@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Video, 
   Share2, 
@@ -26,7 +27,6 @@ import {
   Activity,
   BarChart2,
   Clipboard,
-  Heart,
   UserCog,
   FileBarChart
 } from 'lucide-react';
@@ -40,7 +40,7 @@ const navigation = [
   },
   {
     name: 'Clinical',
-    icon: Heart,
+    icon: Stethoscope,
     color: 'blue',
     items: [
       { name: 'Patient Records', href: '/patients', icon: Users, shortcut: '⌘P' },
@@ -89,7 +89,7 @@ const navigation = [
 const userNavigation = [
   { name: 'Profile Settings', href: '/profile', icon: User },
   { name: 'Help & Support', href: '/help', icon: MessageSquare },
-  { name: 'Sign Out', href: '/logout', icon: LogOut },
+  { name: 'Sign Out', onClick: true, icon: LogOut },
 ];
 
 const NavMenuItem = ({ item }) => {
@@ -187,13 +187,14 @@ const NavMenuItem = ({ item }) => {
 };
 
 const TopNavigation = () => {
+  const { logout } = useAuth();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700 shadow-lg">
       <div className="max-w-[1920px] mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center justify-center gap-3 h-16 px-4 flex-shrink-0">
-            <Heart className="w-5 h-5 text-blue-500" />
+            <img src="/image/aurora.svg" className="w-8 h-8" alt="Aurora Logo" />
             <span className="text-xl font-bold text-white">Aurora</span>
           </Link>
 
@@ -207,12 +208,29 @@ const TopNavigation = () => {
           {/* Right Section */}
           <div className="flex items-center gap-4">
             {/* Search */}
-            <div className="form-control">
-              <input
-                type="search"
-                className="input input-bordered w-64 h-16"
-                placeholder="Search patients, records..."
-              />
+            <div className="form-control relative">
+              <div className="relative">
+                <input
+                  type="search"
+                  className="
+                    input input-bordered
+                    bg-gray-800 
+                    border-gray-700 
+                    text-gray-100 
+                    placeholder:text-gray-500
+                    w-64 h-12
+                    pl-10
+                    focus:border-blue-500
+                    hover:border-gray-600
+                    transition-colors
+                  "
+                  placeholder="Search patients, records..."
+                />
+                <Search 
+                  className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" 
+                  aria-hidden="true"
+                />
+              </div>
             </div>
 
             {/* Notifications */}
@@ -253,18 +271,31 @@ const TopNavigation = () => {
                       <div className="p-2 space-y-1">
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
-                            {({ active }) => (
-                              <Link
-                                to={item.href}
-                                className={`
-                                  group flex items-center px-4 py-3 text-sm rounded-md
-                                  ${active ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}
-                                `}
-                              >
-                                <item.icon className="w-5 h-5 mr-3 text-purple-400 group-hover:text-purple-300" aria-hidden="true" />
-                                {item.name}
-                              </Link>
-                            )}
+                            {({ active }) => {
+                              return item.onClick ? (
+                                <button
+                                  onClick={logout}
+                                  className={`
+                                    group flex items-center px-4 py-3 text-sm rounded-md w-full text-left
+                                    ${active ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}
+                                  `}
+                                >
+                                  <item.icon className="w-5 h-5 mr-3 text-purple-400 group-hover:text-purple-300" aria-hidden="true" />
+                                  {item.name}
+                                </button>
+                              ) : (
+                                <Link
+                                  to={item.href}
+                                  className={`
+                                    group flex items-center px-4 py-3 text-sm rounded-md
+                                    ${active ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}
+                                  `}
+                                >
+                                  <item.icon className="w-5 h-5 mr-3 text-purple-400 group-hover:text-purple-300" aria-hidden="true" />
+                                  {item.name}
+                                </Link>
+                              );
+                            }}
                           </Menu.Item>
                         ))}
                       </div>

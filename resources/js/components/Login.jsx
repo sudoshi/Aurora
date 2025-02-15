@@ -6,15 +6,6 @@ import LoginFooter from './auth/LoginFooter';
 const Login = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gradient-to-b from-gray-900 to-gray-800">
-      {/* Medical Pattern Background */}
-      <div 
-        className="absolute inset-0 z-0 opacity-5"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v20h20v20H30v20H10V40H-10V20H10V0h20zm10 10H20v20H0v20h20v-20h20V10z' fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-          backgroundSize: '30px 30px'
-        }}
-      />
-
       {/* Content Container */}
       <div className="relative z-10 flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

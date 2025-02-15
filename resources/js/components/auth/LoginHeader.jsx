@@ -3,27 +3,13 @@ import React from 'react';
 const LoginHeader = () => {
   return (
     <div className="text-center mb-8">
-      {/* Medical Cross Logo with Pulse Animation */}
-      <div className="relative w-16 h-16 mx-auto mb-4">
-        <div className="absolute inset-0 bg-blue-500 rounded-lg animate-pulse"></div>
-        <div className="relative flex items-center justify-center w-full h-full">
-          <svg
-            className="w-10 h-10 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </div>
-        {/* Pulse Rings */}
-        <div className="absolute inset-0 rounded-lg border-2 border-blue-500 animate-ping"></div>
+      {/* Aurora Logo */}
+      <div className="w-32 h-32 mx-auto mb-4">
+        <img
+          src="/image/aurora.svg"
+          alt="Aurora Logo"
+          className="w-full h-full"
+        />
       </div>
 
       {/* Welcome Text */}

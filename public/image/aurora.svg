@@ -1,41 +1,113 @@
-<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <!-- Gradient for aurora -->
-        <linearGradient id="auroraGradient" x1="0%" y1="50%" x2="100%" y2="50%">
-            <stop offset="0%" stop-color="rgba(0, 255, 150, 0.8)" />
-            <stop offset="50%" stop-color="rgba(0, 200, 255, 0.6)" />
-            <stop offset="100%" stop-color="rgba(150, 50, 255, 0.8)" />
+        <!-- Vibrant vertical aurora gradients -->
+        <linearGradient id="greenCurtain" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="rgba(0, 255, 100, 0)"/>
+            <stop offset="30%" stop-color="rgba(0, 255, 100, 0.5)">
+                <animate attributeName="stop-color" 
+                    values="rgba(0, 255, 100, 0.5);rgba(150, 255, 0, 0.5);rgba(0, 255, 100, 0.5)" 
+                    dur="8s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="rgba(150, 255, 0, 0.3)"/>
+            <stop offset="100%" stop-color="rgba(0, 255, 100, 0)"/>
         </linearGradient>
+
+        <linearGradient id="purpleCurtain" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="rgba(170, 0, 255, 0)"/>
+            <stop offset="30%" stop-color="rgba(170, 0, 255, 0.4)">
+                <animate attributeName="stop-color" 
+                    values="rgba(170, 0, 255, 0.4);rgba(200, 0, 255, 0.4);rgba(170, 0, 255, 0.4)" 
+                    dur="10s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="rgba(200, 0, 255, 0.2)"/>
+            <stop offset="100%" stop-color="rgba(170, 0, 255, 0)"/>
+        </linearGradient>
+
+        <linearGradient id="blueCurtain" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="rgba(0, 150, 255, 0)"/>
+            <stop offset="30%" stop-color="rgba(0, 150, 255, 0.4)">
+                <animate attributeName="stop-color" 
+                    values="rgba(0, 150, 255, 0.4);rgba(0, 200, 255, 0.4);rgba(0, 150, 255, 0.4)" 
+                    dur="9s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="rgba(0, 200, 255, 0.2)"/>
+            <stop offset="100%" stop-color="rgba(0, 150, 255, 0)"/>
+        </linearGradient>
+
+        <linearGradient id="yellowCurtain" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="rgba(255, 220, 0, 0)"/>
+            <stop offset="30%" stop-color="rgba(255, 220, 0, 0.4)">
+                <animate attributeName="stop-color" 
+                    values="rgba(255, 220, 0, 0.4);rgba(255, 200, 0, 0.4);rgba(255, 220, 0, 0.4)" 
+                    dur="7s" repeatCount="indefinite"/>
+            </stop>
+            <stop offset="50%" stop-color="rgba(255, 200, 0, 0.2)"/>
+            <stop offset="100%" stop-color="rgba(255, 220, 0, 0)"/>
+        </linearGradient>
+
+        <!-- Enhanced ethereal glow -->
+        <filter id="auroraGlow">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+            <feColorMatrix in="blur" type="matrix" 
+                values="1.2 0 0 0 0
+                        0 1.2 0 0 0
+                        0 0 1.2 0 0
+                        0 0 0 1 0" />
+        </filter>
     </defs>
 
-    <!-- Aurora Waves with Animation -->
-    <path id="wave1" d="M0,300 Q200,100 400,250 T800,200 V500 H0 Z"
-          fill="url(#auroraGradient)" opacity="0.8">
-        <animate attributeName="d" dur="6s" repeatCount="indefinite"
-            values="
-                M0,300 Q200,100 400,250 T800,200 V500 H0 Z;
-                M0,280 Q200,120 400,230 T800,220 V500 H0 Z;
-                M0,300 Q200,100 400,250 T800,200 V500 H0 Z"
-        />
-    </path>
+    <!-- Aurora curtains -->
+    <g filter="url(#auroraGlow)">
+        <!-- Green curtain -->
+        <path d="M100,600 C100,400 150,300 200,200 C250,100 300,50 350,0
+                 C400,50 450,100 500,200 C550,300 600,400 600,600" 
+              fill="url(#greenCurtain)" 
+              opacity="0.8">
+            <animate attributeName="d" 
+                values="M100,600 C100,400 150,300 200,200 C250,100 300,50 350,0 C400,50 450,100 500,200 C550,300 600,400 600,600;
+                        M150,600 C150,400 200,300 250,200 C300,100 350,50 400,0 C450,50 500,100 550,200 C600,300 650,400 650,600;
+                        M100,600 C100,400 150,300 200,200 C250,100 300,50 350,0 C400,50 450,100 500,200 C550,300 600,400 600,600"
+                dur="20s" 
+                repeatCount="indefinite"/>
+        </path>
 
-    <path id="wave2" d="M0,350 Q200,150 400,280 T800,250 V500 H0 Z"
-          fill="url(#auroraGradient)" opacity="0.6">
-        <animate attributeName="d" dur="8s" repeatCount="indefinite"
-            values="
-                M0,350 Q200,150 400,280 T800,250 V500 H0 Z;
-                M0,370 Q200,130 400,300 T800,230 V500 H0 Z;
-                M0,350 Q200,150 400,280 T800,250 V500 H0 Z"
-        />
-    </path>
+        <!-- Purple curtain -->
+        <path d="M300,600 C300,400 350,300 400,200 C450,100 500,50 550,0
+                 C600,50 650,100 700,200 C750,300 800,400 800,600" 
+              fill="url(#purpleCurtain)" 
+              opacity="0.7">
+            <animate attributeName="d" 
+                values="M300,600 C300,400 350,300 400,200 C450,100 500,50 550,0 C600,50 650,100 700,200 C750,300 800,400 800,600;
+                        M250,600 C250,400 300,300 350,200 C400,100 450,50 500,0 C550,50 600,100 650,200 C700,300 750,400 750,600;
+                        M300,600 C300,400 350,300 400,200 C450,100 500,50 550,0 C600,50 650,100 700,200 C750,300 800,400 800,600"
+                dur="25s" 
+                repeatCount="indefinite"/>
+        </path>
 
-    <path id="wave3" d="M0,400 Q250,200 450,300 T800,320 V500 H0 Z"
-          fill="url(#auroraGradient)" opacity="0.5">
-        <animate attributeName="d" dur="10s" repeatCount="indefinite"
-            values="
-                M0,400 Q250,200 450,300 T800,320 V500 H0 Z;
-                M0,420 Q250,180 450,320 T800,300 V500 H0 Z;
-                M0,400 Q250,200 450,300 T800,320 V500 H0 Z"
-        />
-    </path>
+        <!-- Blue curtain -->
+        <path d="M-100,600 C-100,400 -50,300 0,200 C50,100 100,50 150,0
+                 C200,50 250,100 300,200 C350,300 400,400 400,600" 
+              fill="url(#blueCurtain)" 
+              opacity="0.7">
+            <animate attributeName="d" 
+                values="M-100,600 C-100,400 -50,300 0,200 C50,100 100,50 150,0 C200,50 250,100 300,200 C350,300 400,400 400,600;
+                        M-50,600 C-50,400 0,300 50,200 C100,100 150,50 200,0 C250,50 300,100 350,200 C400,300 450,400 450,600;
+                        M-100,600 C-100,400 -50,300 0,200 C50,100 100,50 150,0 C200,50 250,100 300,200 C350,300 400,400 400,600"
+                dur="22s" 
+                repeatCount="indefinite"/>
+        </path>
+
+        <!-- Yellow curtain -->
+        <path d="M200,600 C200,400 250,300 300,200 C350,100 400,50 450,0
+                 C500,50 550,100 600,200 C650,300 700,400 700,600" 
+              fill="url(#yellowCurtain)" 
+              opacity="0.6">
+            <animate attributeName="d" 
+                values="M200,600 C200,400 250,300 300,200 C350,100 400,50 450,0 C500,50 550,100 600,200 C650,300 700,400 700,600;
+                        M150,600 C150,400 200,300 250,200 C300,100 350,50 400,0 C450,50 500,100 550,200 C600,300 650,400 650,600;
+                        M200,600 C200,400 250,300 300,200 C350,100 400,50 450,0 C500,50 550,100 600,200 C650,300 700,400 700,600"
+                dur="23s" 
+                repeatCount="indefinite"/>
+        </path>
+    </g>
 </svg>
