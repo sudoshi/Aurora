@@ -1,3 +1,210 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Base colors as RGB values for opacity support */
+  --blue-500: 59, 130, 246;    /* #3B82F6 */
+  --red-500: 239, 68, 68;      /* #EF4444 */
+  --green-500: 34, 197, 94;    /* #22C55E */
+  --yellow-500: 234, 179, 8;   /* #EAB308 */
+  --purple-500: 168, 85, 247;  /* #A855F7 */
+  --indigo-500: 99, 102, 241;  /* #6366F1 */
+}
+
+/* Dark mode colors */
+.dark {
+  --blue-500: 96, 165, 250;    /* #60A5FA */
+  --red-500: 248, 113, 113;    /* #F87171 */
+  --green-500: 74, 222, 128;   /* #4ADE80 */
+  --yellow-500: 250, 204, 21;  /* #FACC15 */
+  --purple-500: 192, 132, 252; /* #C084FC */
+  --indigo-500: 129, 140, 248; /* #818CF8 */
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom scrollbar for other elements */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(17, 24, 39); /* gray-900 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99); /* gray-600 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128); /* gray-500 */
+}
+
+/* Base dark theme styles */
+@layer base {
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  /* Improved focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900;
+  }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+  }
+}
+
+/* Custom animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Pulse animation for medical cross */
+  .animate-medical-pulse {
+    animation: medical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes medical-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+  }
+
+  /* Gradient text animation */
+  .animate-gradient-text {
+    background: linear-gradient(
+      to right,
+      theme('colors.blue.400'),
+      theme('colors.indigo.400'),
+      theme('colors.blue.400')
+    );
+    background-size: 200% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: gradient-text 3s linear infinite;
+  }
+
+  @keyframes gradient-text {
+    to {
+      background-position: 200% center;
+    }
+  }
+}
+
+/* Custom form styles */
+@layer components {
+  .form-input-dark {
+    @apply bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500
+           focus:border-blue-500 focus:ring-blue-500;
+  }
+
+  .btn-primary-dark {
+    @apply bg-blue-600 hover:bg-blue-700 text-white
+           focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+  }
+
+  .btn-secondary-dark {
+    @apply bg-gray-700 hover:bg-gray-600 text-gray-100
+           focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+  }
+}
+
+/* Healthcare-specific styles */
+@layer components {
+  .vital-sign-card {
+    @apply bg-gray-800 p-4 rounded-lg border border-gray-700
+           hover:border-blue-500 transition-colors duration-200;
+  }
+
+  .medical-alert {
+    @apply bg-red-900/50 border-l-4 border-red-500 p-4 rounded
+           text-red-200;
+  }
+
+  .health-metric {
+    @apply bg-gray-800/50 backdrop-blur-sm p-4 rounded-lg
+           border border-gray-700;
+  }
+}
+
+/* Accessibility improvements */
+@layer utilities {
+  .sr-only-focusable:not(:focus) {
+    @apply sr-only;
+  }
+
+  .high-contrast {
+    @apply border-2 border-current;
+  }
+}
+
+/* Dark theme overrides for third-party components */
+.tippy-box[data-theme~='dark'] {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.react-datepicker {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.react-datepicker__header {
+  @apply bg-gray-900 border-gray-700;
+}
+
+.react-datepicker__day {
+  @apply text-gray-100 hover:bg-gray-700;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-blue-600 hover:bg-blue-700;
+}

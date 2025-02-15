@@ -132,7 +132,7 @@ import Echo from 'laravel-echo';
 const fetchUserTasks = async (patientId) => {
   // Example fetch: /api/patients/{id}/tasks
   return [
-    { id: 1, title: 'Review Medication Changes', assignedTo: 'Dr. Smith', status: 'pending' },
+    { id: 1, title: 'Review Medication Changes', assignedTo: 'Dr. Udoshi', status: 'pending' },
     { id: 2, title: 'Schedule Follow-up Appointment', assignedTo: 'Admin', status: 'in-progress' },
   ];
 };
@@ -147,7 +147,7 @@ const fetchCaseDiscussions = async (patientId) => {
       messages: [
         {
           id: 101,
-          author: 'Dr. Smith',
+          author: 'Dr. Udoshi',
           content: 'Patient’s creatinine levels are consistently high. We might need to evaluate for dialysis soon.',
           timestamp: Date.now() - 3600 * 1000,
         },
@@ -861,7 +861,7 @@ const ClinicalDashboard = ({ patientId }) => {
   const PresenceComponent = () => {
     // Example local state for who’s online
     const [onlineUsers] = useState([
-      { id: 1, name: 'Dr. Smith', role: 'Physician' },
+      { id: 1, name: 'Dr. Udoshi', role: 'Physician' },
       { id: 2, name: 'Nurse Alice', role: 'Nurse' },
     ]);
 

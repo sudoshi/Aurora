@@ -1,0 +1,41 @@
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- Gradient for aurora -->
+        <linearGradient id="auroraGradient" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" stop-color="rgba(0, 255, 150, 0.8)" />
+            <stop offset="50%" stop-color="rgba(0, 200, 255, 0.6)" />
+            <stop offset="100%" stop-color="rgba(150, 50, 255, 0.8)" />
+        </linearGradient>
+    </defs>
+
+    <!-- Aurora Waves with Animation -->
+    <path id="wave1" d="M0,300 Q200,100 400,250 T800,200 V500 H0 Z"
+          fill="url(#auroraGradient)" opacity="0.8">
+        <animate attributeName="d" dur="6s" repeatCount="indefinite"
+            values="
+                M0,300 Q200,100 400,250 T800,200 V500 H0 Z;
+                M0,280 Q200,120 400,230 T800,220 V500 H0 Z;
+                M0,300 Q200,100 400,250 T800,200 V500 H0 Z"
+        />
+    </path>
+
+    <path id="wave2" d="M0,350 Q200,150 400,280 T800,250 V500 H0 Z"
+          fill="url(#auroraGradient)" opacity="0.6">
+        <animate attributeName="d" dur="8s" repeatCount="indefinite"
+            values="
+                M0,350 Q200,150 400,280 T800,250 V500 H0 Z;
+                M0,370 Q200,130 400,300 T800,230 V500 H0 Z;
+                M0,350 Q200,150 400,280 T800,250 V500 H0 Z"
+        />
+    </path>
+
+    <path id="wave3" d="M0,400 Q250,200 450,300 T800,320 V500 H0 Z"
+          fill="url(#auroraGradient)" opacity="0.5">
+        <animate attributeName="d" dur="10s" repeatCount="indefinite"
+            values="
+                M0,400 Q250,200 450,300 T800,320 V500 H0 Z;
+                M0,420 Q250,180 450,320 T800,300 V500 H0 Z;
+                M0,400 Q250,200 450,300 T800,320 V500 H0 Z"
+        />
+    </path>
+</svg>
