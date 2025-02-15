@@ -4,13 +4,9 @@ import {
   Clock, 
   AlertTriangle, 
   Microscope,
-  FileText,
-  Activity,
-  CalendarClock,
-  Stethoscope,
-  ChevronRight,
   Bell
 } from 'lucide-react';
+import SummaryModal from './SummaryModal';
 
 const MetricCard = ({ 
   title, 
@@ -19,9 +15,7 @@ const MetricCard = ({
   icon: Icon, 
   color, 
   onClick, 
-  alerts = [], 
-  isExpanded,
-  onToggle 
+  alerts = []
 }) => (
   <div className="flex flex-col">
     <button 
@@ -46,20 +40,7 @@ const MetricCard = ({
         )}
       </div>
       <div className="flex-1 min-w-0 text-left">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-400">{title}</h3>
-          {alerts.length > 0 && (
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggle();
-              }}
-              className="p-1 hover:bg-gray-700 rounded-lg"
-            >
-              <ChevronRight className={`w-4 h-4 text-gray-400 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-            </button>
-          )}
-        </div>
+        <h3 className="text-sm font-medium text-gray-400">{title}</h3>
         <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
         {status && (
           <p className={`mt-1 text-sm text-${color}-400 truncate`}>
@@ -68,33 +49,11 @@ const MetricCard = ({
         )}
       </div>
     </button>
-    
-    {/* Alerts Dropdown */}
-    {isExpanded && alerts.length > 0 && (
-      <div className="mt-2 p-3 bg-gray-800 rounded-lg border border-gray-700">
-        <div className="space-y-2">
-          {alerts.map((alert, index) => (
-            <div 
-              key={index}
-              className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-700/50"
-            >
-              <div className={`p-1.5 rounded-lg bg-${alert.color}-900/30 text-${alert.color}-400`}>
-                <Bell className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white">{alert.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{alert.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
   </div>
 );
 
-const SummaryPanel = ({ onMetricClick = () => {} }) => {
-  const [expandedMetric, setExpandedMetric] = useState(null);
+const SummaryPanel = () => {
+  const [selectedMetric, setSelectedMetric] = useState(null);
 
   // Enhanced mock data with alerts
   const metrics = [
@@ -176,17 +135,23 @@ const SummaryPanel = ({ onMetricClick = () => {} }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {metrics.map((metric) => (
-        <MetricCard 
-          key={metric.id}
-          {...metric}
-          onClick={() => onMetricClick(metric)}
-          isExpanded={expandedMetric === metric.id}
-          onToggle={() => setExpandedMetric(expandedMetric === metric.id ? null : metric.id)}
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {metrics.map((metric) => (
+          <MetricCard 
+            key={metric.id}
+            {...metric}
+            onClick={() => setSelectedMetric(metric)}
+          />
+        ))}
+      </div>
+      {selectedMetric && (
+        <SummaryModal 
+          metric={selectedMetric} 
+          onClose={() => setSelectedMetric(null)} 
         />
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 

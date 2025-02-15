@@ -2,6 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Additional FullCalendar Dark Theme Overrides */
+.fc-theme-standard .fc-list-day-cushion {
+  background: theme('colors.gray.800');
+}
+
+.fc .fc-list-event:hover td {
+  background: theme('colors.gray.700');
+}
+
+.fc-theme-standard .fc-list-event-dot {
+  border-color: theme('colors.primary.500');
+}
+
+.fc .fc-list-event-title {
+  color: theme('colors.white');
+}
+
+.fc .fc-list-event-time {
+  color: theme('colors.gray.400');
+}
+
+.fc-direction-ltr .fc-list-day-text,
+.fc-direction-ltr .fc-list-day-side-text {
+  color: theme('colors.white');
+}
+
+/* Custom FullCalendar Theme */
+.fc {
+  --fc-border-color: theme('colors.gray.700');
+  --fc-button-bg-color: theme('colors.gray.800');
+  --fc-button-border-color: theme('colors.gray.700');
+  --fc-button-hover-bg-color: theme('colors.gray.700');
+  --fc-button-hover-border-color: theme('colors.gray.600');
+  --fc-button-active-bg-color: theme('colors.primary.DEFAULT');
+  --fc-button-active-border-color: theme('colors.primary.600');
+  --fc-event-bg-color: theme('colors.primary.900');
+  --fc-event-border-color: theme('colors.primary.700');
+  --fc-today-bg-color: theme('colors.primary.900 / 10%');
+  --fc-now-indicator-color: theme('colors.primary.500');
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border-color: theme('colors.gray.700');
+}
+
+.fc .fc-timegrid-slot {
+  height: 3rem;
+}
+
+.fc .fc-toolbar-title {
+  color: theme('colors.white');
+}
+
+.fc .fc-button {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  color: theme('colors.gray.300');
+}
+
+.fc .fc-button:hover {
+  color: theme('colors.white');
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  color: theme('colors.white');
+}
+
+.fc-direction-ltr .fc-button-group > .fc-button {
+  border-radius: 0.5rem;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: theme('colors.gray.400');
+  font-weight: 500;
+  padding: 8px;
+}
+
+.fc .fc-timegrid-axis-cushion {
+  color: theme('colors.gray.400');
+  font-weight: 500;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+  color: theme('colors.gray.400');
+}
+
+.fc-theme-standard td, 
+.fc-theme-standard th {
+  border-color: theme('colors.gray.700');
+}
+
+.fc .fc-highlight {
+  background: theme('colors.primary.900 / 20%');
+}
+
 :root {
   /* Base colors as RGB values for opacity support */
   --blue-500: 59, 130, 246;    /* #3B82F6 */

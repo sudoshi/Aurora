@@ -55,7 +55,7 @@ const LoginFooter = () => {
 
       {/* Copyright */}
       <div className="text-center text-gray-600 text-xs">
-        <p>© {currentYear} Aurora Healthcare. All rights reserved.</p>
+        <p>© {currentYear} All rights reserved.</p>
         <div className="mt-1 space-x-3">
           <Link
             to="/privacy"
