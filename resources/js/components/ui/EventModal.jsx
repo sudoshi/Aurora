@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 const EventModal = ({ event, onClose }) => {
   const navigate = useNavigate();
   if (!event) return null;
+  
+  console.log('EventModal opened with event:', event);
+  console.log('Event patients:', event.patients);
+  console.log('Event patients length:', event.patients?.length);
 
   const handleUpdateStatus = () => {
     // TODO: Implement status update functionality
@@ -130,6 +134,44 @@ const EventModal = ({ event, onClose }) => {
                         <span className="text-xs text-gray-400">
                           {member.available ? 'Available' : 'Unavailable'}
                         </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Patients */}
+            {event.patients && event.patients.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-gray-400">Patients</h3>
+                  <span className="text-xs text-gray-500">{event.patients.length} patients</span>
+                </div>
+                <div className="space-y-2">
+                  {event.patients.map((patient, index) => (
+                    <div 
+                      key={index}
+                      className="p-3 bg-gray-800/50 rounded-lg space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                            <span className="text-sm font-medium text-white">
+                              {patient.name.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white">{patient.name}</p>
+                            <p className="text-xs text-gray-400">ID: {patient.id}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="pl-11">
+                        <div className="space-y-1">
+                          <p className="text-sm text-white">{patient.condition}</p>
+                          <p className="text-sm text-gray-400">{patient.status}</p>
+                        </div>
                       </div>
                     </div>
                   ))}

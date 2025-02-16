@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Activity, Stethoscope, Users, CalendarDays, Brain, Heart, Microscope } from 'lucide-react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -117,6 +117,7 @@ const Calendar = () => {
         title: "Pre-Rounds Preparation",
         start: formatDate(currentDate, '06:00'),
         end: formatDate(currentDate, '07:00'),
+        time: '6:00 AM',
         description: "Review overnight cases and prepare for morning rounds",
         category: "icu",
         priority: "standard",
@@ -137,6 +138,7 @@ const Calendar = () => {
         title: "ICU Morning Rounds",
         start: formatDate(currentDate, '08:00'),
         end: formatDate(currentDate, '10:00'),
+        time: '8:00 AM',
         description: "Daily multidisciplinary ICU rounds with critical care team",
         category: "icu",
         priority: "critical",
@@ -157,24 +159,111 @@ const Calendar = () => {
       // Weekly tumor board (Tuesdays)
       if (currentDate.getDay() === 2) {
         events.push({
-          id: id++,
-          title: "Tumor Board: Thoracic Cases",
-          start: formatDate(currentDate, '10:30'),
-          end: formatDate(currentDate, '12:00'),
-          description: "Review of complex thoracic oncology cases with multidisciplinary team",
+          id: 46,
+          title: "Abdominal Cases MDC",
+          start: formatDate(currentDate, '10:00'),
+          end: formatDate(currentDate, '11:30'),
+          time: '10:00 AM',
+          description: "Multidisciplinary review of complex abdominal oncology cases",
           category: "oncology",
           priority: "urgent",
           location: "Conference Room 2B",
           duration: 90,
           team: [
-            { name: "Dr. Robert Martinez", role: "Thoracic Surgery", available: true },
             { name: "Dr. Lisa Anderson", role: "Medical Oncology", available: true },
             { name: "Dr. David Kim", role: "Radiation Oncology", available: true },
-            { name: "Dr. Rachel Green", role: "Pathology", available: false }
+            { name: "Dr. Rachel Green", role: "Pathology", available: true }
           ],
-          relatedItems: [
-            { type: 'document', title: 'Imaging Results', description: 'Recent CT scans and PET studies' },
-            { type: 'note', title: 'Previous MDT Notes', description: 'Discussion points from last meeting' }
+          patients: [
+            {
+              id: 5,
+              name: "Steve Jobs",
+              condition: "Stage 4 Pancreatic Cancer (Neuroendocrine Tumor) - Metastatic disease with liver involvement. Previous Whipple procedure with subsequent progression.",
+              status: "Under Treatment - Current therapy includes targeted molecular therapy and symptom management."
+            },
+            {
+              id: 6,
+              name: "Malliharjun Udoshi",
+              condition: "Stage 4 Colon Cancer - Metastatic adenocarcinoma with liver and peritoneal involvement. KRAS mutation positive.",
+              status: "Under Treatment - Receiving FOLFOX chemotherapy with good response on recent imaging."
+            }
+          ],
+          related_items: [
+            { type: 'document', title: 'Recent Imaging', description: 'Latest CT and PET scan results' },
+            { type: 'document', title: 'Treatment Protocols', description: 'Current treatment plans and response assessments' }
+          ]
+        });
+      }
+
+      // Neurology Rounds (Monday, Wednesday, Friday)
+      if ([1, 3, 5].includes(currentDate.getDay())) {
+        events.push({
+          id: id++,
+          title: "Neurology Department Rounds",
+          start: formatDate(currentDate, '09:00'),
+          end: formatDate(currentDate, '10:30'),
+          time: '9:00 AM',
+          description: "Comprehensive neurology rounds with focus on complex neurological cases and new admissions",
+          category: "neurology",
+          priority: "standard",
+          location: "Neurology Wing B",
+          duration: 90,
+          team: [
+            { name: "Dr. Oliver Sacks", role: "Chief Neurologist", available: true },
+            { name: "Dr. Maya Patel", role: "Resident Neurologist", available: true },
+            { name: "Dr. John Chen", role: "Stroke Specialist", available: true }
+          ],
+          patients: [
+            {
+              id: 7,
+              name: "Robert Johnson",
+              condition: "Post-stroke Recovery - Right-sided hemiparesis with improving speech function",
+              status: "Under Treatment - Intensive physical therapy and speech rehabilitation"
+            },
+            {
+              id: 8,
+              name: "Maria Garcia",
+              condition: "Early-onset Alzheimer's Disease - Showing signs of mild cognitive impairment",
+              status: "Under Evaluation - Currently in clinical trial for new therapeutic approach"
+            }
+          ],
+          related_items: [
+            { type: 'document', title: 'Brain MRI Results', description: 'Latest imaging studies and progression analysis' },
+            { type: 'document', title: 'Cognitive Assessment', description: 'Weekly cognitive function test results' }
+          ]
+        });
+      }
+
+      // Multidisciplinary Care Conference (Thursday)
+      if (currentDate.getDay() === 4) {
+        events.push({
+          id: id++,
+          title: "Complex Care Conference",
+          start: formatDate(currentDate, '14:00'),
+          end: formatDate(currentDate, '15:30'),
+          time: '2:00 PM',
+          description: "Multidisciplinary team meeting to discuss complex cases requiring coordinated care",
+          category: "multidisciplinary",
+          priority: "urgent",
+          location: "Main Conference Center",
+          duration: 90,
+          team: [
+            { name: "Dr. Sarah Chen", role: "Critical Care Lead", available: true },
+            { name: "Dr. James Wilson", role: "Lead Surgeon", available: true },
+            { name: "Dr. Oliver Sacks", role: "Chief Neurologist", available: true },
+            { name: "Dr. Lisa Anderson", role: "Medical Oncology", available: true }
+          ],
+          patients: [
+            {
+              id: 9,
+              name: "David Miller",
+              condition: "Multiple System Trauma - Post-MVA with TBI, multiple fractures, and internal injuries",
+              status: "Critical but Stable - Coordinated care between Neurology, Surgery, and Critical Care"
+            }
+          ],
+          related_items: [
+            { type: 'document', title: 'Case Summary', description: 'Comprehensive overview of patient condition and treatment plans' },
+            { type: 'alert', title: 'Critical Updates', description: 'Recent changes in patient status requiring immediate attention' }
           ]
         });
       }
@@ -185,6 +274,7 @@ const Calendar = () => {
         title: "Surgical Planning Meeting",
         start: formatDate(currentDate, '07:00'),
         end: formatDate(currentDate, '08:00'),
+        time: '7:00 AM',
         description: "Pre-operative planning for today's scheduled surgeries",
         category: "surgical",
         priority: "urgent",
@@ -200,213 +290,28 @@ const Calendar = () => {
         ]
       });
 
-      // Bi-weekly transplant board (every other Wednesday)
-      if (currentDate.getDay() === 3 && Math.floor(currentDate.getDate() / 7) % 2 === 0) {
-        events.push({
-          id: id++,
-          title: "Transplant Evaluation Board",
-          start: formatDate(currentDate, '09:00'),
-          end: formatDate(currentDate, '11:00'),
-          description: "Evaluation of potential liver transplant candidates",
-          category: "surgical",
-          priority: "standard",
-          location: "Transplant Center",
-          duration: 120,
-          team: [
-            { name: "Dr. James Wilson", role: "Transplant Surgery", available: true },
-            { name: "Dr. Maria Garcia", role: "Hepatology", available: true },
-            { name: "Dr. Tom Brown", role: "Anesthesiology", available: true },
-            { name: "Dr. Susan Lee", role: "Psychiatry", available: true }
-          ],
-          relatedItems: [
-            { type: 'document', title: 'Candidate Profiles', description: '3 new evaluations pending' },
-            { type: 'alert', title: 'UNOS Status Update', description: 'Status 1A case requiring review' }
-          ]
-        });
-      }
-
-      // Weekly oncology planning (Thursdays)
-      if (currentDate.getDay() === 4) {
-        events.push({
-          id: id++,
-          title: "Oncology Care Planning",
-          start: formatDate(currentDate, '13:00'),
-          end: formatDate(currentDate, '15:00'),
-          description: "Multidisciplinary review of complex oncology cases",
-          category: "oncology",
-          priority: "standard",
-          location: "Oncology Department",
-          duration: 120,
-          team: [
-            { name: "Dr. Rebecca Chen", role: "Medical Oncology", available: true },
-            { name: "Dr. Mark Wilson", role: "Radiation Oncology", available: true },
-            { name: "Dr. Laura Taylor", role: "Surgical Oncology", available: true },
-            { name: "Dr. David Park", role: "Pathology", available: true }
-          ],
-          relatedItems: [
-            { type: 'document', title: 'Treatment Protocols', description: 'Updated clinical trial options' },
-            { type: 'note', title: 'Patient Responses', description: 'Current treatment efficacy data' }
-          ]
-        });
-      }
-
-      // Weekly neurosurgery conference (Wednesdays)
-      if (currentDate.getDay() === 3) {
-        events.push({
-          id: id++,
-          title: "Neurosurgery Conference",
-          start: formatDate(currentDate, '15:30'),
-          end: formatDate(currentDate, '17:00'),
-          description: "Review of complex neurosurgical cases and treatment planning",
-          category: "neurology",
-          priority: "urgent",
-          location: "Neuroscience Center",
-          duration: 90,
-          team: [
-            { name: "Dr. Michael Chang", role: "Neurosurgery", available: true },
-            { name: "Dr. Emma Roberts", role: "Neuroradiology", available: true },
-            { name: "Dr. James Lee", role: "Neurology", available: true }
-          ],
-          relatedItems: [
-            { type: 'document', title: 'MRI Studies', description: 'Recent imaging analysis' },
-            { type: 'document', title: 'Surgical Approaches', description: 'Proposed intervention plans' }
-          ]
-        });
-      }
-
-      // Weekly department meeting (Mondays)
-      if (currentDate.getDay() === 1) {
-        events.push({
-          id: id++,
-          title: "Department Staff Meeting",
-          start: formatDate(currentDate, '12:00'),
-          end: formatDate(currentDate, '13:00'),
-          description: "Monthly department updates and coordination meeting",
-          category: "admin",
-          priority: "standard",
-          location: "Main Conference Room",
-          duration: 60,
-          team: [
-            { name: "Dr. William Harris", role: "Department Head", available: true },
-            { name: "Dr. Jennifer Lee", role: "Chief Resident", available: true },
-            { name: "Sarah Johnson", role: "Department Coordinator", available: true }
-          ],
-          relatedItems: [
-            { type: 'document', title: 'Monthly Metrics', description: 'Department performance review' },
-            { type: 'document', title: 'Staffing Updates', description: 'New hires and schedule changes' }
-          ]
-        });
-      }
-
-      // Daily evening handoff
-      events.push({
-        id: id++,
-        title: "Evening Handoff Meeting",
-        start: formatDate(currentDate, '17:00'),
-        end: formatDate(currentDate, '18:00'),
-        description: "Shift change handoff and patient status updates",
-        category: "multidisciplinary",
-        priority: "critical",
-        location: "Central Nursing Station",
-        duration: 60,
-        team: [
-          { name: "Dr. Lisa Wong", role: "Day Shift Lead", available: true },
-          { name: "Dr. Michael Chen", role: "Night Shift Lead", available: true },
-          { name: "Sarah Miller", role: "Charge Nurse", available: true }
-        ],
-        relatedItems: [
-          { type: 'document', title: 'Shift Report', description: 'Comprehensive handoff documentation' },
-          { type: 'alert', title: 'Critical Cases', description: 'High-priority patients requiring attention' }
-        ]
-      });
-
-      // Daily ED huddle
-      events.push({
-        id: id++,
-        title: "Emergency Department Huddle",
-        start: formatDate(currentDate, '19:00'),
-        end: formatDate(currentDate, '20:00'),
-        description: "Evening ED status review and resource allocation",
-        category: "icu",
-        priority: "urgent",
-        location: "ED Conference Room",
-        duration: 60,
-        team: [
-          { name: "Dr. Alex Johnson", role: "ED Lead", available: true },
-          { name: "Dr. Karen White", role: "Trauma Surgery", available: true },
-          { name: "Dr. Hassan Ahmed", role: "Internal Medicine", available: false }
-        ],
-        relatedItems: [
-          { type: 'alert', title: 'Department Status', description: 'Current ED capacity and pending cases' },
-          { type: 'note', title: 'Resource Updates', description: 'Available beds and specialist coverage' }
-        ]
-      });
-      // Monthly grand rounds (first Friday)
-      if (currentDate.getDay() === 5 && currentDate.getDate() <= 7) {
-        events.push({
-          id: id++,
-          title: "Grand Rounds",
-          start: formatDate(currentDate, '14:00'),
-          end: formatDate(currentDate, '16:00'),
-          category: "surgical",
-          priority: "standard",
-          location: "Main Auditorium",
-          description: "Monthly hospital-wide grand rounds featuring guest speakers and case presentations",
-          team: [
-            { name: "Dr. William Harris", role: "Department Head", available: true },
-            { name: "Dr. Sarah Chen", role: "Chief of Surgery", available: true }
-          ]
-        });
-      }
-
-      // Bi-weekly case review (every other Monday)
-      if (currentDate.getDay() === 1 && Math.floor(currentDate.getDate() / 7) % 2 === 1) {
-        events.push({
-          id: id++,
-          title: "Multidisciplinary Case Review",
-          start: formatDate(currentDate, '14:00'),
-          end: formatDate(currentDate, '16:00'),
-          category: "multidisciplinary",
-          priority: "standard",
-          location: "Conference Room A",
-          description: "Comprehensive review of complex cases requiring multi-specialty input",
-          team: [
-            { name: "Dr. Lisa Wong", role: "Internal Medicine", available: true },
-            { name: "Dr. Michael Chen", role: "Surgery", available: true },
-            { name: "Dr. Emily Taylor", role: "Oncology", available: true }
-          ]
-        });
-      }
-
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    return events.map(event => ({
-      ...event,
-      description: event.description || "Regular scheduled meeting",
-      category: event.category || (() => {
-        if (event.title.includes("ICU") || event.title.includes("Emergency")) return "icu";
-        if (event.title.includes("Surgical") || event.title.includes("Transplant")) return "surgical";
-        if (event.title.includes("Oncology") || event.title.includes("Tumor")) return "oncology";
-        if (event.title.includes("Neuro")) return "neurology";
-        if (event.title.includes("Department") || event.title.includes("Staff")) return "admin";
-        return "multidisciplinary";
-      })(),
-      priority: event.priority || "standard",
-      location: event.location || "Hospital Wing A",
-      team: event.team || [
-        { name: "Dr. John Doe", role: "Lead Physician", available: true },
-        { name: "Dr. Jane Smith", role: "Specialist", available: true }
-      ]
-    }));
+    return events;
   };
 
   const events = generateEvents();
+  console.log('Generated events:', events.find(e => e.id === 46));
 
   const handleEventClick = (clickInfo) => {
-    const event = events.find(e => e.id === parseInt(clickInfo.event.id));
+    console.log('Clicked event ID:', clickInfo.event.id);
+    console.log('All events:', events);
+    const event = events.find(e => e.id === parseInt(clickInfo.event.id, 10));
+    console.log('Found event:', event);
+    console.log('Event patients:', event?.patients);
     if (event) {
-      setSelectedEvent(event);
+      console.log('Setting selected event with patients:', event.patients);
+      setSelectedEvent({
+        ...event,
+        relatedItems: event.related_items || event.relatedItems || [],
+        patients: event.patients || []
+      });
     }
   };
 
@@ -421,7 +326,7 @@ const Calendar = () => {
   };
 
   const renderEventContent = (eventInfo) => {
-    const event = events.find(e => e.id === parseInt(eventInfo.event.id));
+    const event = events.find(e => e.id === parseInt(eventInfo.event.id, 10));
     if (!event) return null;
 
     const categoryColors = {

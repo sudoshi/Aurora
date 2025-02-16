@@ -5,6 +5,10 @@ import CaseDiscussion from './CaseDiscussion';
 import ErrorBoundary from './ui/ErrorBoundary';
 import { SuperNoteFollowUp } from './SuperNoteFollowUp';
 import CaseOverview from './CaseOverview';
+import ImagingView from './ImagingView';
+import LabsView from './LabsView';
+import MolecularView from './MolecularView';
+import PrognosisView from './PrognosisView';
 
 const Collaboration = () => {
   const { eventId } = useParams();
@@ -73,6 +77,10 @@ const Collaboration = () => {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'supernote', label: 'SuperNote' },
+    { id: 'imaging', label: 'Imaging' },
+    { id: 'labs', label: 'Labs' },
+    { id: 'molecular', label: 'Molecular' },
+    { id: 'prognosis', label: 'Prognosis' },
     { id: 'discussion', label: 'Discussion' }
   ];
 
@@ -275,6 +283,46 @@ const Collaboration = () => {
                       onSave={() => {}}
                       onNoteChange={() => {}}
                     />
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {activeTab === 'imaging' && (
+                <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+                  <ErrorBoundary>
+                    <div className="p-6">
+                      <ImagingView patientId={selectedPatient.id} />
+                    </div>
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {activeTab === 'labs' && (
+                <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+                  <ErrorBoundary>
+                    <div className="p-6">
+                      <LabsView patientId={selectedPatient.id} />
+                    </div>
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {activeTab === 'molecular' && (
+                <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+                  <ErrorBoundary>
+                    <div className="p-6">
+                      <MolecularView patientId={selectedPatient.id} />
+                    </div>
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {activeTab === 'prognosis' && (
+                <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+                  <ErrorBoundary>
+                    <div className="p-6">
+                      <PrognosisView patientId={selectedPatient.id} />
+                    </div>
                   </ErrorBoundary>
                 </div>
               )}
