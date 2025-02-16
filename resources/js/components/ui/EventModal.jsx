@@ -1,8 +1,15 @@
 import React from 'react';
 import { X, Users, Clock, MapPin, FileText, AlertTriangle, MessageSquare, ChevronRight, Activity, Heart, Microscope, Brain, Stethoscope } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const EventModal = ({ event, onClose }) => {
+  const navigate = useNavigate();
   if (!event) return null;
+
+  const handleUpdateStatus = () => {
+    // TODO: Implement status update functionality
+    console.log('Update status clicked for event:', event.id);
+  };
 
   const categoryColors = {
     'icu': 'red',
@@ -42,22 +49,24 @@ const EventModal = ({ event, onClose }) => {
         <div className="relative bg-gray-900 rounded-xl shadow-xl w-full max-w-3xl">
           {/* Header */}
           <div className="flex items-start justify-between p-6 border-b border-gray-700">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className={`px-3 py-1 rounded-full text-sm font-medium bg-${color}-900/30 text-${color}-400 flex items-center gap-2`}>
-                  <Icon className="w-4 h-4" />
-                  <span>{categoryLabels[event.category]}</span>
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium bg-${color}-900/30 text-${color}-400 flex items-center gap-2`}>
+                    <Icon className="w-4 h-4" />
+                    <span>{categoryLabels[event.category]}</span>
+                  </div>
+                  <span className="text-sm text-gray-400">{event.time}</span>
                 </div>
-                <span className="text-sm text-gray-400">{event.time}</span>
+                <h2 className="text-xl font-semibold text-white">{event.title}</h2>
               </div>
-              <h2 className="text-xl font-semibold text-white">{event.title}</h2>
+              <button
+                onClick={onClose}
+                className="rounded-full p-2 hover:bg-gray-800 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
             </div>
-            <button 
-              onClick={onClose}
-              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-400" />
-            </button>
           </div>
 
           {/* Content */}
@@ -161,12 +170,19 @@ const EventModal = ({ event, onClose }) => {
           <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
             <button 
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white"
+              className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-gray-800 rounded-lg"
             >
-              Close
+              Cancel
             </button>
-            <button className={`px-4 py-2 bg-${color}-600 text-white text-sm font-medium rounded-lg hover:bg-${color}-700`}>
-              Update Status
+            <button
+              onClick={() => {
+                onClose();
+                navigate(`/collaboration/${event.id}`);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              See Patients
             </button>
           </div>
         </div>

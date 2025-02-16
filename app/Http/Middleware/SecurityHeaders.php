@@ -28,6 +28,38 @@ class SecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        // Add CSP header with development-friendly settings in local environment
+        if (app()->environment('local')) {
+            $response->headers->set('Content-Security-Policy', "
+                default-src 'self';
+                script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173;
+                style-src 'self' 'unsafe-inline';
+                connect-src 'self' ws://localhost:5173 http://localhost:5173;
+                img-src 'self' data: blob:;
+                font-src 'self';
+                object-src 'none';
+                base-uri 'self';
+                form-action 'self';
+                frame-ancestors 'none';
+                block-all-mixed-content;
+                require-trusted-types-for 'script';
+            ");
+        } else {
+            $response->headers->set('Content-Security-Policy', "
+                default-src 'self';
+                script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                style-src 'self' 'unsafe-inline';
+                img-src 'self' data: blob:;
+                font-src 'self';
+                object-src 'none';
+                base-uri 'self';
+                form-action 'self';
+                frame-ancestors 'none';
+                block-all-mixed-content;
+                require-trusted-types-for 'script';
+            ");
+        }
+
         return $response;
     }
 }

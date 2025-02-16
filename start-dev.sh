@@ -50,7 +50,6 @@ if check_port 8000; then
     exit 1
 fi
 
-
 # Install dependencies if needed
 if [ ! -d "${SCRIPT_DIR}/vendor" ]; then
     print_status "$YELLOW" "Installing PHP dependencies..."
@@ -69,27 +68,13 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-# Run database migrations
-# print_status "$YELLOW" "Running database migrations..."
-# php artisan migrate
+# Start development servers
+print_status "$YELLOW" "Starting development servers..."
+npm run start & echo $! > "${VITE_PID_FILE}"
 
-# Build frontend assets
-print_status "$YELLOW" "Building frontend assets..."
-npm run build
-
-# Start Laravel development server
-print_status "$YELLOW" "Starting Laravel development server..."
-php artisan serve > /dev/null 2>&1 & echo $! > "${LARAVEL_PID_FILE}"
-
-# Wait for server to start
-sleep 3
-
-# Check if server is running
-if ! check_port 8000; then
-    print_status "$RED" "Error: Laravel development server failed to start"
-    exit 1
-fi
-
-print_status "$GREEN" "Development server started successfully!"
+print_status "$GREEN" "Development servers started successfully!"
 print_status "$GREEN" "Application: http://localhost:8000"
-print_status "$YELLOW" "Use ./stop-dev.sh to stop the server"
+print_status "$YELLOW" "Use ./stop-dev.sh to stop the servers"
+
+# Keep script running and show server logs
+tail -f storage/logs/laravel.log

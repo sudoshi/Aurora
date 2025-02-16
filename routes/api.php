@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\CaseDiscussionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,20 +12,30 @@ use App\Http\Controllers\AuthController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group assigned
-| the "api" middleware group. Enjoy building your API!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
 |
 */
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
+    // User routes
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    // Add more routes that require authentication here
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Event routes
+    Route::apiResource('events', EventController::class);
+
+    // Case Discussion routes
+    Route::prefix('cases/{caseId}')->group(function () {
+        Route::get('/discussions', [CaseDiscussionController::class, 'index']);
+        Route::post('/discussions', [CaseDiscussionController::class, 'store']);
+        Route::post('/attachments', [CaseDiscussionController::class, 'uploadAttachments']);
+    });
 });

@@ -8,6 +8,7 @@ import Login from './Login.jsx';
 // Lazy load components
 const Home = React.lazy(() => import('./Home.jsx'));
 const About = React.lazy(() => import('./About.jsx'));
+const Collaboration = React.lazy(() => import('./Collaboration.jsx'));
 
 // Placeholder component for routes under development
 const UnderDevelopment = () => (
@@ -45,6 +46,9 @@ function App() {
               <Route path="/active-sessions" element={<UnderDevelopment />} />
               <Route path="/join-meeting" element={<UnderDevelopment />} />
 
+              {/* Collaboration Routes */}
+              <Route path="/collaboration/:eventId" element={<Collaboration />} />
+              
               {/* Communication Routes */}
               <Route path="/case-discussions" element={<UnderDevelopment />} />
               <Route path="/tasks" element={<UnderDevelopment />} />

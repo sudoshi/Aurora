@@ -11,12 +11,7 @@ export default defineConfig({
         react(),
     ],
     server: {
-        port: 8000,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:8000',
-                changeOrigin: true,
-            },
-        },
+        hmr: { host: 'localhost' },
+        host: 'localhost',
     },
 });

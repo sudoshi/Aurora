@@ -49,7 +49,6 @@ const navigation = [
       { name: 'Treatment Plans', href: '/treatments', icon: Clipboard, shortcut: '⌘T' },
       { name: 'Emergency Protocols', href: '/emergency', icon: AlertTriangle, shortcut: '⌘E' },
     ],
-    badge: '3 urgent'
   },
   {
     name: 'Communication',

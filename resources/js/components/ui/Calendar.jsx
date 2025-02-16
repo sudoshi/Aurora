@@ -505,10 +505,6 @@ const Calendar = () => {
           minute: '2-digit',
           meridiem: 'short'
         }}
-        theme={{
-          background: '#111827',
-          textColor: '#fff'
-        }}
       />
       
       {selectedEvent && (

@@ -13,66 +13,49 @@ print_status() {
     echo -e "${color}${message}${NC}"
 }
 
-# Function to check if a port is in use
-check_port() {
-    local port=$1
-    if lsof -i :$port > /dev/null; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 # Store the script's directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PID_DIR="${SCRIPT_DIR}/storage/pids"
 LARAVEL_PID_FILE="${PID_DIR}/laravel.pid"
+VITE_PID_FILE="${PID_DIR}/vite.pid"
 
-# Function to stop a process by PID file
-stop_process() {
-    local pid_file=$1
-    local process_name=$2
-    
-    if [ -f "$pid_file" ]; then
-        local pid=$(cat "$pid_file")
-        if ps -p "$pid" > /dev/null; then
-            print_status "$YELLOW" "Stopping $process_name (PID: $pid)..."
-            kill "$pid"
-            # Wait for process to stop
-            for i in {1..5}; do
-                if ! ps -p "$pid" > /dev/null; then
-                    break
-                fi
-                sleep 1
-            done
-            # Force kill if still running
-            if ps -p "$pid" > /dev/null; then
-                print_status "$YELLOW" "Force stopping $process_name..."
-                kill -9 "$pid"
-            fi
-        fi
-        rm "$pid_file"
+# Function to kill process and its children
+kill_process_tree() {
+    local pid=$1
+    if [ -n "$pid" ]; then
+        # Get all child processes
+        children=$(pgrep -P $pid)
+        
+        # Kill children first
+        for child in $children; do
+            kill_process_tree $child
+        done
+        
+        # Kill the parent process
+        kill -9 $pid 2>/dev/null
     fi
 }
 
-# Stop Laravel server
-stop_process "$LARAVEL_PID_FILE" "Laravel development server"
-
-# Check for any remaining processes on the port
-if check_port 8000; then
-    print_status "$YELLOW" "Cleaning up remaining process on port 8000..."
-    lsof -ti :8000 | xargs kill -9 > /dev/null 2>&1
+# Stop npm process and its children (Laravel and Vite)
+if [ -f "${VITE_PID_FILE}" ]; then
+    PID=$(cat "${VITE_PID_FILE}")
+    print_status "$YELLOW" "Stopping development servers (PID: ${PID})..."
+    kill_process_tree "${PID}"
+    rm "${VITE_PID_FILE}"
 fi
 
-# Final verification
-if ! check_port 8000; then
-    print_status "$GREEN" "Development server stopped successfully!"
-else
-    print_status "$RED" "Warning: Some processes may still be running"
-    print_status "$YELLOW" "Please check manually with: lsof -i :8000"
-fi
+# Clean up any remaining processes on the ports
+print_status "$YELLOW" "Cleaning up remaining process on port 8000..."
+lsof -ti:8000 | xargs kill -9 2>/dev/null
 
-# Clean up PID directory if empty
-if [ -d "$PID_DIR" ] && [ -z "$(ls -A $PID_DIR)" ]; then
-    rmdir "$PID_DIR"
-fi
+print_status "$YELLOW" "Cleaning up remaining process on port 5173..."
+lsof -ti:5173 | xargs kill -9 2>/dev/null
+
+# Clear Laravel caches
+print_status "$YELLOW" "Clearing Laravel caches..."
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+print_status "$GREEN" "Development servers stopped successfully!"
