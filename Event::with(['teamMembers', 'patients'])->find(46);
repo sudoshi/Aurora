@@ -1,0 +1,20 @@
+[90m= [39m[34;4mApp\Models\Event[39;24m {#6173
+    [34mid[39m: [35m46[39m,
+    [34mtitle[39m: "[32mAbdominal Cases MDC[39m",
+    [34mtime[39m: "[32m2025-02-16 10:00:00[39m",
+    [34mduration[39m: [35m90[39m,
+    [34mlocation[39m: "[32mConference Room 2B[39m",
+    [34mcategory[39m: "[32moncology[39m",
+    [34mdescription[39m: "[32mMultidisciplinary review of complex abdominal oncology cases[39m",
+    [34mteam[39m: "[32m[{"name":"Dr. Lisa Anderson","role":"Medical Oncology","available":true},{"name":"Dr. David Kim","role":"Radiation Oncology","available":true},{"name":"Dr. Rachel Green","role":"Pathology","available":true}][39m",
+    [34mpatients[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6174
+      [34mall[39m: [],
+    },
+    [34mrelated_items[39m: "[32m[{"type":"document","title":"Recent Imaging","description":"Latest CT and PET scan results"},{"type":"document","title":"Treatment Protocols","description":"Current treatment plans and response assessments"}][39m",
+    [34mcreated_at[39m: "[32m2025-02-16 21:02:20[39m",
+    [34mupdated_at[39m: "[32m2025-02-16 21:02:20[39m",
+    [34mteamMembers[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#272
+      [34mall[39m: [],
+    },
+  }
+

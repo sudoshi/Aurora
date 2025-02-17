@@ -17,9 +17,9 @@ print_status() {
 check_port() {
     local port=$1
     if lsof -i :$port > /dev/null; then
-        return 0
+        return 0 # Port is in use
     else
-        return 1
+        return 1 # Port is free
     fi
 }
 
@@ -50,6 +50,11 @@ if check_port 8000; then
     exit 1
 fi
 
+if check_port 5173; then
+    print_status "$RED" "Error: Port 5173 is already in use"
+    exit 1
+fi
+
 # Install dependencies if needed
 if [ ! -d "${SCRIPT_DIR}/vendor" ]; then
     print_status "$YELLOW" "Installing PHP dependencies..."
@@ -70,11 +75,18 @@ php artisan view:clear
 
 # Start development servers
 print_status "$YELLOW" "Starting development servers..."
-npm run start & echo $! > "${VITE_PID_FILE}"
+
+# Start Laravel server in the background and immediately save its PID
+php artisan serve --host=0.0.0.0 --port=8000 &
+echo $! > "${LARAVEL_PID_FILE}"
+
+
+# Give Laravel a moment to bind to the port
+sleep 1
+
+# Start Vite server
+npm run dev & echo $! > "${VITE_PID_FILE}"
 
 print_status "$GREEN" "Development servers started successfully!"
 print_status "$GREEN" "Application: http://localhost:8000"
 print_status "$YELLOW" "Use ./stop-dev.sh to stop the servers"
-
-# Keep script running and show server logs
-tail -f storage/logs/laravel.log

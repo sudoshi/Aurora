@@ -25,30 +25,37 @@ kill_process_tree() {
     if [ -n "$pid" ]; then
         # Get all child processes
         children=$(pgrep -P $pid)
-        
+
         # Kill children first
         for child in $children; do
             kill_process_tree $child
         done
-        
+
         # Kill the parent process
         kill -9 $pid 2>/dev/null
     fi
 }
 
-# Stop npm process and its children (Laravel and Vite)
+# Stop Laravel and Vite processes
+if [ -f "${LARAVEL_PID_FILE}" ]; then
+  PID=$(cat "${LARAVEL_PID_FILE}")
+  print_status "$YELLOW" "Stopping Laravel server (PID: ${PID})..."
+  kill_process_tree "${PID}"
+  rm "${LARAVEL_PID_FILE}"
+fi
+
 if [ -f "${VITE_PID_FILE}" ]; then
     PID=$(cat "${VITE_PID_FILE}")
-    print_status "$YELLOW" "Stopping development servers (PID: ${PID})..."
+    print_status "$YELLOW" "Stopping Vite server (PID: ${PID})..."
     kill_process_tree "${PID}"
     rm "${VITE_PID_FILE}"
 fi
 
 # Clean up any remaining processes on the ports
-print_status "$YELLOW" "Cleaning up remaining process on port 8000..."
+print_status "$YELLOW" "Cleaning up remaining processes on port 8000..."
 lsof -ti:8000 | xargs kill -9 2>/dev/null
 
-print_status "$YELLOW" "Cleaning up remaining process on port 5173..."
+print_status "$YELLOW" "Cleaning up remaining processes on port 5173..."
 lsof -ti:5173 | xargs kill -9 2>/dev/null
 
 # Clear Laravel caches

@@ -13,13 +13,72 @@ class EventSeeder extends Seeder
     public function run(): void
     {
         Event::create([
+            'id' => 46,
+            'title' => 'Abdominal Cases MDC',
+            'time' => '10:00 AM',
+            'duration' => 90,
+            'location' => 'Conference Room 2B',
+            'category' => 'oncology',
+            'description' => 'Multidisciplinary review of complex abdominal oncology cases',
+            'team' => json_encode([
+                [
+                    'name' => 'Dr. Lisa Anderson',
+                    'role' => 'Medical Oncology',
+                    'available' => true
+                ],
+                [
+                    'name' => 'Dr. David Kim',
+                    'role' => 'Radiation Oncology',
+                    'available' => true
+                ],
+                [
+                    'name' => 'Dr. Rachel Green',
+                    'role' => 'Pathology',
+                    'available' => true
+                ]
+            ]),
+            'patients' => json_encode([
+                [
+                    'id' => 5,
+                    'name' => 'Steve Jobs',
+                    'condition' => 'Stage 4 Pancreatic Cancer (Neuroendocrine Tumor) - Metastatic disease with liver involvement. Previous Whipple procedure with subsequent progression.',
+                    'status' => 'Under Treatment - Current therapy includes targeted molecular therapy and symptom management.'
+                ],
+                [
+                    'id' => 6,
+                    'name' => 'Malliharjun Udoshi',
+                    'condition' => 'Stage 4 Colon Cancer - Metastatic adenocarcinoma with liver and peritoneal involvement. KRAS mutation positive.',
+                    'status' => 'Under Treatment - Receiving FOLFOX chemotherapy with good response on recent imaging.'
+                ]
+            ]),
+            'related_items' => json_encode([
+                [
+                    'type' => 'document',
+                    'title' => 'Recent Imaging',
+                    'description' => 'Latest CT and PET scan results'
+                ],
+                [
+                    'type' => 'document',
+                    'title' => 'Treatment Protocols',
+                    'description' => 'Current treatment plans and response assessments'
+                ]
+            ])
+        ]);
+
+        $event46 = Event::find(46);
+        $event46->teamMembers()->attach([1], ['role' => 'doctor']);
+        $event46->patients()->attach([5, 6]);
+
+
+        $event = Event::create([
             'title' => 'Patient Consultation',
+
             'time' => '2:30 PM',
             'duration' => 60,
             'location' => 'Room 204',
             'category' => 'multidisciplinary',
             'description' => 'Initial consultation for post-surgical recovery plan',
-            'team' => [
+            'team' => json_encode([
                 [
                     'name' => 'Dr. Sarah Johnson',
                     'role' => 'Primary Care Physician',
@@ -35,8 +94,8 @@ class EventSeeder extends Seeder
                     'role' => 'Nurse Practitioner',
                     'available' => false
                 ]
-            ],
-            'patients' => [
+            ]),
+            'patients' => json_encode([
                 [
                     'id' => 1,
                     'name' => 'John Doe',
@@ -44,8 +103,8 @@ class EventSeeder extends Seeder
                     'condition' => 'Post-surgical recovery',
                     'status' => 'Stable'
                 ]
-            ],
-            'related_items' => [
+            ]),
+            'related_items' => json_encode([
                 [
                     'type' => 'document',
                     'title' => 'Surgery Report',
@@ -56,7 +115,11 @@ class EventSeeder extends Seeder
                     'title' => 'Recovery Notes',
                     'description' => 'Daily progress notes from nursing staff'
                 ]
-            ]
+            ])
         ]);
+
+        $event->teamMembers()->attach([1], ['role' => 'doctor']);
+        $event->patients()->attach([1]);
+
     }
 }

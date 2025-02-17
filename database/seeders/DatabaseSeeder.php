@@ -24,6 +24,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        \App\Models\Patient::factory()->create(['id' => 1]);
+        \App\Models\Patient::factory()->create(['id' => 5]);
+        \App\Models\Patient::factory()->create(['id' => 6]);
+
+
         // Run event seeder
         $this->call([
             EventSeeder::class

@@ -183,7 +183,7 @@ const Calendar = () => {
             },
             {
               id: 6,
-              name: "Malliharjun Udoshi",
+              name: "Mallikarjun Udoshi",
               condition: "Stage 4 Colon Cancer - Metastatic adenocarcinoma with liver and peritoneal involvement. KRAS mutation positive.",
               status: "Under Treatment - Receiving FOLFOX chemotherapy with good response on recent imaging."
             }

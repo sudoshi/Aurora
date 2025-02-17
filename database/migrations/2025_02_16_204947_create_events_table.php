@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 return new class extends Migration
 {
@@ -11,19 +12,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Log::info('Creating events table');
+
+        Schema::create('dev.events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('time');
+            $table->timestamp('time');
             $table->integer('duration');
             $table->string('location');
             $table->string('category');
             $table->text('description')->nullable();
-            $table->json('team')->nullable();
-            $table->json('patients')->nullable();
-            $table->json('related_items')->nullable();
+            $table->json('team');
+            $table->json('patients');
+            $table->json('related_items');
             $table->timestamps();
         });
+
+        Log::info('Events table created successfully.');
     }
 
     /**
@@ -31,6 +36,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Log::info('Dropping events table');
+        Schema::dropIfExists('dev.events');
     }
 };

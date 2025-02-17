@@ -2,102 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaseDiscussion;
+use App\Models\DiscussionAttachment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\ClinicalCase;
+
 
 class CaseDiscussionController extends Controller
 {
     /**
      * Get discussions for a case
      */
-    public function index($caseId)
+    public function index(ClinicalCase $case)
     {
-        // TODO: Fetch discussions from database
-        // For now, return sample data
-        return response()->json([
-            [
-                'id' => 1,
-                'content' => 'Initial assessment completed.',
-                'user' => [
-                    'id' => 1,
-                    'name' => 'Dr. Smith',
-                    'role' => 'Primary Care'
-                ],
-                'created_at' => now()->subHours(2),
-                'attachments' => []
-            ],
-            [
-                'id' => 2,
-                'content' => 'Lab results reviewed. Everything looks normal.',
-                'user' => [
-                    'id' => 2,
-                    'name' => 'Dr. Johnson',
-                    'role' => 'Specialist'
-                ],
-                'created_at' => now()->subHour(),
-                'attachments' => [
-                    [
-                        'id' => 1,
-                        'name' => 'lab-results.pdf',
-                        'type' => 'application/pdf',
-                        'size' => 1024 * 500 // 500KB
-                    ]
-                ]
-            ]
-        ]);
+        return response()->json($case->discussions);
     }
 
     /**
      * Store a new discussion message
      */
-    public function store(Request $request, $caseId)
+    public function store(Request $request, ClinicalCase $case)
     {
         $request->validate([
             'content' => 'required|string|max:1000',
-            'attachments' => 'array'
         ]);
 
-        // TODO: Save message to database
+        $discussion = new CaseDiscussion();
+        $discussion->content = $request->input('content');
+        $discussion->user_id = Auth::id();
+        $discussion->case_id = $case->id;
+        $discussion->save();
+
+        // Handle attachments (simplified for now)
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments'); // Store the file
+                $attachment = new DiscussionAttachment();
+                $attachment->discussion_id = $discussion->id;
+                $attachment->filename = $file->getClientOriginalName();
+                $attachment->filepath = $path;
+                $attachment->mime_type = $file->getMimeType();
+                $attachment->size = $file->getSize();
+                $attachment->save();
+            }
+        }
+
+
         return response()->json([
             'status' => 'success',
-            'message' => [
-                'id' => rand(100, 999),
-                'content' => $request->content,
-                'user' => [
-                    'id' => Auth::id(),
-                    'name' => Auth::user()->name,
-                    'role' => 'Healthcare Provider'
-                ],
-                'created_at' => now(),
-                'attachments' => $request->attachments ?? []
-            ]
-        ]);
+            'message' => $discussion
+        ], 201);
     }
+
 
     /**
      * Upload attachments for a discussion
      */
     public function uploadAttachments(Request $request, $caseId)
     {
-        $request->validate([
-            'files' => 'required|array',
-            'files.*' => 'file|max:10240' // 10MB max per file
-        ]);
+        // This function is now handled within the store method.
+        return response()->json(['message' => 'Attachments should be uploaded with the discussion message.'], 400);
 
-        $uploadedFiles = [];
-
-        foreach ($request->file('files') as $file) {
-            // TODO: Implement proper file storage
-            // For now, just return file info
-            $uploadedFiles[] = [
-                'id' => rand(100, 999),
-                'name' => $file->getClientOriginalName(),
-                'type' => $file->getMimeType(),
-                'size' => $file->getSize()
-            ];
-        }
-
-        return response()->json($uploadedFiles);
     }
 }

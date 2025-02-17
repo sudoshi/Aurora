@@ -1,34 +1,61 @@
-<?php
+php
 
 namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
+use App\Models\Patient;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
+    /**
+     * Get all events
+     */
+    public function index(): JsonResponse
+    {
+        \Log::info('Fetching all events');
+        try {
+            $events = Event::with(['teamMembers', 'patients'])->get();
+            return response()->json($events);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching events', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
+    }
+
     /**
      * Get a specific event by ID
      */
     public function show(Event $event): JsonResponse
     {
-        // Convert the event data to match the frontend format
-        $eventData = [
-            'id' => $event->id,
-            'title' => $event->title,
-            'time' => $event->time,
-            'duration' => $event->duration,
-            'location' => $event->location,
-            'category' => $event->category,
-            'description' => $event->description,
-            'team' => $event->team ?? [],
-            'patients' => $event->patients ?? [],
-            'relatedItems' => $event->related_items ?? []
-        ];
+        try {
+            $event->load(['teamMembers']);
+            
+            // Get the event data with the patients JSON
+            $eventData = $event->toArray();
+            
+            // Ensure patients data is properly decoded
+            if (is_string($eventData['patients'])) {
+                $eventData['patients'] = json_decode($eventData['patients'], true);
+            }
+            
+            return response()->json($eventData);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching event', [
 
-        return response()->json($eventData);
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
     }
+
 
     /**
      * Create a new event
@@ -37,17 +64,31 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'time' => 'required|string',
+            'time' => 'required|date',
             'duration' => 'required|integer',
             'location' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'team' => 'nullable|array',
-            'patients' => 'nullable|array',
-            'related_items' => 'nullable|array',
+            'team_members' => 'nullable|array', // Changed to team_members
+            'team_members.*.user_id' => 'required|exists:users,id', // Ensure user_id exists
+            'team_members.*.role' => 'nullable|string',
+            'patient_ids' => 'nullable|array', // Changed to patient_ids
+            'patient_ids.*' => 'required|exists:patients,id', // Ensure patient_id exists
         ]);
 
         $event = Event::create($validated);
+
+        // Add team members
+        if (isset($validated['team_members'])) {
+            foreach ($validated['team_members'] as $teamMember) {
+                $event->teamMembers()->attach($teamMember['user_id'], ['role' => $teamMember['role']]);
+            }
+        }
+
+        // Add patients
+        if (isset($validated['patient_ids'])) {
+            $event->patients()->sync($validated['patient_ids']);
+        }
 
         return response()->json($event, 201);
     }
@@ -59,17 +100,34 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
-            'time' => 'sometimes|string',
+            'time' => 'sometimes|date',
             'duration' => 'sometimes|integer',
             'location' => 'sometimes|string|max:255',
             'category' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-            'team' => 'nullable|array',
-            'patients' => 'nullable|array',
-            'related_items' => 'nullable|array',
+            'team_members' => 'nullable|array', // Changed to team_members
+            'team_members.*.user_id' => 'required|exists:users,id', // Ensure user_id exists
+            'team_members.*.role' => 'nullable|string',
+            'patient_ids' => 'nullable|array', // Changed to patient_ids
+            'patient_ids.*' => 'required|exists:patients,id', // Ensure patient_id exists
         ]);
 
         $event->update($validated);
+
+        // Update team members
+        if (isset($validated['team_members'])) {
+            $teamMemberIds = [];
+            foreach ($validated['team_members'] as $teamMember) {
+                $teamMemberIds[$teamMember['user_id']] = ['role' => $teamMember['role']];
+            }
+            $event->teamMembers()->sync($teamMemberIds);
+        }
+
+        // Update patients
+        if (isset($validated['patient_ids'])) {
+            $event->patients()->sync($validated['patient_ids']);
+        }
+
 
         return response()->json($event);
     }

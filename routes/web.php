@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Route;
 // This allows React Router to handle client-side routing
 Route::get('/{path?}', function () {
     return view('welcome');
-})->where('path', '.*');
+})->where('path', '^(?!api).*$');
