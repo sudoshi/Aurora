@@ -14,23 +14,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create test user if it doesn't exist
+        // Create team members
         User::firstOrCreate(
-            ['email' => 'testuser@example.com'],
+            ['email' => 'lisa.anderson@example.com'],
             [
-                'name' => 'Test User',
+                'name' => 'Dr. Lisa Anderson',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
 
-        \App\Models\Patient::factory()->create(['id' => 1]);
-        \App\Models\Patient::factory()->create(['id' => 5]);
-        \App\Models\Patient::factory()->create(['id' => 6]);
+        User::firstOrCreate(
+            ['email' => 'david.kim@example.com'],
+            [
+                'name' => 'Dr. David Kim',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'rachel.green@example.com'],
+            [
+                'name' => 'Dr. Rachel Green',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
 
 
-        // Run event seeder
+        // Run seeders
         $this->call([
+            PatientSeeder::class,
             EventSeeder::class
         ]);
     }

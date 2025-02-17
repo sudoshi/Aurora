@@ -46,7 +46,7 @@ const CaseDiscussion = ({ caseId }) => {
       const response = await fetch(`/api/cases/${caseId}/discussions`, {
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       
@@ -74,7 +74,7 @@ const CaseDiscussion = ({ caseId }) => {
       const response = await fetch(`/api/cases/${caseId}/attachments`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: formData,
       });
@@ -102,7 +102,7 @@ const CaseDiscussion = ({ caseId }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         },
         body: JSON.stringify({
           content: newMessage,
@@ -156,9 +156,9 @@ const CaseDiscussion = ({ caseId }) => {
     return (
       <div className="relative flex items-center gap-2 rounded-lg border border-gray-600 bg-gray-700 p-2">
         {isImage ? (
-          <ImageIcon className="h-5 w-5 text-blue-400" />
+          <ImageIcon className="h-5 w-5 text-blue-400" style={{ textAnchor: 'middle' }} />
         ) : (
-          <FileText className="h-5 w-5 text-gray-400" />
+          <FileText className="h-5 w-5 text-gray-400" style={{ textAnchor: 'middle' }} />
         )}
         <span className="text-sm text-gray-200">{file.name}</span>
         <span className="text-xs text-gray-400">({(file.size / 1024).toFixed(1)} KB)</span>
@@ -211,13 +211,13 @@ const CaseDiscussion = ({ caseId }) => {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <Paperclip className="h-5 w-5 text-gray-300" />
+              <Paperclip className="h-5 w-5 text-gray-300" style={{ textAnchor: 'middle' }} />
             </label>
             <button
               onClick={sendMessage}
               className="rounded-lg bg-blue-600 p-2 text-white hover:bg-blue-700"
             >
-              <Send className="h-5 w-5" />
+              <Send className="h-5 w-5" style={{ textAnchor: 'middle' }} />
             </button>
           </div>
         </div>

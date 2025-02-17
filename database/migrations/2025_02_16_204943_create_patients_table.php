@@ -17,6 +17,8 @@ return new class extends Migration
         Schema::create('dev.patients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('condition')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
 

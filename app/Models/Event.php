@@ -10,6 +10,8 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $table = 'dev.events';
+
     protected $fillable = [
         'title',
         'time',
@@ -18,14 +20,13 @@ class Event extends Model
         'category',
         'description',
         'team',
-        'patients',
         'related_items'
     ];
 
     protected $casts = [
         'time' => 'datetime',
-        'team' => 'json',
-        'related_items' => 'json',
+        'team' => 'array',
+        'related_items' => 'array',
     ];
 
 
@@ -34,7 +35,7 @@ class Event extends Model
      */
     public function teamMembers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_team_members', 'event_id', 'user_id')
+        return $this->belongsToMany(User::class, 'dev.event_team_members', 'event_id', 'user_id')
                     ->withPivot('role')
                     ->withTimestamps();
     }
@@ -44,7 +45,7 @@ class Event extends Model
      */
     public function patients(): BelongsToMany
     {
-        return $this->belongsToMany(Patient::class, 'event_patients', 'event_id', 'patient_id')
+        return $this->belongsToMany(Patient::class, 'dev.event_patients', 'event_id', 'patient_id')
                     ->withTimestamps();
     }
 }

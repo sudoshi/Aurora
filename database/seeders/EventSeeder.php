@@ -37,20 +37,6 @@ class EventSeeder extends Seeder
                     'available' => true
                 ]
             ]),
-            'patients' => json_encode([
-                [
-                    'id' => 5,
-                    'name' => 'Steve Jobs',
-                    'condition' => 'Stage 4 Pancreatic Cancer (Neuroendocrine Tumor) - Metastatic disease with liver involvement. Previous Whipple procedure with subsequent progression.',
-                    'status' => 'Under Treatment - Current therapy includes targeted molecular therapy and symptom management.'
-                ],
-                [
-                    'id' => 6,
-                    'name' => 'Malliharjun Udoshi',
-                    'condition' => 'Stage 4 Colon Cancer - Metastatic adenocarcinoma with liver and peritoneal involvement. KRAS mutation positive.',
-                    'status' => 'Under Treatment - Receiving FOLFOX chemotherapy with good response on recent imaging.'
-                ]
-            ]),
             'related_items' => json_encode([
                 [
                     'type' => 'document',
@@ -66,8 +52,12 @@ class EventSeeder extends Seeder
         ]);
 
         $event46 = Event::find(46);
-        $event46->teamMembers()->attach([1], ['role' => 'doctor']);
-        $event46->patients()->attach([5, 6]);
+        $event46->teamMembers()->sync([
+            1 => ['role' => 'Medical Oncology'],
+            2 => ['role' => 'Radiation Oncology'],
+            3 => ['role' => 'Pathology']
+        ]);
+        $event46->patients()->sync([5, 6]);
 
 
         $event = Event::create([
@@ -93,15 +83,6 @@ class EventSeeder extends Seeder
                     'name' => 'Emma Wilson',
                     'role' => 'Nurse Practitioner',
                     'available' => false
-                ]
-            ]),
-            'patients' => json_encode([
-                [
-                    'id' => 1,
-                    'name' => 'John Doe',
-                    'age' => 45,
-                    'condition' => 'Post-surgical recovery',
-                    'status' => 'Stable'
                 ]
             ]),
             'related_items' => json_encode([

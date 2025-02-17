@@ -36,21 +36,19 @@ const Collaboration = () => {
         console.log('Raw API response:', data);
 
         try {
-          // Parse the JSON patients data from the event
-          const patientsData = typeof data.patients === 'string' ? JSON.parse(data.patients) : data.patients;
-          console.log('Patients data:', patientsData);
-
+          console.log('Raw API response:', data);
+          console.log('Patients data:', data.patients);
+          
           const transformedData = {
             ...data,
-            patients: patientsData.map(patient => {
-              console.log('Mapping patient:', patient);
+            patients: data.patients.map(patient => {
               return {
                 id: patient.id,
                 firstName: patient.name.split(' ')[0],
                 lastName: patient.name.split(' ')[1] || '',
                 mrn: `MRN${String(patient.id).padStart(6, '0')}`,
-                primaryDiagnosis: patient.condition,
-                careJourney: patient.status,
+                primaryDiagnosis: patient.condition || '',
+                careJourney: patient.status || '',
                 teamMembers: data.team_members?.map(member => `${member.name} (${member.role})`) || [],
                 nextReviewDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                 description: patient.condition,

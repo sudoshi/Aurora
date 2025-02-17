@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('category');
             $table->text('description')->nullable();
             $table->json('team');
-            $table->json('patients');
             $table->json('related_items');
             $table->timestamps();
         });

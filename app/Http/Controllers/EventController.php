@@ -1,4 +1,4 @@
-php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -35,15 +35,35 @@ class EventController extends Controller
     public function show(Event $event): JsonResponse
     {
         try {
-            $event->load(['teamMembers']);
+            // Load team members and patients relationships
+            $event->load(['teamMembers', 'patients']);
             
-            // Get the event data with the patients JSON
+            // Get the event data with relationships
             $eventData = $event->toArray();
             
-            // Ensure patients data is properly decoded
-            if (is_string($eventData['patients'])) {
-                $eventData['patients'] = json_decode($eventData['patients'], true);
-            }
+            // Add patients data for the frontend
+            $eventData['patients'] = $event->patients->map(function ($patient) {
+                return [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'condition' => $patient->condition,
+                    'status' => $patient->status
+                ];
+            })->toArray();
+            
+            // Add team members data
+            $eventData['team_members'] = $event->teamMembers->map(function ($member) {
+                return [
+                    'name' => $member->name,
+                    'role' => $member->pivot->role
+                ];
+            })->toArray();
+
+            // Log for debugging
+            \Log::info('Event data:', [
+                'id' => $event->id,
+                'patients' => $eventData['patients']
+            ]);
             
             return response()->json($eventData);
         } catch (\Exception $e) {

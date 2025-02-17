@@ -17,9 +17,9 @@ print_status() {
 check_port() {
     local port=$1
     if lsof -i :$port > /dev/null; then
-        return 0 # Port is in use
+        return 0
     else
-        return 1 # Port is free
+        return 1
     fi
 }
 
@@ -73,20 +73,33 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-# Start development servers
-print_status "$YELLOW" "Starting development servers..."
+# Run database migrations
+# print_status "$YELLOW" "Running database migrations..."
+# php artisan migrate
 
-# Start Laravel server in the background and immediately save its PID
-php artisan serve --host=0.0.0.0 --port=8000 &
-echo $! > "${LARAVEL_PID_FILE}"
+# Start Laravel development server
+print_status "$YELLOW" "Starting Laravel development server..."
+php artisan serve > /dev/null 2>&1 & echo $! > "${LARAVEL_PID_FILE}"
 
+# Start Vite development server
+print_status "$YELLOW" "Starting Vite development server..."
+npm run dev > /dev/null 2>&1 & echo $! > "${VITE_PID_FILE}"
 
-# Give Laravel a moment to bind to the port
-sleep 1
+# Wait for servers to start
+sleep 3
 
-# Start Vite server
-npm run dev & echo $! > "${VITE_PID_FILE}"
+# Check if servers are running
+if ! check_port 8000; then
+    print_status "$RED" "Error: Laravel development server failed to start"
+    exit 1
+fi
+
+if ! check_port 5173; then
+    print_status "$RED" "Error: Vite development server failed to start"
+    exit 1
+fi
 
 print_status "$GREEN" "Development servers started successfully!"
-print_status "$GREEN" "Application: http://localhost:8000"
+print_status "$GREEN" "Laravel: http://localhost:8000"
+print_status "$GREEN" "Vite: http://localhost:5173"
 print_status "$YELLOW" "Use ./stop-dev.sh to stop the servers"

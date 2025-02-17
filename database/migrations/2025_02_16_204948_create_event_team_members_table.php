@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('dev.events')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('dev.users')->onDelete('cascade');
         });
 
         Log::info('Event_team_members table created successfully.');
