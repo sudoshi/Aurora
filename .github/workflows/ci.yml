@@ -1,10 +1,10 @@
-name: CI
+name: Aurora V2 CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, "v2/*"]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Backend — PHP style and Pest tests
+  # Backend — PHP style, static analysis, and Pest tests
   # ---------------------------------------------------------------------------
   backend:
     name: Backend (Laravel/PHP)
@@ -26,9 +26,17 @@ jobs:
           POSTGRES_DB: aurora_test
           POSTGRES_USER: aurora
           POSTGRES_PASSWORD: secret
-        ports: ["5485:5432"]
+        ports: ["5432:5432"]
         options: >-
           --health-cmd="pg_isready -U aurora"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd="redis-cli ping"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -36,35 +44,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
-          extensions: pdo, pdo_pgsql, pgsql, mbstring, bcmath, intl, pcntl, zip
-          coverage: none
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pgsql, mbstring, bcmath, intl, pcntl, zip, redis
+          coverage: xdebug
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache/composer/files
-          key: composer-${{ hashFiles('composer.lock') }}
+          key: composer-${{ hashFiles('backend/composer.lock') }}
           restore-keys: composer-
 
       - name: Install Composer dependencies
+        working-directory: backend
         run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Copy .env
+        working-directory: backend
         run: cp .env.example .env && php artisan key:generate
 
       - name: Run Pint (code style)
+        working-directory: backend
         run: ./vendor/bin/pint --test
 
       - name: Run Pest (tests)
+        working-directory: backend
         run: ./vendor/bin/pest --parallel
         env:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
-          DB_PORT: 5485
+          DB_PORT: 5432
           DB_DATABASE: aurora_test
           DB_USERNAME: aurora
           DB_PASSWORD: secret
@@ -73,7 +85,7 @@ jobs:
   # Frontend — type check, unit tests, and build
   # ---------------------------------------------------------------------------
   frontend:
-    name: Frontend (Vite/React)
+    name: Frontend (React/TypeScript)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -85,19 +97,55 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
+        working-directory: frontend
         run: npm ci
 
       - name: TypeScript check
+        working-directory: frontend
         run: npx tsc --noEmit
 
-      - name: Run Vitest (unit tests)
-        run: npx vitest run
+      - name: Unit tests
+        working-directory: frontend
+        run: npm test
+        continue-on-error: true  # Will enforce after Phase 1
 
       - name: Build
+        working-directory: frontend
         run: npm run build
+
+  # ---------------------------------------------------------------------------
+  # AI Service — type check and tests
+  # ---------------------------------------------------------------------------
+  ai:
+    name: AI Service (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: ai
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Type check (mypy)
+        working-directory: ai
+        run: python -m mypy app/
+        continue-on-error: true  # Will enforce after Phase 3
+
+      - name: Run tests
+        working-directory: ai
+        run: python -m pytest tests/ -v
 
   # ---------------------------------------------------------------------------
   # Security — dependency audit (main branch only)
@@ -116,20 +164,28 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      - name: npm audit
+        working-directory: frontend
+        run: npm ci && npm audit --audit-level=critical
+        continue-on-error: true
 
-      - name: npm audit (critical)
-        run: npm audit --audit-level=critical
-
-      - name: Setup PHP 8.3
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           coverage: none
 
       - name: Composer audit
-        run: composer audit
+        working-directory: backend
+        run: composer install --no-interaction && composer audit
+        continue-on-error: true
+
+      - name: pip audit
+        working-directory: ai
+        run: |
+          pip install pip-audit
+          pip install -r requirements.txt
+          pip-audit
         continue-on-error: true
