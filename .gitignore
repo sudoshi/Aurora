@@ -1,23 +1,35 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
+# Dependencies
+/backend/vendor/
+/frontend/node_modules/
+/ai/venv/
+/ai/__pycache__/
+
+# Environment
+/backend/.env
+/ai/.env
+
+# Build artifacts
+/frontend/dist/
+/backend/public/build/
+/backend/public/hot
+
+# Laravel
+/backend/storage/*.key
+/backend/storage/logs/*.log
+/backend/bootstrap/cache/services.php
+/backend/bootstrap/cache/packages.php
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+/e2e/test-results/
+/e2e/playwright-report/
+coverage/
