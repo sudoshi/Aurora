@@ -1,6 +1,10 @@
 import React, { Suspense, type LazyExoticComponent, type ComponentType } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '../context/AuthContext';
+import { queryClient } from '../lib/queryClient';
+import { ToastProvider } from './ui/Toast';
 import DashboardLayout from './layouts/DashboardLayout';
 import PrivateRoute from './PrivateRoute';
 import Login from './Login';
@@ -24,8 +28,10 @@ const UnderDevelopment = (): React.JSX.Element => (
 
 function App() {
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <BrowserRouter>
+        <ToastProvider />
         <Suspense fallback={
           <div className="flex items-center justify-center min-h-screen bg-gray-900">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -85,6 +91,8 @@ function App() {
         </Suspense>
       </BrowserRouter>
     </AuthProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

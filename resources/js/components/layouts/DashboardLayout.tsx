@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import TopNavigation from '../navigation/TopNavigation';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
+import { CommandPalette } from '../ui/CommandPalette';
 import { useAuth } from '../../context/AuthContext';
 
 function DashboardLayout() {
@@ -14,6 +15,7 @@ function DashboardLayout() {
         <Outlet />
       </main>
       {user?.must_change_password && <ChangePasswordModal />}
+      <CommandPalette />
     </div>
   );
 }
