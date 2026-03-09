@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PatientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +27,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+
+    // Patient routes
+    Route::prefix('patients')->group(function () {
+        Route::get('/search', [PatientController::class, 'search']);
+        Route::get('/{patient}/profile', [PatientController::class, 'profile']);
+        Route::get('/{patient}/stats', [PatientController::class, 'stats']);
+        Route::post('/', [PatientController::class, 'store']);
+    });
 });
