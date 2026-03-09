@@ -13,15 +13,15 @@
   --primary-bg:       rgba(155, 27, 48, 0.15);
   --primary-border:   rgba(184, 45, 66, 0.4);
 
-  /* 2.2 Accent — Research Gold */
-  --accent:           #C9A227;
-  --accent-dark:      #A68B1F;
-  --accent-light:     #D4B340;
-  --accent-lighter:   #E0C45A;
-  --accent-muted:     #A68B1F;
-  --accent-pale:      rgba(201, 162, 39, 0.15);
-  --accent-bg:        rgba(201, 162, 39, 0.10);
-  --accent-glow:      rgba(201, 162, 39, 0.30);
+  /* 2.2 Accent — Dark Teal */
+  --accent:           #2A9D8F;
+  --accent-dark:      #1F7A6E;
+  --accent-light:     #3DB8A9;
+  --accent-lighter:   #56D4C4;
+  --accent-muted:     #1F7A6E;
+  --accent-pale:      rgba(42, 157, 143, 0.15);
+  --accent-bg:        rgba(42, 157, 143, 0.10);
+  --accent-glow:      rgba(42, 157, 143, 0.30);
   --focus-ring:       0 0 0 3px var(--accent-pale);
 
   /* 2.3 Surfaces — Dark Grey Stack */
@@ -135,7 +135,7 @@
   --gradient-panel-raised: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
   --gradient-panel-inset:  linear-gradient(135deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 100%);
   --gradient-crimson:      linear-gradient(135deg, var(--primary), var(--primary-dark));
-  --gradient-gold:         linear-gradient(135deg, var(--accent-light), var(--accent-dark));
+  --gradient-teal:         linear-gradient(135deg, var(--accent-light), var(--accent-dark));
 
   /* OMOP Domain Colors */
   --domain-condition:    var(--primary);

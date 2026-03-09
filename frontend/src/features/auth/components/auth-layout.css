@@ -91,7 +91,7 @@
 .auth-hero__divider {
   width: 48px;
   height: 2px;
-  background: var(--gradient-gold);
+  background: var(--gradient-teal);
   margin-bottom: 1.5rem;
   border-radius: 1px;
 }
@@ -157,8 +157,8 @@
     from 0deg,
     transparent 0%,
     transparent 20%,
-    rgba(201, 162, 39, 0.6) 28%,
-    rgba(201, 162, 39, 0.2) 35%,
+    rgba(42, 157, 143, 0.6) 28%,
+    rgba(42, 157, 143, 0.2) 35%,
     transparent 42%,
     transparent 55%,
     rgba(155, 27, 48, 0.5) 62%,
