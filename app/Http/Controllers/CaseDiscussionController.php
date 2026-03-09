@@ -2,68 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CaseDiscussion;
-use App\Models\DiscussionAttachment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Models\ClinicalCase;
-
+use App\Http\Helpers\ApiResponse;
+use App\Http\Requests\StoreDiscussionRequest;
+use App\Http\Requests\UploadAttachmentsRequest;
+use App\Services\CaseDiscussionService;
+use Illuminate\Http\JsonResponse;
 
 class CaseDiscussionController extends Controller
 {
+    public function __construct(
+        private readonly CaseDiscussionService $caseDiscussionService,
+    ) {}
+
     /**
-     * Get discussions for a case
+     * Get discussions for a case.
      */
-    public function index(ClinicalCase $case)
+    public function index(int $caseId): JsonResponse
     {
-        return response()->json($case->discussions);
+        $discussions = $this->caseDiscussionService->listForCase($caseId);
+
+        return ApiResponse::success($discussions);
     }
 
     /**
-     * Store a new discussion message
+     * Store a new discussion message.
      */
-    public function store(Request $request, ClinicalCase $case)
+    public function store(StoreDiscussionRequest $request, int $caseId): JsonResponse
     {
-        $request->validate([
-            'content' => 'required|string|max:1000',
-        ]);
+        $discussion = $this->caseDiscussionService->create(
+            $caseId,
+            $request->validated(),
+            $request->user(),
+        );
 
-        $discussion = new CaseDiscussion();
-        $discussion->content = $request->input('content');
-        $discussion->user_id = Auth::id();
-        $discussion->case_id = $case->id;
-        $discussion->save();
-
-        // Handle attachments (simplified for now)
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $path = $file->store('attachments'); // Store the file
-                $attachment = new DiscussionAttachment();
-                $attachment->discussion_id = $discussion->id;
-                $attachment->filename = $file->getClientOriginalName();
-                $attachment->filepath = $path;
-                $attachment->mime_type = $file->getMimeType();
-                $attachment->size = $file->getSize();
-                $attachment->save();
-            }
-        }
-
-
-        return response()->json([
-            'status' => 'success',
-            'message' => $discussion
-        ], 201);
+        return ApiResponse::success($discussion, 'Discussion created successfully.', 201);
     }
 
-
     /**
-     * Upload attachments for a discussion
+     * Upload attachments for a case.
      */
-    public function uploadAttachments(Request $request, $caseId)
+    public function uploadAttachments(UploadAttachmentsRequest $request, int $caseId): JsonResponse
     {
-        // This function is now handled within the store method.
-        return response()->json(['message' => 'Attachments should be uploaded with the discussion message.'], 400);
+        $attachments = $this->caseDiscussionService->uploadAttachments(
+            $caseId,
+            $request->file('files'),
+            $request->user(),
+        );
 
+        return ApiResponse::success($attachments, 'Attachments uploaded successfully.', 201);
     }
 }

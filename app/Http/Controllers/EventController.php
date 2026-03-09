@@ -2,162 +2,99 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\ApiResponse;
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
-use Illuminate\Http\Request;
+use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
-use App\Models\User;
-use App\Models\Patient;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct(
+        private readonly EventService $eventService,
+    ) {}
+
     /**
-     * Get all events
+     * Get paginated events with optional filters.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        \Log::info('Fetching all events');
-        try {
-            $events = Event::with(['teamMembers', 'patients'])->get();
-            return response()->json($events);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching events', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => 'Internal server error'], 500);
-        }
+        $filters = $request->only(['search', 'start_date', 'end_date', 'category', 'per_page']);
+
+        $events = $this->eventService->list($filters);
+
+        return ApiResponse::paginated($events);
     }
 
     /**
-     * Get a specific event by ID
+     * Get a specific event by ID.
      */
     public function show(Event $event): JsonResponse
     {
-        try {
-            // Load team members and patients relationships
-            $event->load(['teamMembers', 'patients']);
-            
-            // Get the event data with relationships
-            $eventData = $event->toArray();
-            
-            // Add patients data for the frontend
-            $eventData['patients'] = $event->patients->map(function ($patient) {
-                return [
-                    'id' => $patient->id,
-                    'name' => $patient->name,
-                    'condition' => $patient->condition,
-                    'status' => $patient->status
-                ];
-            })->toArray();
-            
-            // Add team members data
-            $eventData['team_members'] = $event->teamMembers->map(function ($member) {
-                return [
-                    'name' => $member->name,
-                    'role' => $member->pivot->role
-                ];
-            })->toArray();
+        $event->load(['teamMembers', 'patients']);
 
-            // Log for debugging
-            \Log::info('Event data:', [
-                'id' => $event->id,
-                'patients' => $eventData['patients']
-            ]);
-            
-            return response()->json($eventData);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching event', [
+        $eventData = $event->toArray();
 
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => 'Internal server error'], 500);
-        }
+        $eventData['patients'] = $event->patients->map(function ($patient) {
+            return [
+                'id' => $patient->id,
+                'name' => $patient->name,
+                'condition' => $patient->condition,
+                'status' => $patient->status,
+            ];
+        })->toArray();
+
+        $eventData['team_members'] = $event->teamMembers->map(function ($member) {
+            return [
+                'name' => $member->name,
+                'role' => $member->pivot->role,
+            ];
+        })->toArray();
+
+        return ApiResponse::success($eventData);
     }
 
-
     /**
-     * Create a new event
+     * Create a new event.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreEventRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'time' => 'required|date',
-            'duration' => 'required|integer',
-            'location' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'team_members' => 'nullable|array', // Changed to team_members
-            'team_members.*.user_id' => 'required|exists:users,id', // Ensure user_id exists
-            'team_members.*.role' => 'nullable|string',
-            'patient_ids' => 'nullable|array', // Changed to patient_ids
-            'patient_ids.*' => 'required|exists:patients,id', // Ensure patient_id exists
-        ]);
+        $event = $this->eventService->create($request->validated());
 
-        $event = Event::create($validated);
-
-        // Add team members
-        if (isset($validated['team_members'])) {
-            foreach ($validated['team_members'] as $teamMember) {
-                $event->teamMembers()->attach($teamMember['user_id'], ['role' => $teamMember['role']]);
-            }
-        }
-
-        // Add patients
-        if (isset($validated['patient_ids'])) {
-            $event->patients()->sync($validated['patient_ids']);
-        }
-
-        return response()->json($event, 201);
+        return ApiResponse::success($event, 'Event created successfully.', 201);
     }
 
     /**
-     * Update an existing event
+     * Update an existing event.
      */
-    public function update(Request $request, Event $event): JsonResponse
+    public function update(UpdateEventRequest $request, Event $event): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'time' => 'sometimes|date',
-            'duration' => 'sometimes|integer',
-            'location' => 'sometimes|string|max:255',
-            'category' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'team_members' => 'nullable|array', // Changed to team_members
-            'team_members.*.user_id' => 'required|exists:users,id', // Ensure user_id exists
-            'team_members.*.role' => 'nullable|string',
-            'patient_ids' => 'nullable|array', // Changed to patient_ids
-            'patient_ids.*' => 'required|exists:patients,id', // Ensure patient_id exists
-        ]);
+        $updatedEvent = $this->eventService->update($event, $request->validated());
 
-        $event->update($validated);
-
-        // Update team members
-        if (isset($validated['team_members'])) {
-            $teamMemberIds = [];
-            foreach ($validated['team_members'] as $teamMember) {
-                $teamMemberIds[$teamMember['user_id']] = ['role' => $teamMember['role']];
-            }
-            $event->teamMembers()->sync($teamMemberIds);
-        }
-
-        // Update patients
-        if (isset($validated['patient_ids'])) {
-            $event->patients()->sync($validated['patient_ids']);
-        }
-
-
-        return response()->json($event);
+        return ApiResponse::success($updatedEvent, 'Event updated successfully.');
     }
 
     /**
-     * Delete an event
+     * Delete an event.
      */
     public function destroy(Event $event): JsonResponse
     {
-        $event->delete();
-        return response()->json(null, 204);
+        $this->eventService->delete($event);
+
+        return ApiResponse::success(null, 'Event deleted successfully.');
+    }
+
+    /**
+     * Get upcoming events.
+     */
+    public function upcoming(Request $request): JsonResponse
+    {
+        $limit = min((int) $request->query('limit', 5), 20);
+
+        $events = $this->eventService->getUpcoming($limit);
+
+        return ApiResponse::success($events, 'Upcoming events retrieved.');
     }
 }

@@ -21,17 +21,16 @@ use App\Http\Controllers\CaseDiscussionController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-// Event routes (temporarily public for testing)
-Route::apiResource('events', EventController::class);
-
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // User routes
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
+
+    // Event routes
+    Route::get('events/upcoming', [EventController::class, 'upcoming']);
+    Route::apiResource('events', EventController::class);
 
     // Case Discussion routes
     Route::prefix('cases/{caseId}')->group(function () {
