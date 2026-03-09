@@ -12,21 +12,35 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Backend — PHP style, static analysis, and tests
+  # Backend — PHP style and Pest tests
   # ---------------------------------------------------------------------------
   backend:
     name: Backend (Laravel/PHP)
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: aurora_test
+          POSTGRES_USER: aurora
+          POSTGRES_PASSWORD: secret
+        ports: ["5485:5432"]
+        options: >-
+          --health-cmd="pg_isready -U aurora"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
-          extensions: pdo, pdo_sqlite, sqlite3, mbstring, bcmath, intl, pcntl, zip
+          php-version: "8.3"
+          extensions: pdo, pdo_pgsql, pgsql, mbstring, bcmath, intl, pcntl, zip
           coverage: none
 
       - name: Cache Composer dependencies
@@ -45,19 +59,23 @@ jobs:
       - name: Run Pint (code style)
         run: ./vendor/bin/pint --test
 
-      - name: Run PHPUnit (tests)
-        run: php artisan test --parallel
+      - name: Run Pest (tests)
+        run: ./vendor/bin/pest --parallel
         env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5485
+          DB_DATABASE: aurora_test
+          DB_USERNAME: aurora
+          DB_PASSWORD: secret
 
   # ---------------------------------------------------------------------------
-  # Frontend — build check (Vite bundles resources/js)
+  # Frontend — type check, unit tests, and build
   # ---------------------------------------------------------------------------
   frontend:
     name: Frontend (Vite/React)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -72,17 +90,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Run Vitest (unit tests)
+        run: npx vitest run
+
       - name: Build
         run: npm run build
 
   # ---------------------------------------------------------------------------
-  # Security — weekly dependency audit
+  # Security — dependency audit (main branch only)
   # ---------------------------------------------------------------------------
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # Run on schedule or manually; don't block PRs on audit results
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -101,10 +124,10 @@ jobs:
       - name: npm audit (critical)
         run: npm audit --audit-level=critical
 
-      - name: Setup PHP 8.2
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: none
 
       - name: Composer audit
