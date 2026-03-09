@@ -2,26 +2,30 @@ import axios from 'axios';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
-// Initialize Laravel Echo
+// Initialize Laravel Echo only if Pusher is configured
 window.Pusher = Pusher;
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    wsHost: import.meta.env.VITE_PUSHER_HOST,
-    wsPort: import.meta.env.VITE_PUSHER_PORT,
-    wssPort: import.meta.env.VITE_PUSHER_PORT,
-    forceTLS: false,
-    encrypted: false,
-    disableStats: true,
-    enabledTransports: ['ws', 'wss'],
-    auth: {
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
-            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+if (import.meta.env.VITE_PUSHER_APP_KEY) {
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: import.meta.env.VITE_PUSHER_APP_KEY,
+        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+        wsHost: import.meta.env.VITE_PUSHER_HOST,
+        wsPort: import.meta.env.VITE_PUSHER_PORT,
+        wssPort: import.meta.env.VITE_PUSHER_PORT,
+        forceTLS: false,
+        encrypted: false,
+        disableStats: true,
+        enabledTransports: ['ws', 'wss'],
+        auth: {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
         }
-    }
-});
+    });
+} else {
+    console.log('Pusher not configured - real-time features disabled');
+}
 
 // Configure axios before it's used anywhere else
 const configureAxios = () => {

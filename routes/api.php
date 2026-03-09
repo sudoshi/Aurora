@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     // Case Discussion routes
     Route::prefix('cases/{caseId}')->group(function () {

@@ -4,6 +4,7 @@ import { AuthProvider } from '../context/AuthContext.jsx';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import Login from './Login.jsx';
+import RegisterPage from './RegisterPage.jsx';
 
 // Lazy load components
 const Home = React.lazy(() => import('./Home.jsx'));
@@ -33,6 +34,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>

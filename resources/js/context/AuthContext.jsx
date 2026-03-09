@@ -54,6 +54,11 @@ function AuthProvider({ children }) {
     setUser(userData);
   }, [setAuthToken]);
 
+  const updateUser = useCallback((userData) => {
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    setUser(userData);
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       // Attempt to logout on server
@@ -69,7 +74,7 @@ function AuthProvider({ children }) {
   }, [setAuthToken]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

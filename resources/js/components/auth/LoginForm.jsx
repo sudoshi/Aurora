@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import AuthInput from './AuthInput';
 import AuthButton from './AuthButton';
 import { useAuth } from '../../context/AuthContext';
@@ -20,10 +21,19 @@ const LoginForm = () => {
     setError('');
 
     try {
-      await login(formData.email, formData.password);
+      const response = await axios.post('/api/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      login(response.data.user, response.data.access_token);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Failed to log in');
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.email?.[0] ||
+        'Failed to log in';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -46,7 +56,7 @@ const LoginForm = () => {
               <span>{error}</span>
             </div>
           )}
-          
+
           <AuthInput
             label="Email"
             type="email"
@@ -84,6 +94,16 @@ const LoginForm = () => {
           >
             Sign In
           </AuthButton>
+
+          <div className="text-center mt-4">
+            <span className="text-gray-400 text-sm">Don't have an account? </span>
+            <Link
+              to="/register"
+              className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+            >
+              Create Account
+            </Link>
+          </div>
         </form>
       </div>
     </div>
