@@ -19,7 +19,7 @@
 
     <!-- Scripts and Styles -->
     @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    @vite(['resources/css/app.css', 'resources/js/app.tsx'])
 </head>
 <body class="bg-gray-900 text-gray-100 antialiased">
     <div id="root"></div>

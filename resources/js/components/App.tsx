@@ -1,18 +1,18 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, type LazyExoticComponent, type ComponentType } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '../context/AuthContext.jsx';
-import DashboardLayout from './layouts/DashboardLayout.jsx';
-import PrivateRoute from './PrivateRoute.jsx';
-import Login from './Login.jsx';
-import RegisterPage from './RegisterPage.jsx';
+import { AuthProvider } from '../context/AuthContext';
+import DashboardLayout from './layouts/DashboardLayout';
+import PrivateRoute from './PrivateRoute';
+import Login from './Login';
+import RegisterPage from './RegisterPage';
 
 // Lazy load components
-const Home = React.lazy(() => import('./Home.jsx'));
-const About = React.lazy(() => import('./About.jsx'));
-const Collaboration = React.lazy(() => import('./Collaboration.jsx'));
+const Home: LazyExoticComponent<ComponentType> = React.lazy(() => import('./Home.jsx'));
+const About: LazyExoticComponent<ComponentType> = React.lazy(() => import('./About.jsx'));
+const Collaboration: LazyExoticComponent<ComponentType> = React.lazy(() => import('./Collaboration.jsx'));
 
 // Placeholder component for routes under development
-const UnderDevelopment = () => (
+const UnderDevelopment = (): React.JSX.Element => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-300">
     <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
       <h2 className="text-2xl font-bold mb-4">Under Development</h2>
@@ -40,7 +40,7 @@ function App() {
             <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              
+
               {/* Collaboration Routes */}
               <Route path="/video-conferences" element={<UnderDevelopment />} />
               <Route path="/screen-sharing" element={<UnderDevelopment />} />
@@ -50,7 +50,7 @@ function App() {
 
               {/* Collaboration Routes */}
               <Route path="/collaboration/:eventId" element={<Collaboration />} />
-              
+
               {/* Communication Routes */}
               <Route path="/case-discussions" element={<UnderDevelopment />} />
               <Route path="/tasks" element={<UnderDevelopment />} />

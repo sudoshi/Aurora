@@ -1,12 +1,18 @@
 import React from 'react';
+import type { InputHTMLAttributes } from 'react';
 
-const AuthInput = ({ 
-  type = 'text', 
-  label, 
-  error, 
-  className = '', 
-  ...props 
-}) => {
+interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
+
+const AuthInput = ({
+  type = 'text',
+  label,
+  error,
+  className = '',
+  ...props
+}: AuthInputProps) => {
   return (
     <div className="form-control w-full">
       {label && (
@@ -17,9 +23,9 @@ const AuthInput = ({
       <input
         type={type}
         className={`
-          input input-primary bg-gray-800 
-          border-gray-700 
-          text-gray-100 
+          input input-primary bg-gray-800
+          border-gray-700
+          text-gray-100
           placeholder:text-gray-500
           w-full
           ${error ? 'input-error' : ''}

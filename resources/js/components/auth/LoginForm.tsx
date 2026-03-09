@@ -1,27 +1,46 @@
 import React, { useState } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import axios, { type AxiosError } from 'axios';
 import AuthInput from './AuthInput';
 import AuthButton from './AuthButton';
 import { useAuth } from '../../context/AuthContext';
+import type { User } from '../../types';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  user: User;
+  access_token: string;
+}
+
+interface LoginErrorResponse {
+  message?: string;
+  errors?: {
+    email?: string[];
+  };
+}
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: ''
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const response = await axios.post('/api/login', {
+      const response = await axios.post<LoginResponse>('/api/login', {
         email: formData.email,
         password: formData.password,
       });
@@ -29,9 +48,10 @@ const LoginForm = () => {
       login(response.data.user, response.data.access_token);
       navigate('/');
     } catch (err) {
+      const axiosError = err as AxiosError<LoginErrorResponse>;
       const message =
-        err.response?.data?.message ||
-        err.response?.data?.errors?.email?.[0] ||
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.errors?.email?.[0] ||
         'Failed to log in';
       setError(message);
     } finally {
@@ -39,7 +59,7 @@ const LoginForm = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,

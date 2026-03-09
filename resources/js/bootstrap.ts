@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type AxiosError, type AxiosResponse } from 'axios';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
@@ -18,7 +18,7 @@ if (import.meta.env.VITE_PUSHER_APP_KEY) {
         enabledTransports: ['ws', 'wss'],
         auth: {
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'X-CSRF-TOKEN': document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '',
                 'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
             }
         }
@@ -28,7 +28,7 @@ if (import.meta.env.VITE_PUSHER_APP_KEY) {
 }
 
 // Configure axios before it's used anywhere else
-const configureAxios = () => {
+const configureAxios = (): void => {
     // Set default configs
     // No need for baseURL since we're serving from the same origin
     // axios.defaults.baseURL = 'http://localhost:8000';
@@ -38,15 +38,15 @@ const configureAxios = () => {
     axios.defaults.withCredentials = true; // Important for CSRF cookie and CORS
 
     // Add CSRF token if it exists (for Laravel)
-    const token = document.head.querySelector('meta[name="csrf-token"]');
+    const token = document.head.querySelector<HTMLMetaElement>('meta[name="csrf-token"]');
     if (token) {
         axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
     }
 
     // Add response interceptor to handle common API errors
     axios.interceptors.response.use(
-        response => response,
-        error => {
+        (response: AxiosResponse) => response,
+        (error: AxiosError) => {
             console.error('API Error:', error);
             if (error.response?.status === 401) {
                 // Clear auth data and redirect to login on unauthorized
