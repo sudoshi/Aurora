@@ -16,10 +16,13 @@ class User extends Authenticatable
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'dev.users';
+    protected $table = 'app.users';
+
+    /**
+     * The guard name for Spatie permissions.
+     */
+    protected $guard_name = 'sanctum';
 
     /**
      * The attributes that are mass assignable.
@@ -31,9 +34,11 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'role',
-        'is_active',
+        'avatar',
         'must_change_password',
+        'is_active',
+        'institution_id',
+        'last_login_at',
     ];
 
     /**
@@ -55,9 +60,18 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'last_login_at' => 'datetime',
             'must_change_password' => 'boolean',
             'is_active' => 'boolean',
+            'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if this user is the superuser.
+     */
+    public function isSuperuser(): bool
+    {
+        return $this->email === 'admin@acumenus.net';
     }
 }
