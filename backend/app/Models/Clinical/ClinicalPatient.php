@@ -4,6 +4,7 @@ namespace App\Models\Clinical;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ClinicalPatient extends Model
 {
@@ -77,5 +78,10 @@ class ClinicalPatient extends Model
     public function drugEras(): HasMany
     {
         return $this->hasMany(DrugEra::class, 'patient_id');
+    }
+
+    public function embedding(): HasOne
+    {
+        return $this->hasOne(PatientEmbedding::class, 'patient_id');
     }
 }

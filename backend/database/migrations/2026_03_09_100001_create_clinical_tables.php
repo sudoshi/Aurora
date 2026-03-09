@@ -40,6 +40,8 @@ return new class extends Migration
             $table->string('identifier_type');
             $table->string('identifier_value');
             $table->string('source_system')->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('patient_id');
@@ -228,6 +230,8 @@ return new class extends Migration
             $table->string('modality', 10)->nullable();
             $table->string('description')->nullable();
             $table->integer('num_instances')->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('imaging_study_id');
@@ -240,6 +244,8 @@ return new class extends Migration
             $table->string('sop_instance_uid')->unique();
             $table->integer('instance_number')->nullable();
             $table->string('file_path')->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('imaging_series_id');
@@ -255,6 +261,8 @@ return new class extends Migration
             $table->string('unit', 30);
             $table->string('measured_by')->nullable();
             $table->timestamp('measured_at')->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('imaging_study_id');
@@ -268,6 +276,8 @@ return new class extends Migration
             $table->string('algorithm')->nullable();
             $table->string('label')->nullable();
             $table->decimal('volume_mm3', 18, 4)->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamp('created_at')->nullable();
 
             $table->index('imaging_study_id');
@@ -305,6 +315,8 @@ return new class extends Migration
             $table->date('era_start');
             $table->date('era_end')->nullable();
             $table->integer('occurrence_count')->default(1);
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('patient_id');
@@ -318,6 +330,8 @@ return new class extends Migration
             $table->date('era_start');
             $table->date('era_end')->nullable();
             $table->integer('gap_days')->default(0);
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
 
             $table->index('patient_id');
@@ -329,6 +343,8 @@ return new class extends Migration
             $table->foreignId('patient_id')->unique()->constrained('clinical.patients')->onDelete('cascade');
             $table->string('model_version')->nullable();
             $table->timestamp('computed_at')->nullable();
+            $table->string('source_id')->nullable();
+            $table->string('source_type')->nullable();
             $table->timestamps();
         });
 
