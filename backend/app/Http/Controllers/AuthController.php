@@ -33,7 +33,7 @@ class AuthController extends Controller
 
             $result = $this->authService->register($validatedData);
 
-            return ApiResponse::success(null, $result['message'], 201);
+            return ApiResponse::success(null, $result['message']);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::error('Validation failed', 422, $e->errors());
         } catch (\Exception $e) {
@@ -66,10 +66,25 @@ class AuthController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::error('Validation failed', 422, $e->errors());
         } catch (\RuntimeException $e) {
-            return ApiResponse::error($e->getMessage(), $e->getCode() ?: 401);
+            $code = $e->getCode();
+            // Ensure we use a valid HTTP status code
+            $statusCode = ($code >= 400 && $code < 600) ? $code : 401;
+            return ApiResponse::error($e->getMessage(), $statusCode);
         } catch (\Exception $e) {
+            Log::error('Login error', ['message' => $e->getMessage()]);
             return ApiResponse::error('An unexpected error occurred', 500);
         }
+    }
+
+    /**
+     * Get authenticated user with formatted data.
+     */
+    public function user(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $formatted = $this->authService->formatUser($user);
+
+        return response()->json($formatted);
     }
 
     /**
@@ -80,20 +95,22 @@ class AuthController extends Controller
         try {
             $validatedData = $request->validate([
                 'current_password' => 'required|string',
-                'new_password'     => 'required|string|min:8',
+                'password'         => 'required|string|min:8|confirmed',
             ]);
 
             $result = $this->authService->changePassword(
                 $request->user(),
                 $validatedData['current_password'],
-                $validatedData['new_password'],
+                $validatedData['password'],
             );
 
             return response()->json($result);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::error('Validation failed', 422, $e->errors());
         } catch (\RuntimeException $e) {
-            return ApiResponse::error($e->getMessage(), $e->getCode() ?: 422);
+            $code = $e->getCode();
+            $statusCode = ($code >= 400 && $code < 600) ? $code : 422;
+            return ApiResponse::error($e->getMessage(), $statusCode);
         } catch (\Exception $e) {
             Log::error('Change password error', ['message' => $e->getMessage()]);
             return ApiResponse::error('An unexpected error occurred.', 500);
@@ -101,20 +118,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user (invalidate token).
+     * Logout user (revoke all tokens).
      */
     public function logout(Request $request): JsonResponse
     {
         $this->authService->logout($request->user());
 
         return ApiResponse::success(null, 'Successfully logged out');
-    }
-
-    /**
-     * Get authenticated user.
-     */
-    public function user(Request $request): JsonResponse
-    {
-        return response()->json($request->user());
     }
 }

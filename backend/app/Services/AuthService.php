@@ -3,11 +3,9 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
@@ -24,9 +22,10 @@ class AuthService
     {
         $successMessage = 'If your email is not already registered, you will receive your login credentials shortly. Please check your inbox.';
 
+        $email = strtolower(trim($data['email']));
+
         // Check if user already exists - return same message to prevent enumeration
-        $existingUser = User::where('email', $data['email'])->first();
-        if ($existingUser) {
+        if (User::where('email', $email)->exists()) {
             return ['message' => $successMessage];
         }
 
@@ -35,15 +34,15 @@ class AuthService
 
         // Create user
         $user = User::create([
-            'name'                 => $data['name'],
-            'email'                => $data['email'],
+            'name'                 => trim($data['name']),
+            'email'                => $email,
             'phone'                => $data['phone'] ?? null,
             'password'             => Hash::make($tempPassword),
             'must_change_password' => true,
             'is_active'            => true,
         ]);
 
-        // Send temp password via email
+        // Send temp password via email (non-fatal if it fails)
         $this->sendTempPasswordEmail($user->email, $user->name, $tempPassword);
 
         return ['message' => $successMessage];
@@ -53,24 +52,26 @@ class AuthService
      * Authenticate a user and create an API token.
      *
      * @param array{email: string, password: string} $credentials
-     * @return array{access_token: string, user: User}
+     * @return array{access_token: string, user: array}
      *
      * @throws \RuntimeException When credentials are invalid or account is inactive.
      */
     public function login(array $credentials): array
     {
-        if (!Auth::attempt($credentials)) {
+        $user = User::where('email', strtolower($credentials['email']))
+            ->with('roles.permissions')
+            ->first();
+
+        // Same error for "not found" and "wrong password" to prevent enumeration
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             throw new \RuntimeException(
-                'The provided credentials do not match our records',
+                'The provided credentials do not match our records.',
                 401
             );
         }
 
-        $user = Auth::user();
-
         // Check if account is active
         if ($user->is_active === false) {
-            Auth::logout();
             throw new \RuntimeException(
                 'Your account has been deactivated. Please contact support.',
                 403
@@ -79,9 +80,12 @@ class AuthService
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Update last_login_at
+        $user->updateQuietly(['last_login_at' => now()]);
+
         return [
             'access_token' => $token,
-            'user'         => $user,
+            'user'         => $this->formatUser($user),
         ];
     }
 
@@ -92,7 +96,7 @@ class AuthService
      * revokes all existing tokens, and issues a fresh one.
      *
      * @throws \RuntimeException When current password is wrong or new matches current.
-     * @return array{message: string, access_token: string, user: User}
+     * @return array{message: string, access_token: string, user: array}
      */
     public function changePassword(User $user, string $currentPassword, string $newPassword): array
     {
@@ -110,21 +114,22 @@ class AuthService
         }
 
         // Update password and clear the must_change_password flag
-        $user->password = Hash::make($newPassword);
-        $user->must_change_password = false;
-        $user->save();
+        $user->update([
+            'password'             => Hash::make($newPassword),
+            'must_change_password' => false,
+        ]);
 
         // Revoke all existing tokens and issue a new one
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         // Refresh user data
-        $user->refresh();
+        $user->refresh()->load('roles.permissions');
 
         return [
             'message'      => 'Password changed successfully.',
             'access_token' => $token,
-            'user'         => $user,
+            'user'         => $this->formatUser($user),
         ];
     }
 
@@ -137,14 +142,39 @@ class AuthService
     }
 
     /**
+     * Format user data for API responses.
+     *
+     * @return array<string, mixed>
+     */
+    public function formatUser(User $user): array
+    {
+        $user->loadMissing('roles.permissions');
+
+        return [
+            'id'                   => $user->id,
+            'name'                 => $user->name,
+            'email'                => $user->email,
+            'phone'                => $user->phone,
+            'avatar'               => $user->avatar,
+            'must_change_password' => $user->must_change_password,
+            'is_active'            => $user->is_active,
+            'last_login_at'        => $user->last_login_at,
+            'roles'                => $user->getRoleNames(),
+            'permissions'          => $user->getAllPermissions()->pluck('name'),
+            'created_at'           => $user->created_at,
+            'updated_at'           => $user->updated_at,
+        ];
+    }
+
+    /**
      * Generate a random temporary password.
      *
      * Produces a 12-character string using characters that exclude
      * visually ambiguous glyphs (I, l, O, 0).
      */
-    private function generateTempPassword(int $length = 12): string
+    public function generateTempPassword(int $length = 12): string
     {
-        $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789!@#$%^&*';
+        $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
         $password = '';
         $max = strlen($chars) - 1;
 
@@ -164,7 +194,9 @@ class AuthService
             $apiKey = config('services.resend.api_key');
 
             if (empty($apiKey)) {
-                Log::error('Resend API key is not configured');
+                Log::warning('Resend API key is not configured — skipping temp password email', [
+                    'email' => $email,
+                ]);
                 return false;
             }
 
@@ -215,6 +247,7 @@ class AuthService
                 'email'   => $email,
                 'message' => $e->getMessage(),
             ]);
+
             return false;
         }
     }

@@ -1,41 +1,29 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\CaseDiscussionController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
-// Public routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+// Health check
+Route::get('/health', fn () => response()->json([
+    'status' => 'ok',
+    'service' => 'aurora-api',
+    'version' => '2.0.0',
+    'timestamp' => now()->toISOString(),
+]));
 
-// Protected routes
+// Auth (public)
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+// Auth (protected)
 Route::middleware('auth:sanctum')->group(function () {
-    // User routes
-    Route::get('/user', [AuthController::class, 'user']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/change-password', [AuthController::class, 'changePassword']);
-
-    // Event routes
-    Route::get('events/upcoming', [EventController::class, 'upcoming']);
-    Route::apiResource('events', EventController::class);
-
-    // Case Discussion routes
-    Route::prefix('cases/{caseId}')->group(function () {
-        Route::get('/discussions', [CaseDiscussionController::class, 'index']);
-        Route::post('/discussions', [CaseDiscussionController::class, 'store']);
-        Route::post('/attachments', [CaseDiscussionController::class, 'uploadAttachments']);
-    });
+    Route::get('/auth/user', [AuthController::class, 'user']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 });
