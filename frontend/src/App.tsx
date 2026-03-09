@@ -1,48 +1,47 @@
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "@/lib/query-client";
+import LoginPage from "@/features/auth/pages/LoginPage";
+import RegisterPage from "@/features/auth/pages/RegisterPage";
+import PrivateRoute from "@/components/ui/PrivateRoute";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      retry: 1,
-    },
-  },
-});
-
-function HomePage() {
+function DashboardHome() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        gap: 'var(--space-4)',
-      }}
-    >
+    <div>
       <h1
         style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 'var(--text-5xl)',
-          fontWeight: 500,
-          color: 'var(--accent)',
-          letterSpacing: '-0.02em',
+          fontSize: "var(--text-2xl)",
+          fontWeight: 600,
+          color: "var(--text-primary)",
+          marginBottom: "var(--space-4)",
         }}
       >
-        Aurora
+        Dashboard
       </h1>
-      <p
+      <p style={{ color: "var(--text-muted)" }}>
+        Welcome to Aurora. Select an item from the sidebar to get started.
+      </p>
+    </div>
+  );
+}
+
+function NotFound() {
+  return (
+    <div>
+      <h1
         style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 'var(--text-sm)',
-          color: 'var(--text-muted)',
-          letterSpacing: '0.5px',
+          fontSize: "var(--text-2xl)",
+          fontWeight: 600,
+          color: "var(--text-primary)",
+          marginBottom: "var(--space-4)",
         }}
       >
-        v2.0.0 — scaffold deployed
+        404 — Page Not Found
+      </h1>
+      <p style={{ color: "var(--text-muted)" }}>
+        The page you are looking for does not exist.
       </p>
     </div>
   );
@@ -52,7 +51,21 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <HomePage />
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <DashboardLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<DashboardHome />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
