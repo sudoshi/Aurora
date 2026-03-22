@@ -66,13 +66,13 @@
 
 .mention {
   display: inline-flex; align-items: center; border-radius: 4px;
-  background: rgba(45, 212, 191, 0.1); color: rgb(94, 234, 212);
+  background: rgba(157, 117, 248, 0.1); color: var(--accent-light);
   font-size: 0.85em; font-weight: 500; padding: 1px 5px; cursor: default;
 }
 
 @keyframes msgHighlightFade {
-  0%   { background-color: rgba(42, 157, 143, 0.18); }
-  60%  { background-color: rgba(42, 157, 143, 0.12); }
+  0%   { background-color: rgba(157, 117, 248, 0.18); }
+  60%  { background-color: rgba(157, 117, 248, 0.12); }
   100% { background-color: transparent; }
 }
 .msg-highlight { animation: msgHighlightFade 2s ease-out forwards; border-radius: 4px; }
