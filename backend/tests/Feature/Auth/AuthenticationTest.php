@@ -145,7 +145,7 @@ describe('POST /api/auth/logout', function () {
 
         // Logout using the token
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/auth/logout');
 
         $response->assertStatus(200);
@@ -158,7 +158,7 @@ describe('POST /api/auth/logout', function () {
 
         // Token should no longer work
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson('/api/auth/user');
 
         $response->assertStatus(401);

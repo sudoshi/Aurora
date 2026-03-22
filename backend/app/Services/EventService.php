@@ -11,30 +11,30 @@ class EventService
     /**
      * List events with optional filters and pagination.
      *
-     * @param array{search?: string, start_date?: string, end_date?: string, category?: string, per_page?: int} $filters
+     * @param  array{search?: string, start_date?: string, end_date?: string, category?: string, per_page?: int}  $filters
      */
     public function list(array $filters = []): LengthAwarePaginator
     {
         $query = Event::with(['teamMembers', 'patients']);
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'ilike', "%{$search}%")
-                  ->orWhere('description', 'ilike', "%{$search}%")
-                  ->orWhere('location', 'ilike', "%{$search}%");
+                    ->orWhere('description', 'ilike', "%{$search}%")
+                    ->orWhere('location', 'ilike', "%{$search}%");
             });
         }
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->where('time', '>=', $filters['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->where('time', '<=', $filters['end_date']);
         }
 
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->where('category', $filters['category']);
         }
 
@@ -54,7 +54,7 @@ class EventService
     /**
      * Create a new event and attach relationships.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): Event
     {
@@ -79,7 +79,7 @@ class EventService
     /**
      * Update an existing event and its relationships.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function update(Event $event, array $data): Event
     {

@@ -39,7 +39,7 @@ class PatientController extends Controller
     {
         $model = ClinicalPatient::find($patient);
 
-        if (!$model) {
+        if (! $model) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -55,7 +55,7 @@ class PatientController extends Controller
     {
         $model = ClinicalPatient::find($patient);
 
-        if (!$model) {
+        if (! $model) {
             return ApiResponse::error('Patient not found', 404);
         }
 

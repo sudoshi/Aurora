@@ -115,7 +115,7 @@ class AbbyController extends Controller
 
         try {
             $aiResponse = \Illuminate\Support\Facades\Http::timeout(30)
-                ->post(config('services.ai.base_url', 'http://localhost:8100') . '/api/ai/abby/chat', [
+                ->post(config('services.ai.base_url', 'http://localhost:8100').'/api/ai/abby/chat', [
                     'message' => $request->input('message'),
                     'page_context' => $request->input('page_context', 'general'),
                     'history' => $request->input('history', []),

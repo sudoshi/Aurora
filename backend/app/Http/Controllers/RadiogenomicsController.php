@@ -22,6 +22,7 @@ class RadiogenomicsController extends Controller
         if (empty($panel)) {
             return ApiResponse::error('Patient not found', 404);
         }
+
         return ApiResponse::success($panel, 'Radiogenomics panel retrieved');
     }
 

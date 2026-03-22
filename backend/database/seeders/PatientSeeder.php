@@ -13,7 +13,7 @@ class PatientSeeder extends Seeder
             'id' => 1,
             'name' => 'John Doe',
             'condition' => 'Post-surgical recovery',
-            'status' => 'Stable'
+            'status' => 'Stable',
         ]);
 
         Patient::create([

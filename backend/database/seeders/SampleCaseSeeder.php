@@ -13,8 +13,9 @@ class SampleCaseSeeder extends Seeder
         $now = now();
         $adminId = DB::table('app.users')->where('email', 'admin@acumenus.net')->value('id');
 
-        if (!$adminId) {
+        if (! $adminId) {
             $this->command->error('Admin user not found.');
+
             return;
         }
 
@@ -208,6 +209,6 @@ class SampleCaseSeeder extends Seeder
             DB::table('app.cases')->insert($case);
         }
 
-        $this->command->info('Seeded ' . count($cases) . ' clinical cases linked to demo patients.');
+        $this->command->info('Seeded '.count($cases).' clinical cases linked to demo patients.');
     }
 }

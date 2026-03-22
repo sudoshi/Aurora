@@ -13,7 +13,7 @@ class ReactionController extends Controller
     public function toggle(Request $request, int $id): JsonResponse
     {
         $request->validate([
-            'emoji' => 'required|string|in:' . implode(',', Reaction::ALLOWED_EMOJI),
+            'emoji' => 'required|string|in:'.implode(',', Reaction::ALLOWED_EMOJI),
         ]);
 
         $message = Message::findOrFail($id);

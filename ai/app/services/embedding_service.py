@@ -272,6 +272,7 @@ async def compute_embedding(text: str) -> list[float]:
     Falls back to Ollama embedding endpoint if SapBERT is unavailable.
     """
     # Try SapBERT first
+    sapbert_error_msg = "not attempted"
     try:
         from app.services.sapbert import get_sapbert_service
 
@@ -280,6 +281,7 @@ async def compute_embedding(text: str) -> list[float]:
         logger.info("Generated embedding via SapBERT (%d dims)", len(embedding))
         return embedding
     except Exception as sapbert_err:
+        sapbert_error_msg = str(sapbert_err)
         logger.info("SapBERT unavailable (%s), falling back to Ollama", sapbert_err)
 
     # Fallback: Ollama embeddings endpoint
@@ -308,7 +310,7 @@ async def compute_embedding(text: str) -> list[float]:
     except Exception as ollama_err:
         logger.error("Ollama embedding failed: %s", ollama_err)
         raise RuntimeError(
-            f"No embedding backend available. SapBERT: {sapbert_err}, Ollama: {ollama_err}"
+            f"No embedding backend available. SapBERT: {sapbert_error_msg}, Ollama: {ollama_err}"
         ) from ollama_err
 
 

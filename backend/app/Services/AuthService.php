@@ -15,7 +15,7 @@ class AuthService
      * Returns the same success message regardless of whether the email
      * already exists (enumeration prevention).
      *
-     * @param array{name: string, email: string, phone?: string|null} $data
+     * @param  array{name: string, email: string, phone?: string|null}  $data
      * @return array{message: string}
      */
     public function register(array $data): array
@@ -34,12 +34,12 @@ class AuthService
 
         // Create user
         $user = User::create([
-            'name'                 => trim($data['name']),
-            'email'                => $email,
-            'phone'                => $data['phone'] ?? null,
-            'password'             => Hash::make($tempPassword),
+            'name' => trim($data['name']),
+            'email' => $email,
+            'phone' => $data['phone'] ?? null,
+            'password' => Hash::make($tempPassword),
             'must_change_password' => true,
-            'is_active'            => true,
+            'is_active' => true,
         ]);
 
         // Send temp password via email (non-fatal if it fails)
@@ -51,7 +51,7 @@ class AuthService
     /**
      * Authenticate a user and create an API token.
      *
-     * @param array{email: string, password: string} $credentials
+     * @param  array{email: string, password: string}  $credentials
      * @return array{access_token: string, user: array}
      *
      * @throws \RuntimeException When credentials are invalid or account is inactive.
@@ -63,7 +63,7 @@ class AuthService
             ->first();
 
         // Same error for "not found" and "wrong password" to prevent enumeration
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             throw new \RuntimeException(
                 'The provided credentials do not match our records.',
                 401
@@ -85,7 +85,7 @@ class AuthService
 
         return [
             'access_token' => $token,
-            'user'         => $this->formatUser($user),
+            'user' => $this->formatUser($user),
         ];
     }
 
@@ -95,13 +95,14 @@ class AuthService
      * Validates the current password, ensures the new one is different,
      * revokes all existing tokens, and issues a fresh one.
      *
-     * @throws \RuntimeException When current password is wrong or new matches current.
      * @return array{message: string, access_token: string, user: array}
+     *
+     * @throws \RuntimeException When current password is wrong or new matches current.
      */
     public function changePassword(User $user, string $currentPassword, string $newPassword): array
     {
         // Verify current password
-        if (!Hash::check($currentPassword, $user->password)) {
+        if (! Hash::check($currentPassword, $user->password)) {
             throw new \RuntimeException('Current password is incorrect.', 422);
         }
 
@@ -115,7 +116,7 @@ class AuthService
 
         // Update password and clear the must_change_password flag
         $user->update([
-            'password'             => Hash::make($newPassword),
+            'password' => Hash::make($newPassword),
             'must_change_password' => false,
         ]);
 
@@ -127,9 +128,9 @@ class AuthService
         $user->refresh()->load('roles.permissions');
 
         return [
-            'message'      => 'Password changed successfully.',
+            'message' => 'Password changed successfully.',
             'access_token' => $token,
-            'user'         => $this->formatUser($user),
+            'user' => $this->formatUser($user),
         ];
     }
 
@@ -151,18 +152,18 @@ class AuthService
         $user->loadMissing('roles.permissions');
 
         return [
-            'id'                   => $user->id,
-            'name'                 => $user->name,
-            'email'                => $user->email,
-            'phone'                => $user->phone,
-            'avatar'               => $user->avatar,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'avatar' => $user->avatar,
             'must_change_password' => $user->must_change_password,
-            'is_active'            => $user->is_active,
-            'last_login_at'        => $user->last_login_at,
-            'roles'                => $user->getRoleNames(),
-            'permissions'          => $user->getAllPermissions()->pluck('name'),
-            'created_at'           => $user->created_at,
-            'updated_at'           => $user->updated_at,
+            'is_active' => $user->is_active,
+            'last_login_at' => $user->last_login_at,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
         ];
     }
 
@@ -197,6 +198,7 @@ class AuthService
                 Log::warning('Resend API key is not configured — skipping temp password email', [
                     'email' => $email,
                 ]);
+
                 return false;
             }
 
@@ -207,11 +209,11 @@ class AuthService
                     <p style="color: #a0c4e8; margin-top: 5px;">Healthcare Collaboration Platform</p>
                 </div>
                 <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e3a5f; margin-top: 0;">Welcome, ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '!</h2>
+                    <h2 style="color: #1e3a5f; margin-top: 0;">Welcome, '.htmlspecialchars($name, ENT_QUOTES, 'UTF-8').'!</h2>
                     <p style="color: #333;">Your Aurora account has been created. Use the temporary password below to log in:</p>
                     <div style="background: #f5f7fa; border: 2px dashed #2d5a87; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
                         <p style="color: #666; margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase;">Temporary Password</p>
-                        <p style="color: #1e3a5f; font-size: 24px; font-weight: bold; margin: 0; letter-spacing: 2px; font-family: monospace;">' . htmlspecialchars($tempPassword, ENT_QUOTES, 'UTF-8') . '</p>
+                        <p style="color: #1e3a5f; font-size: 24px; font-weight: bold; margin: 0; letter-spacing: 2px; font-family: monospace;">'.htmlspecialchars($tempPassword, ENT_QUOTES, 'UTF-8').'</p>
                     </div>
                     <p style="color: #e74c3c; font-weight: bold;">You will be required to change this password upon your first login.</p>
                     <p style="color: #333;">If you did not request this account, please ignore this email.</p>
@@ -221,30 +223,31 @@ class AuthService
             </div>';
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer '.$apiKey,
+                'Content-Type' => 'application/json',
             ])->post('https://api.resend.com/emails', [
-                'from'    => 'Aurora <noreply@acumenus.net>',
-                'to'      => [$email],
+                'from' => 'Aurora <noreply@acumenus.net>',
+                'to' => [$email],
                 'subject' => 'Your Aurora access credentials',
-                'html'    => $html,
+                'html' => $html,
             ]);
 
             if ($response->successful()) {
                 Log::info('Temp password email sent successfully', ['email' => $email]);
+
                 return true;
             }
 
             Log::error('Failed to send temp password email', [
-                'email'    => $email,
-                'status'   => $response->status(),
+                'email' => $email,
+                'status' => $response->status(),
                 'response' => $response->body(),
             ]);
 
             return false;
         } catch (\Exception $e) {
             Log::error('Exception sending temp password email', [
-                'email'   => $email,
+                'email' => $email,
                 'message' => $e->getMessage(),
             ]);
 

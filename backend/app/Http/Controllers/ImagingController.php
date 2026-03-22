@@ -119,7 +119,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::with(['series', 'imagingMeasurements', 'segmentations'])->find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -166,7 +166,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -184,7 +184,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -310,7 +310,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -342,7 +342,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -406,7 +406,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -416,7 +416,7 @@ class ImagingController extends Controller
 
         $patient = ClinicalPatient::find($validated['person_id']);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -440,7 +440,7 @@ class ImagingController extends Controller
 
         $patient = ClinicalPatient::find($validated['person_id']);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -471,7 +471,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -491,7 +491,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -533,7 +533,7 @@ class ImagingController extends Controller
     {
         $measurement = ImagingMeasurement::find($id);
 
-        if (!$measurement) {
+        if (! $measurement) {
             return ApiResponse::error('Measurement not found', 404);
         }
 
@@ -573,7 +573,7 @@ class ImagingController extends Controller
             $updates['measured_at'] = $validated['measured_at'];
         }
 
-        if (!empty($updates)) {
+        if (! empty($updates)) {
             $measurement->update($updates);
             $measurement->refresh();
         }
@@ -589,7 +589,7 @@ class ImagingController extends Controller
     {
         $measurement = ImagingMeasurement::find($id);
 
-        if (!$measurement) {
+        if (! $measurement) {
             return ApiResponse::error('Measurement not found', 404);
         }
 
@@ -606,7 +606,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -640,13 +640,13 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
         $measurementType = $request->input('measurement_type');
 
-        if (!$measurementType) {
+        if (! $measurementType) {
             return ApiResponse::error('measurement_type parameter is required', 422);
         }
 
@@ -686,7 +686,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -701,7 +701,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -740,7 +740,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -755,27 +755,27 @@ class ImagingController extends Controller
             ->with('imagingMeasurements')
             ->first();
 
-        if (!$currentStudy) {
+        if (! $currentStudy) {
             return ApiResponse::error('Current study not found for this patient', 404);
         }
 
         // Find baseline: explicit or first study
         $baselineStudy = null;
-        if (!empty($validated['baseline_study_id'])) {
+        if (! empty($validated['baseline_study_id'])) {
             $baselineStudy = ImagingStudy::where('id', $validated['baseline_study_id'])
                 ->where('patient_id', $personId)
                 ->with('imagingMeasurements')
                 ->first();
         }
 
-        if (!$baselineStudy) {
+        if (! $baselineStudy) {
             $baselineStudy = ImagingStudy::where('patient_id', $personId)
                 ->orderBy('study_date', 'asc')
                 ->with('imagingMeasurements')
                 ->first();
         }
 
-        if (!$baselineStudy || $baselineStudy->id === $currentStudy->id) {
+        if (! $baselineStudy || $baselineStudy->id === $currentStudy->id) {
             return ApiResponse::error('Need at least two distinct studies for assessment', 422);
         }
 
@@ -833,7 +833,7 @@ class ImagingController extends Controller
     {
         $patient = ClinicalPatient::find($personId);
 
-        if (!$patient) {
+        if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -849,7 +849,7 @@ class ImagingController extends Controller
             ->with('imagingMeasurements')
             ->first();
 
-        if (!$currentStudy) {
+        if (! $currentStudy) {
             return ApiResponse::error('Current study not found for this patient', 404);
         }
 
@@ -858,7 +858,7 @@ class ImagingController extends Controller
             ->with('imagingMeasurements')
             ->first();
 
-        if (!$baselineStudy || $baselineStudy->id === $currentStudy->id) {
+        if (! $baselineStudy || $baselineStudy->id === $currentStudy->id) {
             return ApiResponse::success([
                 'response_category' => 'NE',
                 'criteria_type' => $criteriaType,
@@ -916,7 +916,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -934,7 +934,7 @@ class ImagingController extends Controller
     {
         $study = ImagingStudy::find($id);
 
-        if (!$study) {
+        if (! $study) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -955,7 +955,7 @@ class ImagingController extends Controller
     {
         $patientModel = ClinicalPatient::find($patient);
 
-        if (!$patientModel) {
+        if (! $patientModel) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -995,7 +995,7 @@ class ImagingController extends Controller
     {
         $patientModel = ClinicalPatient::find($patient);
 
-        if (!$patientModel) {
+        if (! $patientModel) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -1003,7 +1003,7 @@ class ImagingController extends Controller
             ->where('patient_id', $patient)
             ->first();
 
-        if (!$studyModel) {
+        if (! $studyModel) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -1056,7 +1056,7 @@ class ImagingController extends Controller
     {
         $patientModel = ClinicalPatient::find($patient);
 
-        if (!$patientModel) {
+        if (! $patientModel) {
             return ApiResponse::error('Patient not found', 404);
         }
 
@@ -1064,7 +1064,7 @@ class ImagingController extends Controller
             ->where('patient_id', $patient)
             ->first();
 
-        if (!$studyModel) {
+        if (! $studyModel) {
             return ApiResponse::error('Imaging study not found', 404);
         }
 
@@ -1105,7 +1105,7 @@ class ImagingController extends Controller
     {
         $patientModel = ClinicalPatient::find($patient);
 
-        if (!$patientModel) {
+        if (! $patientModel) {
             return ApiResponse::error('Patient not found', 404);
         }
 

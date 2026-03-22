@@ -9,7 +9,7 @@ return new class extends Migration
     {
         DB::statement('CREATE SCHEMA IF NOT EXISTS app');
         DB::statement('CREATE SCHEMA IF NOT EXISTS clinical');
-        DB::statement("SET search_path TO app, clinical, public");
+        DB::statement('SET search_path TO app, clinical, public');
     }
 
     public function down(): void

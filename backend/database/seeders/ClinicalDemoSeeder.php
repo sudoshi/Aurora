@@ -61,7 +61,7 @@ class ClinicalDemoSeeder extends Seeder
 
             $this->command->info("ClinicalDemoSeeder: [{$number}/{$total}] Seeding {$shortName}...");
 
-            $seeder = new $seederClass();
+            $seeder = new $seederClass;
             $seeder->seed();
         }
 

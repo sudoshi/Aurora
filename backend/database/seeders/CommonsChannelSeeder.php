@@ -100,7 +100,7 @@ class CommonsChannelSeeder extends Seeder
                 ->where('slug', $channel['slug'])
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 $channelId = DB::table('commons_channels')->insertGetId($channel);
 
                 // Auto-join admin to all channels

@@ -37,7 +37,7 @@ class CaseTemplateController extends Controller
     {
         $template = CaseTemplate::where('slug', $slug)->first();
 
-        if (!$template) {
+        if (! $template) {
             return ApiResponse::error('Template not found', 404);
         }
 

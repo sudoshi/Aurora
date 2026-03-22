@@ -22,17 +22,17 @@ class UpdateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'                  => 'sometimes|string|max:255',
-            'description'            => 'nullable|string',
-            'time'                   => 'sometimes|date',
-            'duration'               => 'sometimes|integer',
-            'location'               => 'sometimes|string|max:255',
-            'category'               => 'sometimes|string|max:255',
-            'team_members'           => 'nullable|array',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'time' => 'sometimes|date',
+            'duration' => 'sometimes|integer',
+            'location' => 'sometimes|string|max:255',
+            'category' => 'sometimes|string|max:255',
+            'team_members' => 'nullable|array',
             'team_members.*.user_id' => 'required|exists:dev.users,id',
-            'team_members.*.role'    => 'nullable|string',
-            'patient_ids'            => 'nullable|array',
-            'patient_ids.*'          => 'required|exists:dev.patients,id',
+            'team_members.*.role' => 'nullable|string',
+            'patient_ids' => 'nullable|array',
+            'patient_ids.*' => 'required|exists:dev.patients,id',
         ];
     }
 }

@@ -20,7 +20,7 @@ class ManualAdapter implements ClinicalDataAdapter
     {
         $patient = ClinicalPatient::with('identifiers')->find($patientId);
 
-        if (!$patient) {
+        if (! $patient) {
             return null;
         }
 
@@ -112,7 +112,7 @@ class ManualAdapter implements ClinicalDataAdapter
     {
         $patient = $this->getPatient($patientId);
 
-        if (!$patient) {
+        if (! $patient) {
             return [];
         }
 
@@ -134,13 +134,13 @@ class ManualAdapter implements ClinicalDataAdapter
     {
         $searchTerm = "%{$query}%";
 
-        return ClinicalPatient::where(function ($q) use ($searchTerm, $query) {
+        return ClinicalPatient::where(function ($q) use ($searchTerm) {
             $q->where('first_name', 'ilike', $searchTerm)
-              ->orWhere('last_name', 'ilike', $searchTerm)
-              ->orWhere('mrn', 'ilike', $searchTerm)
-              ->orWhereHas('conditions', function ($sub) use ($searchTerm) {
-                  $sub->where('concept_name', 'ilike', $searchTerm);
-              });
+                ->orWhere('last_name', 'ilike', $searchTerm)
+                ->orWhere('mrn', 'ilike', $searchTerm)
+                ->orWhereHas('conditions', function ($sub) use ($searchTerm) {
+                    $sub->where('concept_name', 'ilike', $searchTerm);
+                });
         })
             ->limit($limit)
             ->get()

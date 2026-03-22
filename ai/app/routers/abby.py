@@ -638,7 +638,6 @@ async def chat(request: ChatRequest) -> ChatResponse:
     # Working memory: track topic and update turn counter
     session = _get_session(request.conversation_id)
     session["turn"] += 1
-    turn = session["turn"]
 
     # Track topic from the message
     msg_lower = request.message.lower()

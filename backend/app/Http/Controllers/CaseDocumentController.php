@@ -19,7 +19,7 @@ class CaseDocumentController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 
@@ -39,7 +39,7 @@ class CaseDocumentController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 
@@ -50,7 +50,7 @@ class CaseDocumentController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->store('case-documents/' . $case, 'local');
+        $path = $file->store('case-documents/'.$case, 'local');
 
         $document = CaseDocument::create([
             'case_id' => $case,
@@ -78,7 +78,7 @@ class CaseDocumentController extends Controller
     {
         $doc = CaseDocument::find($document);
 
-        if (!$doc) {
+        if (! $doc) {
             return ApiResponse::error('Document not found', 404);
         }
 

@@ -24,41 +24,40 @@ class EventSeeder extends Seeder
                 [
                     'name' => 'Dr. Lisa Anderson',
                     'role' => 'Medical Oncology',
-                    'available' => true
+                    'available' => true,
                 ],
                 [
                     'name' => 'Dr. David Kim',
                     'role' => 'Radiation Oncology',
-                    'available' => true
+                    'available' => true,
                 ],
                 [
                     'name' => 'Dr. Rachel Green',
                     'role' => 'Pathology',
-                    'available' => true
-                ]
+                    'available' => true,
+                ],
             ]),
             'related_items' => json_encode([
                 [
                     'type' => 'document',
                     'title' => 'Recent Imaging',
-                    'description' => 'Latest CT and PET scan results'
+                    'description' => 'Latest CT and PET scan results',
                 ],
                 [
                     'type' => 'document',
                     'title' => 'Treatment Protocols',
-                    'description' => 'Current treatment plans and response assessments'
-                ]
-            ])
+                    'description' => 'Current treatment plans and response assessments',
+                ],
+            ]),
         ]);
 
         $event46 = Event::find(46);
         $event46->teamMembers()->sync([
             1 => ['role' => 'Medical Oncology'],
             2 => ['role' => 'Radiation Oncology'],
-            3 => ['role' => 'Pathology']
+            3 => ['role' => 'Pathology'],
         ]);
         $event46->patients()->sync([5, 6]);
-
 
         $event = Event::create([
             'title' => 'Patient Consultation',
@@ -72,31 +71,31 @@ class EventSeeder extends Seeder
                 [
                     'name' => 'Dr. Sarah Johnson',
                     'role' => 'Primary Care Physician',
-                    'available' => true
+                    'available' => true,
                 ],
                 [
                     'name' => 'Dr. Michael Chen',
                     'role' => 'Specialist',
-                    'available' => true
+                    'available' => true,
                 ],
                 [
                     'name' => 'Emma Wilson',
                     'role' => 'Nurse Practitioner',
-                    'available' => false
-                ]
+                    'available' => false,
+                ],
             ]),
             'related_items' => json_encode([
                 [
                     'type' => 'document',
                     'title' => 'Surgery Report',
-                    'description' => 'Detailed report from the surgical procedure'
+                    'description' => 'Detailed report from the surgical procedure',
                 ],
                 [
                     'type' => 'note',
                     'title' => 'Recovery Notes',
-                    'description' => 'Daily progress notes from nursing staff'
-                ]
-            ])
+                    'description' => 'Daily progress notes from nursing staff',
+                ],
+            ]),
         ]);
 
         $event->teamMembers()->attach([1], ['role' => 'doctor']);

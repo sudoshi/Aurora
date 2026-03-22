@@ -7,7 +7,6 @@ use App\Models\ClinicalCase;
 use App\Models\DiscussionAttachment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Storage;
 
 class CaseDiscussionService
 {
@@ -24,13 +23,13 @@ class CaseDiscussionService
     /**
      * Create a new discussion message for a clinical case.
      *
-     * @param array{message: string, parent_id?: int|null} $data
+     * @param  array{message: string, parent_id?: int|null}  $data
      */
     public function create(int $caseId, array $data, User $user): CaseDiscussion
     {
         $case = ClinicalCase::findOrFail($caseId);
 
-        $discussion = new CaseDiscussion();
+        $discussion = new CaseDiscussion;
         $discussion->content = $data['message'];
         $discussion->user_id = $user->id;
         $discussion->case_id = $case->id;
@@ -47,7 +46,7 @@ class CaseDiscussionService
     /**
      * Upload attachments for a clinical case discussion.
      *
-     * @param array<\Illuminate\Http\UploadedFile> $files
+     * @param  array<\Illuminate\Http\UploadedFile>  $files
      * @return array<DiscussionAttachment>
      */
     public function uploadAttachments(int $caseId, array $files, User $user): array
@@ -60,7 +59,7 @@ class CaseDiscussionService
         foreach ($files as $file) {
             $path = $file->store('attachments');
 
-            $attachment = new DiscussionAttachment();
+            $attachment = new DiscussionAttachment;
             $attachment->filename = $file->getClientOriginalName();
             $attachment->filepath = $path;
             $attachment->mime_type = $file->getMimeType();

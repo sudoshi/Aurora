@@ -26,7 +26,7 @@ class AuthController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'name'  => 'required|string|max:255',
+                'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'phone' => 'nullable|string|max:20',
             ]);
@@ -38,6 +38,7 @@ class AuthController extends Controller
             return ApiResponse::error('Validation failed', 422, $e->errors());
         } catch (\Exception $e) {
             Log::error('Registration error', ['message' => $e->getMessage()]);
+
             return ApiResponse::error(
                 'An unexpected error occurred. Please try again later.',
                 500
@@ -52,11 +53,11 @@ class AuthController extends Controller
     {
         try {
             $credentials = $request->validate([
-                'email'    => 'required|string|email',
+                'email' => 'required|string|email',
                 'password' => 'required|string',
             ], [
-                'email.required'    => 'Email is required',
-                'email.email'       => 'Please enter a valid email address',
+                'email.required' => 'Email is required',
+                'email.email' => 'Please enter a valid email address',
                 'password.required' => 'Password is required',
             ]);
 
@@ -69,9 +70,11 @@ class AuthController extends Controller
             $code = $e->getCode();
             // Ensure we use a valid HTTP status code
             $statusCode = ($code >= 400 && $code < 600) ? $code : 401;
+
             return ApiResponse::error($e->getMessage(), $statusCode);
         } catch (\Exception $e) {
             Log::error('Login error', ['message' => $e->getMessage()]);
+
             return ApiResponse::error('An unexpected error occurred', 500);
         }
     }
@@ -95,7 +98,7 @@ class AuthController extends Controller
         try {
             $validatedData = $request->validate([
                 'current_password' => 'required|string',
-                'password'         => 'required|string|min:8|confirmed',
+                'password' => 'required|string|min:8|confirmed',
             ]);
 
             $result = $this->authService->changePassword(
@@ -110,9 +113,11 @@ class AuthController extends Controller
         } catch (\RuntimeException $e) {
             $code = $e->getCode();
             $statusCode = ($code >= 400 && $code < 600) ? $code : 422;
+
             return ApiResponse::error($e->getMessage(), $statusCode);
         } catch (\Exception $e) {
             Log::error('Change password error', ['message' => $e->getMessage()]);
+
             return ApiResponse::error('An unexpected error occurred.', 500);
         }
     }

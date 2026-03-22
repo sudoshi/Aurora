@@ -1,13 +1,12 @@
 <?php
 
 use App\Models\Event;
-use App\Models\User;
 use App\Services\EventService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 beforeEach(function () {
-    $this->service = new EventService();
+    $this->service = new EventService;
 });
 
 describe('EventService::list', function () {
@@ -18,7 +17,7 @@ describe('EventService::list', function () {
         $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
         $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->list();
@@ -34,7 +33,7 @@ describe('EventService::list', function () {
         $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
         $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->list(['search' => 'cardiac']);
@@ -51,7 +50,7 @@ describe('EventService::list', function () {
         $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
         $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->list([
@@ -69,7 +68,7 @@ describe('EventService::list', function () {
         $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
         $query->shouldReceive('paginate')->with(100)->andReturn($paginator);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->list(['per_page' => 500]);
@@ -86,7 +85,7 @@ describe('EventService::create', function () {
             ->once()
             ->andReturnSelf();
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('create')
             ->with(['title' => 'Tumor Board', 'time' => '2026-04-01 09:00:00'])
             ->once()
@@ -140,7 +139,7 @@ describe('EventService::getUpcoming', function () {
         $query->shouldReceive('limit')->with(5)->andReturnSelf();
         $query->shouldReceive('get')->andReturn($collection);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->getUpcoming();
@@ -157,7 +156,7 @@ describe('EventService::getUpcoming', function () {
         $query->shouldReceive('limit')->with(10)->andReturnSelf();
         $query->shouldReceive('get')->andReturn($collection);
 
-        $mock = Mockery::mock('alias:' . Event::class);
+        $mock = Mockery::mock('alias:'.Event::class);
         $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
 
         $result = $this->service->getUpcoming(10);

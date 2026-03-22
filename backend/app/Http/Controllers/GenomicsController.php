@@ -17,8 +17,8 @@ class GenomicsController extends Controller
     public function stats(): JsonResponse
     {
         $total = GenomicVariant::count();
-        $pathogenic = GenomicVariant::where('clinical_significance', 'Pathogenic')->count();
-        $vus = GenomicVariant::where('clinical_significance', 'Uncertain significance')->count();
+        $pathogenic = GenomicVariant::whereRaw("LOWER(clinical_significance) IN ('pathogenic', 'likely_pathogenic')")->count();
+        $vus = GenomicVariant::whereRaw("LOWER(clinical_significance) IN ('vus', 'uncertain significance')")->count();
 
         return ApiResponse::success([
             'total_variants' => $total,
@@ -185,7 +185,7 @@ class GenomicsController extends Controller
 
         if ($request->filled('upload_id')) {
             $query->where('source_id', $request->input('upload_id'))
-                  ->where('source_type', 'upload');
+                ->where('source_type', 'upload');
         }
 
         if ($request->filled('person_id')) {
@@ -213,7 +213,7 @@ class GenomicsController extends Controller
     {
         $variant = GenomicVariant::find($id);
 
-        if (!$variant) {
+        if (! $variant) {
             return ApiResponse::error('Variant not found', 404);
         }
 

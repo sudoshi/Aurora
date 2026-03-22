@@ -10,7 +10,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $this->service = new CaseDiscussionService();
+    $this->service = new CaseDiscussionService;
 });
 
 describe('CaseDiscussionService::listForCase', function () {
@@ -27,7 +27,7 @@ describe('CaseDiscussionService::listForCase', function () {
         $case = Mockery::mock(ClinicalCase::class);
         $case->shouldReceive('discussions')->andReturn($discussionsQuery);
 
-        $mock = Mockery::mock('alias:' . ClinicalCase::class);
+        $mock = Mockery::mock('alias:'.ClinicalCase::class);
         $mock->shouldReceive('findOrFail')->with(1)->andReturn($case);
 
         $result = $this->service->listForCase(1);
@@ -41,7 +41,7 @@ describe('CaseDiscussionService::create', function () {
         $case = Mockery::mock(ClinicalCase::class);
         $case->id = 1;
 
-        $caseMock = Mockery::mock('alias:' . ClinicalCase::class);
+        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
         $caseMock->shouldReceive('findOrFail')->with(1)->andReturn($case);
 
         $user = Mockery::mock(User::class);
@@ -55,7 +55,7 @@ describe('CaseDiscussionService::create', function () {
             ->andReturnSelf();
 
         // Override the new CaseDiscussion() call via alias
-        $discussionAlias = Mockery::mock('alias:' . CaseDiscussion::class);
+        $discussionAlias = Mockery::mock('alias:'.CaseDiscussion::class);
         // Since the service uses `new CaseDiscussion()`, we test the
         // integration path where it sets properties and saves.
 
@@ -73,7 +73,7 @@ describe('CaseDiscussionService::create', function () {
         $case = Mockery::mock(ClinicalCase::class);
         $case->id = 1;
 
-        $caseMock = Mockery::mock('alias:' . ClinicalCase::class);
+        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
         $caseMock->shouldReceive('findOrFail')->with(1)->andReturn($case);
 
         $user = Mockery::mock(User::class);
@@ -94,7 +94,7 @@ describe('CaseDiscussionService::uploadAttachments', function () {
     it('stores files and returns attachment records', function () {
         Storage::fake('local');
 
-        $caseMock = Mockery::mock('alias:' . ClinicalCase::class);
+        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
         $caseMock->shouldReceive('findOrFail')->with(1)->andReturn(
             Mockery::mock(ClinicalCase::class)
         );

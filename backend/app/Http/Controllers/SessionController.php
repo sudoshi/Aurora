@@ -242,7 +242,7 @@ class SessionController extends Controller
             ->where('user_id', $request->user()->id)
             ->first();
 
-        if (!$participant) {
+        if (! $participant) {
             return ApiResponse::error('Not a participant in this session', 404);
         }
 

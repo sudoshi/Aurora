@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\GenomicVariant;
 use App\Models\Clinical\ImagingStudy;
-use App\Models\Clinical\ClinicalPatient;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +16,7 @@ class RadiogenomicsService
     public function getPatientPanel(int $patientId): array
     {
         $patient = ClinicalPatient::find($patientId);
-        if (!$patient) {
+        if (! $patient) {
             return [];
         }
 
@@ -104,6 +104,17 @@ class RadiogenomicsService
             'TP53' => [['drug' => 'Cisplatin', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
             'PIK3CA' => [['drug' => 'Alpelisib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
             'NTRK1' => [['drug' => 'Larotrectinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Entrectinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
+            // Non-oncology pharmacogenomics
+            'TTR' => [['drug' => 'Tafamidis', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Diflunisal', 'relationship' => 'sensitive', 'evidence' => 'Level 2B'], ['drug' => 'Patisiran', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
+            'TSC2' => [['drug' => 'Everolimus', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Sirolimus', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
+            'VHL' => [['drug' => 'Belzutifan', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Sunitinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Bevacizumab', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
+            'ENG' => [['drug' => 'Bevacizumab', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Thalidomide', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
+            'UBA1' => [['drug' => 'Azacitidine', 'relationship' => 'sensitive', 'evidence' => 'Level 2B'], ['drug' => 'Ruxolitinib', 'relationship' => 'sensitive', 'evidence' => 'Level 3']],
+            'DNMT3A' => [['drug' => 'Azacitidine', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Decitabine', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
+            'PCSK9' => [['drug' => 'Evolocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Alirocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
+            'LDLR' => [['drug' => 'Evolocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Atorvastatin', 'relationship' => 'partial_response', 'evidence' => 'Level 1A']],
+            'BTNL2' => [['drug' => 'Infliximab', 'relationship' => 'sensitive', 'evidence' => 'Level 3'], ['drug' => 'Methotrexate', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
+            'MAP2K1' => [['drug' => 'Trametinib', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Cobimetinib', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
         ];
 
         $correlations = [];
@@ -127,6 +138,7 @@ class RadiogenomicsService
                 ];
             }
         }
+
         return $correlations;
     }
 
@@ -147,24 +159,26 @@ class RadiogenomicsService
             $recommendations[] = [
                 'gene' => $variant->gene,
                 'variant' => $variant->variant ?? $variant->variant_type,
-                'recommendation_type' => !empty($drugsAvoid) ? 'avoid_and_consider' : 'consider',
+                'recommendation_type' => ! empty($drugsAvoid) ? 'avoid_and_consider' : 'consider',
                 'drugs_avoid' => $drugsAvoid,
                 'drugs_consider' => $drugsConsider,
                 'rationale' => $this->buildRationale($variant, $drugsAvoid, $drugsConsider),
             ];
         }
+
         return $recommendations;
     }
 
     private function buildRationale($variant, array $avoid, array $consider): string
     {
         $parts = [];
-        if (!empty($avoid)) {
+        if (! empty($avoid)) {
             $parts[] = sprintf('%s %s confers resistance to %s.', $variant->gene, $variant->variant ?? '', implode(', ', $avoid));
         }
-        if (!empty($consider)) {
+        if (! empty($consider)) {
             $parts[] = sprintf('Consider %s (potential sensitivity via %s pathway).', implode(', ', $consider), $variant->gene);
         }
+
         return implode(' ', $parts);
     }
 }

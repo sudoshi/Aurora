@@ -21,7 +21,7 @@ class PatientService
 
     public function __construct(?ClinicalDataAdapter $adapter = null)
     {
-        $this->adapter = $adapter ?? new ManualAdapter();
+        $this->adapter = $adapter ?? new ManualAdapter;
     }
 
     /**
@@ -43,7 +43,7 @@ class PatientService
     /**
      * Create a new patient via manual entry.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createPatient(array $data): ClinicalPatient
     {

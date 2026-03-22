@@ -2,13 +2,7 @@
 
 use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\Condition;
-use App\Models\Clinical\GenomicVariant;
-use App\Models\Clinical\ImagingStudy;
-use App\Models\Clinical\Measurement;
 use App\Models\Clinical\Medication;
-use App\Models\Clinical\Observation;
-use App\Models\Clinical\Procedure;
-use App\Models\Clinical\Visit;
 use App\Models\User;
 
 beforeEach(function () {

@@ -18,7 +18,7 @@ class CaseDiscussionController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 
@@ -39,7 +39,7 @@ class CaseDiscussionController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 
@@ -49,12 +49,12 @@ class CaseDiscussionController extends Controller
         ]);
 
         // If parent_id is provided, verify it belongs to this case
-        if (!empty($validated['parent_id'])) {
+        if (! empty($validated['parent_id'])) {
             $parent = CaseDiscussion::where('id', $validated['parent_id'])
                 ->where('case_id', $case)
                 ->first();
 
-            if (!$parent) {
+            if (! $parent) {
                 return ApiResponse::error('Parent discussion not found in this case', 422);
             }
         }

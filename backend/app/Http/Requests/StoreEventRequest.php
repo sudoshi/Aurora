@@ -22,17 +22,17 @@ class StoreEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'                  => 'required|string|max:255',
-            'description'            => 'nullable|string',
-            'time'                   => 'required|date',
-            'duration'               => 'required|integer',
-            'location'               => 'required|string|max:255',
-            'category'               => 'required|string|max:255',
-            'team_members'           => 'nullable|array',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'time' => 'required|date',
+            'duration' => 'required|integer',
+            'location' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'team_members' => 'nullable|array',
             'team_members.*.user_id' => 'required|exists:dev.users,id',
-            'team_members.*.role'    => 'nullable|string',
-            'patient_ids'            => 'nullable|array',
-            'patient_ids.*'          => 'required|exists:dev.patients,id',
+            'team_members.*.role' => 'nullable|string',
+            'patient_ids' => 'nullable|array',
+            'patient_ids.*' => 'required|exists:dev.patients,id',
         ];
     }
 }

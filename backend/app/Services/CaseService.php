@@ -12,7 +12,7 @@ class CaseService
     /**
      * Create a new clinical case and auto-add the creator as coordinator.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createCase(array $data, int $userId): ClinicalCase
     {
@@ -35,7 +35,7 @@ class CaseService
     /**
      * Update an existing clinical case.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function updateCase(ClinicalCase $case, array $data): ClinicalCase
     {
@@ -91,7 +91,7 @@ class CaseService
             ->where('user_id', $userId)
             ->first();
 
-        if (!$member) {
+        if (! $member) {
             throw new \InvalidArgumentException('User is not a team member of this case.');
         }
 
@@ -101,7 +101,7 @@ class CaseService
     /**
      * Get paginated cases for a user with optional filters.
      *
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      */
     public function getCasesForUser(int $userId, array $filters = []): LengthAwarePaginator
     {
@@ -109,20 +109,20 @@ class CaseService
             ->with(['creator', 'patient'])
             ->withCount(['teamMembers', 'discussions', 'annotations', 'documents', 'decisions']);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->byStatus($filters['status']);
         }
 
-        if (!empty($filters['specialty'])) {
+        if (! empty($filters['specialty'])) {
             $query->bySpecialty($filters['specialty']);
         }
 
-        if (!empty($filters['urgency'])) {
+        if (! empty($filters['urgency'])) {
             $query->where('urgency', $filters['urgency']);
         }
 
-        if (!empty($filters['search'])) {
-            $query->where('title', 'ilike', '%' . $filters['search'] . '%');
+        if (! empty($filters['search'])) {
+            $query->where('title', 'ilike', '%'.$filters['search'].'%');
         }
 
         return $query->orderBy('updated_at', 'desc')

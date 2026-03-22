@@ -81,7 +81,7 @@ class UserController extends Controller
             // Send temp password via Resend API
             try {
                 Http::withHeaders([
-                    'Authorization' => 'Bearer ' . config('services.resend.key'),
+                    'Authorization' => 'Bearer '.config('services.resend.key'),
                     'Content-Type' => 'application/json',
                 ])->post('https://api.resend.com/emails', [
                     'from' => 'Aurora <noreply@acumenus.net>',

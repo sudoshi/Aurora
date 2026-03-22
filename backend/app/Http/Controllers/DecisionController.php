@@ -32,7 +32,7 @@ class DecisionController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 
@@ -52,7 +52,7 @@ class DecisionController extends Controller
     {
         $clinicalCase = ClinicalCase::find($case);
 
-        if (!$clinicalCase) {
+        if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
 

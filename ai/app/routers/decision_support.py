@@ -5,22 +5,16 @@ import logging
 from fastapi import APIRouter
 
 from app.models.decision_support import (
-    ConcordanceResult,
-    DrugInteraction,
     DrugInteractionRequest,
     DrugInteractionResponse,
     GuidelineCheckRequest,
     GuidelineCheckResponse,
-    PrognosticScore,
     PrognosticScoreRequest,
     PrognosticScoreResponse,
-    RareDiseaseMatch,
     RareDiseaseMatchRequest,
     RareDiseaseMatchResponse,
     TrialMatchRequest,
     TrialMatchResponse,
-    TrialSuggestion,
-    VariantInterpretation,
     VariantInterpretRequest,
     VariantInterpretResponse,
 )

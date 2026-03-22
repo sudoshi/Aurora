@@ -19,7 +19,7 @@ class AiProxyController extends Controller
     public function proxy(Request $request, string $path)
     {
         $aiBaseUrl = config('services.ai.base_url', 'http://localhost:8100');
-        $url = rtrim($aiBaseUrl, '/') . '/api/ai/' . ltrim($path, '/');
+        $url = rtrim($aiBaseUrl, '/').'/api/ai/'.ltrim($path, '/');
 
         try {
             $response = Http::timeout(120)
@@ -54,7 +54,7 @@ class AiProxyController extends Controller
     public function proxyGet(Request $request, string $path)
     {
         $aiBaseUrl = config('services.ai.base_url', 'http://localhost:8100');
-        $url = rtrim($aiBaseUrl, '/') . '/api/ai/' . ltrim($path, '/');
+        $url = rtrim($aiBaseUrl, '/').'/api/ai/'.ltrim($path, '/');
 
         try {
             $response = Http::timeout(30)

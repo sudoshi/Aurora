@@ -116,7 +116,7 @@ trait DemoSeederHelper
         $study = ImagingStudy::create(array_merge(
             [
                 'patient_id' => $patient->id,
-                'study_uid' => '2.25.' . Str::random(32),
+                'study_uid' => '2.25.'.Str::random(32),
             ],
             $attrs,
             $this->provenance(),
@@ -124,7 +124,7 @@ trait DemoSeederHelper
 
         ImagingSeries::create(array_merge([
             'imaging_study_id' => $study->id,
-            'series_uid' => '2.25.' . Str::random(32),
+            'series_uid' => '2.25.'.Str::random(32),
             'series_number' => 1,
             'modality' => $study->modality,
             'description' => $study->description,
@@ -173,7 +173,7 @@ trait DemoSeederHelper
      * Batch-create measurements from a lab panel.
      *
      * @param  array<int, array{0: string, 1: string, 2: float|string, 3: string, 4: float|null, 5: float|null, 6: string|null}>  $labs
-     *         Each entry: [name, LOINC code, value, unit, refLow, refHigh, abnormalFlag]
+     *                                                                                                                                   Each entry: [name, LOINC code, value, unit, refLow, refHigh, abnormalFlag]
      * @return array<int, Measurement>
      */
     protected function addLabPanel(ClinicalPatient $patient, string $measuredAt, array $labs): array

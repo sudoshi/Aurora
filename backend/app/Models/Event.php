@@ -20,7 +20,7 @@ class Event extends Model
         'category',
         'description',
         'team',
-        'related_items'
+        'related_items',
     ];
 
     protected $casts = [
@@ -29,15 +29,14 @@ class Event extends Model
         'related_items' => 'array',
     ];
 
-
     /**
      * The team members associated with this event
      */
     public function teamMembers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'dev.event_team_members', 'event_id', 'user_id')
-                    ->withPivot('role')
-                    ->withTimestamps();
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
@@ -46,6 +45,6 @@ class Event extends Model
     public function patients(): BelongsToMany
     {
         return $this->belongsToMany(Patient::class, 'dev.event_patients', 'event_id', 'patient_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 }

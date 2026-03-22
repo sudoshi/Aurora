@@ -22,7 +22,7 @@ class UploadAttachmentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'files'   => 'required|array|max:5',
+            'files' => 'required|array|max:5',
             'files.*' => 'file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,txt,csv',
         ];
     }
