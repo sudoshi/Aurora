@@ -5,21 +5,22 @@
 
 :root {
   /* 3.1 Font Stack */
-  --font-body:     'Source Sans 3', 'Helvetica Neue', sans-serif;
-  --font-mono:     'IBM Plex Mono', Consolas, monospace;
+  --font-display: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-body:    'Source Sans 3', 'Helvetica Neue', sans-serif;
+  --font-mono:    'JetBrains Mono', Consolas, monospace;
 
   /* 3.2 Type Scale */
-  --text-xs:   0.6875rem;
-  --text-sm:   0.75rem;
-  --text-base: 0.875rem;
-  --text-md:   0.9375rem;
-  --text-lg:   1rem;
-  --text-xl:   1.125rem;
-  --text-2xl:  1.375rem;
-  --text-3xl:  1.75rem;
-  --text-4xl:  2.25rem;
-  --text-5xl:  3rem;
-  --text-6xl:  3.5rem;
+  --text-xs:   0.75rem;     /* 12px — healthcare minimum */
+  --text-sm:   0.8125rem;   /* 13px */
+  --text-base: 0.9375rem;   /* 15px */
+  --text-md:   1rem;        /* 16px */
+  --text-lg:   1.125rem;    /* 18px */
+  --text-xl:   1.25rem;     /* 20px */
+  --text-2xl:  1.5rem;      /* 24px */
+  --text-3xl:  1.875rem;    /* 30px */
+  --text-4xl:  2.25rem;     /* 36px */
+  --text-5xl:  3rem;        /* 48px */
+  --text-6xl:  3.5rem;      /* 56px */
 
   /* 4.1 Spacing Scale (4px base) */
   --space-0:  0;
@@ -37,12 +38,12 @@
   --space-24: 96px;
 
   /* 4.2 Layout Variables */
-  --sidebar-width:           260px;
-  --sidebar-width-collapsed: 72px;
+  --sidebar-width:           64px;    /* rail width */
+  --sidebar-width-collapsed: 64px;    /* rail doesn't collapse */
   --topbar-height:           56px;
-  --content-max-width:       1600px;
+  --content-max-width:       1800px;
   --panel-padding:           var(--space-5);
-  --content-padding:         var(--space-6);
+  --content-padding:         var(--space-8);
 
   /* 4.4 Z-Index Scale */
   --z-base:           0;
@@ -117,18 +118,18 @@
   font-size: var(--text-sm);
 }
 .text-value {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-3xl);
   color: var(--text-primary);
 }
 .text-panel-title {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--text-primary);
 }
 .text-section {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-2xl);
   color: var(--text-primary);
 }
