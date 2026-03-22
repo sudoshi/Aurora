@@ -34,8 +34,14 @@ from .routers.health import router as health_router
 from .routers.abby import router as abby_router
 from .routers.embeddings import router as embeddings_router
 from .routers.clinical_nlp import router as clinical_nlp_router
+from .routers.decision_support import router as decision_support_router
+from .routers.similarity import router as similarity_router
+from .routers.copilot import router as copilot_router
 
 app.include_router(health_router, prefix="/api/ai")
 app.include_router(abby_router, prefix="/api/ai/abby")
 app.include_router(embeddings_router, prefix="/api/ai")
 app.include_router(clinical_nlp_router, prefix="/api/ai")
+app.include_router(decision_support_router, prefix="/api/ai")
+app.include_router(similarity_router, prefix="/api/ai")
+app.include_router(copilot_router, prefix="/api/ai")

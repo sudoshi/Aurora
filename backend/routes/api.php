@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\AiProviderController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Admin\UserAuditController;
 use App\Http\Controllers\AbbyController;
+use App\Http\Controllers\AiProxyController;
 use App\Http\Controllers\Admin\AppSettingsController;
 
 /*
@@ -58,7 +59,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
-    // Abby AI
+    // AI Service Proxy (forwards to FastAPI)
+    Route::prefix('ai')->group(function () {
+        Route::post('{path}', [AiProxyController::class, 'proxy'])->where('path', '.*');
+        Route::get('{path}', [AiProxyController::class, 'proxyGet'])->where('path', '.*');
+    });
+
+    // Abby AI (conversation CRUD — handled by Laravel directly)
     Route::prefix('abby')->group(function () {
         Route::get('/conversations', [AbbyController::class, 'conversations']);
         Route::post('/conversations', [AbbyController::class, 'createConversation']);

@@ -13,6 +13,7 @@ import {
   Clock,
   User,
   X,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePatientProfile, usePatientStats } from "../hooks/useProfiles";
@@ -24,10 +25,11 @@ import { PatientSummaryStats } from "../components/PatientSummaryStats";
 import { PatientLabPanel } from "../components/PatientLabPanel";
 import { PatientVisitView } from "../components/PatientVisitView";
 import { PatientNotesTab } from "../components/PatientNotesTab";
+import { PatientsLikeThis } from "../components/PatientsLikeThis";
 import { useProfileStore } from "@/stores/profileStore";
 import type { ClinicalEvent } from "../types/profile";
 
-type ViewMode = "timeline" | "list" | "labs" | "visits" | "notes" | "eras";
+type ViewMode = "timeline" | "list" | "labs" | "visits" | "notes" | "eras" | "similar";
 
 type DomainTab =
   | "all"
@@ -59,6 +61,7 @@ const VIEW_BUTTONS: {
   { mode: "visits", icon: <Hospital size={12} />, label: "Visits" },
   { mode: "notes", icon: <FileText size={12} />, label: "Notes" },
   { mode: "eras", icon: <GitBranch size={12} />, label: "Eras" },
+  { mode: "similar", icon: <Brain size={12} />, label: "Similar Patients" },
 ];
 
 function formatTimeAgo(epochMs: number): string {
@@ -257,7 +260,7 @@ export default function PatientProfilePage() {
             </span>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 rounded-lg border border-[#232328] bg-[#0E0E11] p-0.5">
-                {VIEW_BUTTONS.filter((b) => b.mode !== "eras" || hasEras).map(({ mode, icon, label }) => (
+                {VIEW_BUTTONS.filter((b) => (b.mode !== "eras" || hasEras)).map(({ mode, icon, label }) => (
                   <button
                     key={mode}
                     type="button"
@@ -304,6 +307,10 @@ export default function PatientProfilePage() {
               conditionEras={profile.condition_eras ?? []}
               drugEras={profile.drug_eras ?? []}
             />
+          )}
+
+          {viewMode === "similar" && parsedPersonId && (
+            <PatientsLikeThis patientId={parsedPersonId} />
           )}
 
           {viewMode === "list" && (

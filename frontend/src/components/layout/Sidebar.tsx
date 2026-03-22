@@ -46,6 +46,7 @@ const navItems: NavItem[] = [
   { path: "/sessions", label: "Sessions", icon: Calendar },
   { path: "/profiles", label: "Patient Profiles", icon: Users },
   { path: "/decisions", label: "Decisions", icon: CheckCircle2 },
+  { path: "/copilot", label: "AI Copilot", icon: Cpu },
   { path: "/commons", label: "Commons", icon: MessageSquare },
   {
     path: "/admin",

@@ -26,6 +26,9 @@ const SessionDetailPage = lazy(() => import("@/features/collaboration/pages/Sess
 // Decisions
 const DecisionDashboardPage = lazy(() => import("@/features/decisions/pages/DecisionDashboardPage"));
 
+// Copilot
+const CopilotPage = lazy(() => import("@/features/copilot/pages/CopilotPage"));
+
 // Admin pages
 const AdminDashboardPage = lazy(() => import("@/features/administration/pages/AdminDashboardPage"));
 const UsersPage = lazy(() => import("@/features/administration/pages/UsersPage"));
@@ -92,6 +95,9 @@ export default function App() {
 
                 {/* Decisions */}
                 <Route path="decisions" element={<DecisionDashboardPage />} />
+
+                {/* Copilot */}
+                <Route path="copilot" element={<CopilotPage />} />
 
                 {/* Commons */}
                 <Route path="commons" element={<CommonsPage />} />
