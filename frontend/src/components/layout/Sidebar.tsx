@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useUiStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
 import {
   LayoutDashboard,
@@ -9,9 +8,6 @@ import {
   MessageSquare,
   Shield,
   Settings,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
   UsersRound,
   ShieldCheck,
   ScrollText,
@@ -72,43 +68,98 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const location = useLocation();
-  const { sidebarOpen, toggleSidebar } = useUiStore();
   const { isAdmin, isSuperAdmin } = useAuthStore();
-  const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
-  const [manualClosed, setManualClosed] = useState<Set<string>>(new Set());
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const railRef = useRef<HTMLElement>(null);
+  const flyoutRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const railItemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const isActive = (path: string) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
-  const isGroupActive = (item: NavItem) => {
-    if (!item.children) return isActive(item.path);
-    return item.children.some((child) => isActive(child.path));
-  };
+  // Close flyout on route change
+  useEffect(() => {
+    setActiveGroup(null);
+  }, [location.pathname]);
 
-  const toggleGroup = (path: string) => {
-    const groupActive = navItems.find((i) => i.path === path)?.children?.some((c) => isActive(c.path)) ?? false;
+  // Close flyout on click outside
+  useEffect(() => {
+    if (!activeGroup) return;
 
-    if (groupActive) {
-      setManualClosed((prev) => {
-        const next = new Set(prev);
-        if (next.has(path)) next.delete(path);
-        else next.add(path);
-        return next;
-      });
-    } else {
-      setManualOpen((prev) => {
-        const next = new Set(prev);
-        if (next.has(path)) next.delete(path);
-        else next.add(path);
-        return next;
-      });
+    const handleClickOutside = (e: MouseEvent) => {
+      const rail = railRef.current;
+      if (!rail) return;
+      const target = e.target as Node;
+      if (!rail.contains(target)) {
+        setActiveGroup(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [activeGroup]);
+
+  // Close flyout on Escape key, return focus to rail icon
+  useEffect(() => {
+    if (!activeGroup) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        const btn = railItemRefs.current.get(activeGroup);
+        setActiveGroup(null);
+        btn?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [activeGroup]);
+
+  const handleRailHover = useCallback((path: string, pointerType: string) => {
+    if (pointerType !== "touch") {
+      setActiveGroup(path);
     }
-  };
+  }, []);
 
-  const isExpanded = (item: NavItem) => {
-    if (manualClosed.has(item.path)) return false;
-    return manualOpen.has(item.path) || isGroupActive(item);
-  };
+  const handleRailLeave = useCallback((e: React.PointerEvent, path: string) => {
+    if (e.pointerType === "touch") return;
+    // Only close if pointer moved outside both rail item and flyout
+    const flyout = flyoutRefs.current.get(path);
+    const related = e.relatedTarget as Node | null;
+    if (flyout && related && flyout.contains(related)) return;
+    setActiveGroup((prev) => (prev === path ? null : prev));
+  }, []);
+
+  const handleFlyoutLeave = useCallback((e: React.PointerEvent, path: string) => {
+    if (e.pointerType === "touch") return;
+    const rail = railRef.current;
+    const related = e.relatedTarget as Node | null;
+    if (rail && related && rail.contains(related)) return;
+    setActiveGroup((prev) => (prev === path ? null : prev));
+  }, []);
+
+  const handleRailClick = useCallback((path: string) => {
+    setActiveGroup((prev) => (prev === path ? null : path));
+  }, []);
+
+  // Arrow key navigation within flyout
+  const handleFlyoutKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>, path: string) => {
+    const flyout = flyoutRefs.current.get(path);
+    if (!flyout) return;
+    const items = Array.from(flyout.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+    const focused = document.activeElement as HTMLElement;
+    const idx = items.indexOf(focused);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = items[(idx + 1) % items.length];
+      next?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prev = items[(idx - 1 + items.length) % items.length];
+      prev?.focus();
+    }
+  }, []);
 
   const visibleItems = navItems.filter((item) => {
     if (item.superAdminOnly) return isSuperAdmin();
@@ -117,84 +168,90 @@ export function Sidebar() {
   });
 
   return (
-    <aside className={cn("app-sidebar", !sidebarOpen && "collapsed")}>
+    <aside className="app-sidebar" ref={railRef}>
       {/* Header */}
       <div className="sidebar-header">
-        <img src="/aurora_icon.png" alt="Aurora" className={cn("shrink-0", sidebarOpen ? "w-8 h-8" : "w-6 h-6")} />
-        {sidebarOpen && <span className="sidebar-logo">Aurora</span>}
-        <button
-          onClick={toggleSidebar}
-          className="sidebar-toggle"
-          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-        >
-          {sidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-        </button>
+        <img src="/aurora_icon.png" alt="Aurora" className="w-8 h-8 shrink-0" />
       </div>
 
-      {/* Navigation */}
+      {/* Navigation rail */}
       <nav className="sidebar-nav" style={{ flex: 1 }}>
         {visibleItems.map((item) => {
-          const hasChildren = item.children && item.children.length > 0;
-          const groupActive = isGroupActive(item);
-          const expanded = hasChildren && isExpanded(item);
+          const hasChildren = Boolean(item.children && item.children.length > 0);
+          const groupActive = hasChildren
+            ? item.children!.some((child) => isActive(child.path))
+            : isActive(item.path);
 
           if (!hasChildren) {
             return (
-              <div key={item.path}>
-                <Link
-                  to={item.path}
-                  className={cn("nav-item", isActive(item.path) && "active")}
-                  title={!sidebarOpen ? item.label : undefined}
-                >
-                  <item.icon size={18} className="nav-icon" />
-                  {sidebarOpen && <span className="nav-label">{item.label}</span>}
-                </Link>
-              </div>
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn("nav-item", groupActive && "active")}
+                title={item.label}
+              >
+                <item.icon size={20} className="nav-icon" />
+                <span style={{ fontSize: "9px", lineHeight: 1, marginTop: 2 }}>{item.label}</span>
+              </Link>
             );
           }
 
+          // Item with children — rail button + flyout
+          const isOpen = activeGroup === item.path;
+          const visibleChildren = item.children!.filter(
+            (child) => !child.superAdminOnly || isSuperAdmin(),
+          );
+
           return (
-            <div key={item.path}>
+            <div key={item.path} style={{ position: "relative" }}>
               <button
+                ref={(el) => {
+                  if (el) railItemRefs.current.set(item.path, el);
+                  else railItemRefs.current.delete(item.path);
+                }}
                 type="button"
-                onClick={() => toggleGroup(item.path)}
                 className={cn("nav-item", groupActive && "active")}
-                title={!sidebarOpen ? item.label : undefined}
+                title={item.label}
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+                onPointerEnter={(e) => handleRailHover(item.path, e.pointerType)}
+                onPointerLeave={(e) => handleRailLeave(e, item.path)}
+                onClick={() => handleRailClick(item.path)}
               >
-                <item.icon size={18} className="nav-icon" />
-                {sidebarOpen && (
-                  <>
-                    <span className="nav-label">{item.label}</span>
-                    <ChevronDown
-                      size={14}
-                      className={cn(
-                        "ml-auto shrink-0 transition-transform duration-200",
-                        expanded && "rotate-180",
-                      )}
-                    />
-                  </>
-                )}
+                <item.icon size={20} className="nav-icon" />
+                <span style={{ fontSize: "9px", lineHeight: 1, marginTop: 2 }}>{item.label}</span>
               </button>
 
-              {sidebarOpen && expanded && (
-                <div>
-                  {item.children!
-                    .filter((child) => !child.superAdminOnly || isSuperAdmin())
-                    .map((child) => (
-                      <Link
-                        key={child.path}
-                        to={child.path}
-                        className={cn(
-                          "nav-sub-item",
-                          location.pathname === child.path && "active",
-                        )}
-                      >
-                        <child.icon size={14} />
-                        {child.label}
-                      </Link>
-                    ))}
-                </div>
-              )}
+              {/* Flyout panel */}
+              <div
+                ref={(el) => {
+                  if (el) flyoutRefs.current.set(item.path, el);
+                  else flyoutRefs.current.delete(item.path);
+                }}
+                className={cn("sidebar-flyout", isOpen && "open")}
+                role="menu"
+                aria-expanded={isOpen}
+                aria-label={item.label}
+                onPointerLeave={(e) => handleFlyoutLeave(e, item.path)}
+                onKeyDown={(e) => handleFlyoutKeyDown(e, item.path)}
+              >
+                <div className="flyout-title">{item.label}</div>
+                {visibleChildren.map((child) => {
+                  const childActive = location.pathname === child.path;
+                  return (
+                    <Link
+                      key={child.path}
+                      to={child.path}
+                      className={cn("flyout-item", childActive && "active")}
+                      role="menuitem"
+                      tabIndex={isOpen ? 0 : -1}
+                    >
+                      <child.icon size={14} />
+                      {child.label}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
@@ -203,7 +260,7 @@ export function Sidebar() {
       {/* Acumenus branding */}
       <div
         style={{
-          padding: sidebarOpen ? "var(--space-4) var(--space-5)" : "var(--space-4) 0",
+          padding: "var(--space-4) 0",
           borderTop: "1px solid var(--border-subtle)",
           textAlign: "center",
         }}
@@ -214,7 +271,7 @@ export function Sidebar() {
           rel="noopener noreferrer"
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: sidebarOpen ? "var(--text-xs)" : "9px",
+            fontSize: "9px",
             color: "var(--text-ghost)",
             textDecoration: "none",
             letterSpacing: "0.3px",
@@ -227,7 +284,7 @@ export function Sidebar() {
             e.currentTarget.style.color = "var(--text-ghost)";
           }}
         >
-          {sidebarOpen ? "Acumenus Data Sciences" : "ADS"}
+          ADS
         </a>
       </div>
     </aside>
