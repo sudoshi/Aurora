@@ -12,6 +12,44 @@ const IMAGES = [
 
 const FADE_INTERVAL = 8000;
 
+const FEATURES = [
+  { icon: "\u2726", label: "Live Tumor Board Sessions", desc: "Real-time presenter sync, shared annotations, structured voting" },
+  { icon: "\u2726", label: "Abby AI Clinical Copilot", desc: "Case briefs, patient summaries, post-session notes" },
+  { icon: "\u2726", label: "Patients Like This", desc: "Genomics-weighted similarity engine across institutions" },
+  { icon: "\u2726", label: "DICOM Imaging Suite", desc: "Cornerstone3D viewer with volumetric analysis and segmentation" },
+  { icon: "\u2726", label: "Decision Intelligence", desc: "Tracked recommendations, guideline concordance, outcome recording" },
+  { icon: "\u2726", label: "Clinical Trial Matching", desc: "ClinicalTrials.gov integration with automatic eligibility screening" },
+];
+
+const ARCH_PILLS = [
+  "OMOP CDM",
+  "FHIR R4",
+  "pgvector",
+  "Laravel Reverb",
+  "Sanctum Auth",
+  "Federation",
+];
+
+const CAPABILITY_PILLS = [
+  "Oncology",
+  "Rare Disease",
+  "Surgical Planning",
+  "Genomic Review",
+  "Molecular Board",
+  "Complex Medical",
+];
+
+const SECURITY_PILLS = [
+  "HIPAA Compliant",
+  "SOC 2 Type II",
+  "mTLS Federation",
+  "RBAC (8 Roles)",
+  "PHI Isolation",
+  "Audit Logging",
+  "Patient Opt-Out",
+  "End-to-End Encryption",
+];
+
 interface AuthLayoutProps {
   children: ReactNode;
 }
@@ -45,32 +83,67 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Left hero */}
         <div className="auth-hero">
           <div className="auth-hero__glass">
-            <h1 className="auth-hero__title">Aurora</h1>
+            {/* Header */}
+            <div className="auth-hero__header">
+              <h1 className="auth-hero__title">Aurora</h1>
+              <span className="auth-hero__version">v2.0</span>
+            </div>
             <p className="auth-hero__subtitle">
-              Clinical Case Intelligence
+              Clinical Case Intelligence Platform
             </p>
             <div className="auth-hero__divider" />
             <p className="auth-hero__description">
-              Advanced tumor board platform for multidisciplinary case review,
-              clinical decision support, and collaborative patient care.
+              Federated, AI-powered tumor board and multidisciplinary case review
+              platform. Built for oncology, rare disease, surgical planning, and
+              complex medical decision-making across institutions.
             </p>
+
+            {/* Features */}
             <div className="auth-hero__features">
-              <div className="auth-hero__feature">
-                <span className="auth-hero__feature-icon">&#9670;</span>
-                <span>Real-time case collaboration</span>
+              {FEATURES.map((f) => (
+                <div key={f.label} className="auth-hero__feature">
+                  <span className="auth-hero__feature-icon">{f.icon}</span>
+                  <div>
+                    <span className="auth-hero__feature-label">{f.label}</span>
+                    <span className="auth-hero__feature-desc">{f.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pill sections */}
+            <div className="auth-hero__pills-section">
+              <p className="auth-hero__pills-label">Architecture</p>
+              <div className="auth-hero__pills">
+                {ARCH_PILLS.map((p) => (
+                  <span key={p} className="auth-hero__pill auth-hero__pill--arch">{p}</span>
+                ))}
               </div>
-              <div className="auth-hero__feature">
-                <span className="auth-hero__feature-icon">&#9670;</span>
-                <span>AI-assisted clinical insights</span>
+            </div>
+
+            <div className="auth-hero__pills-section">
+              <p className="auth-hero__pills-label">Specialties</p>
+              <div className="auth-hero__pills">
+                {CAPABILITY_PILLS.map((p) => (
+                  <span key={p} className="auth-hero__pill auth-hero__pill--cap">{p}</span>
+                ))}
               </div>
-              <div className="auth-hero__feature">
-                <span className="auth-hero__feature-icon">&#9670;</span>
-                <span>OMOP-standardized data</span>
+            </div>
+
+            <div className="auth-hero__pills-section">
+              <p className="auth-hero__pills-label">Security &amp; Compliance</p>
+              <div className="auth-hero__pills">
+                {SECURITY_PILLS.map((p) => (
+                  <span key={p} className="auth-hero__pill auth-hero__pill--sec">{p}</span>
+                ))}
               </div>
-              <div className="auth-hero__feature">
-                <span className="auth-hero__feature-icon">&#9670;</span>
-                <span>Integrated DICOM imaging</span>
-              </div>
+            </div>
+
+            {/* Footer tagline */}
+            <div className="auth-hero__footer">
+              <span className="auth-hero__footer-text">
+                Powered by Abby AI &middot; Acumenus Data Sciences
+              </span>
             </div>
           </div>
         </div>

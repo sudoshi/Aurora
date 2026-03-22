@@ -1,0 +1,361 @@
+import { useState } from "react";
+import { Bot, ChevronDown, ChevronUp, Eye, EyeOff, Loader2, Radio } from "lucide-react";
+import { Panel } from "@/components/ui/Panel";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import type { AiProviderSetting } from "../api/adminApi";
+import {
+  useActivateAiProvider,
+  useAiProviders,
+  useTestAiProvider,
+  useToggleAiProvider,
+  useUpdateAiProvider,
+} from "../hooks/useAiProviders";
+
+// ── Provider metadata ─────────────────────────────────────────────────────────
+
+interface ProviderMeta {
+  region: "US" | "EU" | "China" | "Local";
+  regionBadge: "info" | "success" | "critical" | "inactive";
+  models: string[];
+  hasApiKey: boolean;
+  hasBaseUrl: boolean;
+}
+
+const PROVIDER_META: Record<string, ProviderMeta> = {
+  ollama: {
+    region: "Local",
+    regionBadge: "inactive",
+    models: ["MedAIBase/MedGemma1.5:4b", "llama3.2", "gemma3:4b", "mistral"],
+    hasApiKey: false,
+    hasBaseUrl: true,
+  },
+  anthropic: {
+    region: "US",
+    regionBadge: "info",
+    models: ["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  openai: {
+    region: "US",
+    regionBadge: "info",
+    models: ["gpt-4o", "gpt-4o-mini", "o3-mini"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  gemini: {
+    region: "US",
+    regionBadge: "info",
+    models: ["gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-pro"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  deepseek: {
+    region: "China",
+    regionBadge: "critical",
+    models: ["deepseek-chat", "deepseek-reasoner"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  qwen: {
+    region: "China",
+    regionBadge: "critical",
+    models: ["qwen-max", "qwen-plus", "qwen-turbo"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  moonshot: {
+    region: "China",
+    regionBadge: "critical",
+    models: ["moonshot-v1-128k"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+  mistral: {
+    region: "EU",
+    regionBadge: "success",
+    models: ["mistral-large-latest", "mistral-medium"],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  },
+};
+
+// ── Provider card ─────────────────────────────────────────────────────────────
+
+interface TestResult {
+  success: boolean;
+  message: string;
+  details?: Record<string, unknown>;
+}
+
+function ProviderCard({ provider }: { provider: AiProviderSetting }) {
+  const meta = PROVIDER_META[provider.provider_type] ?? {
+    region: "US" as const,
+    regionBadge: "info" as const,
+    models: [],
+    hasApiKey: true,
+    hasBaseUrl: false,
+  };
+
+  const [expanded, setExpanded] = useState(provider.is_active);
+  const [model, setModel] = useState(provider.model || meta.models[0] || "");
+  const [apiKey, setApiKey] = useState(
+    typeof provider.settings?.api_key === "string" ? provider.settings.api_key : "",
+  );
+  const [baseUrl, setBaseUrl] = useState(
+    typeof provider.settings?.base_url === "string"
+      ? provider.settings.base_url
+      : "http://localhost:11434",
+  );
+  const [showKey, setShowKey] = useState(false);
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const [dirty, setDirty] = useState(false);
+
+  const updateMutation = useUpdateAiProvider();
+  const activateMutation = useActivateAiProvider();
+  const toggleMutation = useToggleAiProvider();
+  const testMutation = useTestAiProvider();
+
+  function handleSave() {
+    const settings: Record<string, string> = {};
+    if (meta.hasApiKey) settings.api_key = apiKey;
+    if (meta.hasBaseUrl) settings.base_url = baseUrl;
+
+    updateMutation.mutate(
+      { type: provider.provider_type, data: { model, settings } },
+      { onSuccess: () => setDirty(false) },
+    );
+  }
+
+  function handleTest() {
+    setTestResult(null);
+    testMutation.mutate(provider.provider_type, {
+      onSuccess: (r) => setTestResult(r),
+      onError: () => setTestResult({ success: false, message: "Request failed." }),
+    });
+  }
+
+  const isSaving = updateMutation.isPending;
+  const isTesting = testMutation.isPending;
+
+  return (
+    <Panel className={provider.is_active ? "border-[#2DD4BF]/50" : ""}>
+      {/* Header row */}
+      <div
+        className="flex cursor-pointer items-center gap-4"
+        onClick={() => setExpanded((v) => !v)}
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#1C1C20]">
+          <Bot className="h-5 w-5 text-[#8A857D]" />
+        </div>
+
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[#F0EDE8]">{provider.display_name}</span>
+            {provider.is_active && <Badge variant="primary">Active</Badge>}
+            <Badge variant={meta.regionBadge}>{meta.region}</Badge>
+          </div>
+          <p className="text-sm text-[#8A857D]">{provider.model || "No model selected"}</p>
+        </div>
+
+        {/* Enable toggle */}
+        <label
+          className="relative inline-flex cursor-pointer items-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            className="peer sr-only"
+            checked={provider.is_enabled}
+            onChange={(e) =>
+              toggleMutation.mutate({ type: provider.provider_type, enabled: e.target.checked })
+            }
+          />
+          <div className="peer h-5 w-9 rounded-full bg-[#3A3A42] after:absolute after:left-[2px] after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#2DD4BF] peer-checked:after:translate-x-4" />
+          <span className="ml-2 text-sm text-[#8A857D]">
+            {provider.is_enabled ? "Enabled" : "Disabled"}
+          </span>
+        </label>
+
+        {expanded ? (
+          <ChevronUp className="h-4 w-4 text-[#8A857D]" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-[#8A857D]" />
+        )}
+      </div>
+
+      {/* Expanded config */}
+      {expanded && (
+        <div className="border-t border-[#232328] mt-4 pt-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Model selector */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">Model</label>
+              {meta.models.length > 0 ? (
+                <select
+                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  value={model}
+                  onChange={(e) => {
+                    setModel(e.target.value);
+                    setDirty(true);
+                  }}
+                >
+                  {meta.models.map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  value={model}
+                  onChange={(e) => {
+                    setModel(e.target.value);
+                    setDirty(true);
+                  }}
+                  placeholder="Model name"
+                />
+              )}
+            </div>
+
+            {/* API key or base URL */}
+            {meta.hasApiKey && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">API Key</label>
+                <div className="relative">
+                  <input
+                    type={showKey ? "text" : "password"}
+                    className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 pr-10 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                    value={apiKey}
+                    onChange={(e) => {
+                      setApiKey(e.target.value);
+                      setDirty(true);
+                    }}
+                    placeholder="sk-..."
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8A857D] hover:text-[#F0EDE8]"
+                    onClick={() => setShowKey((v) => !v)}
+                  >
+                    {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {meta.hasBaseUrl && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">
+                  Ollama Base URL
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  value={baseUrl}
+                  onChange={(e) => {
+                    setBaseUrl(e.target.value);
+                    setDirty(true);
+                  }}
+                  placeholder="http://localhost:11434"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Test result */}
+          {testResult && (
+            <div
+              className={`mt-3 rounded-md px-3 py-2 text-sm ${
+                testResult.success
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "bg-red-500/10 text-red-400"
+              }`}
+            >
+              {testResult.success ? "OK" : "FAIL"} {testResult.message}
+            </div>
+          )}
+
+          {/* Action row */}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => activateMutation.mutate(provider.provider_type)}
+              disabled={provider.is_active || activateMutation.isPending}
+            >
+              <Radio className="h-3.5 w-3.5 mr-1" />
+              {provider.is_active ? "Currently Active" : "Set as Active"}
+            </Button>
+
+            {dirty && (
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving}>
+                {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />}
+                Save
+              </Button>
+            )}
+
+            <Button variant="secondary" size="sm" onClick={handleTest} disabled={isTesting}>
+              {isTesting && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />}
+              Test Connection
+            </Button>
+          </div>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export default function AiProvidersPage() {
+  const { data: providers, isLoading } = useAiProviders();
+
+  const activeProvider = providers?.find((p) => p.is_active);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-[#F0EDE8]">AI Provider Configuration</h1>
+        <p className="mt-1 text-sm text-[#8A857D]">
+          Choose which AI backend powers Abby. Only one provider is active at a time. API keys are
+          stored encrypted.
+        </p>
+      </div>
+
+      {/* Active provider banner */}
+      {activeProvider && (
+        <Panel>
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-sm font-medium text-[#F0EDE8]">
+              Active provider:{" "}
+              <span className="font-semibold">{activeProvider.display_name}</span>
+              {activeProvider.model && (
+                <span className="ml-2 font-normal text-[#8A857D]">
+                  / {activeProvider.model}
+                </span>
+              )}
+            </span>
+            <Badge variant="success">Active</Badge>
+          </div>
+        </Panel>
+      )}
+
+      {/* Provider list */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-6 w-6 animate-spin text-[#8A857D]" />
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {(providers ?? []).map((p) => (
+            <ProviderCard key={p.provider_type} provider={p} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

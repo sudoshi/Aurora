@@ -7,6 +7,11 @@ export interface User {
   email: string;
   phone: string | null;
   avatar: string | null;
+  phone_number: string | null;
+  job_title: string | null;
+  department: string | null;
+  organization: string | null;
+  bio: string | null;
   must_change_password: boolean;
   is_active: boolean;
   last_login_at: string | null;
@@ -26,6 +31,7 @@ interface AuthState {
   hasRole: (role: string) => boolean;
   hasPermission: (permission: string) => boolean;
   isAdmin: () => boolean;
+  isSuperAdmin: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -59,6 +65,9 @@ export const useAuthStore = create<AuthState>()(
         ["super-admin", "admin"].some((r) =>
           (get().user?.roles ?? []).includes(r),
         ),
+
+      isSuperAdmin: () =>
+        (get().user?.roles ?? []).includes("super-admin"),
     }),
     { name: "aurora-auth" },
   ),

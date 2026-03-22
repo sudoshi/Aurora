@@ -2,6 +2,17 @@
 @import "./tokens-dark.css";
 @import "./tokens-base.css";
 
+/* Component styles */
+@import "./components/layout.css";
+@import "./components/navigation.css";
+@import "./components/forms.css";
+@import "./components/cards.css";
+@import "./components/tables.css";
+@import "./components/badges.css";
+@import "./components/modals.css";
+@import "./components/alerts.css";
+@import "./components/ai.css";
+
 /* Base body styles */
 body {
   font-family: var(--font-body);
