@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Clinical\GenomicVariant;
 use App\Models\Clinical\ImagingStudy;
-use App\Models\Clinical\ImagingMeasurement;
 use App\Models\Clinical\ClinicalPatient;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class RadiogenomicsService
 {
@@ -37,7 +37,7 @@ class RadiogenomicsService
         $vus = $variants->filter(fn ($v) => $v->clinical_significance === 'VUS');
 
         // Build drug exposure timeline from drug_eras
-        $drugExposures = \DB::table('clinical.drug_eras')
+        $drugExposures = DB::table('drug_eras')
             ->where('patient_id', $patientId)
             ->orderBy('era_start')
             ->get()

@@ -2,16 +2,12 @@
    Aurora Navigation — Top Nav + Dropdowns + Section Sidebar
    ============================================================ */
 
-/* Top Navigation Bar (44px) */
-.topnav-bar {
+/* Inline navigation — centered in header's middle column */
+.topnav-inline {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-1);
-  height: 44px;
-  padding: 0 var(--space-6);
-  background-color: var(--surface-base);
-  border-bottom: 1px solid var(--border-default);
-  flex-shrink: 0;
 }
 
 .topnav-group { position: relative; }

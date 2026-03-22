@@ -60,7 +60,7 @@ class ImagingController extends Controller
     public function stats(): JsonResponse
     {
         $totalStudies = ImagingStudy::count();
-        $totalPatients = ImagingStudy::distinct('patient_id')->count('patient_id');
+        $totalPatients = ImagingStudy::distinct()->count('patient_id');
         $totalMeasurements = ImagingMeasurement::count();
 
         $modalityCounts = ImagingStudy::select('modality', DB::raw('count(*) as count'))
@@ -266,7 +266,7 @@ class ImagingController extends Controller
         }
 
         $totalStudies = $query->count();
-        $totalPatients = (clone $query)->distinct('patient_id')->count('patient_id');
+        $totalPatients = (clone $query)->distinct()->count('patient_id');
 
         $modalityDistribution = ImagingStudy::select('modality', DB::raw('count(*) as count'))
             ->whereNotNull('modality')
@@ -364,13 +364,10 @@ class ImagingController extends Controller
         $modality = $request->input('modality');
         $perPage = min((int) ($request->input('per_page', 25)), 100);
 
-        $subQuery = ImagingStudy::select('patient_id', DB::raw('count(*) as study_count'))
+        $patientIds = ImagingStudy::select('patient_id')
             ->when($modality, fn ($q) => $q->where('modality', $modality))
             ->groupBy('patient_id')
-            ->havingRaw('count(*) >= ?', [$minStudies]);
-
-        $patientIds = DB::table(DB::raw("({$subQuery->toSql()}) as sub"))
-            ->mergeBindings($subQuery->getQuery())
+            ->havingRaw('count(*) >= ?', [$minStudies])
             ->pluck('patient_id');
 
         $query = ClinicalPatient::whereIn('id', $patientIds)->orderBy('id');

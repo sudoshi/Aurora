@@ -10,7 +10,7 @@
   background-color: var(--surface-base);
 }
 
-/* Brand Header (56px) */
+/* Brand Header (56px) — 3-column: brand | nav (centered) | actions */
 .app-topbar {
   position: sticky;
   top: 0;
@@ -18,9 +18,9 @@
   height: 56px;
   background-color: var(--surface-raised);
   border-bottom: 1px solid var(--border-default);
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   padding: 0 var(--space-6);
   flex-shrink: 0;
 }
@@ -66,6 +66,8 @@
   overflow-y: auto;
   padding: var(--content-padding);
   max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
 }
 
 .content-main:has(.layout-full-bleed) {
@@ -90,9 +92,6 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .section-sidebar { display: none; }
-}
 @media (max-width: 768px) {
-  .topnav-bar { display: none; }
+  .topnav-inline { display: none; }
 }
