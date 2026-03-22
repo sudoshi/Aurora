@@ -1,110 +1,23 @@
 /* ============================================================
-   Aurora Layout — Application Shell
+   Aurora Layout — Top Nav + Contextual Section Sidebar
    ============================================================ */
 
 .app-shell {
   display: flex;
+  flex-direction: column;
   height: 100vh;
   overflow: hidden;
   background-color: var(--surface-base);
 }
 
-/* Sidebar — fixed 64px icon rail */
-.app-sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: var(--z-sidebar);
-  height: 100vh;
-  width: 64px;
-  background-color: var(--sidebar-bg);
-  border-right: 1px solid var(--border-default);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: visible;
-  background-image: linear-gradient(to bottom, transparent 80%, rgba(0, 214, 143, 0.03) 100%);
-}
-
-/* Flyout panel — slides out from the rail on hover/active */
-.sidebar-flyout {
-  position: absolute;
-  left: 64px;
-  top: 0;
-  width: 240px;
-  height: 100vh;
-  background: rgba(10, 10, 24, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left: none;
-  border-radius: 0 16px 16px 0;
-  transform: translateX(-100%);
-  opacity: 0;
-  transition: transform 200ms var(--ease-out), opacity 200ms var(--ease-out);
-  z-index: var(--z-sidebar);
-  padding: var(--space-4) 0;
-  overflow-y: auto;
-  pointer-events: none;
-}
-.sidebar-flyout.open {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Sidebar header — centered for rail layout */
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--topbar-height);
-  padding: 0;
-  border-bottom: 1px solid var(--border-default);
-  flex-shrink: 0;
-  width: 100%;
-}
-
-.sidebar-logo {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-2);
-}
-
-.sidebar-section-label {
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-ghost);
-  padding: var(--space-3) var(--space-3) var(--space-1);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.sidebar-footer {
-  padding: var(--space-3) var(--space-4);
-  border-top: 1px solid var(--border-default);
-  flex-shrink: 0;
-}
-
-/* Top bar — frosted glass header */
+/* Brand Header (56px) */
 .app-topbar {
   position: sticky;
   top: 0;
   z-index: var(--z-topbar);
-  height: var(--topbar-height);
-  background: rgba(10, 10, 24, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  height: 56px;
+  background-color: var(--surface-raised);
+  border-bottom: 1px solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,10 +25,19 @@
   flex-shrink: 0;
 }
 
-.topbar-title {
-  font-size: var(--text-lg);
-  font-weight: 600;
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+}
+
+.topbar-brand-name {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.03em;
 }
 
 .topbar-actions {
@@ -124,13 +46,19 @@
   gap: var(--space-2);
 }
 
-/* Content area — fixed 64px left margin matching the rail */
+/* Content wrapper (sidebar + main) */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Content Area */
 .app-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin-left: 64px;
 }
 
 .content-main {
@@ -140,17 +68,14 @@
   max-width: var(--content-max-width);
 }
 
-/* Full-bleed pages (e.g. Commons) bypass padding + max-width */
 .content-main:has(.layout-full-bleed) {
   padding: 0;
   max-width: none;
   overflow: hidden;
 }
 
-/* Page header */
-.page-header {
-  margin-bottom: var(--space-6);
-}
+/* Page Header */
+.page-header { margin-bottom: var(--space-6); }
 .page-title {
   font-family: var(--font-display);
   font-size: var(--text-2xl);
@@ -162,4 +87,12 @@
   font-size: var(--text-base);
   color: var(--text-muted);
   margin-top: var(--space-1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .section-sidebar { display: none; }
+}
+@media (max-width: 768px) {
+  .topnav-bar { display: none; }
 }
