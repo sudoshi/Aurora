@@ -40,8 +40,8 @@
 }
 
 .data-table tbody tr { transition: background var(--duration-fast); min-height: 44px; }
-.data-table tbody tr:hover { background: var(--surface-overlay); }
-.data-table tbody tr.selected { background: var(--surface-elevated); }
+.data-table tbody tr:hover { background: rgba(0, 214, 143, 0.04); }
+.data-table tbody tr.selected { background: rgba(157, 117, 248, 0.08); border-left: 2px solid var(--accent); }
 .data-table td.mono { font-family: var(--font-mono); font-size: var(--text-sm); }
 .data-table tbody tr.clickable { cursor: pointer; }
 .data-table tbody tr.clickable:hover { background: var(--surface-elevated); }
