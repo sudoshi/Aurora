@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AiProviderController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Admin\UserAuditController;
+use App\Http\Controllers\AbbyController;
 use App\Http\Controllers\Admin\AppSettingsController;
 
 /*
@@ -56,6 +57,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
+    // Abby AI
+    Route::prefix('abby')->group(function () {
+        Route::get('/conversations', [AbbyController::class, 'conversations']);
+        Route::post('/conversations', [AbbyController::class, 'createConversation']);
+        Route::get('/conversations/{id}', [AbbyController::class, 'showConversation']);
+        Route::delete('/conversations/{id}', [AbbyController::class, 'deleteConversation']);
+        Route::post('/chat', [AbbyController::class, 'chat']);
+        Route::post('/conversations/{id}/title', [AbbyController::class, 'generateTitle']);
+    });
 
     // Patient routes
     Route::prefix('patients')->group(function () {

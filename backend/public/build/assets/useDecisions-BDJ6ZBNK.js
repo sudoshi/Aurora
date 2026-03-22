@@ -1,0 +1,11 @@
+import{c as n,a as i,m as o}from"./index-B_xzNjNU.js";import{u as c}from"./useQuery-C3exQT_G.js";import{u as a}from"./useMutation-CeolTNtZ.js";/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const u=[["path",{d:"M21.801 10A10 10 0 1 1 17 3.335",key:"yps3ct"}],["path",{d:"m9 11 3 3L22 4",key:"1pflzl"}]],D=n("circle-check-big",u);/**
+ * @license lucide-react v0.577.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const d=[["path",{d:"m14 13-8.381 8.38a1 1 0 0 1-3.001-3l8.384-8.381",key:"pgg06f"}],["path",{d:"m16 16 6-6",key:"vzrcl6"}],["path",{d:"m21.5 10.5-8-8",key:"a17d9x"}],["path",{d:"m8 8 6-6",key:"18bi4p"}],["path",{d:"m8.5 7.5 8 8",key:"1oyaui"}]],K=n("gavel",d),r=(e={})=>i.get("/decisions",{params:e}).then(s=>s.data),l=e=>i.post("/decisions",e).then(s=>s.data),y=e=>i.post(`/decisions/${e}/finalize`).then(s=>s.data),p=(e,s)=>i.post(`/decisions/${e}/votes`,s).then(t=>t.data),h=(e,s)=>i.post(`/decisions/${e}/follow-ups`,s).then(t=>t.data),m=(e,s)=>i.put(`/follow-ups/${e}/status`,{status:s}).then(t=>t.data),q=()=>i.get("/decisions/dashboard").then(e=>e.data),Q=(e={})=>c({queryKey:["decisions",e],queryFn:()=>r(e)}),g=()=>c({queryKey:["decisions","dashboard"],queryFn:q}),k=()=>{const e=o();return a({mutationFn:s=>l(s),onSuccess:()=>{e.invalidateQueries({queryKey:["decisions"]}),e.invalidateQueries({queryKey:["cases"]})}})},C=()=>{const e=o();return a({mutationFn:s=>y(s),onSuccess:(s,t)=>{e.invalidateQueries({queryKey:["decisions"]}),e.invalidateQueries({queryKey:["decisions",t]})}})},w=()=>{const e=o();return a({mutationFn:({decisionId:s,data:t})=>p(s,t),onSuccess:(s,t)=>{e.invalidateQueries({queryKey:["decisions",t.decisionId]}),e.invalidateQueries({queryKey:["decisions",t.decisionId,"votes"]})}})},S=()=>{const e=o();return a({mutationFn:({decisionId:s,data:t})=>h(s,t),onSuccess:(s,t)=>e.invalidateQueries({queryKey:["decisions",t.decisionId,"follow-ups"]})})},_=()=>{const e=o();return a({mutationFn:({followUpId:s,status:t})=>m(s,t),onSuccess:()=>e.invalidateQueries({queryKey:["decisions"]})})};export{D as C,K as G,w as a,C as b,S as c,Q as d,g as e,_ as f,k as u};

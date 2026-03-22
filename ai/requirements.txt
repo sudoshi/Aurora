@@ -1,11 +1,28 @@
+# Core framework
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
 pydantic==2.10.0
 pydantic-settings==2.7.0
 httpx==0.28.0
+python-dotenv==1.0.1
+
+# Database
 psycopg2-binary==2.9.10
 pgvector==0.3.6
+sqlalchemy==2.0.36
+
+# Caching
+redis==5.2.1
+
+# LLM / AI
+anthropic==0.40.0
 numpy==2.2.0
-python-dotenv==1.0.1
+markdown==3.7
+
+# Optional: SapBERT embeddings (requires torch — install separately if needed)
+# sentence-transformers==3.3.1
+# torch>=2.0.0
+
+# Testing & typing
 pytest==8.3.0
 mypy==1.14.0

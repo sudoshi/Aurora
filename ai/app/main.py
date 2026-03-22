@@ -1,12 +1,24 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from .config import settings
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    yield
+    # Shutdown
+
 
 app = FastAPI(
     title=settings.app_name,
     version="2.0.0",
     docs_url="/api/ai/docs",
     openapi_url="/api/ai/openapi.json",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -17,7 +29,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import and include routers
+from .routers.health import router as health_router
+from .routers.abby import router as abby_router
+from .routers.embeddings import router as embeddings_router
+from .routers.clinical_nlp import router as clinical_nlp_router
 
-@app.get("/api/ai/health")
-async def health():
-    return {"status": "ok", "service": "abby", "version": "2.0.0"}
+app.include_router(health_router, prefix="/api/ai")
+app.include_router(abby_router, prefix="/api/ai/abby")
+app.include_router(embeddings_router, prefix="/api/ai")
+app.include_router(clinical_nlp_router, prefix="/api/ai")

@@ -210,7 +210,7 @@ export function AbbyPanel() {
       try {
         // Try streaming first
         const currentToken = useAuthStore.getState().token;
-        const response = await fetch("/api/v1/abby/chat/stream", {
+        const response = await fetch("/api/ai/abby/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
