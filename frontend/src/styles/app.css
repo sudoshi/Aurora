@@ -13,6 +13,20 @@
 @import "./components/alerts.css";
 @import "./components/ai.css";
 
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Variable.woff2') format('woff2');
+  font-weight: 100 800;
+  font-display: swap;
+}
+
 /* Base body styles */
 body {
   font-family: var(--font-body);
@@ -57,6 +71,14 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: var(--primary-bg);
+  background-color: rgba(157, 117, 248, 0.30);
   color: var(--text-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
