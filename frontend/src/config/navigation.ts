@@ -8,7 +8,6 @@ import {
   Dna,
   Cpu,
   MessageSquare,
-  Shield,
   Settings,
   Activity,
   UsersRound,

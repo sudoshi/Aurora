@@ -8,7 +8,7 @@ import { navGroups, type NavGroup } from "@/config/navigation";
 function NavDropdown({ group, isActive }: { group: NavGroup; isActive: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const location = useLocation();
 
   useEffect(() => { setOpen(false); }, [location.pathname]);

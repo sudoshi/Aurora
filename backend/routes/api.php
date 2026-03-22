@@ -32,6 +32,9 @@ use App\Http\Controllers\AbbyController;
 use App\Http\Controllers\AiProxyController;
 use App\Http\Controllers\Admin\AppSettingsController;
 use App\Http\Controllers\ImagingController;
+use App\Http\Controllers\GenomicsController;
+use App\Http\Controllers\RadiogenomicsController;
+use App\Http\Controllers\CaseTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +94,71 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{study}', [ImagingController::class, 'show']);
         Route::post('/{study}/measurements', [ImagingController::class, 'storeMeasurement']);
     });
+
+    // ── Standalone Imaging ──────────────────────────────────────────────
+    Route::prefix('imaging')->group(function () {
+        Route::get('/stats', [ImagingController::class, 'stats']);
+        Route::get('/studies', [ImagingController::class, 'studies']);
+        Route::post('/studies/index-from-dicomweb', [ImagingController::class, 'indexFromDicomweb']);
+        Route::post('/studies/bulk-link', [ImagingController::class, 'bulkLinkStudies']);
+        Route::post('/studies/auto-link', [ImagingController::class, 'autoLinkStudies']);
+        Route::get('/studies/{id}', [ImagingController::class, 'studyShow']);
+        Route::post('/studies/{id}/index-series', [ImagingController::class, 'indexSeries']);
+        Route::post('/studies/{id}/extract-nlp', [ImagingController::class, 'extractNlp']);
+        Route::post('/studies/{id}/link-person', [ImagingController::class, 'linkStudyToPerson']);
+        Route::get('/studies/{id}/measurements', [ImagingController::class, 'studyMeasurements']);
+        Route::post('/studies/{id}/measurements', [ImagingController::class, 'createStudyMeasurement']);
+        Route::post('/studies/{id}/ai-extract', [ImagingController::class, 'aiExtractMeasurements']);
+        Route::get('/studies/{id}/suggest-template', [ImagingController::class, 'suggestTemplate']);
+        Route::put('/measurements/{id}', [ImagingController::class, 'updateMeasurement']);
+        Route::delete('/measurements/{id}', [ImagingController::class, 'destroyMeasurement']);
+        Route::get('/features', [ImagingController::class, 'features']);
+        Route::get('/criteria', [ImagingController::class, 'criteriaIndex']);
+        Route::post('/criteria', [ImagingController::class, 'criteriaStore']);
+        Route::delete('/criteria/{id}', [ImagingController::class, 'criteriaDestroy']);
+        Route::get('/analytics/population', [ImagingController::class, 'populationAnalytics']);
+        Route::post('/import-local/trigger', [ImagingController::class, 'importLocalTrigger']);
+        Route::get('/patients', [ImagingController::class, 'patientsWithImaging']);
+        Route::get('/patients/{personId}/timeline', [ImagingController::class, 'patientTimeline']);
+        Route::get('/patients/{personId}/studies', [ImagingController::class, 'patientStudies']);
+        Route::get('/patients/{personId}/measurements', [ImagingController::class, 'patientMeasurements']);
+        Route::get('/patients/{personId}/measurements/trends', [ImagingController::class, 'measurementTrends']);
+        Route::get('/patients/{personId}/response-assessments', [ImagingController::class, 'patientResponseAssessments']);
+        Route::post('/patients/{personId}/response-assessments', [ImagingController::class, 'createResponseAssessment']);
+        Route::post('/patients/{personId}/compute-response', [ImagingController::class, 'computeResponse']);
+        Route::post('/patients/{personId}/assess-preview', [ImagingController::class, 'assessPreview']);
+    });
+
+    // ── Genomics ──────────────────────────────────────────────────────────
+    Route::prefix('genomics')->group(function () {
+        Route::get('/stats', [GenomicsController::class, 'stats']);
+        Route::get('/uploads', [GenomicsController::class, 'listUploads']);
+        Route::post('/uploads', [GenomicsController::class, 'storeUpload']);
+        Route::get('/uploads/{id}', [GenomicsController::class, 'showUpload']);
+        Route::delete('/uploads/{id}', [GenomicsController::class, 'destroyUpload']);
+        Route::post('/uploads/{id}/match-persons', [GenomicsController::class, 'matchPersons']);
+        Route::post('/uploads/{id}/import', [GenomicsController::class, 'importToOmop']);
+        Route::post('/uploads/{id}/annotate-clinvar', [GenomicsController::class, 'annotateClinVar']);
+        Route::get('/variants', [GenomicsController::class, 'listVariants']);
+        Route::get('/variants/{id}', [GenomicsController::class, 'showVariant']);
+        Route::get('/criteria', [GenomicsController::class, 'listCriteria']);
+        Route::post('/criteria', [GenomicsController::class, 'storeCriterion']);
+        Route::put('/criteria/{id}', [GenomicsController::class, 'updateCriterion']);
+        Route::delete('/criteria/{id}', [GenomicsController::class, 'destroyCriterion']);
+        Route::get('/clinvar/status', [GenomicsController::class, 'clinvarStatus']);
+        Route::get('/clinvar/search', [GenomicsController::class, 'clinvarSearch']);
+        Route::post('/clinvar/sync', [GenomicsController::class, 'clinvarSync']);
+    });
+
+    // ── Radiogenomics ─────────────────────────────────────────────────────
+    Route::prefix('radiogenomics')->group(function () {
+        Route::get('/patients/{patientId}', [RadiogenomicsController::class, 'patientPanel']);
+        Route::get('/variant-drug-interactions', [RadiogenomicsController::class, 'variantDrugInteractions']);
+    });
+
+    // ── Case Templates ────────────────────────────────────────────────────
+    Route::get('/case-templates', [CaseTemplateController::class, 'index']);
+    Route::get('/case-templates/{slug}', [CaseTemplateController::class, 'show']);
 
     // ── Cases ─────────────────────────────────────────────────────────────
     Route::apiResource('cases', CaseController::class);
