@@ -7,9 +7,9 @@ import {
   ArrowRight,
   Loader2,
   AlertTriangle,
-  UserPlus,
   FolderOpen,
-  Globe,
+  MessageSquare,
+  Calendar,
 } from "lucide-react";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { Panel } from "@/components/ui/Panel";
@@ -17,20 +17,25 @@ import { Badge } from "@/components/ui/Badge";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { useDashboardStats } from "../hooks/useDashboard";
 
-// ── Priority color mapping ──────────────────────────────────────────────────
-const PRIORITY_COLORS: Record<string, string> = {
-  critical: "#E85A6B",
-  high: "#F59E0B",
-  normal: "#2DD4BF",
-  low: "#8A857D",
+const URGENCY_COLORS: Record<string, string> = {
+  emergent: "#E85A6B",
+  urgent: "#F59E0B",
+  routine: "#2DD4BF",
 };
 
 const STATUS_BADGE: Record<string, "success" | "warning" | "critical" | "info" | "default"> = {
-  open: "info",
-  in_progress: "warning",
-  review: "accent" as "warning",
-  resolved: "success",
-  closed: "default",
+  draft: "default",
+  active: "info",
+  in_review: "warning",
+  closed: "success",
+  archived: "inactive" as "default",
+};
+
+const SPECIALTY_LABELS: Record<string, string> = {
+  oncology: "Oncology",
+  surgical: "Surgical",
+  rare_disease: "Rare Disease",
+  complex_medical: "Complex Medical",
 };
 
 export default function DashboardPage() {
@@ -53,7 +58,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-sm font-medium text-[#F59E0B]">Unable to load dashboard data</p>
             <p className="mt-0.5 text-xs text-[#8A857D]">
-              The API may be unavailable. Displaying cached data if available.
+              The API may be unavailable. Please try again.
             </p>
           </div>
         </div>
@@ -71,21 +76,21 @@ export default function DashboardPage() {
           <MetricCard
             label="Total Patients"
             value={stats?.total_patients ?? 0}
-            description="In the system"
+            description="In clinical schema"
             icon={<Users size={18} />}
-            to="/patients"
+            to="/profiles"
           />
           <MetricCard
             label="Active Cases"
-            value={stats?.total_cases ?? 0}
-            description="Open cases"
+            value={stats?.active_cases ?? 0}
+            description={`${stats?.total_cases ?? 0} total`}
             icon={<Briefcase size={18} />}
             to="/cases"
           />
           <MetricCard
             label="Team Members"
             value={stats?.active_users ?? 0}
-            description="Active this week"
+            description={`${stats?.total_users ?? 0} total users`}
             icon={<Activity size={18} />}
           />
           <MetricCard
@@ -94,11 +99,12 @@ export default function DashboardPage() {
             description="Awaiting review"
             icon={<Clock size={18} />}
             variant={stats?.pending_decisions ? "warning" : "default"}
+            to="/decisions"
           />
         </div>
       )}
 
-      {/* Two-column layout: Recent Cases + Quick Actions */}
+      {/* Two-column layout */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Recent Cases (2/3 width) */}
         <div className="lg:col-span-2">
@@ -119,12 +125,12 @@ export default function DashboardPage() {
               <div className="flex h-48 items-center justify-center">
                 <Loader2 size={24} className="animate-spin text-[#8A857D]" />
               </div>
-            ) : stats?.recent_cases.length ? (
+            ) : (stats?.recent_cases ?? []).length > 0 ? (
               <div className="overflow-hidden rounded-lg border border-[#232328]">
                 <table className="w-full">
                   <thead>
                     <tr className="bg-[#1C1C20]">
-                      {["Case", "Patient", "Status", "Priority", "Updated"].map((h) => (
+                      {["Case", "Specialty", "Status", "Urgency", "Created"].map((h) => (
                         <th
                           key={h}
                           className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8A857D]"
@@ -135,18 +141,22 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {stats.recent_cases.map((c, i) => (
+                    {(stats?.recent_cases ?? []).map((c, i) => (
                       <tr
                         key={c.id}
-                        className={`border-t border-[#1C1C20] transition-colors hover:bg-[#1C1C20]/50 ${
+                        className={`border-t border-[#1C1C20] transition-colors hover:bg-[#1C1C20]/50 cursor-pointer ${
                           i % 2 === 0 ? "bg-[#151518]" : "bg-[#1A1A1E]"
                         }`}
+                        onClick={() => window.location.href = `/cases/${c.id}`}
                       >
-                        <td className="px-4 py-2.5 text-sm font-medium text-[#C5C0B8]">
-                          {c.title}
+                        <td className="px-4 py-2.5">
+                          <div className="text-sm font-medium text-[#C5C0B8]">{c.title}</div>
+                          <div className="text-[10px] text-[#5A5650] mt-0.5">by {c.creator_name}</div>
                         </td>
-                        <td className="px-4 py-2.5 text-sm text-[#8A857D]">
-                          {c.patient_name}
+                        <td className="px-4 py-2.5">
+                          <Badge variant="default">
+                            {SPECIALTY_LABELS[c.specialty] ?? c.specialty}
+                          </Badge>
                         </td>
                         <td className="px-4 py-2.5">
                           <Badge variant={STATUS_BADGE[c.status] ?? "default"}>
@@ -156,22 +166,20 @@ export default function DashboardPage() {
                         <td className="px-4 py-2.5">
                           <span
                             className="inline-flex items-center gap-1.5 text-xs font-medium"
-                            style={{ color: PRIORITY_COLORS[c.priority] ?? "#8A857D" }}
+                            style={{ color: URGENCY_COLORS[c.urgency] ?? "#8A857D" }}
                           >
                             <span
                               className="h-1.5 w-1.5 rounded-full"
-                              style={{ backgroundColor: PRIORITY_COLORS[c.priority] ?? "#8A857D" }}
+                              style={{ backgroundColor: URGENCY_COLORS[c.urgency] ?? "#8A857D" }}
                             />
-                            {c.priority}
+                            {c.urgency}
                           </span>
                         </td>
                         <td className="px-4 py-2.5 font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
-                          {c.updated_at
-                            ? new Date(c.updated_at).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                              })
-                            : "--"}
+                          {new Date(c.created_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </td>
                       </tr>
                     ))}
@@ -190,7 +198,7 @@ export default function DashboardPage() {
           </Panel>
         </div>
 
-        {/* Quick Actions + System Health (1/3 width) */}
+        {/* Quick Actions + System Health */}
         <div className="space-y-6">
           {/* Quick Actions */}
           <Panel
@@ -200,24 +208,31 @@ export default function DashboardPage() {
           >
             <div className="flex flex-col gap-2">
               <Link
-                to="/cases/new"
+                to="/cases"
                 className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3 text-sm text-[#C5C0B8] transition-colors hover:border-[#2DD4BF]/30 hover:text-[#2DD4BF]"
               >
                 <FolderOpen size={16} />
-                New Case
+                Browse Cases
               </Link>
               <Link
-                to="/patients"
+                to="/sessions"
                 className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3 text-sm text-[#C5C0B8] transition-colors hover:border-[#2DD4BF]/30 hover:text-[#2DD4BF]"
               >
-                <UserPlus size={16} />
-                Browse Patients
+                <Calendar size={16} />
+                Sessions
+              </Link>
+              <Link
+                to="/profiles"
+                className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3 text-sm text-[#C5C0B8] transition-colors hover:border-[#2DD4BF]/30 hover:text-[#2DD4BF]"
+              >
+                <Users size={16} />
+                Patient Profiles
               </Link>
               <Link
                 to="/commons"
                 className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3 text-sm text-[#C5C0B8] transition-colors hover:border-[#2DD4BF]/30 hover:text-[#2DD4BF]"
               >
-                <Globe size={16} />
+                <MessageSquare size={16} />
                 Open Commons
               </Link>
             </div>
@@ -243,37 +258,24 @@ export default function DashboardPage() {
               </div>
             ) : stats?.system_health ? (
               <div className="space-y-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <StatusDot
-                    status={
-                      stats.system_health.status === "healthy"
-                        ? "healthy"
-                        : stats.system_health.status === "degraded"
-                          ? "degraded"
-                          : "critical"
-                    }
-                  />
-                  <span className="text-sm font-medium text-[#F0EDE8]">
-                    {stats.system_health.status === "healthy" ? "All Systems Operational" : "Issues Detected"}
-                  </span>
-                </div>
-                {stats.system_health.services.map((svc) => (
+                {Object.entries(stats.system_health).map(([name, status]) => (
                   <div
-                    key={svc.name}
+                    key={name}
                     className="flex items-center justify-between rounded-md border border-[#232328] bg-[#151518] px-3 py-2"
                   >
-                    <span className="text-xs text-[#8A857D]">{svc.name}</span>
-                    <Badge
-                      variant={
-                        svc.status === "healthy"
-                          ? "success"
-                          : svc.status === "degraded"
-                            ? "warning"
-                            : "critical"
-                      }
-                    >
-                      {svc.status}
-                    </Badge>
+                    <span className="text-xs text-[#8A857D] capitalize">{name}</span>
+                    <div className="flex items-center gap-2">
+                      <StatusDot
+                        status={
+                          status === "healthy"
+                            ? "healthy"
+                            : status === "degraded"
+                              ? "degraded"
+                              : "critical"
+                        }
+                      />
+                      <span className="text-xs text-[#C5C0B8] capitalize">{status}</span>
+                    </div>
                   </div>
                 ))}
               </div>
