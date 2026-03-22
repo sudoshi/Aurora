@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\UserAuditController;
 use App\Http\Controllers\AbbyController;
 use App\Http\Controllers\AiProxyController;
 use App\Http\Controllers\Admin\AppSettingsController;
+use App\Http\Controllers\ImagingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +82,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{patient}/profile', [PatientController::class, 'profile']);
         Route::get('/{patient}/stats', [PatientController::class, 'stats']);
         Route::post('/', [PatientController::class, 'store']);
+    });
+
+    // ── Imaging ──────────────────────────────────────────────────────────
+    Route::prefix('patients/{patient}/imaging')->group(function () {
+        Route::get('/', [ImagingController::class, 'index']);
+        Route::get('/response-assessments', [ImagingController::class, 'responseAssessments']);
+        Route::get('/{study}', [ImagingController::class, 'show']);
+        Route::post('/{study}/measurements', [ImagingController::class, 'storeMeasurement']);
     });
 
     // ── Cases ─────────────────────────────────────────────────────────────

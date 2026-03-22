@@ -21,6 +21,8 @@ import {
   Calendar,
   CheckCircle2,
   Cpu,
+  ScanLine,
+  Dna,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +48,8 @@ const navItems: NavItem[] = [
   { path: "/sessions", label: "Sessions", icon: Calendar },
   { path: "/profiles", label: "Patient Profiles", icon: Users },
   { path: "/decisions", label: "Decisions", icon: CheckCircle2 },
+  { path: "/imaging", label: "Imaging", icon: ScanLine },
+  { path: "/genomics", label: "Genomics", icon: Dna },
   { path: "/copilot", label: "AI Copilot", icon: Cpu },
   { path: "/commons", label: "Commons", icon: MessageSquare },
   {

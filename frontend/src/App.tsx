@@ -29,6 +29,16 @@ const DecisionDashboardPage = lazy(() => import("@/features/decisions/pages/Deci
 // Copilot
 const CopilotPage = lazy(() => import("@/features/copilot/pages/CopilotPage"));
 
+// Imaging
+const ImagingPage = lazy(() => import("@/features/imaging/pages/ImagingPage"));
+const ImagingStudyPage = lazy(() => import("@/features/imaging/pages/ImagingStudyPage"));
+
+// Genomics
+const GenomicsPage = lazy(() => import("@/features/genomics/pages/GenomicsPage"));
+const GenomicAnalysisPage = lazy(() => import("@/features/genomics/pages/GenomicAnalysisPage"));
+const TumorBoardPage = lazy(() => import("@/features/genomics/pages/TumorBoardPage"));
+const UploadDetailPage = lazy(() => import("@/features/genomics/pages/UploadDetailPage"));
+
 // Admin pages
 const AdminDashboardPage = lazy(() => import("@/features/administration/pages/AdminDashboardPage"));
 const UsersPage = lazy(() => import("@/features/administration/pages/UsersPage"));
@@ -98,6 +108,16 @@ export default function App() {
 
                 {/* Copilot */}
                 <Route path="copilot" element={<CopilotPage />} />
+
+                {/* Imaging */}
+                <Route path="imaging" element={<ImagingPage />} />
+                <Route path="imaging/studies/:id" element={<ImagingStudyPage />} />
+
+                {/* Genomics */}
+                <Route path="genomics" element={<GenomicsPage />} />
+                <Route path="genomics/analysis" element={<GenomicAnalysisPage />} />
+                <Route path="genomics/tumor-board" element={<TumorBoardPage />} />
+                <Route path="genomics/uploads/:id" element={<UploadDetailPage />} />
 
                 {/* Commons */}
                 <Route path="commons" element={<CommonsPage />} />
