@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useAbbyStore } from "@/stores/abbyStore";
@@ -92,18 +92,24 @@ export function Header() {
 
   return (
     <header className="app-topbar">
-      {/* Left: Command palette trigger */}
-      <button
-        className="search-bar"
-        onClick={() => setCommandPaletteOpen(true)}
-        style={{ maxWidth: 320, cursor: "pointer" }}
-      >
-        <Search size={16} className="search-icon" />
-        <span style={{ color: "var(--text-ghost)", fontSize: "var(--text-base)" }}>
-          Search or jump to...
-        </span>
-        <span className="search-shortcut">Ctrl K</span>
-      </button>
+      {/* Left: Brand + Search */}
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-6)" }}>
+        <Link to="/" className="topbar-brand">
+          <img src="/aurora_icon.png" alt="Aurora" className="w-8 h-8 shrink-0" />
+          <span className="topbar-brand-name">Aurora</span>
+        </Link>
+        <button
+          className="search-bar"
+          onClick={() => setCommandPaletteOpen(true)}
+          style={{ maxWidth: 280, cursor: "pointer" }}
+        >
+          <Search size={16} className="search-icon" />
+          <span style={{ color: "var(--text-ghost)", fontSize: "var(--text-sm)" }}>
+            Search...
+          </span>
+          <span className="search-shortcut">Ctrl K</span>
+        </button>
+      </div>
 
       {/* Right: actions */}
       <div className="topbar-actions">
