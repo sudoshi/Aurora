@@ -85,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/search', [PatientController::class, 'search']);
         Route::get('/{patient}/profile', [PatientController::class, 'profile']);
         Route::get('/{patient}/stats', [PatientController::class, 'stats']);
+        Route::get('/{patient}/notes', [PatientController::class, 'notes']);
         Route::post('/', [PatientController::class, 'store']);
     });
 

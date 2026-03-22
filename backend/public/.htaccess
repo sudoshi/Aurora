@@ -18,6 +18,9 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Proxy /orthanc/ to Orthanc PACS (with auth + CORS for OHIF)
+    RewriteRule ^orthanc/(.*)$ http://parthenon:orthanc_secret@127.0.0.1:8042/$1 [P,L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

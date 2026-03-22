@@ -84,6 +84,26 @@ class PatientController extends Controller
     }
 
     /**
+     * GET /api/patients/{patient}/notes
+     */
+    public function notes(Request $request, int $patient): JsonResponse
+    {
+        $model = ClinicalPatient::find($patient);
+
+        if (! $model) {
+            return ApiResponse::error('Patient not found', 404);
+        }
+
+        $perPage = min((int) $request->input('per_page', 50), 100);
+
+        $paginator = $model->clinicalNotes()
+            ->orderBy('authored_at', 'desc')
+            ->paginate($perPage);
+
+        return ApiResponse::paginated($paginator, 'Clinical notes retrieved');
+    }
+
+    /**
      * POST /api/patients
      */
     public function store(Request $request): JsonResponse
