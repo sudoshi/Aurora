@@ -20,13 +20,17 @@ The aurora borealis is the brand. The internal UI should evoke the same awe: dee
 
 All design decisions are constrained by clinical UI standards:
 
-- **WCAG AAA contrast (7:1)** for all body text on surfaces
+- **WCAG contrast guarantees (scoped):**
+  - `--text-primary` and `--text-secondary`: WCAG AAA (7:1) on all surfaces
+  - `--text-muted`: WCAG AA (4.5:1) minimum on all surfaces
+  - `--text-ghost` and `--text-disabled`: decorative/non-informational only — exempt from contrast requirements. Never used for text that conveys meaning.
+  - `--accent` text: WCAG AA (4.5:1) — use `--accent-light` (#A78BFA) when rendering accent-colored text on dark surfaces
 - **Aurora green used for accents/borders/indicators only** — never as body text color. All readable text uses the cool white scale
 - **Red reserved exclusively** for alerts, errors, and clinical warnings — never for branding or decoration
 - **Color is never the sole indicator** — all status states pair color with icons, labels, or patterns
 - **`prefers-reduced-motion` respected** — all animations disabled when user prefers reduced motion
-- **High-contrast mode** — design tokens include `--hc-` override set
-- **Minimum 12px (0.75rem)** for all readable text including labels
+- **High-contrast mode** — `@media (prefers-contrast: more)` activates `--hc-*` token overrides (defined in Section 10)
+- **Minimum 12px (0.75rem)** for all readable text including labels — `--text-xs` is bumped from 11px to 12px
 - **15px (0.9375rem) base font** — clinical users work on large monitors, often at distance
 
 ---
@@ -40,6 +44,7 @@ All design decisions are constrained by clinical UI standards:
 --primary-light:    #33E0A8;
 --primary-dark:     #00A56E;
 --primary-darker:   #008555;
+--primary-lighter:  #50E8B8;   /* for badges and light-on-dark text */
 --primary-glow:     rgba(0, 214, 143, 0.35);
 --primary-bg:       rgba(0, 214, 143, 0.12);
 --primary-border:   rgba(0, 214, 143, 0.25);
@@ -48,12 +53,14 @@ All design decisions are constrained by clinical UI standards:
 ### Accent — Aurora Violet (replaces Parthenon gold/teal)
 
 ```css
---accent:           #8B5CF6;
+--accent:           #9D75F8;   /* brightened from #8B5CF6 — passes AA (4.5:1) on --surface-raised */
 --accent-light:     #A78BFA;
+--accent-lighter:   #C4B5FD;   /* for text on darkest surfaces where AA is tight */
 --accent-dark:      #6D28D9;
---accent-pale:      rgba(139, 92, 246, 0.15);
---accent-bg:        rgba(139, 92, 246, 0.10);
---accent-glow:      rgba(139, 92, 246, 0.30);
+--accent-muted:     #7C4FD0;   /* subdued variant for backgrounds */
+--accent-pale:      rgba(157, 117, 248, 0.15);
+--accent-bg:        rgba(157, 117, 248, 0.10);
+--accent-glow:      rgba(157, 117, 248, 0.30);
 ```
 
 ### Secondary — Aurora Cyan (new, no Parthenon equivalent)
@@ -108,12 +115,12 @@ All design decisions are constrained by clinical UI standards:
 --warning-bg:      rgba(240, 176, 64, 0.15);
 --warning-border:  rgba(240, 176, 64, 0.30);
 
-/* Success */
---success:         #34D9A0;
---success-dark:    #22B880;
---success-light:   #50E8B8;
---success-bg:      rgba(52, 217, 160, 0.15);
---success-border:  rgba(52, 217, 160, 0.30);
+/* Success — shifted toward blue-green to differentiate from primary aurora green */
+--success:         #2DD4BF;
+--success-dark:    #20B8A5;
+--success-light:   #45E0CF;
+--success-bg:      rgba(45, 212, 191, 0.15);
+--success-border:  rgba(45, 212, 191, 0.30);
 
 /* Info */
 --info:            #60A5FA;
@@ -128,15 +135,24 @@ All design decisions are constrained by clinical UI standards:
 ```css
 --border-default: rgba(255, 255, 255, 0.06);
 --border-subtle:  rgba(255, 255, 255, 0.03);
---border-hover:   rgba(139, 92, 246, 0.20);   /* violet tint on hover */
---border-focus:   rgba(139, 92, 246, 0.40);
+--border-hover:   rgba(157, 117, 248, 0.20);   /* violet tint on hover */
+--border-focus:   rgba(157, 117, 248, 0.40);
 --border-active:  rgba(0, 214, 143, 0.30);
 ```
 
 ### Focus Ring
 
 ```css
---focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.25);   /* violet, not gold */
+--focus-ring: 0 0 0 3px rgba(157, 117, 248, 0.25);   /* violet, not gold */
+```
+
+### Semantic Glow Tokens
+
+```css
+--critical-glow:   rgba(240, 96, 122, 0.25);
+--warning-glow:    rgba(240, 176, 64, 0.25);
+--success-glow:    rgba(45, 212, 191, 0.25);
+--info-glow:       rgba(96, 165, 250, 0.25);
 ```
 
 ### Glassmorphism (recalibrated for cold surfaces)
@@ -148,6 +164,13 @@ All design decisions are constrained by clinical UI standards:
 --glass-03: rgba(255, 255, 255, 0.08);
 --glass-04: rgba(255, 255, 255, 0.12);
 --glass-05: rgba(255, 255, 255, 0.16);
+--glass-dark-00: rgba(0, 0, 0, 0.10);
+--glass-dark-01: rgba(0, 0, 0, 0.20);
+--glass-dark-02: rgba(0, 0, 0, 0.30);
+--blur-sm: blur(4px);
+--blur-md: blur(8px);
+--blur-lg: blur(16px);
+--blur-xl: blur(24px);
 ```
 
 ### Gradients
@@ -156,9 +179,60 @@ All design decisions are constrained by clinical UI standards:
 --gradient-panel:        linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
 --gradient-panel-raised: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
 --gradient-panel-inset:  linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.10) 100%);
---gradient-aurora:       linear-gradient(135deg, #00D68F, #8B5CF6);
+--gradient-aurora:       linear-gradient(135deg, #00D68F, #9D75F8);
 --gradient-aurora-cyan:  linear-gradient(135deg, #00D68F, #22D3EE);
 --gradient-primary:      linear-gradient(135deg, #00D68F, #00A56E);
+/* Replaces Parthenon's --gradient-crimson and --gradient-teal */
+```
+
+### Domain Status Tokens (mapped to new palette)
+
+```css
+/* Research domain status */
+--dqd-pass:        var(--success);
+--dqd-pass-bg:     var(--success-bg);
+--dqd-warn:        var(--warning);
+--dqd-warn-bg:     var(--warning-bg);
+--dqd-fail:        var(--critical);
+--dqd-fail-bg:     var(--critical-bg);
+--dqd-na:          var(--text-ghost);
+
+--job-queued:      var(--text-muted);
+--job-running:     var(--info);
+--job-running-bg:  var(--info-bg);
+--job-success:     var(--success);
+--job-success-bg:  var(--success-bg);
+--job-failed:      var(--critical);
+--job-failed-bg:   var(--critical-bg);
+--job-cancelled:   var(--text-ghost);
+
+--cohort-draft:    var(--text-muted);
+--cohort-active:   var(--success);
+--cohort-archived: var(--text-ghost);
+--cohort-error:    var(--critical);
+
+--source-healthy:     var(--success);
+--source-degraded:    var(--warning);
+--source-unavailable: var(--critical);
+--source-unknown:     var(--text-ghost);
+
+--ai-high:    var(--success);
+--ai-medium:  var(--warning);
+--ai-low:     var(--critical);
+--ai-pending: var(--info);
+```
+
+### Chart Categorical (tuned to new palette)
+
+```css
+--chart-1: var(--primary);     /* aurora green */
+--chart-2: var(--info);        /* blue */
+--chart-3: var(--accent);      /* violet */
+--chart-4: var(--warning);     /* amber */
+--chart-5: var(--secondary);   /* cyan */
+--chart-6: #A78BFA;            /* light violet */
+--chart-7: #F472B6;            /* pink */
+--chart-8: var(--text-muted);  /* steel grey */
 ```
 
 ---
@@ -184,6 +258,13 @@ All design decisions are constrained by clinical UI standards:
 - Auto-closes on navigation or click-outside
 - Transition: `transform: translateX` + `ease-out` over 200ms
 
+**Flyout Interaction Spec:**
+- **Z-index:** `var(--z-sidebar)` (100) — same as rail, overlaps content but sits below topbar (`--z-topbar: 50` — note: topbar uses `sticky` so it stacks above)
+- **Touch devices:** hover trigger disabled; click-only toggle. Detected via `@media (hover: none)` or pointer event detection
+- **Keyboard navigation:** Tab from rail icon enters flyout children; arrow keys move between children; Escape closes flyout and returns focus to rail icon; Tab past last child closes flyout
+- **Multi-flyout:** only one flyout open at a time. Hovering a different rail icon closes the current flyout and opens the new one after a 100ms delay (prevents accidental triggers during vertical mouse travel)
+- **Screen reader:** flyout container has `role="menu"`, `aria-expanded`, and `aria-label` matching the parent icon's label. Children are `role="menuitem"`
+
 **Active State (rail icon):**
 - Icon color: `--primary` (#00D68F)
 - Below icon: 4px diameter glowing dot, centered
@@ -193,7 +274,7 @@ All design decisions are constrained by clinical UI standards:
 **Active State (flyout child):**
 - Text color: `--text-primary` (white)
 - 4px violet dot to the left of text
-- Background: `rgba(139, 92, 246, 0.08)`
+- Background: `rgba(157, 117, 248, 0.08)`
 
 ### Header → Transparent Frosted Bar
 
@@ -218,14 +299,17 @@ All design decisions are constrained by clinical UI standards:
 ### Content Area
 
 ```css
+/* Token update: --content-max-width: 1800px (up from 1600px) */
+/* Token update: --content-padding: var(--space-8) (32px, up from 24px) */
+
 .content-main {
-  padding: 32px;
-  max-width: 1800px;
+  padding: var(--content-padding);
+  max-width: var(--content-max-width);
 }
 ```
 
 - More breathing room than Parthenon's `24px` padding
-- Panels have `16px` gap between them (up from `16px` — keeping consistent)
+- Panels have `16px` gap between them (unchanged)
 
 ---
 
@@ -254,7 +338,7 @@ All design decisions are constrained by clinical UI standards:
 /* NO ::before shimmer line — that's Parthenon's signature */
 
 .panel:hover {
-  border-color: rgba(139, 92, 246, 0.20);
+  border-color: rgba(157, 117, 248, 0.20);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.50), 0 0 20px rgba(0, 214, 143, 0.06);
 }
 ```
@@ -272,8 +356,22 @@ All design decisions are constrained by clinical UI standards:
   line-height: 1.1;
 }
 
-.metric-card:hover {
-  border-image: linear-gradient(135deg, rgba(0,214,143,0.3), rgba(139,92,246,0.3)) 1;
+/* Hover: gradient border via ::after pseudo (border-image breaks border-radius) */
+.metric-card {
+  position: relative;
+}
+.metric-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px; /* card radius + 1px */
+  background: linear-gradient(135deg, rgba(0,214,143,0.3), rgba(157,117,248,0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+.metric-card:hover::after {
+  opacity: 1;
   /* NO translateY — that's Parthenon's move */
 }
 ```
@@ -294,16 +392,16 @@ All design decisions are constrained by clinical UI standards:
 
 /* Selected row */
 .data-table tbody tr.selected {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(157, 117, 248, 0.08);
   border-left: 2px solid var(--accent);
 }
 
-/* Header */
+/* Header — uses --text-muted (not --text-ghost) since headers convey meaning */
 .data-table thead th {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: var(--text-ghost);
+  color: var(--text-muted);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 ```
@@ -331,7 +429,7 @@ All design decisions are constrained by clinical UI standards:
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .btn-secondary:hover:not(:disabled) {
-  border-color: rgba(139, 92, 246, 0.25);
+  border-color: rgba(157, 117, 248, 0.25);
   color: var(--text-primary);
 }
 
@@ -376,7 +474,7 @@ All design decisions are constrained by clinical UI standards:
 ```css
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);  /* violet ring */
+  box-shadow: 0 0 0 3px rgba(157, 117, 248, 0.25);  /* violet ring */
 }
 ```
 
@@ -426,10 +524,41 @@ All design decisions are constrained by clinical UI standards:
 ### Scale
 
 ```css
+--text-xs:   0.75rem;    /* 12px, up from 11px — meets healthcare 12px minimum */
+--text-sm:   0.8125rem;  /* 13px, up from 12px */
 --text-base: 0.9375rem;  /* 15px, up from 14px — healthcare accessibility */
+/* All other scale values shift proportionally */
 ```
 
-All other scale values remain proportional. Minimum readable size: `0.75rem` (12px).
+### Text Utility Updates
+
+```css
+/* These utilities must switch from --font-body to --font-display */
+.text-panel-title { font-family: var(--font-display); }
+.text-section     { font-family: var(--font-display); }
+.text-value       { font-family: var(--font-display); }
+.page-title       { font-family: var(--font-display); }
+```
+
+### Font Loading Strategy
+
+Self-hosted woff2 files with `font-display: swap` (healthcare apps need network reliability):
+
+```css
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Variable.woff2') format('woff2');
+  font-weight: 100 800;
+  font-display: swap;
+}
+```
 
 ---
 
@@ -455,7 +584,7 @@ All other scale values remain proportional. Minimum readable size: `0.75rem` (12
 |---|---|---|
 | Surface tone | Warm grey-black (#08080A) | Cold blue-black (#050510) |
 | Primary color | Dark crimson (#9B1B30) | Aurora green (#00D68F) |
-| Accent color | Research gold (#C9A227) | Aurora violet (#8B5CF6) |
+| Accent color | Research gold (#C9A227) | Aurora violet (#9D75F8) |
 | Third color | None | Aurora cyan (#22D3EE) |
 | Text warmth | Ivory (#F0EDE8) | Cool blue-white (#E8ECF4) |
 | Sidebar | Full 260px, collapsible to 72px | 64px rail + 240px flyout |
@@ -485,6 +614,13 @@ All other scale values remain proportional. Minimum readable size: `0.75rem` (12
 - `frontend/src/styles/components/cards.css` — panel + metric-card glass treatment
 - `frontend/src/styles/components/forms.css` — button variants, focus states, inputs
 
+### Component CSS Token Cascades (hardcoded rgba values must be audited)
+- `frontend/src/styles/components/modals.css` — backdrop, panel glass, close button
+- `frontend/src/styles/components/tables.css` — row hover, selected, header colors
+- `frontend/src/styles/components/badges.css` — contains hardcoded Parthenon-era rgba values (e.g., `rgba(155, 27, 48, 0.15)`) that must be replaced with new tokens
+- `frontend/src/styles/components/alerts.css` — toast/alert left-border pattern (see note in Section 4)
+- `frontend/src/styles/components/ai.css` — Abby panel styling
+
 ### Component TSX Changes
 - `frontend/src/components/layout/Sidebar.tsx` — rewrite to rail + flyout architecture
 - `frontend/src/components/navigation/TopNavigation.tsx` — transparent header, new layout
@@ -492,8 +628,8 @@ All other scale values remain proportional. Minimum readable size: `0.75rem` (12
 - `frontend/src/components/layout/Header.tsx` — frosted header with blur
 
 ### New Dependencies
-- `Inter` font (Google Fonts or self-hosted)
-- `JetBrains Mono` font (Google Fonts or self-hosted)
+- `Inter` font (self-hosted woff2 — see Section 5 Font Loading Strategy)
+- `JetBrains Mono` font (self-hosted woff2 — see Section 5 Font Loading Strategy)
 
 ### Unchanged
 - `frontend/src/features/auth/` — login page stays as-is (user confirmed)
@@ -502,9 +638,77 @@ All other scale values remain proportional. Minimum readable size: `0.75rem` (12
 
 ---
 
-## 9. Accessibility Checklist
+## 9. Global Styles
 
-- [ ] All text meets WCAG AAA (7:1) contrast on its background
+### Scrollbar
+
+```css
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-accent);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--surface-highlight);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-accent) transparent;
+}
+```
+
+### Text Selection
+
+```css
+::selection {
+  background-color: rgba(157, 117, 248, 0.30);  /* violet accent */
+  color: var(--text-primary);
+}
+```
+
+### Toast/Alert Left-Border Pattern
+
+The existing alerts use a 3px left-border indicator, which echoes Parthenon's signature 3px-left-border nav pattern. **Decision: acceptable for non-navigation uses.** Toasts, alerts, and selected table rows may continue using a left-border indicator — the context is sufficiently different from sidebar navigation that it does not undermine visual differentiation.
+
+---
+
+## 10. High-Contrast Mode
+
+```css
+@media (prefers-contrast: more) {
+  :root {
+    --hc-text-primary:   #FFFFFF;
+    --hc-text-secondary: #D0D4DC;
+    --hc-text-muted:     #A0A8B8;
+    --hc-border-default: rgba(255, 255, 255, 0.15);
+    --hc-focus-ring:     0 0 0 3px rgba(157, 117, 248, 0.50);
+    --hc-surface-raised: #12122E;
+
+    --text-primary:   var(--hc-text-primary);
+    --text-secondary: var(--hc-text-secondary);
+    --text-muted:     var(--hc-text-muted);
+    --border-default: var(--hc-border-default);
+    --focus-ring:     var(--hc-focus-ring);
+    --surface-raised: var(--hc-surface-raised);
+  }
+}
+```
+
+---
+
+## 11. Accessibility Checklist
+
+- [ ] `--text-primary` and `--text-secondary` meet WCAG AAA (7:1) on all surfaces
+- [ ] `--text-muted` meets WCAG AA (4.5:1) on all surfaces
+- [ ] `--text-ghost` used only for decorative/non-informational elements
 - [ ] Primary green never used as text color for body copy
 - [ ] Red used exclusively for errors/alerts/clinical warnings
 - [ ] All status indicators use color + icon + label (never color alone)
