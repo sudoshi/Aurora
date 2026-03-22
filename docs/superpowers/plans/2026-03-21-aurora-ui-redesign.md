@@ -44,10 +44,14 @@
 | `frontend/public/fonts/Inter-Variable.woff2` | Self-hosted Inter variable font |
 | `frontend/public/fonts/JetBrainsMono-Variable.woff2` | Self-hosted JetBrains Mono variable font |
 
+### Bulk Color Sweep (hardcoded Tailwind hex values in TSX)
+70+ files across `frontend/src/features/` and `frontend/src/components/` use inline Tailwind classes like `bg-[#151518]`, `text-[#F0EDE8]`, `border-[#232328]` that bypass CSS token cascade. These must be swept and replaced. See Task 18.
+
 ### Unchanged (verified)
 - `frontend/src/features/auth/` — login page stays as-is
 - `frontend/src/components/layout/CommandPalette.tsx` — uses CSS classes, cascades via tokens
 - `frontend/src/components/layout/AbbyPanel.tsx` — has one hardcoded `#0E0E11` in history panel, minor fix
+- `frontend/src/components/navigation/TopNavigation.tsx` — appears unused (DashboardLayout uses Header.tsx), leave as-is or remove later
 
 ---
 
@@ -113,7 +117,15 @@ Replace the full contents of `tokens-dark.css` with the new "Northern Sky" palet
 11. Gradients (including `--gradient-aurora`, replacing `--gradient-crimson`/`--gradient-teal`)
 12. Domain status tokens (dqd, job, cohort, source, ai)
 13. Chart categorical
-14. OMOP domain colors (remapped: Condition→critical, Measurement→primary, Visit→accent)
+14. OMOP domain colors — **SEMANTIC REMAPPING** (these changed meaning, not just color):
+    - `--domain-condition: var(--critical)` (was `var(--primary)` crimson → now critical red)
+    - `--domain-drug: var(--info)` (unchanged)
+    - `--domain-measurement: var(--primary)` (was `var(--success)` → now aurora green)
+    - `--domain-visit: var(--accent)` (was `var(--accent)` teal → now violet)
+    - `--domain-observation: #A78BFA`
+    - `--domain-procedure: #F472B6`
+    - `--domain-device: #FB923C`
+    - `--domain-death: var(--critical)`
 15. High-contrast `@media (prefers-contrast: more)` block
 
 Copy every value directly from spec Sections 1 and 10.
@@ -142,12 +154,12 @@ git commit -m "feat(tokens): rewrite color system — Northern Sky palette"
 
 - [ ] **Step 1: Update font stacks**
 
-Replace the font stack section:
+**IMPORTANT:** `--font-display` is a NEW variable that does not exist in the current file. The current file only has `--font-body` and `--font-mono`. You must ADD the new line, not just replace existing ones.
 
 ```css
---font-display: 'Inter', 'Helvetica Neue', sans-serif;
---font-body:    'Source Sans 3', 'Helvetica Neue', sans-serif;
---font-mono:    'JetBrains Mono', Consolas, monospace;
+--font-display: 'Inter', 'Helvetica Neue', sans-serif;  /* NEW — add this line */
+--font-body:    'Source Sans 3', 'Helvetica Neue', sans-serif;  /* existing — unchanged */
+--font-mono:    'JetBrains Mono', Consolas, monospace;  /* existing — change from IBM Plex Mono */
 ```
 
 - [ ] **Step 2: Update type scale**
@@ -204,9 +216,9 @@ git commit -m "feat(tokens): update typography, scale, and layout variables"
 **Files:**
 - Modify: `frontend/src/styles/app.css`
 
-- [ ] **Step 1: Add @font-face declarations before the @import lines**
+- [ ] **Step 1: Add @font-face declarations AFTER the @import lines**
 
-Add at the very top of app.css, before `@import "tailwindcss"`:
+**IMPORTANT:** CSS `@import` rules must come before all other at-rules. Place `@font-face` declarations AFTER the existing `@import` block but BEFORE the `body` styles:
 
 ```css
 @font-face {
@@ -568,6 +580,8 @@ git commit -m "feat(nav): rail icons with glow dots, flyout items, glowing tab u
 
 - [ ] **Step 2: Add staggered animation delays**
 
+Note: This relies on panels being direct siblings of a common container. If panels are wrapped in individual grid cells, all will match `:nth-child(1)` and animate simultaneously. Verify the layout structure and adjust if needed.
+
 ```css
 .panel:nth-child(1) { animation-delay: 0ms; }
 .panel:nth-child(2) { animation-delay: 50ms; }
@@ -614,15 +628,21 @@ git commit -m "feat(nav): rail icons with glow dots, flyout items, glowing tab u
 
 - [ ] **Step 4: Add panel-highlight variant**
 
+Note: `border-image` breaks `border-radius`, so use a `::before` pseudo for the gradient strip.
+
 ```css
 .panel-highlight {
-  border-left: 2px solid transparent;
-  border-image: linear-gradient(to bottom, var(--primary), var(--accent)) 1;
-  border-image-slice: 1;
-  /* Only applies to left border */
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-left: calc(var(--panel-padding) + 2px);
+}
+.panel-highlight::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+  border-radius: 16px 0 0 16px;
 }
 ```
 
@@ -677,7 +697,13 @@ git commit -m "feat(cards): glass constellation panels, gradient metric text, ho
 }
 ```
 
-- [ ] **Step 4: Update focus ring to violet**
+- [ ] **Step 4: Update form-select SVG chevron color**
+
+The `form-select` background-image contains an inline SVG with a hardcoded stroke color. Update from old `--text-muted` value to new:
+
+Replace `stroke='%238A857D'` with `stroke='%237A8298'` in the SVG data URI.
+
+- [ ] **Step 5: Update focus ring to violet**
 
 ```css
 :focus-visible {
@@ -686,11 +712,11 @@ git commit -m "feat(cards): glass constellation panels, gradient metric text, ho
 }
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add frontend/src/styles/components/forms.css
-git commit -m "feat(forms): green gradient buttons, glass secondary, violet focus ring"
+git commit -m "feat(forms): green gradient buttons, glass secondary, violet focus ring, SVG chevron fix"
 ```
 
 ---
@@ -1009,6 +1035,69 @@ git commit -m "feat: complete Aurora Northern Light UI redesign — visual verif
 
 ---
 
+## Task 18: Bulk sweep — Replace hardcoded Parthenon hex values in all TSX files
+
+**Files:**
+- Modify: 70+ files across `frontend/src/features/` and `frontend/src/components/`
+
+This is the highest-risk task. Inline Tailwind classes like `bg-[#151518]`, `text-[#F0EDE8]`, `border-[#232328]` bypass CSS token cascade and will show old warm-ivory/crimson colors if not updated.
+
+- [ ] **Step 1: Generate a list of all affected files**
+
+```bash
+grep -rln "0E0E11\|151518\|232328\|C5C0B8\|F0EDE8\|9B1B30\|C9A227\|2A9D8F\|08080A\|1C1C20\|2A2A30\|8A857D\|5A5650\|454540" frontend/src/ --include="*.tsx" --include="*.ts" | grep -v "auth/" | sort
+```
+
+- [ ] **Step 2: Apply color mapping**
+
+Use find-and-replace across all matched files with this mapping (old → new):
+
+| Old (Parthenon) | New (Aurora) | Context |
+|---|---|---|
+| `#08080A` | `#050510` | surface-darkest |
+| `#0E0E11` | `#0A0A18` | surface-base |
+| `#151518` | `#10102A` | surface-raised |
+| `#1C1C20` | `#16163A` | surface-overlay |
+| `#232328` | `#1C1C48` | surface-elevated |
+| `#2A2A30` | `#222256` | surface-accent |
+| `#323238` | `#2A2A60` | surface-highlight |
+| `#0B0B0E` | `#060612` | sidebar-bg |
+| `#F0EDE8` | `#E8ECF4` | text-primary |
+| `#C5C0B8` | `#B4BAC8` | text-secondary |
+| `#8A857D` | `#7A8298` | text-muted |
+| `#5A5650` | `#4A5068` | text-ghost |
+| `#454540` | `#3A3E50` | text-disabled |
+| `#9B1B30` | `#00D68F` | primary |
+| `#B82D42` | `#33E0A8` | primary-light |
+| `#6A1220` | `#00A56E` | primary-dark |
+| `#C9A227` | `#9D75F8` | accent (was gold) |
+| `#2A9D8F` | `#9D75F8` | accent (was teal) |
+| `#E85A6B` | `#F0607A` | critical |
+| `#2DD4BF` | `#2DD4BF` | success (unchanged) |
+
+**IMPORTANT:** Where possible, prefer replacing hardcoded hex with `var(--token-name)` inline style references. Where Tailwind bracket syntax is used (`bg-[#hex]`), replace the hex value directly.
+
+- [ ] **Step 3: Handle edge cases**
+
+Some files may use hex values in contexts where they shouldn't be swapped blindly (e.g., chart colors, image references). Review grep output contextually — don't blindly find-and-replace.
+
+- [ ] **Step 4: Verify no old colors remain**
+
+```bash
+grep -rn "9B1B30\|C9A227\|2A9D8F\|0E0E11\|151518\|08080A\|F0EDE8\|C5C0B8" frontend/src/ --include="*.tsx" --include="*.ts" | grep -v "auth/"
+```
+
+Expected: zero matches (excluding auth/).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add frontend/src/
+git commit -m "fix: sweep all TSX files — replace hardcoded Parthenon hex with Aurora palette"
+```
+
+---
+
 ## Task Dependency Graph
 
 ```
@@ -1030,8 +1119,11 @@ Task 13 (Header.tsx) ───────────────────�
 Task 14 (DashboardLayout.tsx) ─────────────────┤│
 Task 15 (AbbyPanel.tsx) ───────────────────────┤│
 Task 16 (uiStore.ts) ─────────────────────────┐││
+Task 18 (bulk hex sweep) ─────────────────────┤││
                                                 ▼▼▼
 Task 17 (visual verification) ──────────────── DONE
 ```
 
-**Parallelism:** Tasks 1-4 can run in parallel. Tasks 5-11 can run in parallel (all CSS-only). Tasks 12-16 can run in parallel (all TSX). Task 17 runs last.
+**Parallelism:** Tasks 1-4 can run in parallel. Tasks 5-11 can run in parallel (all CSS-only). Tasks 12-16 + 18 can run in parallel (all TSX). Task 17 runs last.
+
+**Note:** Intermediate commits will show partially-updated visuals. This is acceptable on a feature branch — the final state after Task 17 is the only one that matters.
