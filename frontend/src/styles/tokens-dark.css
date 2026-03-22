@@ -1,69 +1,77 @@
 /* ============================================================
-   Aurora Design Tokens — Color System (Dark Crimson + Gold + Ivory)
-   Ported from Parthenon DESIGNLOG.md §2
+   Aurora Design Tokens — Color System (Northern Sky)
+   Redesign: 2026-03-21 — Northern Light, Luminous and Ethereal
+   Replaces: Dark Crimson + Gold + Ivory (Parthenon-era)
    ============================================================ */
 
 :root {
-  /* 2.1 Primary — Dark Crimson */
-  --primary:          #9B1B30;
-  --primary-light:    #B82D42;
-  --primary-dark:     #6A1220;
-  --primary-lighter:  #D04058;
-  --primary-glow:     rgba(155, 27, 48, 0.4);
-  --primary-bg:       rgba(155, 27, 48, 0.15);
-  --primary-border:   rgba(184, 45, 66, 0.4);
+  /* 1.1 Primary — Aurora Green */
+  --primary:          #00D68F;
+  --primary-light:    #33E0A8;
+  --primary-dark:     #00A56E;
+  --primary-darker:   #008555;
+  --primary-lighter:  #50E8B8;   /* for badges and light-on-dark text */
+  --primary-glow:     rgba(0, 214, 143, 0.35);
+  --primary-bg:       rgba(0, 214, 143, 0.12);
+  --primary-border:   rgba(0, 214, 143, 0.25);
 
-  /* 2.2 Accent — Dark Teal */
-  --accent:           #2A9D8F;
-  --accent-dark:      #1F7A6E;
-  --accent-light:     #3DB8A9;
-  --accent-lighter:   #56D4C4;
-  --accent-muted:     #1F7A6E;
-  --accent-pale:      rgba(42, 157, 143, 0.15);
-  --accent-bg:        rgba(42, 157, 143, 0.10);
-  --accent-glow:      rgba(42, 157, 143, 0.30);
-  --focus-ring:       0 0 0 3px var(--accent-pale);
+  /* 1.2 Accent — Aurora Violet */
+  --accent:           #9D75F8;   /* brightened — passes AA (4.5:1) on --surface-raised */
+  --accent-light:     #A78BFA;
+  --accent-lighter:   #C4B5FD;   /* for text on darkest surfaces where AA is tight */
+  --accent-dark:      #6D28D9;
+  --accent-muted:     #7C4FD0;   /* subdued variant for backgrounds */
+  --accent-pale:      rgba(157, 117, 248, 0.15);
+  --accent-bg:        rgba(157, 117, 248, 0.10);
+  --accent-glow:      rgba(157, 117, 248, 0.30);
 
-  /* 2.3 Surfaces — Dark Grey Stack */
-  --surface-darkest:   #08080A;
-  --surface-base:      #0E0E11;
-  --surface-raised:    #151518;
-  --surface-overlay:   #1C1C20;
-  --surface-elevated:  #232328;
-  --surface-accent:    #2A2A30;
-  --surface-highlight: #323238;
+  /* 1.3 Secondary — Aurora Cyan (new, no Parthenon equivalent) */
+  --secondary:        #22D3EE;
+  --secondary-light:  #67E8F9;
+  --secondary-dark:   #06B6D4;
+  --secondary-bg:     rgba(34, 211, 238, 0.10);
+  --secondary-glow:   rgba(34, 211, 238, 0.25);
 
-  --sidebar-bg:        #0B0B0E;
-  --sidebar-bg-light:  #131316;
+  /* 1.4 Surfaces — Cold Space Black */
+  --surface-darkest:   #050510;   /* hint of blue */
+  --surface-base:      #0A0A18;   /* cold midnight */
+  --surface-raised:    #10102A;   /* deep indigo-black */
+  --surface-overlay:   #16163A;
+  --surface-elevated:  #1C1C48;
+  --surface-accent:    #222256;
+  --surface-highlight: #2A2A60;
 
-  /* 2.4 Text — Ivory Scale */
-  --text-primary:   #F0EDE8;
-  --text-secondary: #C5C0B8;
-  --text-muted:     #8A857D;
-  --text-ghost:     #5A5650;
-  --text-disabled:  #454540;
+  --sidebar-bg:        #060612;
+  --sidebar-bg-light:  #0C0C1E;
 
-  /* 2.5 Semantic — Critical / Error */
-  --critical:        #E85A6B;
-  --critical-dark:   #C94A5A;
-  --critical-light:  #FF6B7D;
-  --critical-bg:     rgba(232, 90, 107, 0.20);
-  --critical-border: rgba(232, 90, 107, 0.30);
-  --critical-glow:   rgba(232, 90, 107, 0.25);
+  /* 1.5 Text — Cool White */
+  --text-primary:   #E8ECF4;   /* cool blue-white */
+  --text-secondary: #B4BAC8;
+  --text-muted:     #7A8298;
+  --text-ghost:     #4A5068;
+  --text-disabled:  #3A3E50;
+
+  /* 1.6 Semantic — Critical / Error (reserved for clinical alerts) */
+  --critical:        #F0607A;
+  --critical-dark:   #D44A62;
+  --critical-light:  #FF7A92;
+  --critical-bg:     rgba(240, 96, 122, 0.15);
+  --critical-border: rgba(240, 96, 122, 0.30);
+  --critical-glow:   rgba(240, 96, 122, 0.25);
 
   /* Warning */
-  --warning:         #E5A84B;
-  --warning-dark:    #C9923A;
-  --warning-light:   #F0B85C;
-  --warning-bg:      rgba(229, 168, 75, 0.20);
-  --warning-border:  rgba(229, 168, 75, 0.30);
-  --warning-glow:    rgba(229, 168, 75, 0.25);
+  --warning:         #F0B040;
+  --warning-dark:    #D49A2A;
+  --warning-light:   #F5C060;
+  --warning-bg:      rgba(240, 176, 64, 0.15);
+  --warning-border:  rgba(240, 176, 64, 0.30);
+  --warning-glow:    rgba(240, 176, 64, 0.25);
 
-  /* Success */
+  /* Success — shifted toward blue-green to differentiate from primary aurora green */
   --success:         #2DD4BF;
   --success-dark:    #20B8A5;
   --success-light:   #45E0CF;
-  --success-bg:      rgba(45, 212, 191, 0.20);
+  --success-bg:      rgba(45, 212, 191, 0.15);
   --success-border:  rgba(45, 212, 191, 0.30);
   --success-glow:    rgba(45, 212, 191, 0.25);
 
@@ -71,11 +79,45 @@
   --info:            #60A5FA;
   --info-dark:       #4A94E8;
   --info-light:      #78B4FF;
-  --info-bg:         rgba(96, 165, 250, 0.20);
+  --info-bg:         rgba(96, 165, 250, 0.15);
   --info-border:     rgba(96, 165, 250, 0.30);
   --info-glow:       rgba(96, 165, 250, 0.25);
 
-  /* 2.6 Research-Domain Status Colors */
+  /* 1.7 Borders */
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-subtle:  rgba(255, 255, 255, 0.03);
+  --border-hover:   rgba(157, 117, 248, 0.20);   /* violet tint on hover */
+  --border-focus:   rgba(157, 117, 248, 0.40);
+  --border-active:  rgba(0, 214, 143, 0.30);
+
+  /* 1.8 Focus Ring (violet, not gold) */
+  --focus-ring: 0 0 0 3px rgba(157, 117, 248, 0.25);
+
+  /* 1.9 Glassmorphism (recalibrated for cold surfaces) */
+  --glass-00: rgba(255, 255, 255, 0.02);
+  --glass-01: rgba(255, 255, 255, 0.04);
+  --glass-02: rgba(255, 255, 255, 0.06);
+  --glass-03: rgba(255, 255, 255, 0.08);
+  --glass-04: rgba(255, 255, 255, 0.12);
+  --glass-05: rgba(255, 255, 255, 0.16);
+  --glass-dark-00: rgba(0, 0, 0, 0.10);
+  --glass-dark-01: rgba(0, 0, 0, 0.20);
+  --glass-dark-02: rgba(0, 0, 0, 0.30);
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+
+  /* 1.10 Gradients */
+  --gradient-panel:        linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  --gradient-panel-raised: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  --gradient-panel-inset:  linear-gradient(135deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.10) 100%);
+  --gradient-aurora:       linear-gradient(135deg, #00D68F, #9D75F8);
+  --gradient-aurora-cyan:  linear-gradient(135deg, #00D68F, #22D3EE);
+  --gradient-primary:      linear-gradient(135deg, #00D68F, #00A56E);
+  /* --gradient-crimson and --gradient-teal removed — replaced by above */
+
+  /* 1.11 Research-Domain Status Colors */
   --dqd-pass:        var(--success);
   --dqd-pass-bg:     var(--success-bg);
   --dqd-warn:        var(--warning);
@@ -108,52 +150,42 @@
   --ai-low:     var(--critical);
   --ai-pending: var(--info);
 
-  /* 2.7 Borders */
-  --border-default: #2A2A30;
-  --border-subtle:  rgba(42, 42, 48, 0.60);
-  --border-hover:   #A68B1F;
-  --border-focus:   #C9A227;
-  --border-active:  #9B1B30;
+  /* 1.12 OMOP Domain Colors — semantic remapping */
+  --domain-condition:    var(--critical);       /* red — clinical condition severity */
+  --domain-drug:         var(--info);           /* blue */
+  --domain-measurement:  var(--primary);        /* aurora green */
+  --domain-visit:        var(--accent);         /* violet */
+  --domain-observation:  #A78BFA;               /* light violet */
+  --domain-procedure:    #F472B6;               /* pink */
+  --domain-device:       #FB923C;               /* orange */
+  --domain-death:        var(--critical);       /* red */
 
-  /* 2.8 Glassmorphism */
-  --glass-00: rgba(255, 255, 255, 0.02);
-  --glass-01: rgba(255, 255, 255, 0.04);
-  --glass-02: rgba(255, 255, 255, 0.07);
-  --glass-03: rgba(255, 255, 255, 0.10);
-  --glass-04: rgba(255, 255, 255, 0.14);
-  --glass-05: rgba(255, 255, 255, 0.18);
-  --glass-dark-00: rgba(0, 0, 0, 0.10);
-  --glass-dark-01: rgba(0, 0, 0, 0.20);
-  --glass-dark-02: rgba(0, 0, 0, 0.30);
-  --blur-sm: blur(4px);
-  --blur-md: blur(8px);
-  --blur-lg: blur(16px);
-  --blur-xl: blur(24px);
+  /* 1.13 Chart Categorical (tuned to new palette) */
+  --chart-1: var(--primary);     /* aurora green */
+  --chart-2: var(--info);        /* blue */
+  --chart-3: var(--accent);      /* violet */
+  --chart-4: var(--warning);     /* amber */
+  --chart-5: var(--secondary);   /* cyan */
+  --chart-6: #A78BFA;            /* light violet */
+  --chart-7: #F472B6;            /* pink */
+  --chart-8: var(--text-muted);  /* steel grey */
+}
 
-  /* 2.9 Gradients */
-  --gradient-panel:        linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.015) 100%);
-  --gradient-panel-raised: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
-  --gradient-panel-inset:  linear-gradient(135deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 100%);
-  --gradient-crimson:      linear-gradient(135deg, var(--primary), var(--primary-dark));
-  --gradient-teal:         linear-gradient(135deg, var(--accent-light), var(--accent-dark));
+/* 1.14 High-Contrast Mode */
+@media (prefers-contrast: more) {
+  :root {
+    --hc-text-primary:   #FFFFFF;
+    --hc-text-secondary: #D0D4DC;
+    --hc-text-muted:     #A0A8B8;
+    --hc-border-default: rgba(255, 255, 255, 0.15);
+    --hc-focus-ring:     0 0 0 3px rgba(157, 117, 248, 0.50);
+    --hc-surface-raised: #12122E;
 
-  /* OMOP Domain Colors */
-  --domain-condition:    var(--primary);
-  --domain-drug:         var(--info);
-  --domain-measurement:  var(--success);
-  --domain-visit:        var(--accent);
-  --domain-observation:  #A78BFA;
-  --domain-procedure:    #F472B6;
-  --domain-device:       #FB923C;
-  --domain-death:        var(--critical);
-
-  /* Chart Categorical */
-  --chart-1: var(--primary);
-  --chart-2: var(--info);
-  --chart-3: var(--success);
-  --chart-4: var(--warning);
-  --chart-5: var(--accent);
-  --chart-6: #A78BFA;
-  --chart-7: #F472B6;
-  --chart-8: var(--text-muted);
+    --text-primary:   var(--hc-text-primary);
+    --text-secondary: var(--hc-text-secondary);
+    --text-muted:     var(--hc-text-muted);
+    --border-default: var(--hc-border-default);
+    --focus-ring:     var(--hc-focus-ring);
+    --surface-raised: var(--hc-surface-raised);
+  }
 }
