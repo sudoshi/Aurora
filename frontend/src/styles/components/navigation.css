@@ -2,67 +2,96 @@
    Aurora Navigation Patterns
    ============================================================ */
 
-/* Nav item */
+/* Nav item — rail icon style (icon-only, column layout, 48×48px) */
 .nav-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
+  justify-content: center;
+  gap: 2px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md);
-  font-size: var(--text-base);
-  color: var(--text-secondary);
-  text-decoration: none;
+  color: var(--text-ghost);
   cursor: pointer;
   transition: color var(--duration-fast), background var(--duration-fast);
-  white-space: nowrap;
-  overflow: hidden;
-  min-height: 40px;
   border: none;
   background: transparent;
-  width: 100%;
-  text-align: left;
+  position: relative;
+  text-decoration: none;
 }
 .nav-item:hover {
-  background: var(--surface-overlay);
-  color: var(--text-primary);
+  color: var(--text-secondary);
+  background: rgba(0, 214, 143, 0.08);
 }
 .nav-item.active {
-  background: var(--primary-bg);
-  color: var(--text-primary);
-  border-left: 3px solid var(--primary);
-  padding-left: calc(var(--space-3) - 3px);
+  color: var(--primary);
 }
-.nav-item .nav-icon {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+/* Glowing dot beneath active icon — NOT a left border */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 6px rgba(0, 214, 143, 0.6);
 }
+.nav-item .nav-icon { flex-shrink: 0; width: 20px; height: 20px; }
 .nav-item .nav-label {
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 56px;
+  text-align: center;
 }
 
-/* Sub-nav item */
-.nav-sub-item {
+/* Flyout panel title */
+.flyout-title {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: var(--space-3) var(--space-4);
+  letter-spacing: -0.01em;
+}
+
+/* Flyout child item */
+.flyout-item {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  margin-left: var(--space-8);
-  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
   color: var(--text-muted);
   text-decoration: none;
   transition: color var(--duration-fast), background var(--duration-fast);
-  min-height: 32px;
+  cursor: pointer;
+  position: relative;
 }
-.nav-sub-item:hover {
-  background: var(--surface-overlay);
+.flyout-item:hover {
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
 }
-.nav-sub-item.active {
-  color: var(--accent);
-  background: var(--accent-bg);
+.flyout-item.active {
+  color: var(--text-primary);
+  background: rgba(157, 117, 248, 0.08);
+}
+.flyout-item.active::before {
+  content: '';
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 /* Tab bar */
@@ -87,7 +116,7 @@
   color: var(--text-primary);
 }
 .tab-item.active {
-  color: var(--accent);
+  color: var(--primary);
 }
 .tab-item.active::after {
   content: '';
@@ -96,8 +125,9 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--accent);
+  background: var(--primary);
   border-radius: var(--radius-full) var(--radius-full) 0 0;
+  box-shadow: 0 2px 8px rgba(0, 214, 143, 0.4);
 }
 
 /* Breadcrumb */
