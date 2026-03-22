@@ -3,23 +3,33 @@
    ============================================================ */
 
 .panel {
-  background: var(--gradient-panel);
+  background: linear-gradient(135deg, rgba(16, 16, 42, 0.8) 0%, rgba(16, 16, 42, 0.6) 100%);
   background-color: var(--surface-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
   box-shadow: var(--shadow-sm);
   padding: var(--panel-padding);
   position: relative;
   overflow: hidden;
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+  animation: fadeInUp 300ms var(--ease-out) both;
 }
-.panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--glass-03) 50%, transparent 100%);
+.panel:hover {
+  border-color: rgba(157, 117, 248, 0.20);
+  box-shadow: var(--shadow-sm), 0 0 20px rgba(0, 214, 143, 0.06);
 }
-.panel:hover { border-color: var(--border-hover); }
+
+/* Staggered animation delays for sibling panels */
+.panel:nth-child(1) { animation-delay: 0ms; }
+.panel:nth-child(2) { animation-delay: 50ms; }
+.panel:nth-child(3) { animation-delay: 100ms; }
+.panel:nth-child(4) { animation-delay: 150ms; }
+.panel:nth-child(5) { animation-delay: 200ms; }
+.panel:nth-child(6) { animation-delay: 250ms; }
+.panel:nth-child(7) { animation-delay: 300ms; }
+.panel:nth-child(8) { animation-delay: 350ms; }
 
 .panel-header {
   display: flex;
@@ -49,9 +59,26 @@
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-inset);
 }
-.panel-inset::before { display: none; }
 
-/* Metric Card */
+/* Panel highlight variant — left accent bar via ::before */
+.panel-highlight {
+  padding-left: calc(var(--panel-padding) + 2px);
+}
+.panel-highlight::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+  border-radius: 16px 0 0 16px;
+}
+
+/* ============================================================
+   Metric Card
+   ============================================================ */
+
 .metric-card {
   background: var(--gradient-panel);
   background-color: var(--surface-raised);
@@ -60,19 +87,21 @@
   padding: var(--space-4) var(--space-5);
   position: relative;
   overflow: hidden;
-  transition: border-color var(--duration-fast), transform var(--duration-fast);
+  transition: border-color var(--duration-fast);
 }
-.metric-card::before {
+
+/* Hover glow via ::after pseudo-element (avoids border-image breaking border-radius) */
+.metric-card::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--glass-03) 50%, transparent 100%);
+  inset: -1px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, rgba(0, 214, 143, 0.3), rgba(157, 117, 248, 0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
 }
-.metric-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
-}
+.metric-card:hover::after { opacity: 1; }
 
 .metric-card .metric-label {
   font-size: var(--text-xs);
@@ -82,9 +111,13 @@
   margin-bottom: var(--space-2);
 }
 .metric-card .metric-value {
+  font-family: var(--font-display);
   font-size: var(--text-4xl);
   font-weight: 600;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #00D68F, #22D3EE);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1.1;
 }
 .metric-card .metric-description {
@@ -103,11 +136,8 @@
 .metric-card .metric-trend.negative { color: var(--critical); }
 .metric-card .metric-trend.neutral  { color: var(--text-muted); }
 
+/* Semantic status variants — border only; gradient text handles color otherwise */
 .metric-card.critical { border-color: var(--critical-border); }
-.metric-card.critical .metric-value { color: var(--critical); }
-.metric-card.warning { border-color: var(--warning-border); }
-.metric-card.warning .metric-value { color: var(--warning); }
-.metric-card.success { border-color: var(--success-border); }
-.metric-card.success .metric-value { color: var(--success); }
-.metric-card.info { border-color: var(--info-border); }
-.metric-card.info .metric-value { color: var(--info); }
+.metric-card.warning  { border-color: var(--warning-border); }
+.metric-card.success  { border-color: var(--success-border); }
+.metric-card.info     { border-color: var(--info-border); }
