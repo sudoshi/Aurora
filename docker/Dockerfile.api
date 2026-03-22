@@ -1,0 +1,47 @@
+FROM php:8.4-fpm-alpine
+
+RUN apk add --no-cache \
+    postgresql-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    fcgi \
+    && docker-php-ext-install \
+    pdo_pgsql \
+    pgsql \
+    zip \
+    bcmath \
+    opcache
+
+# Install php-fpm-healthcheck
+RUN wget -O /usr/local/bin/php-fpm-healthcheck \
+    https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
+    && chmod +x /usr/local/bin/php-fpm-healthcheck
+
+# Enable status page for healthcheck
+RUN echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+# Copy composer files first for layer caching
+COPY backend/composer.json backend/composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
+
+# Copy application code
+COPY backend/ .
+
+# Generate optimized autoload
+RUN composer dump-autoload --optimize
+
+# Set permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
+# Cache config, routes, and views for production
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+EXPOSE 9000
+CMD ["php-fpm"]

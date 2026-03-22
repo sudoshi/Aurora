@@ -23,7 +23,8 @@ class SessionController extends Controller
             'per_page' => 'sometimes|integer|min:1|max:100',
         ]);
 
-        $query = Session::with(['creator:id,name', 'participants'])
+        $query = Session::with(['creator:id,name'])
+            ->withCount(['sessionCases', 'participants'])
             ->when($request->input('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->input('session_type'), fn ($q, $type) => $q->byType($type))
             ->orderByRaw("CASE WHEN status = 'live' THEN 0 WHEN status = 'scheduled' THEN 1 ELSE 2 END")

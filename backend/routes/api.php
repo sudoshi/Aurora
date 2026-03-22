@@ -47,9 +47,9 @@ Route::get('/health', fn () => response()->json([
     'timestamp' => now()->toISOString(),
 ]));
 
-// Auth (public)
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
+// Auth (public — tightly throttled)
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // Auth (protected)
 Route::middleware('auth:sanctum')->group(function () {
@@ -60,8 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
-    // AI Service Proxy (forwards to FastAPI)
-    Route::prefix('ai')->group(function () {
+    // AI Service Proxy (forwards to FastAPI — rate limited: 30/min)
+    Route::prefix('ai')->middleware('throttle:30,1')->group(function () {
         Route::post('{path}', [AiProxyController::class, 'proxy'])->where('path', '.*');
         Route::get('{path}', [AiProxyController::class, 'proxyGet'])->where('path', '.*');
     });
@@ -103,7 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('cases/{case}/annotations', [CaseAnnotationController::class, 'index']);
     Route::post('cases/{case}/annotations', [CaseAnnotationController::class, 'store']);
     Route::get('cases/{case}/documents', [CaseDocumentController::class, 'index']);
-    Route::post('cases/{case}/documents', [CaseDocumentController::class, 'store']);
+    Route::post('cases/{case}/documents', [CaseDocumentController::class, 'store'])->middleware('throttle:10,1');
     Route::delete('documents/{document}', [CaseDocumentController::class, 'destroy']);
 
     // ── Sessions ─────────────────────────────────────────────────────────

@@ -24,13 +24,8 @@ class DecisionController extends Controller
         }
 
         $decisions = Decision::where('case_id', $case)
-            ->with([
-                'proposer:id,name',
-                'finalizer:id,name',
-                'session:id,title',
-                'votes.user:id,name',
-                'followUps.assignee:id,name',
-            ])
+            ->with(['proposer:id,name'])
+            ->withCount(['votes', 'followUps'])
             ->orderByDesc('created_at')
             ->paginate((int) $request->input('per_page', 20));
 
