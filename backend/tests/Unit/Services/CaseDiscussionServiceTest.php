@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('mockery-alias');
+
 use App\Models\CaseDiscussion;
 use App\Models\ClinicalCase;
 use App\Models\DiscussionAttachment;

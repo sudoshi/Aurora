@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('mockery-alias');
+
 use App\Models\Event;
 use App\Services\EventService;
 use Illuminate\Database\Eloquent\Collection;
