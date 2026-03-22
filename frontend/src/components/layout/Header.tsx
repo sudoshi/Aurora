@@ -48,25 +48,32 @@ function UserDropdown() {
 
       {open && (
         <div
-          className="absolute right-0 mt-1 w-48 rounded-lg border border-[#232328] bg-[#151518] shadow-xl z-50 py-1"
+          className="absolute right-0 mt-1 w-48 rounded-lg shadow-xl z-50 py-1"
+          style={{ border: "1px solid var(--border-default)", background: "var(--surface-raised)" }}
         >
           <button
             onClick={() => {
               setOpen(false);
               navigate("/settings");
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#C5C0B8] hover:bg-[#1A1A1F] transition-colors"
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors"
+            style={{ color: "var(--text-secondary)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-overlay)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
             <Settings size={14} />
             Settings
           </button>
-          <div className="border-t border-[#232328] my-1" />
+          <div className="my-1" style={{ borderTop: "1px solid var(--border-default)" }} />
           <button
             onClick={() => {
               setOpen(false);
               logout();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#E85A6B] hover:bg-[#1A1A1F] transition-colors"
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors"
+            style={{ color: "var(--critical)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-overlay)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
             <LogOut size={14} />
             Logout
@@ -106,7 +113,7 @@ export function Header() {
               className="btn btn-ghost btn-sm"
               onClick={() => setAboutAbbyOpen(true)}
               style={{
-                color: "#2DD4BF",
+                color: "var(--primary)",
                 fontWeight: 600,
                 fontSize: "var(--text-sm)",
                 gap: "var(--space-1)",
