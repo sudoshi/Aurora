@@ -106,7 +106,8 @@ class CaseService
     public function getCasesForUser(int $userId, array $filters = []): LengthAwarePaginator
     {
         $query = ClinicalCase::forUser($userId)
-            ->with(['creator', 'teamMembers.user', 'patient']);
+            ->with(['creator', 'patient'])
+            ->withCount(['teamMembers', 'discussions', 'annotations', 'documents', 'decisions']);
 
         if (!empty($filters['status'])) {
             $query->byStatus($filters['status']);
