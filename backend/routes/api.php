@@ -16,6 +16,13 @@ use App\Http\Controllers\Commons\ActivityController;
 use App\Http\Controllers\Commons\DirectMessageController;
 use App\Http\Controllers\Commons\ObjectReferenceController;
 use App\Http\Controllers\Commons\ReviewRequestController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\DecisionController;
+use App\Http\Controllers\CaseController;
+use App\Http\Controllers\CaseDiscussionController;
+use App\Http\Controllers\CaseAnnotationController;
+use App\Http\Controllers\CaseDocumentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\AiProviderController;
@@ -47,6 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 
+    // Dashboard
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
     // Patient routes
     Route::prefix('patients')->group(function () {
         Route::get('/search', [PatientController::class, 'search']);
@@ -54,6 +64,39 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{patient}/stats', [PatientController::class, 'stats']);
         Route::post('/', [PatientController::class, 'store']);
     });
+
+    // ── Cases ─────────────────────────────────────────────────────────────
+    Route::apiResource('cases', CaseController::class);
+    Route::post('cases/{case}/team', [CaseController::class, 'addTeamMember']);
+    Route::delete('cases/{case}/team/{user}', [CaseController::class, 'removeTeamMember']);
+
+    // Case sub-resources
+    Route::get('cases/{case}/discussions', [CaseDiscussionController::class, 'index']);
+    Route::post('cases/{case}/discussions', [CaseDiscussionController::class, 'store']);
+    Route::get('cases/{case}/annotations', [CaseAnnotationController::class, 'index']);
+    Route::post('cases/{case}/annotations', [CaseAnnotationController::class, 'store']);
+    Route::get('cases/{case}/documents', [CaseDocumentController::class, 'index']);
+    Route::post('cases/{case}/documents', [CaseDocumentController::class, 'store']);
+    Route::delete('documents/{document}', [CaseDocumentController::class, 'destroy']);
+
+    // ── Sessions ─────────────────────────────────────────────────────────
+    Route::apiResource('sessions', SessionController::class);
+    Route::post('sessions/{session}/start', [SessionController::class, 'start']);
+    Route::post('sessions/{session}/end', [SessionController::class, 'end']);
+    Route::post('sessions/{session}/cases', [SessionController::class, 'addCase']);
+    Route::patch('sessions/{session}/cases/{sessionCase}', [SessionController::class, 'updateCase']);
+    Route::delete('sessions/{session}/cases/{sessionCase}', [SessionController::class, 'removeCase']);
+    Route::post('sessions/{session}/join', [SessionController::class, 'join']);
+    Route::post('sessions/{session}/leave', [SessionController::class, 'leave']);
+
+    // ── Decisions ────────────────────────────────────────────────────────
+    Route::get('cases/{case}/decisions', [DecisionController::class, 'index']);
+    Route::post('cases/{case}/decisions', [DecisionController::class, 'store']);
+    Route::patch('decisions/{decision}', [DecisionController::class, 'update']);
+    Route::post('decisions/{decision}/vote', [DecisionController::class, 'vote']);
+    Route::post('decisions/{decision}/finalize', [DecisionController::class, 'finalize']);
+    Route::post('decisions/{decision}/follow-ups', [DecisionController::class, 'addFollowUp']);
+    Route::patch('follow-ups/{followUp}', [DecisionController::class, 'updateFollowUp']);
 
     // ── Commons Workspace ────────────────────────────────────────────────
     Route::prefix('commons')->group(function () {

@@ -15,6 +15,17 @@ const PatientProfilePage = lazy(() => import("@/features/patient-profile/pages/P
 const CommonsPage = lazy(() => import("@/features/commons/pages/CommonsPage"));
 const SettingsPage = lazy(() => import("@/features/settings/pages/SettingsPage"));
 
+// Cases
+const CaseListPage = lazy(() => import("@/features/cases/pages/CaseListPage"));
+const CaseDetailPage = lazy(() => import("@/features/cases/pages/CaseDetailPage"));
+
+// Sessions (Collaboration)
+const SessionListPage = lazy(() => import("@/features/collaboration/pages/SessionListPage"));
+const SessionDetailPage = lazy(() => import("@/features/collaboration/pages/SessionDetailPage"));
+
+// Decisions
+const DecisionDashboardPage = lazy(() => import("@/features/decisions/pages/DecisionDashboardPage"));
+
 // Admin pages
 const AdminDashboardPage = lazy(() => import("@/features/administration/pages/AdminDashboardPage"));
 const UsersPage = lazy(() => import("@/features/administration/pages/UsersPage"));
@@ -67,11 +78,22 @@ export default function App() {
                 {/* Dashboard */}
                 <Route index element={<DashboardPage />} />
 
+                {/* Cases */}
+                <Route path="cases" element={<CaseListPage />} />
+                <Route path="cases/:id" element={<CaseDetailPage />} />
+
+                {/* Sessions */}
+                <Route path="sessions" element={<SessionListPage />} />
+                <Route path="sessions/:id" element={<SessionDetailPage />} />
+
                 {/* Patient Profiles */}
                 <Route path="profiles" element={<PatientProfilePage />} />
                 <Route path="profiles/:personId" element={<PatientProfilePage />} />
 
-                {/* Commons (Collaboration) */}
+                {/* Decisions */}
+                <Route path="decisions" element={<DecisionDashboardPage />} />
+
+                {/* Commons */}
                 <Route path="commons" element={<CommonsPage />} />
                 <Route path="commons/:slug" element={<CommonsPage />} />
 

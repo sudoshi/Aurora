@@ -14,6 +14,9 @@ import {
   Search,
   FileText,
   HeartPulse,
+  Briefcase,
+  Calendar,
+  CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -84,8 +87,11 @@ export function CommandPalette() {
   const commands = useMemo<CommandItem[]>(
     () => [
       { id: "dashboard", label: "Dashboard", group: "Navigation", icon: LayoutDashboard, action: () => navigate("/"), shortcut: "g d", keywords: "home overview" },
+      { id: "cases", label: "Cases", group: "Navigation", icon: Briefcase, action: () => navigate("/cases"), shortcut: "g c", keywords: "case tumor board surgical review clinical" },
+      { id: "sessions", label: "Sessions", group: "Navigation", icon: Calendar, action: () => navigate("/sessions"), shortcut: "g e", keywords: "session meeting tumor board mdc" },
       { id: "profiles", label: "Patient Profiles", group: "Navigation", icon: Users, action: () => navigate("/profiles"), shortcut: "g p", keywords: "patient person timeline clinical" },
-      { id: "commons", label: "Commons", group: "Navigation", icon: MessageSquare, action: () => navigate("/commons"), shortcut: "g c", keywords: "discussion forum" },
+      { id: "decisions", label: "Decisions", group: "Navigation", icon: CheckCircle2, action: () => navigate("/decisions"), keywords: "decision vote recommendation follow-up" },
+      { id: "commons", label: "Commons", group: "Navigation", icon: MessageSquare, action: () => navigate("/commons"), keywords: "discussion chat channels" },
       { id: "admin", label: "Admin", group: "Navigation", icon: Shield, action: () => navigate("/admin"), keywords: "users roles settings administration" },
       { id: "settings", label: "Settings", group: "Navigation", icon: Settings, action: () => navigate("/settings"), shortcut: "g s", keywords: "preferences configuration" },
       { id: "ai", label: "Open AI Assistant", group: "Actions", icon: Sparkles, action: () => toggleAbbyPanel(), shortcut: "Ctrl Shift A", keywords: "abby chat ai assistant" },

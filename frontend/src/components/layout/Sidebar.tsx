@@ -17,6 +17,10 @@ import {
   ScrollText,
   Activity,
   Bell,
+  Briefcase,
+  Calendar,
+  CheckCircle2,
+  Cpu,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,7 +42,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/cases", label: "Cases", icon: Briefcase },
+  { path: "/sessions", label: "Sessions", icon: Calendar },
   { path: "/profiles", label: "Patient Profiles", icon: Users },
+  { path: "/decisions", label: "Decisions", icon: CheckCircle2 },
   { path: "/commons", label: "Commons", icon: MessageSquare },
   {
     path: "/admin",
@@ -51,6 +58,7 @@ const navItems: NavItem[] = [
       { path: "/admin/users", label: "Users", icon: UsersRound },
       { path: "/admin/user-audit", label: "Audit Log", icon: ScrollText },
       { path: "/admin/roles", label: "Roles & Permissions", icon: ShieldCheck, superAdminOnly: true },
+      { path: "/admin/ai-providers", label: "AI Providers", icon: Cpu },
       { path: "/admin/notifications", label: "Notifications", icon: Bell },
     ],
   },
