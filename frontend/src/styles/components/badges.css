@@ -21,13 +21,13 @@
 .badge-critical { background: var(--critical-bg); color: var(--critical-light); border: 1px solid var(--critical-border); }
 .badge-info { background: var(--info-bg); color: var(--info-light); border: 1px solid var(--info-border); }
 .badge-inactive { background: var(--surface-overlay); color: var(--text-ghost); border: 1px solid var(--border-subtle); }
-.badge-accent { background: var(--accent-bg); color: var(--accent-light); border: 1px solid rgba(42, 157, 143, 0.30); }
+.badge-accent { background: var(--accent-bg); color: var(--accent-light); border: 1px solid rgba(157, 117, 248, 0.30); }
 
 /* Clinical domain badges */
-.badge-condition   { background: rgba(155, 27, 48, 0.15); color: var(--primary-lighter); border-color: var(--primary-border); }
+.badge-condition   { background: var(--critical-bg); color: var(--critical-light); border-color: var(--critical-border); }
 .badge-drug        { background: var(--info-bg); color: var(--info-light); border-color: var(--info-border); }
 .badge-measurement { background: var(--success-bg); color: var(--success-light); border-color: var(--success-border); }
-.badge-visit       { background: var(--accent-bg); color: var(--accent-light); border-color: rgba(42, 157, 143, 0.30); }
+.badge-visit       { background: var(--accent-bg); color: var(--accent-light); border-color: rgba(157, 117, 248, 0.30); }
 .badge-observation { background: rgba(167, 139, 250, 0.15); color: #C4B5FD; border-color: rgba(167, 139, 250, 0.30); }
 .badge-procedure   { background: rgba(244, 114, 182, 0.15); color: #F9A8D4; border-color: rgba(244, 114, 182, 0.30); }
 
