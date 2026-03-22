@@ -13,6 +13,19 @@ use Illuminate\Http\Request;
 class DecisionController extends Controller
 {
     /**
+     * GET /api/decisions/dashboard — all decisions across cases
+     */
+    public function dashboard(Request $request): JsonResponse
+    {
+        $decisions = Decision::with(['proposer:id,name', 'clinicalCase:id,title'])
+            ->withCount(['votes', 'followUps'])
+            ->orderByDesc('created_at')
+            ->paginate((int) $request->input('per_page', 20));
+
+        return ApiResponse::success($decisions, 'Decisions retrieved');
+    }
+
+    /**
      * GET /api/cases/{case}/decisions
      */
     public function index(Request $request, int $case): JsonResponse

@@ -13,10 +13,20 @@ import type {
 
 // ── Decisions CRUD ───────────────────────────────────────────────────────────
 
-export const getDecisions = (filters: DecisionFilters = {}) =>
-  apiClient
-    .get<PaginatedDecisions>("/decisions", { params: filters })
+export const getDecisions = (filters: DecisionFilters = {}) => {
+  // If case_id is specified, use the case-scoped endpoint
+  if (filters.case_id) {
+    return apiClient
+      .get<PaginatedDecisions>(`/cases/${filters.case_id}/decisions`, {
+        params: { ...filters, case_id: undefined },
+      })
+      .then((r) => r.data);
+  }
+  // Otherwise use the dashboard endpoint
+  return apiClient
+    .get<PaginatedDecisions>("/decisions/dashboard", { params: filters })
     .then((r) => r.data);
+};
 
 export const getDecision = (id: number) =>
   apiClient.get<Decision>(`/decisions/${id}`).then((r) => r.data);

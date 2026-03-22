@@ -117,6 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('sessions/{session}/leave', [SessionController::class, 'leave']);
 
     // ── Decisions ────────────────────────────────────────────────────────
+    Route::get('decisions/dashboard', [DecisionController::class, 'dashboard']);
     Route::get('cases/{case}/decisions', [DecisionController::class, 'index']);
     Route::post('cases/{case}/decisions', [DecisionController::class, 'store']);
     Route::patch('decisions/{decision}', [DecisionController::class, 'update']);
