@@ -12,12 +12,62 @@ class ClinicalPatient extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['category'];
+
     protected function casts(): array
     {
         return [
             'date_of_birth' => 'date',
             'deceased_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Derive patient category from conditions.
+     */
+    public function getCategoryAttribute(): string
+    {
+        $conditions = $this->relationLoaded('conditions')
+            ? $this->conditions->pluck('concept_name')->implode(' ')
+            : $this->conditions()->pluck('concept_name')->implode(' ');
+
+        $text = strtolower($conditions);
+
+        // Oncology keywords
+        $oncoTerms = ['carcinoma', 'adenocarcinoma', 'lymphoma', 'leukemia', 'melanoma',
+            'sarcoma', 'myeloma', 'tumor', 'tumour', 'neoplasm', 'metastasis', 'metastases',
+            'metastatic', 'cancer', 'oncolog', 'chemo', 'mastectomy', 'lumpectomy'];
+
+        foreach ($oncoTerms as $term) {
+            if (str_contains($text, $term)) {
+                return 'oncology';
+            }
+        }
+
+        // Rare disease keywords — specific named conditions, not generic terms like "syndrome"
+        $rareTerms = ['hereditary', 'von hippel', 'tuberous sclerosis',
+            'erdheim', 'vexas', 'apeced', 'autoimmune polyendocrine', 'amyloidosis',
+            'telangiectasia', 'hemangioblastoma', 'myelodysplastic', 'west syndrome',
+            'mucocutaneous candidiasis', 'hypoparathyroidism'];
+
+        foreach ($rareTerms as $term) {
+            if (str_contains($text, $term)) {
+                return 'rare_disease';
+            }
+        }
+
+        // Surgical keywords
+        $surgTerms = ['stenosis', 'bypass', 'cabg', 'stent', 'valve replacement',
+            'transplant', 'resection', 'arthroplasty', 'surgical', 'post-op',
+            'status post'];
+
+        foreach ($surgTerms as $term) {
+            if (str_contains($text, $term)) {
+                return 'surgical';
+            }
+        }
+
+        return 'complex_medical';
     }
 
     public function identifiers(): HasMany

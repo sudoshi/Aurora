@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Patient routes
     Route::prefix('patients')->group(function () {
+        Route::get('/', [PatientController::class, 'index']);
         Route::get('/search', [PatientController::class, 'search']);
         Route::get('/{patient}/profile', [PatientController::class, 'profile']);
         Route::get('/{patient}/stats', [PatientController::class, 'stats']);

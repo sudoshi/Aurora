@@ -73,7 +73,7 @@ class MeasurementEnrichmentSeeder extends Seeder
 
             // Study 1326 (2012-01-10 Brain MRI)
             ['imaging_study_id' => 1326, 'measurement_type' => 'SEN_largest',         'target_lesion' => false, 'value_numeric' => 5,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2012-01-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['imaging_study_id' => 1326, 'measurement_type' => 'cortical_tuber_count','target_lesion' => false, 'value_numeric' => 12,   'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2012-01-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1326, 'measurement_type' => 'cortical_tuber_count', 'target_lesion' => false, 'value_numeric' => 12,   'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2012-01-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1327 (2016-01-10 Brain)
             ['imaging_study_id' => 1327, 'measurement_type' => 'SEN_largest',         'target_lesion' => false, 'value_numeric' => 9,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2016-01-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
@@ -154,7 +154,7 @@ class MeasurementEnrichmentSeeder extends Seeder
 
             // Study 1351 (2025-11-15 abdominal US)
             ['imaging_study_id' => 1351, 'measurement_type' => 'liver_span',          'target_lesion' => false, 'value_numeric' => 16,    'unit' => 'cm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-11-15'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['imaging_study_id' => 1351, 'measurement_type' => 'portal_vein_velocity','target_lesion' => false, 'value_numeric' => 18,    'unit' => 'cm_s',  'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-11-15'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1351, 'measurement_type' => 'portal_vein_velocity', 'target_lesion' => false, 'value_numeric' => 18,    'unit' => 'cm_s',  'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-11-15'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // ──────────────────────────────────────────────────────────────
             // Patient 152 — Carmen Delgado — Sarcoidosis
@@ -162,7 +162,7 @@ class MeasurementEnrichmentSeeder extends Seeder
 
             // Study 1352 (2026-02-01 CT abd)
             ['imaging_study_id' => 1352, 'measurement_type' => 'spleen_length',       'target_lesion' => false, 'value_numeric' => 15,    'unit' => 'cm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-01'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['imaging_study_id' => 1352, 'measurement_type' => 'hepatic_granuloma_ct','target_lesion' => false, 'value_numeric' => 4,     'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-01'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1352, 'measurement_type' => 'hepatic_granuloma_ct', 'target_lesion' => false, 'value_numeric' => 4,     'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-01'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1353 (2026-02-01 CT chest)
             ['imaging_study_id' => 1353, 'measurement_type' => 'mediastinal_LN_SAX',  'target_lesion' => true,  'value_numeric' => 22,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-01'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
@@ -176,7 +176,7 @@ class MeasurementEnrichmentSeeder extends Seeder
             // Study 1355 (2026-02-10 TTE)
             ['imaging_study_id' => 1355, 'measurement_type' => 'LVEF',                'target_lesion' => false, 'value_numeric' => 45,    'unit' => '%',     'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
             ['imaging_study_id' => 1355, 'measurement_type' => 'septal_thickness',    'target_lesion' => false, 'value_numeric' => 14,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['imaging_study_id' => 1355, 'measurement_type' => 'pericardial_effusion','target_lesion' => false, 'value_numeric' => 8,     'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1355, 'measurement_type' => 'pericardial_effusion', 'target_lesion' => false, 'value_numeric' => 8,     'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // ──────────────────────────────────────────────────────────────
             // Patient 153 — Erik Lindgren — VHL + HHT
@@ -188,7 +188,7 @@ class MeasurementEnrichmentSeeder extends Seeder
 
             // Study 1357 (2026-01-16 MRA brain)
             ['imaging_study_id' => 1357, 'measurement_type' => 'AVM_diameter',        'target_lesion' => false, 'value_numeric' => 12,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-01-16'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['imaging_study_id' => 1357, 'measurement_type' => 'feeding_artery_count','target_lesion' => false, 'value_numeric' => 3,     'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-01-16'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1357, 'measurement_type' => 'feeding_artery_count', 'target_lesion' => false, 'value_numeric' => 3,     'unit' => 'count', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-01-16'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1358 (2026-01-20 CT chest)
             ['imaging_study_id' => 1358, 'measurement_type' => 'pulm_AVM_RLL',        'target_lesion' => false, 'value_numeric' => 15,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2026-01-20'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
@@ -329,7 +329,7 @@ class MeasurementEnrichmentSeeder extends Seeder
             ['imaging_study_id' => 1402, 'measurement_type' => 'cortical_thickness',  'target_lesion' => false, 'value_numeric' => 8,     'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2023-06-20'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1403 (2023-07-15 bone scan)
-            ['imaging_study_id' => 1403, 'measurement_type' => 'femoral_uptake_ratio','target_lesion' => false, 'value_numeric' => 3.2,   'unit' => 'ratio', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2023-07-15'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1403, 'measurement_type' => 'femoral_uptake_ratio', 'target_lesion' => false, 'value_numeric' => 3.2,   'unit' => 'ratio', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2023-07-15'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1404 (2024-02-20 Brain MRI)
             ['imaging_study_id' => 1404, 'measurement_type' => 'pituitary_stalk',     'target_lesion' => false, 'value_numeric' => 4.2,   'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2024-02-20'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
@@ -343,7 +343,7 @@ class MeasurementEnrichmentSeeder extends Seeder
             ['imaging_study_id' => 1406, 'measurement_type' => 'renal_encase_score',  'target_lesion' => false, 'value_numeric' => 3,     'unit' => 'score', 'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2024-08-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1407 (2025-02-10 TTE)
-            ['imaging_study_id' => 1407, 'measurement_type' => 'pericardial_effusion','target_lesion' => false, 'value_numeric' => 18,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['imaging_study_id' => 1407, 'measurement_type' => 'pericardial_effusion', 'target_lesion' => false, 'value_numeric' => 18,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
             ['imaging_study_id' => 1407, 'measurement_type' => 'RA_mass',             'target_lesion' => true,  'value_numeric' => 22,    'unit' => 'mm',    'measured_by' => 'synthetic_enrichment_v2', 'measured_at' => Carbon::parse('2025-02-10'), 'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // Study 1408 (2025-02-20 Cardiac MRI)
@@ -408,11 +408,11 @@ class MeasurementEnrichmentSeeder extends Seeder
             // ── Patient 151 — cardiac variants ──
             ['patient_id' => 151, 'gene' => 'PCSK9',  'variant' => 'p.D374Y',        'variant_type' => 'missense',      'chromosome' => '1',  'position' => 55505647,  'ref_allele' => 'G',  'alt_allele' => 'T',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.001, 'clinical_significance' => 'pathogenic', 'actionability' => 'therapeutic',  'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
             ['patient_id' => 151, 'gene' => 'MYBPC3', 'variant' => 'p.Arg502Trp',    'variant_type' => 'missense',      'chromosome' => '11', 'position' => 47352957,  'ref_allele' => 'C',  'alt_allele' => 'T',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.002, 'clinical_significance' => 'VUS',        'actionability' => 'monitor',     'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['patient_id' => 151, 'gene' => 'LDLR',   'variant' => 'c.1775G>A',      'variant_type' => 'missense',      'chromosome' => '19', 'position' => 11224088,  'ref_allele' => 'G',  'alt_allele' => 'A',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.0005,'clinical_significance' => 'pathogenic', 'actionability' => 'therapeutic',  'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['patient_id' => 151, 'gene' => 'LDLR',   'variant' => 'c.1775G>A',      'variant_type' => 'missense',      'chromosome' => '19', 'position' => 11224088,  'ref_allele' => 'G',  'alt_allele' => 'A',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.0005, 'clinical_significance' => 'pathogenic', 'actionability' => 'therapeutic',  'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // ── Patient 152 — sarcoidosis variants ──
-            ['patient_id' => 152, 'gene' => 'ACE',    'variant' => 'I/D',            'variant_type' => 'indel',         'chromosome' => '17', 'position' => 61566031,  'ref_allele' => '-',  'alt_allele' => 'ALU','zygosity' => 'heterozygous', 'allele_frequency' => 0.45,  'clinical_significance' => 'VUS',        'actionability' => 'none',        'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
-            ['patient_id' => 152, 'gene' => 'HLA-DRB1','variant' => '*03:01',        'variant_type' => 'HLA_allele',    'chromosome' => '6',  'position' => 32578775,  'ref_allele' => '-',  'alt_allele' => '-',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.12,  'clinical_significance' => 'VUS',        'actionability' => 'none',        'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['patient_id' => 152, 'gene' => 'ACE',    'variant' => 'I/D',            'variant_type' => 'indel',         'chromosome' => '17', 'position' => 61566031,  'ref_allele' => '-',  'alt_allele' => 'ALU', 'zygosity' => 'heterozygous', 'allele_frequency' => 0.45,  'clinical_significance' => 'VUS',        'actionability' => 'none',        'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
+            ['patient_id' => 152, 'gene' => 'HLA-DRB1', 'variant' => '*03:01',        'variant_type' => 'HLA_allele',    'chromosome' => '6',  'position' => 32578775,  'ref_allele' => '-',  'alt_allele' => '-',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.12,  'clinical_significance' => 'VUS',        'actionability' => 'none',        'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
             ['patient_id' => 152, 'gene' => 'BTNL2',  'variant' => 'p.Arg262Trp',    'variant_type' => 'missense',      'chromosome' => '6',  'position' => 32363825,  'ref_allele' => 'C',  'alt_allele' => 'T',  'zygosity' => 'heterozygous', 'allele_frequency' => 0.08,  'clinical_significance' => 'pathogenic', 'actionability' => 'diagnostic',   'source_id' => 'enrichment_v2', 'source_type' => 'synthetic', 'created_at' => $now, 'updated_at' => $now],
 
             // ── Patient 153 — VUS contrast ──

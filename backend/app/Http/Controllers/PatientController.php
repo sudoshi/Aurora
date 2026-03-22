@@ -15,6 +15,25 @@ class PatientController extends Controller
     ) {}
 
     /**
+     * GET /api/patients
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $perPage = (int) $request->input('per_page', 50);
+        $perPage = min(max($perPage, 1), 100);
+
+        $patients = ClinicalPatient::with('conditions:id,patient_id,concept_name')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate($perPage);
+
+        // Hide the eager-loaded conditions from the JSON (category uses them internally)
+        $patients->getCollection()->each(fn ($p) => $p->makeHidden('conditions'));
+
+        return ApiResponse::success($patients);
+    }
+
+    /**
      * GET /api/patients/search?q={query}
      */
     public function search(Request $request): JsonResponse
