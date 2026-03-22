@@ -28,8 +28,9 @@ echo "[5/6] Building frontend..."
 cd "$DEPLOY_DIR/frontend"
 npm ci 2>/dev/null || npm install
 npm run build
+rm -rf "$DEPLOY_DIR/backend/public/build"
 mkdir -p "$DEPLOY_DIR/backend/public/build"
-cp -r dist/* "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend build copy skipped (dist may not exist yet)"
+cp -a dist/. "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend build copy skipped (dist may not exist yet)"
 
 echo "[6/6] Reloading PHP-FPM..."
 sudo systemctl reload php8.4-fpm 2>/dev/null || echo "PHP-FPM reload skipped (may need sudo)"
