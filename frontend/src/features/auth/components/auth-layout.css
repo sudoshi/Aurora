@@ -1,3 +1,42 @@
+/* Pin original auth page colors — immune to app token changes */
+.auth-layout {
+  --primary:          #9B1B30;
+  --primary-light:    #B82D42;
+  --primary-dark:     #6A1220;
+  --primary-lighter:  #D04058;
+  --primary-glow:     rgba(155, 27, 48, 0.4);
+  --primary-bg:       rgba(155, 27, 48, 0.15);
+  --primary-border:   rgba(184, 45, 66, 0.4);
+  --accent:           #2A9D8F;
+  --accent-dark:      #1F7A6E;
+  --accent-light:     #3DB8A9;
+  --accent-lighter:   #56D4C4;
+  --accent-muted:     #1F7A6E;
+  --accent-pale:      rgba(42, 157, 143, 0.15);
+  --accent-bg:        rgba(42, 157, 143, 0.10);
+  --accent-glow:      rgba(42, 157, 143, 0.30);
+  --surface-darkest:  #08080A;
+  --surface-base:     #0E0E11;
+  --surface-raised:   #151518;
+  --surface-overlay:  #1C1C20;
+  --text-primary:     #F0EDE8;
+  --text-secondary:   #C5C0B8;
+  --text-muted:       #8A857D;
+  --text-ghost:       #5A5650;
+  --border-default:   #2A2A30;
+  --border-hover:     #A68B1F;
+  --gradient-teal:    linear-gradient(135deg, #3DB8A9, #1F7A6E);
+  --font-mono:        'IBM Plex Mono', Consolas, monospace;
+  --success:          #2DD4BF;
+  --success-bg:       rgba(45, 212, 191, 0.20);
+  --success-border:   rgba(45, 212, 191, 0.30);
+  --success-light:    #45E0CF;
+  --critical-light:   #FF6B7D;
+  --critical-bg:      rgba(232, 90, 107, 0.20);
+  --critical-border:  rgba(232, 90, 107, 0.30);
+  --focus-ring:       0 0 0 3px rgba(42, 157, 143, 0.15);
+}
+
 /* ============================================================
    Auth Layout — Background Slideshow + Glassmorphic Panels
    ============================================================ */

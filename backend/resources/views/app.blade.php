@@ -21,7 +21,7 @@
         @endforeach
     @endif
 </head>
-<body class="antialiased" style="background-color: #0A0A18; color: #E8ECF4;">
+<body class="antialiased" style="background-color: #080816; color: #E8ECF4;">
     <div id="root"></div>
     @if($manifest && isset($manifest['index.html']))
         <script type="module" src="/build/{{ $manifest['index.html']['file'] }}"></script>

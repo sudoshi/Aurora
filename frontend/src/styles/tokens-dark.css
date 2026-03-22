@@ -34,15 +34,15 @@
 
   /* 1.4 Surfaces — Cold Space Black */
   --surface-darkest:   #050510;   /* hint of blue */
-  --surface-base:      #0A0A18;   /* cold midnight */
-  --surface-raised:    #10102A;   /* deep indigo-black */
-  --surface-overlay:   #16163A;
-  --surface-elevated:  #1C1C48;
-  --surface-accent:    #222256;
-  --surface-highlight: #2A2A60;
+  --surface-base:      #080816;   /* cold midnight */
+  --surface-raised:    #12122E;   /* deep indigo-black */
+  --surface-overlay:   #1A1A42;
+  --surface-elevated:  #222250;
+  --surface-accent:    #2A2A60;
+  --surface-highlight: #323270;
 
-  --sidebar-bg:        #060612;
-  --sidebar-bg-light:  #0C0C1E;
+  --sidebar-bg:        #080816;
+  --sidebar-bg-light:  #0E0E22;
 
   /* 1.5 Text — Cool White */
   --text-primary:   #E8ECF4;   /* cool blue-white */
