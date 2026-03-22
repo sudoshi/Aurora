@@ -22,8 +22,8 @@ function ServiceCard({ service }: { service: SystemHealthService }) {
         <div className="flex items-center gap-3">
           <StatusDot status={dot} />
           <div>
-            <p className="font-semibold text-[#F0EDE8]">{service.name}</p>
-            <p className="mt-0.5 text-sm text-[#8A857D]">{service.message}</p>
+            <p className="font-semibold text-[#E8ECF4]">{service.name}</p>
+            <p className="mt-0.5 text-sm text-[#7A8298]">{service.message}</p>
           </div>
         </div>
         <Badge variant={badge}>{service.status}</Badge>
@@ -31,14 +31,14 @@ function ServiceCard({ service }: { service: SystemHealthService }) {
 
       {queueDetails?.pending !== undefined && (
         <div className="mt-3 flex gap-4 text-sm">
-          <span className="text-[#8A857D]">
+          <span className="text-[#7A8298]">
             Pending:{" "}
-            <span className="font-medium text-[#F0EDE8]">{queueDetails.pending ?? 0}</span>
+            <span className="font-medium text-[#E8ECF4]">{queueDetails.pending ?? 0}</span>
           </span>
-          <span className="text-[#8A857D]">
+          <span className="text-[#7A8298]">
             Failed:{" "}
             <span
-              className={`font-medium ${(queueDetails.failed ?? 0) > 0 ? "text-[#E85A6B]" : "text-[#F0EDE8]"}`}
+              className={`font-medium ${(queueDetails.failed ?? 0) > 0 ? "text-[#F0607A]" : "text-[#E8ECF4]"}`}
             >
               {queueDetails.failed ?? 0}
             </span>
@@ -66,8 +66,8 @@ export default function SystemHealthPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">System Health</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">System Health</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">
             Live status of Aurora services: database, cache, queue, and AI backend. Auto-refreshes every 30 seconds.
           </p>
         </div>
@@ -87,14 +87,14 @@ export default function SystemHealthPage() {
         <Panel>
           <div className="flex items-center gap-3">
             <StatusDot status={overallDot} />
-            <span className="text-sm font-medium text-[#F0EDE8]">
+            <span className="text-sm font-medium text-[#E8ECF4]">
               Server Status
             </span>
             <Badge variant={overallStatus === "healthy" ? "success" : "warning"}>
               {overallStatus === "healthy" ? "Healthy" : "Needs Attention"}
             </Badge>
             {checkedAt && (
-              <span className="ml-auto text-xs text-[#8A857D]">
+              <span className="ml-auto text-xs text-[#7A8298]">
                 Last checked at {checkedAt}
               </span>
             )}
@@ -106,7 +106,7 @@ export default function SystemHealthPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg border border-[#232328] bg-[#1C1C20]" />
+            <div key={i} className="h-24 animate-pulse rounded-lg border border-[#1C1C48] bg-[#16163A]" />
           ))}
         </div>
       ) : (

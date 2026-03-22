@@ -64,7 +64,7 @@ interface Panel {
 }
 
 const CLINVAR_SEVERITY: Record<string, { color: string; icon: typeof ShieldAlert; label: string }> = {
-  pathogenic: { color: "text-[#E85A6B]", icon: ShieldAlert, label: "Pathogenic" },
+  pathogenic: { color: "text-[#F0607A]", icon: ShieldAlert, label: "Pathogenic" },
   "likely pathogenic": { color: "text-orange-400", icon: ShieldAlert, label: "Likely Pathogenic" },
   "uncertain significance": { color: "text-amber-400", icon: ShieldQuestion, label: "VUS" },
   "likely benign": { color: "text-blue-400", icon: ShieldCheck, label: "Likely Benign" },
@@ -106,29 +106,29 @@ export default function TumorBoardPage() {
           <Dna size={18} style={{ color: "#A78BFA" }} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Molecular Tumor Board</h1>
-          <p className="text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Molecular Tumor Board</h1>
+          <p className="text-sm text-[#7A8298]">
             Per-patient molecular evidence panel -- variants, similar patient outcomes, drug patterns
           </p>
         </div>
       </div>
 
       {/* Patient search */}
-      <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
-        <label className="block text-xs text-[#8A857D] mb-2">OMOP Person ID</label>
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
+        <label className="block text-xs text-[#7A8298] mb-2">OMOP Person ID</label>
         <div className="flex items-center gap-2">
           <input
             value={personId}
             onChange={(e) => setPersonId(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Enter person_id..."
-            className="w-48 rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+            className="w-48 rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
           />
           <button
             type="button"
             onClick={handleSearch}
             disabled={!personId}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0E0E11] hover:bg-[#26B8A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Search size={14} />
             Load Panel
@@ -137,14 +137,14 @@ export default function TumorBoardPage() {
       </div>
 
       {isLoading && (
-        <div className="flex items-center gap-2 text-[#8A857D] py-8 justify-center">
+        <div className="flex items-center gap-2 text-[#7A8298] py-8 justify-center">
           <Loader2 size={20} className="animate-spin text-[#2DD4BF]" />
           <span className="text-sm">Building evidence panel...</span>
         </div>
       )}
 
       {isError && (
-        <div className="flex items-center gap-2 rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 p-4 text-[#E85A6B]">
+        <div className="flex items-center gap-2 rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 p-4 text-[#F0607A]">
           <AlertCircle size={16} />
           <span className="text-sm">
             Failed to load panel. Check that person_id exists and genomic data is available.
@@ -159,14 +159,14 @@ export default function TumorBoardPage() {
             <div className="flex items-start gap-2">
               <FileText size={16} className="text-[#2DD4BF] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-[#F0EDE8] mb-1">Evidence Summary</p>
-                <p className="text-sm text-[#C5C0B8]">{panel.evidence_summary}</p>
+                <p className="text-sm font-semibold text-[#E8ECF4] mb-1">Evidence Summary</p>
+                <p className="text-sm text-[#B4BAC8]">{panel.evidence_summary}</p>
                 {panel.actionable_genes.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {panel.actionable_genes.map((g) => (
                       <span
                         key={g}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#E85A6B]/15 border border-[#E85A6B]/30 text-[#E85A6B]"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#F0607A]/15 border border-[#F0607A]/30 text-[#F0607A]"
                       >
                         {g} -- Actionable
                       </span>
@@ -179,52 +179,52 @@ export default function TumorBoardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Variants */}
-            <div className="lg:col-span-2 rounded-lg border border-[#232328] bg-[#151518]">
-              <div className="px-4 py-3 border-b border-[#232328] flex items-center gap-2">
+            <div className="lg:col-span-2 rounded-lg border border-[#1C1C48] bg-[#10102A]">
+              <div className="px-4 py-3 border-b border-[#1C1C48] flex items-center gap-2">
                 <Dna size={14} className="text-[#A78BFA]" />
-                <h2 className="text-sm font-semibold text-[#F0EDE8]">
+                <h2 className="text-sm font-semibold text-[#E8ECF4]">
                   Variants ({panel.variants.length})
                 </h2>
               </div>
               {panel.variants.length === 0 ? (
-                <p className="text-xs text-[#5A5650] p-4">
+                <p className="text-xs text-[#4A5068] p-4">
                   No genomic variants on record for this patient.
                 </p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-[#232328]">
+                      <tr className="border-b border-[#1C1C48]">
                         {["Gene", "Alteration", "Type", "Class", "AF", "Classification"].map((h) => (
                           <th
                             key={h}
-                            className="px-3 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                            className="px-3 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                           >
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1E1E23]">
+                    <tbody className="divide-y divide-[#16163A]">
                       {panel.variants.map((v) => {
                         const sig = clinvarInfo(v.clinvar_significance);
                         const SigIcon = sig?.icon ?? ShieldQuestion;
                         return (
-                          <tr key={v.id} className="hover:bg-[#1A1A1F] transition-colors">
+                          <tr key={v.id} className="hover:bg-[#16163A] transition-colors">
                             <td className="px-3 py-2.5 font-semibold text-[#A78BFA]">
                               {v.gene ?? "\u2014"}
                             </td>
-                            <td className="px-3 py-2.5 font-mono text-[#C5C0B8]">
+                            <td className="px-3 py-2.5 font-mono text-[#B4BAC8]">
                               {v.hgvs_p ?? v.hgvs_c ?? `${v.chromosome}:${v.position}`}
                             </td>
-                            <td className="px-3 py-2.5 text-[#8A857D]">{v.variant_type ?? "\u2014"}</td>
+                            <td className="px-3 py-2.5 text-[#7A8298]">{v.variant_type ?? "\u2014"}</td>
                             <td
-                              className="px-3 py-2.5 text-[#8A857D] max-w-[120px] truncate"
+                              className="px-3 py-2.5 text-[#7A8298] max-w-[120px] truncate"
                               title={v.variant_class ?? ""}
                             >
                               {v.variant_class ?? "\u2014"}
                             </td>
-                            <td className="px-3 py-2.5 text-[#8A857D]">
+                            <td className="px-3 py-2.5 text-[#7A8298]">
                               {v.allele_frequency != null
                                 ? (v.allele_frequency * 100).toFixed(1) + "%"
                                 : "\u2014"}
@@ -236,7 +236,7 @@ export default function TumorBoardPage() {
                                   <span>{sig.label}</span>
                                 </span>
                               ) : (
-                                <span className="text-[#3A3A42]">{"\u2014"}</span>
+                                <span className="text-[#2A2A60]">{"\u2014"}</span>
                               )}
                             </td>
                           </tr>
@@ -252,16 +252,16 @@ export default function TumorBoardPage() {
             <div className="space-y-4">
               {/* Demographics */}
               {panel.demographics && (
-                <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+                <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <User size={14} className="text-blue-400" />
-                    <h2 className="text-sm font-semibold text-[#F0EDE8]">Demographics</h2>
+                    <h2 className="text-sm font-semibold text-[#E8ECF4]">Demographics</h2>
                   </div>
                   <dl className="space-y-1.5">
                     {Object.entries(panel.demographics).map(([k, v]) => (
                       <div key={k} className="flex justify-between text-xs">
-                        <dt className="text-[#5A5650] capitalize">{k.replace(/_/g, " ")}</dt>
-                        <dd className="text-[#C5C0B8] font-medium">{String(v)}</dd>
+                        <dt className="text-[#4A5068] capitalize">{k.replace(/_/g, " ")}</dt>
+                        <dd className="text-[#B4BAC8] font-medium">{String(v)}</dd>
                       </div>
                     ))}
                   </dl>
@@ -270,20 +270,20 @@ export default function TumorBoardPage() {
 
               {/* Drug patterns */}
               {panel.drug_patterns.length > 0 && (
-                <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+                <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Pill size={14} className="text-[#2DD4BF]" />
-                    <h2 className="text-sm font-semibold text-[#F0EDE8]">
+                    <h2 className="text-sm font-semibold text-[#E8ECF4]">
                       Drug Patterns in Similar Patients
                     </h2>
                   </div>
                   <div className="space-y-2">
                     {panel.drug_patterns.map((d) => (
                       <div key={d.drug} className="flex items-center gap-2">
-                        <div className="flex-1 truncate text-xs text-[#C5C0B8]" title={d.drug}>
+                        <div className="flex-1 truncate text-xs text-[#B4BAC8]" title={d.drug}>
                           {d.drug}
                         </div>
-                        <div className="w-24 bg-[#0E0E11] rounded-full h-1.5 overflow-hidden">
+                        <div className="w-24 bg-[#0A0A18] rounded-full h-1.5 overflow-hidden">
                           <div
                             className="h-1.5 rounded-full"
                             style={{
@@ -292,7 +292,7 @@ export default function TumorBoardPage() {
                             }}
                           />
                         </div>
-                        <span className="text-[10px] text-[#5A5650] w-10 text-right">{d.pct}%</span>
+                        <span className="text-[10px] text-[#4A5068] w-10 text-right">{d.pct}%</span>
                       </div>
                     ))}
                   </div>
@@ -303,39 +303,39 @@ export default function TumorBoardPage() {
 
           {/* Similar patient outcomes */}
           {panel.similar_patients.length > 0 && (
-            <div className="rounded-lg border border-[#232328] bg-[#151518]">
-              <div className="px-4 py-3 border-b border-[#232328] flex items-center gap-2">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
+              <div className="px-4 py-3 border-b border-[#1C1C48] flex items-center gap-2">
                 <Users size={14} className="text-[#2DD4BF]" />
-                <h2 className="text-sm font-semibold text-[#F0EDE8]">
+                <h2 className="text-sm font-semibold text-[#E8ECF4]">
                   Outcomes in Molecularly Similar Patients
                 </h2>
               </div>
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-[#232328]">
+                  <tr className="border-b border-[#1C1C48]">
                     {["Gene", "Similar Patients (n)", "Median Survival", "Event Rate"].map((h) => (
                       <th
                         key={h}
-                        className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                        className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                       >
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1E1E23]">
+                <tbody className="divide-y divide-[#16163A]">
                   {panel.similar_patients.map((s) => (
-                    <tr key={s.gene} className="hover:bg-[#1A1A1F] transition-colors">
+                    <tr key={s.gene} className="hover:bg-[#16163A] transition-colors">
                       <td className="px-4 py-2.5 font-semibold text-[#A78BFA]">{s.gene}</td>
-                      <td className="px-4 py-2.5 text-[#C5C0B8]">{s.n_similar.toLocaleString()}</td>
-                      <td className="px-4 py-2.5 text-[#C5C0B8]">
+                      <td className="px-4 py-2.5 text-[#B4BAC8]">{s.n_similar.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-[#B4BAC8]">
                         {s.median_survival_days !== null
                           ? `${Math.round(s.median_survival_days / 30.4)} months`
                           : "\u2014"}
                       </td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-16 bg-[#0E0E11] rounded-full h-1.5 overflow-hidden">
+                          <div className="w-16 bg-[#0A0A18] rounded-full h-1.5 overflow-hidden">
                             <div
                               className="h-1.5 rounded-full"
                               style={{
@@ -344,7 +344,7 @@ export default function TumorBoardPage() {
                               }}
                             />
                           </div>
-                          <span className="text-[#C5C0B8]">{(s.event_rate * 100).toFixed(1)}%</span>
+                          <span className="text-[#B4BAC8]">{(s.event_rate * 100).toFixed(1)}%</span>
                         </div>
                       </td>
                     </tr>

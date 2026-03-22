@@ -125,7 +125,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 const SPECIALTY_ACCENT: Record<string, string> = {
-  Oncology: "#E85A6B",
+  Oncology: "#F0607A",
   "Genomic Medicine": "#A78BFA",
   "Rare Disease": "#F59E0B",
   Surgery: "#60A5FA",
@@ -215,7 +215,7 @@ export default function SpecialtyWorkflow({
           className,
         )}
       >
-        <AlertCircle className="h-4 w-4 text-[#E85A6B]" />
+        <AlertCircle className="h-4 w-4 text-[#F0607A]" />
         <span className="text-sm text-[var(--color-text-secondary)]">
           {error ?? "Template not found"}
         </span>

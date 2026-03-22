@@ -38,9 +38,9 @@ export default function PatientImagingTab({ patientId }: PatientImagingTabProps)
 
   if (timelineError) {
     return (
-      <div className="rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 p-6 flex items-center gap-3">
-        <AlertCircle size={18} className="text-[#E85A6B] flex-shrink-0" />
-        <p className="text-sm text-[#E85A6B]">
+      <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 p-6 flex items-center gap-3">
+        <AlertCircle size={18} className="text-[#F0607A] flex-shrink-0" />
+        <p className="text-sm text-[#F0607A]">
           Failed to load imaging data: {(timelineError as Error).message}
         </p>
       </div>
@@ -52,10 +52,10 @@ export default function PatientImagingTab({ patientId }: PatientImagingTabProps)
 
   if (!hasStudies) {
     return (
-      <div className="rounded-lg border border-dashed border-[#323238] bg-[#151518] p-10 text-center">
-        <ScanLine size={28} className="text-[#232328] mx-auto mb-3" />
-        <p className="text-sm text-[#5A5650]">No imaging studies found for this patient.</p>
-        <p className="text-xs text-[#5A5650] mt-1">
+      <div className="rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] p-10 text-center">
+        <ScanLine size={28} className="text-[#1C1C48] mx-auto mb-3" />
+        <p className="text-sm text-[#4A5068]">No imaging studies found for this patient.</p>
+        <p className="text-xs text-[#4A5068] mt-1">
           Studies will appear here once DICOM data is imported and linked to this patient.
         </p>
       </div>
@@ -67,15 +67,15 @@ export default function PatientImagingTab({ patientId }: PatientImagingTabProps)
       {/* Summary stats */}
       {timeline && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             <div className="flex items-center gap-2 mb-2">
               <ScanLine size={14} className="text-[#60A5FA]" />
-              <span className="text-[10px] text-[#5A5650] uppercase tracking-wider">Studies</span>
+              <span className="text-[10px] text-[#4A5068] uppercase tracking-wider">Studies</span>
             </div>
             <p className="text-lg text-[#60A5FA] font-semibold font-mono">
               {timeline.summary.total_studies}
             </p>
-            <p className="text-xs text-[#8A857D] mt-1">
+            <p className="text-xs text-[#7A8298] mt-1">
               {timeline.summary.modalities.join(", ") || "--"}
               {timeline.summary.imaging_span_days
                 ? ` · ${timeline.summary.imaging_span_days}d span`
@@ -83,27 +83,27 @@ export default function PatientImagingTab({ patientId }: PatientImagingTabProps)
             </p>
           </div>
 
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             <div className="flex items-center gap-2 mb-2">
               <Ruler size={14} className="text-[#2DD4BF]" />
-              <span className="text-[10px] text-[#5A5650] uppercase tracking-wider">Measurements</span>
+              <span className="text-[10px] text-[#4A5068] uppercase tracking-wider">Measurements</span>
             </div>
             <p className="text-lg text-[#2DD4BF] font-semibold font-mono">
               {timeline.summary.total_measurements}
             </p>
-            <p className="text-xs text-[#8A857D] mt-1">
+            <p className="text-xs text-[#7A8298] mt-1">
               {timeline.summary.measurement_types.length > 0
                 ? `${timeline.summary.measurement_types.length} type${timeline.summary.measurement_types.length !== 1 ? "s" : ""}`
                 : "None recorded"}
             </p>
           </div>
 
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             <div className="flex items-center gap-2 mb-2">
               <Activity size={14} className="text-[#A78BFA]" />
-              <span className="text-[10px] text-[#5A5650] uppercase tracking-wider">Date Range</span>
+              <span className="text-[10px] text-[#4A5068] uppercase tracking-wider">Date Range</span>
             </div>
-            <p className="text-xs text-[#C5C0B8] mt-2">
+            <p className="text-xs text-[#B4BAC8] mt-2">
               {timeline.summary.date_range.first
                 ? new Date(timeline.summary.date_range.first).toLocaleDateString()
                 : "--"}

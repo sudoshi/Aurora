@@ -10,19 +10,19 @@ import type { User, UserFilters } from "../api/adminApi";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const ROLE_COLORS: Record<string, string> = {
-  "super-admin":      "#9B1B30",
+  "super-admin":      "#00D68F",
   "admin":            "#2DD4BF",
   "researcher":       "#60A5FA",
   "data-steward":     "#A78BFA",
   "clinical-reviewer": "#F59E0B",
   "case-manager":     "#10B981",
-  "viewer":           "#8A857D",
+  "viewer":           "#7A8298",
 };
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function RoleBadge({ role }: { role: string }) {
-  const color = ROLE_COLORS[role] ?? "#8A857D";
+  const color = ROLE_COLORS[role] ?? "#7A8298";
   return (
     <span
       className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
@@ -34,7 +34,7 @@ function RoleBadge({ role }: { role: string }) {
 }
 
 function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
-  if (!active) return <ChevronUp size={12} className="text-[#3A3A42]" />;
+  if (!active) return <ChevronUp size={12} className="text-[#2A2A60]" />;
   return dir === "asc"
     ? <ChevronUp size={12} className="text-[#2DD4BF]" />
     : <ChevronDown size={12} className="text-[#2DD4BF]" />;
@@ -42,15 +42,15 @@ function SortIcon({ active, dir }: { active: boolean; dir: "asc" | "desc" }) {
 
 function EmptyState({ loading }: { loading: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-16">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1C1C20]">
-        <UsersRound size={24} className="text-[#8A857D]" />
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-16">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#16163A]">
+        <UsersRound size={24} className="text-[#7A8298]" />
       </div>
-      <h3 className="text-lg font-semibold text-[#F0EDE8]">
+      <h3 className="text-lg font-semibold text-[#E8ECF4]">
         {loading ? "Loading..." : "No users found"}
       </h3>
       {!loading && (
-        <p className="mt-2 text-sm text-[#8A857D]">Try adjusting your search or filters.</p>
+        <p className="mt-2 text-sm text-[#7A8298]">Try adjusting your search or filters.</p>
       )}
     </div>
   );
@@ -77,35 +77,35 @@ function DeleteConfirmModal({
         onClick={onCancel}
       />
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-sm rounded-xl border border-[#232328] bg-[#1C1C20] shadow-xl">
+      <div className="relative z-10 w-full max-w-sm rounded-xl border border-[#1C1C48] bg-[#16163A] shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#232328] px-5 py-4">
-          <h2 className="text-base font-semibold text-[#F0EDE8]">Delete user?</h2>
+        <div className="flex items-center justify-between border-b border-[#1C1C48] px-5 py-4">
+          <h2 className="text-base font-semibold text-[#E8ECF4]">Delete user?</h2>
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#2A2A30] hover:text-[#8A857D]"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#222256] hover:text-[#7A8298]"
           >
             <X size={16} />
           </button>
         </div>
         {/* Body */}
         <div className="px-5 py-4">
-          <p className="text-sm text-[#8A857D]">
-            <span className="font-semibold text-[#C5C0B8]">{user.name}</span>{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
+          <p className="text-sm text-[#7A8298]">
+            <span className="font-semibold text-[#B4BAC8]">{user.name}</span>{" "}
+            <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#4A5068]">
               ({user.email})
             </span>{" "}
             will be permanently deleted and all their API tokens revoked.{" "}
-            <span className="text-[#E85A6B]">This cannot be undone.</span>
+            <span className="text-[#F0607A]">This cannot be undone.</span>
           </p>
         </div>
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t border-[#232328] px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-[#1C1C48] px-5 py-4">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+            className="rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
           >
             Cancel
           </button>
@@ -113,7 +113,7 @@ function DeleteConfirmModal({
             type="button"
             disabled={isPending}
             onClick={onConfirm}
-            className="rounded-lg bg-[#9B1B30] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B52238] disabled:opacity-50"
+            className="rounded-lg bg-[#00D68F] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B52238] disabled:opacity-50"
           >
             {isPending ? "Deleting..." : "Delete"}
           </button>
@@ -160,9 +160,9 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Users</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#C5C0B8]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Users</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
               {data?.total ?? 0}
             </span>{" "}
             total accounts
@@ -171,7 +171,7 @@ export default function UsersPage() {
         <button
           type="button"
           onClick={() => setModalState({ open: true, user: null })}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
         >
           <Plus size={16} />
           New User
@@ -182,19 +182,19 @@ export default function UsersPage() {
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative max-w-xs flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A5650]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A5068]" />
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setFilters((f) => ({ ...f, page: 1 })); }}
             placeholder="Search name or email..."
-            className="w-full rounded-lg border border-[#232328] bg-[#151518] py-2 pl-9 pr-8 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+            className="w-full rounded-lg border border-[#1C1C48] bg-[#10102A] py-2 pl-9 pr-8 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A5650] hover:text-[#8A857D]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A5068] hover:text-[#7A8298]"
             >
               <X size={12} />
             </button>
@@ -205,7 +205,7 @@ export default function UsersPage() {
         <select
           value={filters.role ?? ""}
           onChange={(e) => setFilters((f) => ({ ...f, role: e.target.value || undefined, page: 1 }))}
-          className="rounded-lg border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#C5C0B8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
+          className="rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#B4BAC8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
         >
           <option value="">All roles</option>
           {roles?.map((r) => (
@@ -218,10 +218,10 @@ export default function UsersPage() {
       {isLoading || users.length === 0 ? (
         <EmptyState loading={isLoading} />
       ) : (
-        <div className="overflow-hidden rounded-lg border border-[#232328] bg-[#151518]">
+        <div className="overflow-hidden rounded-lg border border-[#1C1C48] bg-[#10102A]">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#1C1C20]">
+              <tr className="bg-[#16163A]">
                 {SORTABLE.map(({ key, label }) => (
                   <th
                     key={key}
@@ -230,7 +230,7 @@ export default function UsersPage() {
                     <button
                       type="button"
                       onClick={() => handleSort(key)}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#8A857D] transition-colors hover:text-[#C5C0B8]"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#7A8298] transition-colors hover:text-[#B4BAC8]"
                     >
                       {label}
                       <SortIcon
@@ -240,7 +240,7 @@ export default function UsersPage() {
                     </button>
                   </th>
                 ))}
-                <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8A857D]">
+                <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#7A8298]">
                   Roles
                 </th>
                 <th className="w-20 px-4 py-2.5" />
@@ -254,8 +254,8 @@ export default function UsersPage() {
                   <tr
                     key={user.id}
                     className={cn(
-                      "border-t border-[#1C1C20] transition-colors",
-                      i % 2 === 0 ? "bg-[#151518]" : "bg-[#1A1A1E]",
+                      "border-t border-[#16163A] transition-colors",
+                      i % 2 === 0 ? "bg-[#10102A]" : "bg-[#16163A]",
                     )}
                   >
                     {/* Name */}
@@ -267,13 +267,13 @@ export default function UsersPage() {
                         >
                           {user.name.charAt(0)}
                         </div>
-                        <span className="text-sm font-medium text-[#C5C0B8]">{user.name}</span>
+                        <span className="text-sm font-medium text-[#B4BAC8]">{user.name}</span>
                       </div>
                     </td>
 
                     {/* Email */}
                     <td className="px-4 py-3">
-                      <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#8A857D]">
+                      <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#7A8298]">
                         {user.email}
                       </span>
                     </td>
@@ -284,12 +284,12 @@ export default function UsersPage() {
                         <Circle
                           size={7}
                           style={{
-                            fill: isActive ? "#2DD4BF" : "#3A3A42",
-                            color: isActive ? "#2DD4BF" : "#3A3A42",
+                            fill: isActive ? "#2DD4BF" : "#2A2A60",
+                            color: isActive ? "#2DD4BF" : "#2A2A60",
                             flexShrink: 0,
                           }}
                         />
-                        <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
+                        <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#4A5068]">
                           {activeAt ? new Date(activeAt).toLocaleString("en-US", {
                             month: "short", day: "numeric",
                             hour: "2-digit", minute: "2-digit",
@@ -300,7 +300,7 @@ export default function UsersPage() {
 
                     {/* Joined */}
                     <td className="px-4 py-3">
-                      <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
+                      <span className="font-['IBM_Plex_Mono',monospace] text-xs text-[#4A5068]">
                         {new Date(user.created_at).toLocaleDateString("en-US", {
                           month: "short", day: "numeric", year: "numeric",
                         })}
@@ -316,7 +316,7 @@ export default function UsersPage() {
                             return <RoleBadge key={name} role={name} />;
                           })
                         ) : (
-                          <span className="text-xs text-[#5A5650]">--</span>
+                          <span className="text-xs text-[#4A5068]">--</span>
                         )}
                       </div>
                     </td>
@@ -328,7 +328,7 @@ export default function UsersPage() {
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setModalState({ open: true, user }); }}
                           title="Edit user"
-                          className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#232328] hover:text-[#8A857D]"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#1C1C48] hover:text-[#7A8298]"
                         >
                           <Pencil size={14} />
                         </button>
@@ -336,7 +336,7 @@ export default function UsersPage() {
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setDeleteConfirm(user); }}
                           title="Delete user"
-                          className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#9B1B3015] hover:text-[#E85A6B]"
+                          className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#00D68F15] hover:text-[#F0607A]"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -352,18 +352,18 @@ export default function UsersPage() {
 
       {/* Pagination */}
       {data && data.last_page > 1 && (
-        <div className="flex items-center justify-between text-sm text-[#5A5650]">
+        <div className="flex items-center justify-between text-sm text-[#4A5068]">
           <span>
             Page{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#8A857D]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#7A8298]">
               {data.current_page}
             </span>{" "}
             of{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#8A857D]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#7A8298]">
               {data.last_page}
             </span>
             {" "}&middot;{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#C5C0B8]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
               {data.total.toLocaleString()}
             </span>{" "}
             users
@@ -373,7 +373,7 @@ export default function UsersPage() {
               type="button"
               disabled={data.current_page === 1}
               onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}
-              className="inline-flex items-center justify-center rounded-lg border border-[#2A2A30] bg-[#151518] p-1.5 text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-lg border border-[#222256] bg-[#10102A] p-1.5 text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft size={16} />
             </button>
@@ -381,7 +381,7 @@ export default function UsersPage() {
               type="button"
               disabled={data.current_page === data.last_page}
               onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}
-              className="inline-flex items-center justify-center rounded-lg border border-[#2A2A30] bg-[#151518] p-1.5 text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-lg border border-[#222256] bg-[#10102A] p-1.5 text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight size={16} />
             </button>
@@ -413,7 +413,7 @@ export default function UsersPage() {
       {/* Loading overlay */}
       {isLoading && users.length > 0 && (
         <div className="flex justify-center">
-          <Loader2 size={18} className="animate-spin text-[#5A5650]" />
+          <Loader2 size={18} className="animate-spin text-[#4A5068]" />
         </div>
       )}
     </div>

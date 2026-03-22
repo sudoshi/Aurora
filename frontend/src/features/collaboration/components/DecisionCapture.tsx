@@ -27,14 +27,14 @@ const STATUS_CONFIG: Record<string, { color: string; icon: typeof Clock }> = {
   proposed:     { color: "#F59E0B", icon: Clock },
   under_review: { color: "#60A5FA", icon: Clock },
   approved:     { color: "#2DD4BF", icon: CheckCircle },
-  rejected:     { color: "#E85A6B", icon: XCircle },
-  deferred:     { color: "#8A857D", icon: Clock },
+  rejected:     { color: "#F0607A", icon: XCircle },
+  deferred:     { color: "#7A8298", icon: Clock },
 };
 
 const VOTE_CONFIG: Record<VoteType, { label: string; color: string; icon: typeof ThumbsUp }> = {
   agree:   { label: "Agree", color: "#2DD4BF", icon: ThumbsUp },
-  disagree: { label: "Disagree", color: "#E85A6B", icon: ThumbsDown },
-  abstain:  { label: "Abstain", color: "#8A857D", icon: Minus },
+  disagree: { label: "Disagree", color: "#F0607A", icon: ThumbsDown },
+  abstain:  { label: "Abstain", color: "#7A8298", icon: Minus },
 };
 
 // ── Single decision card ─────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ function DecisionCard({
   };
 
   return (
-    <div className="rounded-lg border border-[#232328] bg-[#1A1A1E]">
+    <div className="rounded-lg border border-[#1C1C48] bg-[#16163A]">
       {/* Header */}
       <div className="flex items-start justify-between p-4">
         <div className="flex-1">
@@ -84,17 +84,17 @@ function DecisionCard({
             >
               {decision.status.replace(/_/g, " ")}
             </span>
-            <span className="rounded bg-[#232328] px-1.5 py-0.5 text-[10px] font-medium text-[#8A857D]">
+            <span className="rounded bg-[#1C1C48] px-1.5 py-0.5 text-[10px] font-medium text-[#7A8298]">
               {decision.decision_type.replace(/_/g, " ")}
             </span>
           </div>
-          <p className="text-sm font-medium text-[#C5C0B8]">
+          <p className="text-sm font-medium text-[#B4BAC8]">
             {decision.recommendation}
           </p>
           {decision.proposer && (
-            <p className="mt-1 text-[10px] text-[#5A5650]">
+            <p className="mt-1 text-[10px] text-[#4A5068]">
               Proposed by{" "}
-              <span className="text-[#8A857D]">{decision.proposer.name}</span>
+              <span className="text-[#7A8298]">{decision.proposer.name}</span>
               {" "}&middot;{" "}
               <span className="font-['IBM_Plex_Mono',monospace]">
                 {new Date(decision.created_at).toLocaleDateString("en-US", {
@@ -109,14 +109,14 @@ function DecisionCard({
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#232328] hover:text-[#8A857D]"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#1C1C48] hover:text-[#7A8298]"
         >
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
       </div>
 
       {/* Voting bar */}
-      <div className="flex items-center gap-4 border-t border-[#232328] px-4 py-3">
+      <div className="flex items-center gap-4 border-t border-[#1C1C48] px-4 py-3">
         {(Object.entries(VOTE_CONFIG) as Array<[VoteType, typeof VOTE_CONFIG.agree]>).map(
           ([voteType, cfg]) => {
             const Icon = cfg.icon;
@@ -129,7 +129,7 @@ function DecisionCard({
                 disabled={castVote.isPending}
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
-                  "border-[#232328] hover:border-[#3A3A42]",
+                  "border-[#1C1C48] hover:border-[#2A2A60]",
                 )}
                 style={{ color: cfg.color }}
               >
@@ -146,7 +146,7 @@ function DecisionCard({
         )}
 
         {totalVotes > 0 && (
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-[10px] text-[#5A5650]">
+          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-[10px] text-[#4A5068]">
             {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
           </span>
         )}
@@ -166,18 +166,18 @@ function DecisionCard({
 
       {/* Expanded section */}
       {expanded && (
-        <div className="border-t border-[#232328] px-4 py-3 space-y-3">
+        <div className="border-t border-[#1C1C48] px-4 py-3 space-y-3">
           {decision.rationale && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
                 Rationale
               </p>
-              <p className="mt-1 text-xs text-[#8A857D]">{decision.rationale}</p>
+              <p className="mt-1 text-xs text-[#7A8298]">{decision.rationale}</p>
             </div>
           )}
           {decision.guideline_reference && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
                 Guideline Reference
               </p>
               <p className="mt-1 font-['IBM_Plex_Mono',monospace] text-xs text-[#2DD4BF]">
@@ -189,14 +189,14 @@ function DecisionCard({
           {/* Follow-ups */}
           {decision.follow_ups && decision.follow_ups.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
                 Follow-ups
               </p>
               <div className="mt-1 space-y-1">
                 {decision.follow_ups.map((fu) => (
                   <div
                     key={fu.id}
-                    className="flex items-center gap-2 rounded border border-[#232328] bg-[#151518] px-2 py-1"
+                    className="flex items-center gap-2 rounded border border-[#1C1C48] bg-[#10102A] px-2 py-1"
                   >
                     <span
                       className={cn(
@@ -204,9 +204,9 @@ function DecisionCard({
                         fu.status === "completed" ? "bg-[#2DD4BF]" : "bg-[#F59E0B]",
                       )}
                     />
-                    <span className="flex-1 text-xs text-[#8A857D]">{fu.title}</span>
+                    <span className="flex-1 text-xs text-[#7A8298]">{fu.title}</span>
                     {fu.assignee && (
-                      <span className="text-[10px] text-[#5A5650]">
+                      <span className="text-[10px] text-[#4A5068]">
                         {fu.assignee.name}
                       </span>
                     )}
@@ -223,12 +223,12 @@ function DecisionCard({
               value={followUpTitle}
               onChange={(e) => setFollowUpTitle(e.target.value)}
               placeholder="Add a follow-up task..."
-              className="flex-1 rounded-lg border border-[#232328] bg-[#151518] px-3 py-1.5 text-xs text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none"
+              className="flex-1 rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-1.5 text-xs text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none"
             />
             <button
               type="submit"
               disabled={!followUpTitle.trim() || createFollowUp.isPending}
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2DD4BF] text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2DD4BF] text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
             >
               <Plus size={12} />
             </button>
@@ -273,8 +273,8 @@ function ProposeDecisionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4 space-y-3">
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4 space-y-3">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
         Propose Decision
       </h4>
 
@@ -343,14 +343,14 @@ function ProposeDecisionForm({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+          className="rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={!recommendation.trim() || createDecision.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
         >
           <Send size={14} />
           {createDecision.isPending ? "Proposing..." : "Propose"}
@@ -379,9 +379,9 @@ export function DecisionCapture({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[#C5C0B8]">
+        <h3 className="text-sm font-semibold text-[#B4BAC8]">
           Decisions
-          <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
+          <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-xs text-[#4A5068]">
             ({decisions.length})
           </span>
         </h3>
@@ -389,7 +389,7 @@ export function DecisionCapture({
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
           >
             <Gavel size={12} />
             Propose Decision
@@ -415,10 +415,10 @@ export function DecisionCapture({
         </div>
       ) : (
         !showForm && (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-            <Gavel size={24} className="mb-2 text-[#5A5650]" />
-            <p className="text-sm text-[#8A857D]">No decisions yet</p>
-            <p className="mt-1 text-xs text-[#5A5650]">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+            <Gavel size={24} className="mb-2 text-[#4A5068]" />
+            <p className="text-sm text-[#7A8298]">No decisions yet</p>
+            <p className="mt-1 text-xs text-[#4A5068]">
               Propose a decision to start the consensus process.
             </p>
           </div>

@@ -87,7 +87,7 @@ export function EraTimeline({ conditionEras, drugEras }: EraTimelineProps) {
                     endDate={era.end_date}
                     minDate={minDate}
                     maxDate={maxDate}
-                    color="#9B1B30"
+                    color="#00D68F"
                   />
                 </div>
                 <div className="w-28 shrink-0 text-right">

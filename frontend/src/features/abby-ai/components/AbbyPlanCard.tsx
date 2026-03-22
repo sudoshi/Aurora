@@ -74,7 +74,7 @@ export default function AbbyPlanCard({
   const isCancelled = plan.status === 'cancelled';
 
   return (
-    <div className="rounded-xl border border-[#2DD4BF]/20 bg-[#0E0E11] shadow-md mt-2 overflow-hidden">
+    <div className="rounded-xl border border-[#2DD4BF]/20 bg-[#0A0A18] shadow-md mt-2 overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.06] bg-gradient-to-r from-teal-900/10 to-transparent">
         <span className="text-[10px] px-1.5 py-px rounded bg-[#2DD4BF]/10 text-[#2DD4BF] font-medium uppercase tracking-wide">

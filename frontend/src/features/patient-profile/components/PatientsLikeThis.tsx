@@ -23,7 +23,7 @@ interface PatientsLikeThisProps {
 function scoreColor(score: number): string {
   if (score >= 0.8) return "#2DD4BF"; // green/teal
   if (score >= 0.6) return "#F59E0B"; // yellow/amber
-  return "#E85A6B";                   // red
+  return "#F0607A";                   // red
 }
 
 function scoreLabel(score: number): string {
@@ -226,10 +226,10 @@ export function PatientsLikeThis({ patientId }: PatientsLikeThisProps) {
 
       {/* Error */}
       {isError && !isLoading && (
-        <div className="flex items-center gap-3 rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4">
-          <AlertCircle size={16} className="text-[#E85A6B] shrink-0" />
+        <div className="flex items-center gap-3 rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4">
+          <AlertCircle size={16} className="text-[#F0607A] shrink-0" />
           <div className="min-w-0">
-            <p className="text-sm text-[#E85A6B]">
+            <p className="text-sm text-[#F0607A]">
               Failed to load similar patients
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">

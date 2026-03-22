@@ -68,9 +68,9 @@ export default function CaseListPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Cases</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#C5C0B8]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Cases</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
               {data?.total ?? 0}
             </span>{" "}
             clinical cases
@@ -79,7 +79,7 @@ export default function CaseListPage() {
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
         >
           <Plus size={16} />
           New Case
@@ -102,7 +102,7 @@ export default function CaseListPage() {
                 "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                 statusFilter === chip.value
                   ? "bg-[#2DD4BF]/10 text-[#2DD4BF] border border-[#2DD4BF]/30"
-                  : "bg-[#1C1C20] text-[#8A857D] border border-[#232328] hover:border-[#3A3A42]",
+                  : "bg-[#16163A] text-[#7A8298] border border-[#1C1C48] hover:border-[#2A2A60]",
               )}
             >
               {chip.label}
@@ -117,7 +117,7 @@ export default function CaseListPage() {
             setSpecialtyFilter(e.target.value as CaseSpecialty | "");
             setFilters((f) => ({ ...f, page: 1 }));
           }}
-          className="rounded-lg border border-[#232328] bg-[#151518] px-3 py-1.5 text-xs text-[#C5C0B8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
+          className="rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-1.5 text-xs text-[#B4BAC8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
         >
           {SPECIALTY_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -133,7 +133,7 @@ export default function CaseListPage() {
             setUrgencyFilter(e.target.value as CaseUrgency | "");
             setFilters((f) => ({ ...f, page: 1 }));
           }}
-          className="rounded-lg border border-[#232328] bg-[#151518] px-3 py-1.5 text-xs text-[#C5C0B8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
+          className="rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-1.5 text-xs text-[#B4BAC8] focus:border-[#2DD4BF] focus:outline-none transition-colors"
         >
           {URGENCY_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -152,20 +152,20 @@ export default function CaseListPage() {
               setFilters((f) => ({ ...f, page: 1 }));
             }}
             placeholder="Search cases..."
-            className="w-full rounded-lg border border-[#232328] bg-[#151518] px-3 py-1.5 text-xs text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none transition-colors"
+            className="w-full rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-1.5 text-xs text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none transition-colors"
           />
         </div>
 
         {/* View toggle */}
-        <div className="flex gap-1 rounded-lg border border-[#232328] bg-[#151518] p-0.5">
+        <div className="flex gap-1 rounded-lg border border-[#1C1C48] bg-[#10102A] p-0.5">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
               viewMode === "grid"
-                ? "bg-[#232328] text-[#2DD4BF]"
-                : "text-[#5A5650] hover:text-[#8A857D]",
+                ? "bg-[#1C1C48] text-[#2DD4BF]"
+                : "text-[#4A5068] hover:text-[#7A8298]",
             )}
           >
             <LayoutGrid size={14} />
@@ -176,8 +176,8 @@ export default function CaseListPage() {
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-md transition-colors",
               viewMode === "list"
-                ? "bg-[#232328] text-[#2DD4BF]"
-                : "text-[#5A5650] hover:text-[#8A857D]",
+                ? "bg-[#1C1C48] text-[#2DD4BF]"
+                : "text-[#4A5068] hover:text-[#7A8298]",
             )}
           >
             <List size={14} />
@@ -188,21 +188,21 @@ export default function CaseListPage() {
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 size={24} className="animate-spin text-[#5A5650]" />
+          <Loader2 size={24} className="animate-spin text-[#4A5068]" />
         </div>
       ) : cases.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-16">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1C1C20]">
-            <Briefcase size={24} className="text-[#8A857D]" />
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-16">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#16163A]">
+            <Briefcase size={24} className="text-[#7A8298]" />
           </div>
-          <h3 className="text-lg font-semibold text-[#F0EDE8]">No cases found</h3>
-          <p className="mt-2 text-sm text-[#8A857D]">
+          <h3 className="text-lg font-semibold text-[#E8ECF4]">No cases found</h3>
+          <p className="mt-2 text-sm text-[#7A8298]">
             Try adjusting your filters or create a new case.
           </p>
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
           >
             <Plus size={16} />
             New Case
@@ -224,18 +224,18 @@ export default function CaseListPage() {
 
       {/* Pagination */}
       {data && data.last_page > 1 && (
-        <div className="flex items-center justify-between text-sm text-[#5A5650]">
+        <div className="flex items-center justify-between text-sm text-[#4A5068]">
           <span>
             Page{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#8A857D]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#7A8298]">
               {data.current_page}
             </span>{" "}
             of{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#8A857D]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#7A8298]">
               {data.last_page}
             </span>
             {" "}&middot;{" "}
-            <span className="font-['IBM_Plex_Mono',monospace] text-[#C5C0B8]">
+            <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
               {data.total.toLocaleString()}
             </span>{" "}
             cases
@@ -245,7 +245,7 @@ export default function CaseListPage() {
               type="button"
               disabled={data.current_page === 1}
               onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}
-              className="inline-flex items-center justify-center rounded-lg border border-[#2A2A30] bg-[#151518] p-1.5 text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-lg border border-[#222256] bg-[#10102A] p-1.5 text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft size={16} />
             </button>
@@ -253,7 +253,7 @@ export default function CaseListPage() {
               type="button"
               disabled={data.current_page === data.last_page}
               onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}
-              className="inline-flex items-center justify-center rounded-lg border border-[#2A2A30] bg-[#151518] p-1.5 text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-lg border border-[#222256] bg-[#10102A] p-1.5 text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight size={16} />
             </button>

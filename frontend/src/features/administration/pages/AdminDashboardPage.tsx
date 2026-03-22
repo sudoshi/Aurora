@@ -76,8 +76,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#F0EDE8]">Administration</h1>
-        <p className="mt-1 text-sm text-[#8A857D]">
+        <h1 className="text-2xl font-bold text-[#E8ECF4]">Administration</h1>
+        <p className="mt-1 text-sm text-[#7A8298]">
           Manage users, roles, permissions, and platform configuration.
         </p>
       </div>
@@ -121,8 +121,8 @@ export default function AdminDashboardPage() {
                   <div className={`inline-flex rounded-md p-2 ${card.bg}`}>
                     <card.icon className={`h-5 w-5 ${card.color}`} />
                   </div>
-                  <h3 className="mt-4 text-base font-semibold text-[#F0EDE8]">{card.title}</h3>
-                  <p className="mt-1 text-sm text-[#8A857D]">{card.description}</p>
+                  <h3 className="mt-4 text-base font-semibold text-[#E8ECF4]">{card.title}</h3>
+                  <p className="mt-1 text-sm text-[#7A8298]">{card.description}</p>
                 </div>
                 <div className="mt-4 flex items-center gap-1 text-sm font-medium text-[#2DD4BF] opacity-0 transition-opacity group-hover:opacity-100">
                   Open <ArrowRight className="h-4 w-4" />

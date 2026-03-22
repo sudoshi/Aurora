@@ -6,12 +6,12 @@ const DOMAIN_CONFIG: Record<
   ClinicalDomain,
   { label: string; color: string; plural: string }
 > = {
-  condition:   { label: "Condition",   plural: "Conditions",   color: "#9B1B30" },
+  condition:   { label: "Condition",   plural: "Conditions",   color: "#00D68F" },
   medication:  { label: "Medication",  plural: "Medications",  color: "#60A5FA" },
   procedure:   { label: "Procedure",   plural: "Procedures",   color: "#F472B6" },
   measurement: { label: "Measurement", plural: "Measurements", color: "#2DD4BF" },
   observation: { label: "Observation", plural: "Observations", color: "#A78BFA" },
-  visit:       { label: "Visit",       plural: "Visits",       color: "#2A9D8F" },
+  visit:       { label: "Visit",       plural: "Visits",       color: "#9D75F8" },
 };
 
 function formatDate(iso: string): string {
@@ -110,7 +110,7 @@ function VisitCard({ visitGroup }: { visitGroup: VisitGroup }) {
         onClick={() => setExpanded((p) => !p)}
         className="w-full flex items-start gap-3 p-4 hover:bg-[var(--surface-overlay)] transition-colors text-left"
       >
-        <div className="flex items-center justify-center w-8 h-8 rounded-md shrink-0" style={{ backgroundColor: "#2A9D8F18" }}>
+        <div className="flex items-center justify-center w-8 h-8 rounded-md shrink-0" style={{ backgroundColor: "#9D75F818" }}>
           <Hospital size={15} className="text-[var(--domain-visit)]" />
         </div>
 

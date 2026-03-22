@@ -14,9 +14,9 @@ import type { ImagingResponseAssessment, TimelineStudy } from "../types";
 const RESPONSE_STYLES: Record<string, { color: string; bg: string; icon: typeof CheckCircle2; label: string }> = {
   CR: { color: "#2DD4BF", bg: "#2DD4BF", icon: CheckCircle2, label: "Complete Response" },
   PR: { color: "#60A5FA", bg: "#60A5FA", icon: Activity, label: "Partial Response" },
-  SD: { color: "#C9A227", bg: "#C9A227", icon: MinusCircle, label: "Stable Disease" },
-  PD: { color: "#E85A6B", bg: "#E85A6B", icon: XCircle, label: "Progressive Disease" },
-  NE: { color: "#8A857D", bg: "#8A857D", icon: HelpCircle, label: "Not Evaluable" },
+  SD: { color: "#9D75F8", bg: "#9D75F8", icon: MinusCircle, label: "Stable Disease" },
+  PD: { color: "#F0607A", bg: "#F0607A", icon: XCircle, label: "Progressive Disease" },
+  NE: { color: "#7A8298", bg: "#7A8298", icon: HelpCircle, label: "Not Evaluable" },
 };
 
 const CRITERIA_LABELS: Record<string, string> = {
@@ -54,16 +54,16 @@ export default function ResponseAssessmentPanel({ personId, studies }: ResponseA
       <div className="rounded-lg border border-[#A78BFA]/30 bg-[#A78BFA]/5 p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-[#A78BFA]" />
-          <h3 className="text-sm font-semibold text-[#F0EDE8]">Compute Response Assessment</h3>
+          <h3 className="text-sm font-semibold text-[#E8ECF4]">Compute Response Assessment</h3>
         </div>
-        <p className="text-xs text-[#8A857D]">
+        <p className="text-xs text-[#7A8298]">
           Automatically computes treatment response by comparing measurements across timepoints using RECIST 1.1, CT Severity, Deauville/Lugano, or RANO criteria.
         </p>
         <div className="flex items-end gap-3 flex-wrap">
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs text-[#8A857D] mb-1">Current Study (timepoint)</label>
+            <label className="block text-xs text-[#7A8298] mb-1">Current Study (timepoint)</label>
             <select
-              className="w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:border-[#A78BFA] transition-colors"
+              className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:border-[#A78BFA] transition-colors"
               value={selectedStudyId}
               onChange={(e) => setSelectedStudyId(parseInt(e.target.value))}
             >
@@ -78,9 +78,9 @@ export default function ResponseAssessmentPanel({ personId, studies }: ResponseA
             </select>
           </div>
           <div className="min-w-[140px]">
-            <label className="block text-xs text-[#8A857D] mb-1">Criteria</label>
+            <label className="block text-xs text-[#7A8298] mb-1">Criteria</label>
             <select
-              className="w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:border-[#A78BFA] transition-colors"
+              className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:border-[#A78BFA] transition-colors"
               value={selectedCriteria}
               onChange={(e) => setSelectedCriteria(e.target.value)}
             >
@@ -108,16 +108,16 @@ export default function ResponseAssessmentPanel({ personId, studies }: ResponseA
         )}
 
         {computeMutation.isError && (
-          <div className="rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 px-4 py-3 text-sm text-[#E85A6B]">
+          <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-sm text-[#F0607A]">
             {(computeMutation.error as Error)?.message ?? "Assessment failed"}
           </div>
         )}
       </div>
 
       {/* Assessment History */}
-      <div className="rounded-lg border border-[#232328] bg-[#151518]">
-        <div className="px-4 py-3 border-b border-[#232328]">
-          <h3 className="text-sm font-semibold text-[#F0EDE8] flex items-center gap-2">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
+        <div className="px-4 py-3 border-b border-[#1C1C48]">
+          <h3 className="text-sm font-semibold text-[#E8ECF4] flex items-center gap-2">
             <Activity size={14} className="text-[#2DD4BF]" />
             Assessment History
           </h3>
@@ -130,13 +130,13 @@ export default function ResponseAssessmentPanel({ personId, studies }: ResponseA
         )}
 
         {!isLoading && (!assessments || assessments.length === 0) && (
-          <div className="p-6 text-center text-sm text-[#5A5650]">
+          <div className="p-6 text-center text-sm text-[#4A5068]">
             No response assessments computed yet. Select a study timepoint above to compute one.
           </div>
         )}
 
         {assessments && assessments.length > 0 && (
-          <div className="divide-y divide-[#1E1E23]">
+          <div className="divide-y divide-[#16163A]">
             {assessments.map((a) => (
               <div key={a.id} className="px-4 py-3">
                 <button
@@ -174,16 +174,16 @@ function ResponseBadge({ assessment, expanded }: { assessment: ImagingResponseAs
           <span className="text-xs font-semibold">{assessment.response_category}</span>
         </div>
 
-        <span className="text-xs text-[#8A857D]">{style.label}</span>
-        <span className="text-[10px] text-[#5A5650] bg-[#232328] px-2 py-0.5 rounded">{criteria}</span>
-        <span className="text-xs text-[#5A5650] ml-auto">
+        <span className="text-xs text-[#7A8298]">{style.label}</span>
+        <span className="text-[10px] text-[#4A5068] bg-[#1C1C48] px-2 py-0.5 rounded">{criteria}</span>
+        <span className="text-xs text-[#4A5068] ml-auto">
           {new Date(assessment.assessment_date).toLocaleDateString()}
         </span>
 
         {expanded ? (
-          <ChevronUp size={14} className="text-[#5A5650]" />
+          <ChevronUp size={14} className="text-[#4A5068]" />
         ) : (
-          <ChevronDown size={14} className="text-[#5A5650]" />
+          <ChevronDown size={14} className="text-[#4A5068]" />
         )}
       </div>
 
@@ -191,7 +191,7 @@ function ResponseBadge({ assessment, expanded }: { assessment: ImagingResponseAs
         <div className="pl-4 space-y-2">
           {/* Rationale */}
           {assessment.rationale && (
-            <p className="text-xs text-[#8A857D] italic">{assessment.rationale}</p>
+            <p className="text-xs text-[#7A8298] italic">{assessment.rationale}</p>
           )}
 
           {/* Metrics */}
@@ -211,13 +211,13 @@ function ResponseBadge({ assessment, expanded }: { assessment: ImagingResponseAs
           <div className="flex gap-4">
             {assessment.percent_change_from_baseline !== null && (
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#5A5650]">vs Baseline:</span>
+                <span className="text-[10px] text-[#4A5068]">vs Baseline:</span>
                 <PercentChip value={assessment.percent_change_from_baseline} />
               </div>
             )}
             {assessment.percent_change_from_nadir !== null && (
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#5A5650]">vs Nadir:</span>
+                <span className="text-[10px] text-[#4A5068]">vs Nadir:</span>
                 <PercentChip value={assessment.percent_change_from_nadir} />
               </div>
             )}
@@ -238,15 +238,15 @@ function ResponseBadge({ assessment, expanded }: { assessment: ImagingResponseAs
 
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2">
-      <p className="text-[10px] text-[#5A5650] uppercase tracking-wider">{label}</p>
-      <p className="text-sm font-semibold font-mono text-[#F0EDE8]">{value.toFixed(1)}</p>
+    <div className="rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2">
+      <p className="text-[10px] text-[#4A5068] uppercase tracking-wider">{label}</p>
+      <p className="text-sm font-semibold font-mono text-[#E8ECF4]">{value.toFixed(1)}</p>
     </div>
   );
 }
 
 function PercentChip({ value }: { value: number }) {
-  const color = value > 5 ? "#E85A6B" : value < -5 ? "#2DD4BF" : "#C9A227";
+  const color = value > 5 ? "#F0607A" : value < -5 ? "#2DD4BF" : "#9D75F8";
   return (
     <span
       className="font-mono text-[10px] font-medium px-1.5 py-0.5 rounded"

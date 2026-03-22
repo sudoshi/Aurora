@@ -51,8 +51,8 @@ function DiscussionMessage({
   });
 
   return (
-    <div className={cn(depth > 0 && "ml-6 border-l border-[#232328] pl-4")}>
-      <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
+    <div className={cn(depth > 0 && "ml-6 border-l border-[#1C1C48] pl-4")}>
+      <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
         {/* Author row */}
         <div className="mb-2 flex items-center gap-2">
           {message.user?.avatar ? (
@@ -69,23 +69,23 @@ function DiscussionMessage({
               {initials}
             </div>
           )}
-          <span className="text-xs font-medium text-[#C5C0B8]">
+          <span className="text-xs font-medium text-[#B4BAC8]">
             {message.user?.name ?? "Unknown"}
           </span>
-          <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#5A5650]">
+          <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#4A5068]">
             {formattedDate}
           </span>
         </div>
 
         {/* Content */}
-        <p className="text-sm text-[#C5C0B8] whitespace-pre-wrap">{message.content}</p>
+        <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">{message.content}</p>
 
         {/* Reply toggle */}
         {depth < 3 && (
           <button
             type="button"
             onClick={() => setReplying(!replying)}
-            className="mt-2 inline-flex items-center gap-1 text-[10px] text-[#5A5650] transition-colors hover:text-[#2DD4BF]"
+            className="mt-2 inline-flex items-center gap-1 text-[10px] text-[#4A5068] transition-colors hover:text-[#2DD4BF]"
           >
             <Reply size={10} />
             Reply
@@ -100,13 +100,13 @@ function DiscussionMessage({
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="Write a reply..."
-              className="flex-1 rounded-lg border border-[#232328] bg-[#151518] px-3 py-1.5 text-xs text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none"
+              className="flex-1 rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-1.5 text-xs text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none"
               autoFocus
             />
             <button
               type="submit"
               disabled={!replyContent.trim() || createDiscussion.isPending}
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2DD4BF] text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2DD4BF] text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
             >
               <Send size={12} />
             </button>
@@ -158,7 +158,7 @@ export function CaseDiscussionThread({ caseId }: CaseDiscussionThreadProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="text-sm text-[#5A5650]">Loading discussion...</span>
+        <span className="text-sm text-[#4A5068]">Loading discussion...</span>
       </div>
     );
   }
@@ -173,10 +173,10 @@ export function CaseDiscussionThread({ caseId }: CaseDiscussionThreadProps) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-          <MessageSquare size={24} className="mb-2 text-[#5A5650]" />
-          <p className="text-sm text-[#8A857D]">No discussion yet</p>
-          <p className="mt-1 text-xs text-[#5A5650]">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+          <MessageSquare size={24} className="mb-2 text-[#4A5068]" />
+          <p className="text-sm text-[#7A8298]">No discussion yet</p>
+          <p className="mt-1 text-xs text-[#4A5068]">
             Start the conversation below.
           </p>
         </div>
@@ -185,9 +185,9 @@ export function CaseDiscussionThread({ caseId }: CaseDiscussionThreadProps) {
       {/* New comment form */}
       <form
         onSubmit={handleSubmit}
-        className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4"
+        className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4"
       >
-        <label htmlFor="new-comment" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+        <label htmlFor="new-comment" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
           Add Comment
         </label>
         <textarea
@@ -204,7 +204,7 @@ export function CaseDiscussionThread({ caseId }: CaseDiscussionThreadProps) {
             disabled={!newComment.trim() || createDiscussion.isPending}
             className={cn(
               "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors",
-              "bg-[#2DD4BF] text-[#0E0E11] hover:bg-[#25B8A5] disabled:opacity-50",
+              "bg-[#2DD4BF] text-[#0A0A18] hover:bg-[#25B8A5] disabled:opacity-50",
             )}
           >
             <Send size={14} />

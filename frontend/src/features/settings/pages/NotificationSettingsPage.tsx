@@ -11,10 +11,10 @@ export default function NotificationSettingsPage() {
             <Bell size={20} className="text-[#2DD4BF]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#F0EDE8]">
+            <h1 className="text-2xl font-bold text-[#E8ECF4]">
               Notification Preferences
             </h1>
-            <p className="text-sm text-[#8A857D]">
+            <p className="text-sm text-[#7A8298]">
               Configure how and when you receive notifications
             </p>
           </div>

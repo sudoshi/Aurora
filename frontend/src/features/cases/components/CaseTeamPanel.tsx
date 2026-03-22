@@ -12,7 +12,7 @@ const ROLE_CONFIG: Record<
 > = {
   presenter:   { label: "Presenter", color: "#2DD4BF", icon: Presentation },
   reviewer:    { label: "Reviewer", color: "#60A5FA", icon: Shield },
-  observer:    { label: "Observer", color: "#8A857D", icon: Eye },
+  observer:    { label: "Observer", color: "#7A8298", icon: Eye },
   coordinator: { label: "Coordinator", color: "#F59E0B", icon: UserPlus },
 };
 
@@ -48,13 +48,13 @@ function AddMemberForm({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-sm rounded-xl border border-[#232328] bg-[#1C1C20] shadow-xl">
-        <div className="flex items-center justify-between border-b border-[#232328] px-5 py-4">
-          <h2 className="text-base font-semibold text-[#F0EDE8]">Add Team Member</h2>
+      <div className="relative z-10 w-full max-w-sm rounded-xl border border-[#1C1C48] bg-[#16163A] shadow-xl">
+        <div className="flex items-center justify-between border-b border-[#1C1C48] px-5 py-4">
+          <h2 className="text-base font-semibold text-[#E8ECF4]">Add Team Member</h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#2A2A30] hover:text-[#8A857D]"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#222256] hover:text-[#7A8298]"
           >
             <X size={16} />
           </button>
@@ -95,18 +95,18 @@ function AddMemberForm({
             </select>
           </div>
 
-          <div className="flex justify-end gap-3 border-t border-[#232328] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#1C1C48] pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+              className="rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!userId || addMember.isPending}
-              className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+              className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
             >
               {addMember.isPending ? "Adding..." : "Add Member"}
             </button>
@@ -137,16 +137,16 @@ export function CaseTeamPanel({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[#C5C0B8]">
+        <h3 className="text-sm font-semibold text-[#B4BAC8]">
           Team Members
-          <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-xs text-[#5A5650]">
+          <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-xs text-[#4A5068]">
             ({teamMembers.length})
           </span>
         </h3>
         <button
           type="button"
           onClick={() => setShowAddForm(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
         >
           <Plus size={12} />
           Add Member
@@ -172,7 +172,7 @@ export function CaseTeamPanel({
             return (
               <div
                 key={member.id}
-                className="flex items-center justify-between rounded-lg border border-[#232328] bg-[#1A1A1E] p-3"
+                className="flex items-center justify-between rounded-lg border border-[#1C1C48] bg-[#16163A] p-3"
               >
                 <div className="flex items-center gap-3">
                   {member.user?.avatar ? (
@@ -190,7 +190,7 @@ export function CaseTeamPanel({
                     </div>
                   )}
                   <div>
-                    <p className="text-sm font-medium text-[#C5C0B8]">
+                    <p className="text-sm font-medium text-[#B4BAC8]">
                       {member.user?.name ?? `User #${member.user_id}`}
                     </p>
                     <div className="flex items-center gap-1.5">
@@ -202,7 +202,7 @@ export function CaseTeamPanel({
                         {config.label}
                       </span>
                       {member.user?.email && (
-                        <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#5A5650]">
+                        <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#4A5068]">
                           {member.user.email}
                         </span>
                       )}
@@ -218,7 +218,7 @@ export function CaseTeamPanel({
                     }
                     disabled={removeMember.isPending}
                     title="Remove member"
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#9B1B3015] hover:text-[#E85A6B]"
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#00D68F15] hover:text-[#F0607A]"
                   >
                     <X size={14} />
                   </button>
@@ -228,10 +228,10 @@ export function CaseTeamPanel({
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-          <Users size={24} className="mb-2 text-[#5A5650]" />
-          <p className="text-sm text-[#8A857D]">No team members yet</p>
-          <p className="mt-1 text-xs text-[#5A5650]">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+          <Users size={24} className="mb-2 text-[#4A5068]" />
+          <p className="text-sm text-[#7A8298]">No team members yet</p>
+          <p className="mt-1 text-xs text-[#4A5068]">
             Add members to collaborate on this case.
           </p>
         </div>

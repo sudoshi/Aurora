@@ -29,15 +29,15 @@ export default function SettingsPage() {
           <Settings size={20} className="text-[#2DD4BF]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Settings</h1>
-          <p className="text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Settings</h1>
+          <p className="text-sm text-[#7A8298]">
             Manage your profile, security, and preferences
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-[#232328]">
+      <div className="border-b border-[#1C1C48]">
         <nav className="flex gap-1" role="tablist">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
@@ -49,7 +49,7 @@ export default function SettingsPage() {
                 "inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors",
                 activeTab === key
                   ? "border-[#2DD4BF] text-[#2DD4BF]"
-                  : "border-transparent text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#232328]",
+                  : "border-transparent text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#1C1C48]",
               )}
             >
               <Icon size={16} />

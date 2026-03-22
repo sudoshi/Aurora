@@ -12,7 +12,7 @@ import type { Session, SessionFilters, CreateSessionData, UpdateSessionData } fr
 // ── Color maps ───────────────────────────────────────────────────────────────
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  tumor_board:       { bg: "#E85A6B15", text: "#E85A6B" },
+  tumor_board:       { bg: "#F0607A15", text: "#F0607A" },
   mdc:               { bg: "#60A5FA15", text: "#60A5FA" },
   surgical_planning: { bg: "#2DD4BF15", text: "#2DD4BF" },
   grand_rounds:      { bg: "#A78BFA15", text: "#A78BFA" },
@@ -22,16 +22,16 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   scheduled: { bg: "#60A5FA15", text: "#60A5FA" },
   live:      { bg: "#2DD4BF15", text: "#2DD4BF" },
-  completed: { bg: "#5A565015", text: "#5A5650" },
-  cancelled: { bg: "#3A3A4215", text: "#5A5650" },
+  completed: { bg: "#4A506815", text: "#4A5068" },
+  cancelled: { bg: "#2A2A6015", text: "#4A5068" },
 };
 
 // ── Session card ─────────────────────────────────────────────────────────────
 
 function SessionCard({ session }: { session: Session }) {
   const navigate = useNavigate();
-  const typeCfg = TYPE_COLORS[session.session_type] ?? { bg: "#3A3A4220", text: "#8A857D" };
-  const statusCfg = STATUS_COLORS[session.status] ?? { bg: "#3A3A4220", text: "#8A857D" };
+  const typeCfg = TYPE_COLORS[session.session_type] ?? { bg: "#2A2A6020", text: "#7A8298" };
+  const statusCfg = STATUS_COLORS[session.status] ?? { bg: "#2A2A6020", text: "#7A8298" };
 
   const scheduledDate = new Date(session.scheduled_at);
   const dateStr = scheduledDate.toLocaleDateString("en-US", {
@@ -52,8 +52,8 @@ function SessionCard({ session }: { session: Session }) {
       type="button"
       onClick={() => navigate(`/sessions/${session.id}`)}
       className={cn(
-        "w-full text-left rounded-lg border border-[#232328] bg-[#151518] p-4 transition-all",
-        "hover:border-[#2DD4BF]/30 hover:bg-[#1A1A1E] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40",
+        "w-full text-left rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 transition-all",
+        "hover:border-[#2DD4BF]/30 hover:bg-[#16163A] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40",
         session.status === "live" && "border-[#2DD4BF]/40",
       )}
     >
@@ -77,39 +77,39 @@ function SessionCard({ session }: { session: Session }) {
       </div>
 
       {/* Title */}
-      <h3 className="mb-1 text-sm font-semibold text-[#F0EDE8]">
+      <h3 className="mb-1 text-sm font-semibold text-[#E8ECF4]">
         {session.title}
       </h3>
       {session.description && (
-        <p className="mb-3 text-xs text-[#8A857D] line-clamp-1">
+        <p className="mb-3 text-xs text-[#7A8298] line-clamp-1">
           {session.description}
         </p>
       )}
 
       {/* Bottom row */}
-      <div className="flex items-center justify-between border-t border-[#1C1C20] pt-3">
+      <div className="flex items-center justify-between border-t border-[#16163A] pt-3">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1 text-[10px] text-[#5A5650]">
+          <span className="inline-flex items-center gap-1 text-[10px] text-[#4A5068]">
             <Calendar size={10} />
             <span className="font-['IBM_Plex_Mono',monospace]">{dateStr}</span>
           </span>
-          <span className="inline-flex items-center gap-1 text-[10px] text-[#5A5650]">
+          <span className="inline-flex items-center gap-1 text-[10px] text-[#4A5068]">
             <Clock size={10} />
             <span className="font-['IBM_Plex_Mono',monospace]">{timeStr}</span>
           </span>
-          <span className="text-[10px] text-[#5A5650]">
+          <span className="text-[10px] text-[#4A5068]">
             ({session.duration_minutes}m)
           </span>
         </div>
         <div className="flex items-center gap-3">
           {caseCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-[10px] text-[#5A5650]">
+            <span className="inline-flex items-center gap-1 text-[10px] text-[#4A5068]">
               <Briefcase size={10} />
               {caseCount} case{caseCount !== 1 ? "s" : ""}
             </span>
           )}
           {participantCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-[10px] text-[#5A5650]">
+            <span className="inline-flex items-center gap-1 text-[10px] text-[#4A5068]">
               <Users size={10} />
               {participantCount}
             </span>
@@ -150,15 +150,15 @@ export default function SessionListPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Sessions</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Sessions</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">
             Collaborative review sessions and conferences
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
         >
           <Plus size={16} />
           Schedule Session
@@ -168,21 +168,21 @@ export default function SessionListPage() {
       {/* Loading */}
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 size={24} className="animate-spin text-[#5A5650]" />
+          <Loader2 size={24} className="animate-spin text-[#4A5068]" />
         </div>
       ) : sessions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-16">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1C1C20]">
-            <Calendar size={24} className="text-[#8A857D]" />
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-16">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#16163A]">
+            <Calendar size={24} className="text-[#7A8298]" />
           </div>
-          <h3 className="text-lg font-semibold text-[#F0EDE8]">No sessions yet</h3>
-          <p className="mt-2 text-sm text-[#8A857D]">
+          <h3 className="text-lg font-semibold text-[#E8ECF4]">No sessions yet</h3>
+          <p className="mt-2 text-sm text-[#7A8298]">
             Schedule your first collaborative session.
           </p>
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5]"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
           >
             <Plus size={16} />
             Schedule Session
@@ -192,9 +192,9 @@ export default function SessionListPage() {
         <>
           {/* Upcoming / Live */}
           <div>
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
               Upcoming &amp; Live
-              <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-[#5A5650]">
+              <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-[#4A5068]">
                 ({upcoming.length})
               </span>
             </h2>
@@ -205,7 +205,7 @@ export default function SessionListPage() {
                 ))}
               </div>
             ) : (
-              <p className="rounded-lg border border-dashed border-[#323238] bg-[#151518] py-8 text-center text-sm text-[#5A5650]">
+              <p className="rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-8 text-center text-sm text-[#4A5068]">
                 No upcoming sessions
               </p>
             )}
@@ -217,10 +217,10 @@ export default function SessionListPage() {
               <button
                 type="button"
                 onClick={() => setShowPast(!showPast)}
-                className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#8A857D] transition-colors hover:text-[#C5C0B8]"
+                className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#7A8298] transition-colors hover:text-[#B4BAC8]"
               >
                 Past Sessions
-                <span className="font-['IBM_Plex_Mono',monospace] text-[#5A5650]">
+                <span className="font-['IBM_Plex_Mono',monospace] text-[#4A5068]">
                   ({past.length})
                 </span>
                 {showPast ? <ChevronUp size={12} /> : <ChevronDown size={12} />}

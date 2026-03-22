@@ -144,8 +144,8 @@ export default function PatientProfilePage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Patient Profiles</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Patient Profiles</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">
             Search by patient ID to view clinical timelines, labs, and notes
           </p>
         </div>
@@ -155,14 +155,14 @@ export default function PatientProfilePage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock size={14} className="text-[#8A857D]" />
-                <h2 className="text-sm font-semibold text-[#C5C0B8]">Recent Profiles</h2>
-                <span className="text-xs text-[#5A5650]">({recentProfiles.length})</span>
+                <Clock size={14} className="text-[#7A8298]" />
+                <h2 className="text-sm font-semibold text-[#B4BAC8]">Recent Profiles</h2>
+                <span className="text-xs text-[#4A5068]">({recentProfiles.length})</span>
               </div>
               <button
                 type="button"
                 onClick={clearRecentProfiles}
-                className="inline-flex items-center gap-1 text-[10px] text-[#5A5650] hover:text-[#8A857D] transition-colors"
+                className="inline-flex items-center gap-1 text-[10px] text-[#4A5068] hover:text-[#7A8298] transition-colors"
               >
                 <X size={10} />
                 Clear
@@ -174,7 +174,7 @@ export default function PatientProfilePage() {
                   key={`${rp.patientId}`}
                   type="button"
                   onClick={() => navigate(`/profiles/${rp.patientId}`)}
-                  className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-3 py-2.5 text-left hover:border-[#2DD4BF]/30 hover:bg-[#1A1A1E] transition-colors"
+                  className="flex items-center gap-3 rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2.5 text-left hover:border-[#2DD4BF]/30 hover:bg-[#16163A] transition-colors"
                 >
                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2DD4BF]/10 shrink-0">
                     <User size={14} className="text-[#2DD4BF]" />
@@ -183,10 +183,10 @@ export default function PatientProfilePage() {
                     <span className="text-sm font-semibold text-[#2DD4BF] font-['IBM_Plex_Mono',monospace]">
                       #{rp.patientId}
                     </span>
-                    <span className="text-xs text-[#8A857D] ml-2">
+                    <span className="text-xs text-[#7A8298] ml-2">
                       {rp.name} · MRN: {rp.mrn}
                     </span>
-                    <div className="text-[10px] text-[#5A5650] mt-0.5">
+                    <div className="text-[10px] text-[#4A5068] mt-0.5">
                       {formatTimeAgo(rp.viewedAt)}
                     </div>
                   </div>
@@ -208,20 +208,20 @@ export default function PatientProfilePage() {
           <button
             type="button"
             onClick={() => navigate("/profiles")}
-            className="inline-flex items-center gap-1 text-sm text-[#8A857D] hover:text-[#F0EDE8] transition-colors mb-3"
+            className="inline-flex items-center gap-1 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors mb-3"
           >
             <ArrowLeft size={14} />
             Patient Profiles
           </button>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Patient Profile</h1>
-          <p className="mt-1 text-sm text-[#8A857D]">Patient #{parsedPersonId}</p>
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Patient Profile</h1>
+          <p className="mt-1 text-sm text-[#7A8298]">Patient #{parsedPersonId}</p>
         </div>
       </div>
 
       {/* Loading */}
       {loadingProfile && (
         <div className="flex items-center justify-center h-64">
-          <Loader2 size={24} className="animate-spin text-[#8A857D]" />
+          <Loader2 size={24} className="animate-spin text-[#7A8298]" />
         </div>
       )}
 
@@ -229,8 +229,8 @@ export default function PatientProfilePage() {
       {profileError && (
         <div className="flex items-center justify-center h-48">
           <div className="text-center">
-            <p className="text-[#E85A6B] text-sm">Failed to load patient profile</p>
-            <p className="mt-1 text-xs text-[#8A857D]">
+            <p className="text-[#F0607A] text-sm">Failed to load patient profile</p>
+            <p className="mt-1 text-xs text-[#7A8298]">
               Patient #{parsedPersonId} may not exist.
             </p>
           </div>
@@ -255,11 +255,11 @@ export default function PatientProfilePage() {
 
           {/* View controls */}
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <span className="text-sm font-semibold text-[#F0EDE8]">
+            <span className="text-sm font-semibold text-[#E8ECF4]">
               Clinical Events ({allEvents.length})
             </span>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-lg border border-[#232328] bg-[#0E0E11] p-0.5">
+              <div className="flex items-center gap-1 rounded-lg border border-[#1C1C48] bg-[#0A0A18] p-0.5">
                 {VIEW_BUTTONS.filter((b) => (b.mode !== "eras" || hasEras)).map(({ mode, icon, label }) => (
                   <button
                     key={mode}
@@ -269,7 +269,7 @@ export default function PatientProfilePage() {
                       "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
                       viewMode === mode
                         ? "bg-[#2DD4BF]/10 text-[#2DD4BF]"
-                        : "text-[#8A857D] hover:text-[#C5C0B8]",
+                        : "text-[#7A8298] hover:text-[#B4BAC8]",
                     )}
                   >
                     {icon}
@@ -281,7 +281,7 @@ export default function PatientProfilePage() {
                 <button
                   type="button"
                   onClick={handleExportCsv}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#323238] px-3 py-1.5 text-xs text-[#8A857D] hover:text-[#F0EDE8] hover:border-[#5A5650] transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A2A60] px-3 py-1.5 text-xs text-[#7A8298] hover:text-[#E8ECF4] hover:border-[#4A5068] transition-colors"
                 >
                   <Download size={12} />
                   Export CSV
@@ -315,7 +315,7 @@ export default function PatientProfilePage() {
 
           {viewMode === "list" && (
             <div className="space-y-4">
-              <div className="flex items-center gap-1 border-b border-[#232328] overflow-x-auto">
+              <div className="flex items-center gap-1 border-b border-[#1C1C48] overflow-x-auto">
                 {DOMAIN_TABS.map((tab) => {
                   const count =
                     tab.key === "all"
@@ -331,7 +331,7 @@ export default function PatientProfilePage() {
                         "relative px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap",
                         domainTab === tab.key
                           ? "text-[#2DD4BF]"
-                          : "text-[#8A857D] hover:text-[#C5C0B8]",
+                          : "text-[#7A8298] hover:text-[#B4BAC8]",
                       )}
                     >
                       {tab.label} <span className="text-[10px] opacity-60">({count})</span>
@@ -344,8 +344,8 @@ export default function PatientProfilePage() {
               </div>
 
               {filteredEvents.length === 0 ? (
-                <div className="flex items-center justify-center h-32 rounded-lg border border-dashed border-[#323238] bg-[#151518]">
-                  <p className="text-sm text-[#8A857D]">No events in this category</p>
+                <div className="flex items-center justify-center h-32 rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A]">
+                  <p className="text-sm text-[#7A8298]">No events in this category</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

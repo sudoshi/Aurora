@@ -45,10 +45,10 @@ export function ActionableGenes({ genes }: ActionableGenesProps) {
   if (genes.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 space-y-3">
+    <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <AlertTriangle size={14} className="text-[#E85A6B]" />
-        <h4 className="text-sm font-semibold text-[#F0EDE8]">
+        <AlertTriangle size={14} className="text-[#F0607A]" />
+        <h4 className="text-sm font-semibold text-[#E8ECF4]">
           Actionable Genes Detected ({genes.length})
         </h4>
       </div>
@@ -60,12 +60,12 @@ export function ActionableGenes({ genes }: ActionableGenesProps) {
           return (
             <div
               key={gene}
-              className="rounded-md border border-[#232328] bg-[#151518] px-3 py-2.5"
+              className="rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2.5"
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <Dna size={12} className="text-[#E85A6B]" />
-                <span className="text-xs font-semibold text-[#E85A6B]">{gene}</span>
-                <span className="text-[10px] text-[#8A857D]">-- Pathogenic / Likely Pathogenic</span>
+                <Dna size={12} className="text-[#F0607A]" />
+                <span className="text-xs font-semibold text-[#F0607A]">{gene}</span>
+                <span className="text-[10px] text-[#7A8298]">-- Pathogenic / Likely Pathogenic</span>
               </div>
 
               {therapies && therapies.length > 0 ? (
@@ -81,7 +81,7 @@ export function ActionableGenes({ genes }: ActionableGenesProps) {
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-[#5A5650]">
+                <p className="text-[10px] text-[#4A5068]">
                   No standard targeted therapies mapped. Consult molecular tumor board for recommendations.
                 </p>
               )}
@@ -90,7 +90,7 @@ export function ActionableGenes({ genes }: ActionableGenesProps) {
         })}
       </div>
 
-      <p className="text-[10px] text-[#5A5650] italic">
+      <p className="text-[10px] text-[#4A5068] italic">
         Therapy suggestions are for reference only. Consult the Precision Medicine tab or Molecular Tumor Board for
         evidence-based recommendations with confidence levels.
       </p>

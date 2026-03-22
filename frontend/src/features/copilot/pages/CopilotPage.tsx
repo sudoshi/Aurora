@@ -103,8 +103,8 @@ function GenomicsPanel({ patientId: _patientId }: { patientId: number | null }) 
       </Button>
 
       {mutation.isError && (
-        <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 text-center">
-          <p className="text-sm text-[#E85A6B]">Failed to interpret variant</p>
+        <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 text-center">
+          <p className="text-sm text-[#F0607A]">Failed to interpret variant</p>
         </div>
       )}
 
@@ -184,7 +184,7 @@ function VariantResult({ data }: { data: VariantInterpretation }) {
 const RISK_STYLES: Record<string, { color: string; bg: string }> = {
   low_risk:     { color: "#2DD4BF", bg: "#2DD4BF15" },
   intermediate: { color: "#F59E0B", bg: "#F59E0B15" },
-  high_risk:    { color: "#E85A6B", bg: "#E85A6B15" },
+  high_risk:    { color: "#F0607A", bg: "#F0607A15" },
 };
 
 function PrognosisPanel({ patientContext }: { patientContext: PatientContext | null }) {
@@ -206,8 +206,8 @@ function PrognosisPanel({ patientContext }: { patientContext: PatientContext | n
 
   if (isError) {
     return (
-      <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 text-center">
-        <p className="text-sm text-[#E85A6B]">Failed to compute prognostic scores</p>
+      <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 text-center">
+        <p className="text-sm text-[#F0607A]">Failed to compute prognostic scores</p>
       </div>
     );
   }

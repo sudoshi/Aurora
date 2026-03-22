@@ -13,8 +13,8 @@ const DECISION_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   proposed:     { bg: "#F59E0B15", text: "#F59E0B" },
   under_review: { bg: "#60A5FA15", text: "#60A5FA" },
   approved:     { bg: "#2DD4BF15", text: "#2DD4BF" },
-  rejected:     { bg: "#E85A6B15", text: "#E85A6B" },
-  deferred:     { bg: "#8A857D15", text: "#8A857D" },
+  rejected:     { bg: "#F0607A15", text: "#F0607A" },
+  deferred:     { bg: "#7A829815", text: "#7A8298" },
 };
 
 // ── Stat card ────────────────────────────────────────────────────────────────
@@ -31,10 +31,10 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+    <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
       <div className="mb-2 flex items-center gap-2">
         <span style={{ color }}>{icon}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
           {label}
         </span>
       </div>
@@ -53,15 +53,15 @@ function StatCard({
 function DecisionRow({ decision }: { decision: Decision }) {
   const navigate = useNavigate();
   const statusCfg = DECISION_STATUS_COLORS[decision.status] ?? {
-    bg: "#3A3A4220",
-    text: "#8A857D",
+    bg: "#2A2A6020",
+    text: "#7A8298",
   };
 
   return (
     <button
       type="button"
       onClick={() => navigate(`/cases/${decision.case_id}`)}
-      className="flex w-full items-center justify-between rounded-lg border border-[#232328] bg-[#1A1A1E] p-3 text-left transition-all hover:border-[#2DD4BF]/30 hover:bg-[#1C1C20]"
+      className="flex w-full items-center justify-between rounded-lg border border-[#1C1C48] bg-[#16163A] p-3 text-left transition-all hover:border-[#2DD4BF]/30 hover:bg-[#16163A]"
     >
       <div className="flex-1 min-w-0">
         <div className="mb-1 flex items-center gap-2">
@@ -71,14 +71,14 @@ function DecisionRow({ decision }: { decision: Decision }) {
           >
             {decision.status.replace(/_/g, " ")}
           </span>
-          <span className="rounded bg-[#232328] px-1.5 py-0.5 text-[10px] text-[#8A857D]">
+          <span className="rounded bg-[#1C1C48] px-1.5 py-0.5 text-[10px] text-[#7A8298]">
             {decision.decision_type.replace(/_/g, " ")}
           </span>
         </div>
-        <p className="text-sm font-medium text-[#C5C0B8] truncate">
+        <p className="text-sm font-medium text-[#B4BAC8] truncate">
           {decision.recommendation}
         </p>
-        <div className="mt-1 flex items-center gap-2 text-[10px] text-[#5A5650]">
+        <div className="mt-1 flex items-center gap-2 text-[10px] text-[#4A5068]">
           {decision.proposer && <span>{decision.proposer.name}</span>}
           <span>&middot;</span>
           <span className="font-['IBM_Plex_Mono',monospace]">
@@ -93,14 +93,14 @@ function DecisionRow({ decision }: { decision: Decision }) {
               <span className="text-[#2DD4BF]">
                 {decision.votes_summary.agree} agree
               </span>
-              <span className="text-[#E85A6B]">
+              <span className="text-[#F0607A]">
                 {decision.votes_summary.disagree} disagree
               </span>
             </>
           )}
         </div>
       </div>
-      <ChevronRight size={14} className="ml-2 shrink-0 text-[#3A3A42]" />
+      <ChevronRight size={14} className="ml-2 shrink-0 text-[#2A2A60]" />
     </button>
   );
 }
@@ -117,7 +117,7 @@ function FollowUpRow({ followUp }: { followUp: FollowUp }) {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
+    <div className="flex items-center gap-3 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
       <button
         type="button"
         onClick={handleToggle}
@@ -125,7 +125,7 @@ function FollowUpRow({ followUp }: { followUp: FollowUp }) {
         className={cn(
           "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors",
           isPending
-            ? "border-[#3A3A42] bg-[#151518] hover:border-[#2DD4BF]"
+            ? "border-[#2A2A60] bg-[#10102A] hover:border-[#2DD4BF]"
             : "border-[#2DD4BF] bg-[#2DD4BF]/10",
         )}
       >
@@ -137,13 +137,13 @@ function FollowUpRow({ followUp }: { followUp: FollowUp }) {
           className={cn(
             "text-sm",
             isPending
-              ? "font-medium text-[#C5C0B8]"
-              : "text-[#5A5650] line-through",
+              ? "font-medium text-[#B4BAC8]"
+              : "text-[#4A5068] line-through",
           )}
         >
           {followUp.title}
         </p>
-        <div className="flex items-center gap-2 text-[10px] text-[#5A5650]">
+        <div className="flex items-center gap-2 text-[10px] text-[#4A5068]">
           {followUp.assignee && (
             <span className="inline-flex items-center gap-1">
               <User size={8} />
@@ -175,7 +175,7 @@ export default function DecisionDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 size={24} className="animate-spin text-[#5A5650]" />
+        <Loader2 size={24} className="animate-spin text-[#4A5068]" />
       </div>
     );
   }
@@ -188,8 +188,8 @@ export default function DecisionDashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#F0EDE8]">Decisions</h1>
-        <p className="mt-1 text-sm text-[#8A857D]">
+        <h1 className="text-2xl font-bold text-[#E8ECF4]">Decisions</h1>
+        <p className="mt-1 text-sm text-[#7A8298]">
           Cross-case decision tracking and follow-ups
         </p>
       </div>
@@ -199,7 +199,7 @@ export default function DecisionDashboardPage() {
         <StatCard
           label="Total"
           value={stats.total}
-          color="#C5C0B8"
+          color="#B4BAC8"
           icon={<Gavel size={16} />}
         />
         <StatCard
@@ -217,7 +217,7 @@ export default function DecisionDashboardPage() {
         <StatCard
           label="Deferred"
           value={stats.deferred}
-          color="#8A857D"
+          color="#7A8298"
           icon={<AlertCircle size={16} />}
         />
       </div>
@@ -226,7 +226,7 @@ export default function DecisionDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent decisions */}
         <div className="space-y-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
             Recent Decisions
           </h2>
           {recentDecisions.length > 0 ? (
@@ -236,18 +236,18 @@ export default function DecisionDashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-              <Gavel size={24} className="mb-2 text-[#5A5650]" />
-              <p className="text-sm text-[#8A857D]">No decisions yet</p>
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+              <Gavel size={24} className="mb-2 text-[#4A5068]" />
+              <p className="text-sm text-[#7A8298]">No decisions yet</p>
             </div>
           )}
         </div>
 
         {/* Pending follow-ups */}
         <div className="space-y-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
             Pending Follow-ups
-            <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-[#5A5650]">
+            <span className="ml-2 font-['IBM_Plex_Mono',monospace] text-[#4A5068]">
               ({pendingFollowUps.length})
             </span>
           </h2>
@@ -258,10 +258,10 @@ export default function DecisionDashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
               <CheckCircle size={24} className="mb-2 text-[#2DD4BF]" />
-              <p className="text-sm text-[#8A857D]">All caught up</p>
-              <p className="mt-1 text-xs text-[#5A5650]">
+              <p className="text-sm text-[#7A8298]">All caught up</p>
+              <p className="mt-1 text-xs text-[#4A5068]">
                 No pending follow-ups assigned to you.
               </p>
             </div>

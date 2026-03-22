@@ -63,7 +63,7 @@ export function AbbyExplainer({ expression }: AbbyExplainerProps) {
       {isExpanded && explainMutation.data && (
         <div
           className={cn(
-            "rounded-lg border border-[#2DD4BF]/20 bg-[#1C1C20] px-4 py-3",
+            "rounded-lg border border-[#2DD4BF]/20 bg-[#16163A] px-4 py-3",
             "animate-in fade-in slide-in-from-top-1 duration-200",
           )}
         >
@@ -72,7 +72,7 @@ export function AbbyExplainer({ expression }: AbbyExplainerProps) {
               size={14}
               className="text-[#2DD4BF] mt-0.5 shrink-0"
             />
-            <p className="text-sm text-[#C5C0B8] leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-[#B4BAC8] leading-relaxed whitespace-pre-wrap">
               {explainMutation.data.explanation}
             </p>
           </div>
@@ -81,7 +81,7 @@ export function AbbyExplainer({ expression }: AbbyExplainerProps) {
 
       {/* Error */}
       {explainMutation.isError && (
-        <p className="text-xs text-[#E85A6B]">
+        <p className="text-xs text-[#F0607A]">
           {explainMutation.error?.message ?? "Failed to explain analysis"}
         </p>
       )}

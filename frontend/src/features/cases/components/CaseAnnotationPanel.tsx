@@ -19,13 +19,13 @@ const DOMAINS = [
 
 const DOMAIN_COLORS: Record<string, string> = {
   radiology: "#60A5FA",
-  pathology: "#E85A6B",
+  pathology: "#F0607A",
   surgery:   "#2DD4BF",
-  oncology:  "#9B1B30",
+  oncology:  "#00D68F",
   genetics:  "#A78BFA",
   pharmacy:  "#F59E0B",
   nursing:   "#10B981",
-  other:     "#8A857D",
+  other:     "#7A8298",
 };
 
 // ── Grouped annotation list ──────────────────────────────────────────────────
@@ -37,7 +37,7 @@ function AnnotationGroup({
   domain: string;
   annotations: CaseAnnotation[];
 }) {
-  const color = DOMAIN_COLORS[domain] ?? "#8A857D";
+  const color = DOMAIN_COLORS[domain] ?? "#7A8298";
 
   return (
     <div className="space-y-2">
@@ -49,7 +49,7 @@ function AnnotationGroup({
           <Tag size={10} />
           {domain}
         </span>
-        <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#5A5650]">
+        <span className="font-['IBM_Plex_Mono',monospace] text-[10px] text-[#4A5068]">
           {annotations.length}
         </span>
       </div>
@@ -58,12 +58,12 @@ function AnnotationGroup({
         {annotations.map((annotation) => (
           <div
             key={annotation.id}
-            className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-3"
+            className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-3"
           >
-            <p className="text-sm text-[#C5C0B8]">{annotation.content}</p>
-            <div className="mt-2 flex items-center gap-2 text-[10px] text-[#5A5650]">
+            <p className="text-sm text-[#B4BAC8]">{annotation.content}</p>
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-[#4A5068]">
               {annotation.user && (
-                <span className="font-medium text-[#8A857D]">
+                <span className="font-medium text-[#7A8298]">
                   {annotation.user.name}
                 </span>
               )}
@@ -127,7 +127,7 @@ export function CaseAnnotationPanel({ caseId }: CaseAnnotationPanelProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="text-sm text-[#5A5650]">Loading annotations...</span>
+        <span className="text-sm text-[#4A5068]">Loading annotations...</span>
       </div>
     );
   }
@@ -142,10 +142,10 @@ export function CaseAnnotationPanel({ caseId }: CaseAnnotationPanelProps) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-          <Tag size={24} className="mb-2 text-[#5A5650]" />
-          <p className="text-sm text-[#8A857D]">No annotations yet</p>
-          <p className="mt-1 text-xs text-[#5A5650]">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+          <Tag size={24} className="mb-2 text-[#4A5068]" />
+          <p className="text-sm text-[#7A8298]">No annotations yet</p>
+          <p className="mt-1 text-xs text-[#4A5068]">
             Add the first clinical annotation below.
           </p>
         </div>
@@ -154,9 +154,9 @@ export function CaseAnnotationPanel({ caseId }: CaseAnnotationPanelProps) {
       {/* Add annotation form */}
       <form
         onSubmit={handleSubmit}
-        className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4"
+        className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4"
       >
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
           Add Annotation
         </h4>
 
@@ -198,7 +198,7 @@ export function CaseAnnotationPanel({ caseId }: CaseAnnotationPanelProps) {
             disabled={!content.trim() || createAnnotation.isPending}
             className={cn(
               "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors",
-              "bg-[#2DD4BF] text-[#0E0E11] hover:bg-[#25B8A5] disabled:opacity-50",
+              "bg-[#2DD4BF] text-[#0A0A18] hover:bg-[#25B8A5] disabled:opacity-50",
             )}
           >
             <Send size={14} />

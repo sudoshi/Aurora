@@ -121,18 +121,18 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
       >
         {/* Gradient border wrapper */}
         <div className="h-full bg-gradient-to-b from-[#2DD4BF] to-[#A78BFA] p-[1px] shadow-[0_0_40px_rgba(45,212,191,0.15)]">
-          <div className="h-full bg-[#0E0E11] flex flex-col">
+          <div className="h-full bg-[#0A0A18] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#232328]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1C1C48]">
               <div className="flex items-center gap-2.5">
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#2DD4BF]/20 to-[#A78BFA]/20">
                   <Sparkles size={16} className="text-[#2DD4BF]" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold text-[#F0EDE8]">
+                  <h2 className="text-sm font-semibold text-[#E8ECF4]">
                     Abby AI
                   </h2>
-                  <p className="text-[10px] text-[#8A857D]">
+                  <p className="text-[10px] text-[#7A8298]">
                     Clinical Case Intelligence
                   </p>
                 </div>
@@ -142,7 +142,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium text-[#8A857D] hover:text-[#F0EDE8] hover:bg-[#1C1C20] transition-colors"
+                    className="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium text-[#7A8298] hover:text-[#E8ECF4] hover:bg-[#16163A] transition-colors"
                   >
                     New query
                   </button>
@@ -150,7 +150,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-md text-[#8A857D] hover:text-[#F0EDE8] hover:bg-[#1C1C20] transition-colors"
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-md text-[#7A8298] hover:text-[#E8ECF4] hover:bg-[#16163A] transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -162,7 +162,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
               {/* Example prompts */}
               {showExamples && !result && (
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-[#8A857D] uppercase tracking-wider">
+                  <p className="text-xs font-medium text-[#7A8298] uppercase tracking-wider">
                     Try an example
                   </p>
                   <div className="space-y-1.5">
@@ -173,15 +173,15 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                         onClick={() => handleExampleClick(example)}
                         className={cn(
                           "w-full text-left px-3 py-2.5 rounded-lg text-sm",
-                          "border border-[#232328] bg-[#151518]",
-                          "text-[#C5C0B8] hover:text-[#F0EDE8]",
+                          "border border-[#1C1C48] bg-[#10102A]",
+                          "text-[#B4BAC8] hover:text-[#E8ECF4]",
                           "hover:border-[#2DD4BF]/30 hover:bg-[#2DD4BF]/5",
                           "transition-all group flex items-center gap-2",
                         )}
                       >
                         <ChevronRight
                           size={12}
-                          className="text-[#5A5650] group-hover:text-[#2DD4BF] transition-colors shrink-0"
+                          className="text-[#4A5068] group-hover:text-[#2DD4BF] transition-colors shrink-0"
                         />
                         <span>{example}</span>
                       </button>
@@ -197,7 +197,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                     <div className="w-10 h-10 rounded-full border-2 border-[#2DD4BF]/20 border-t-[#2DD4BF] animate-spin" />
                     <div className="absolute inset-0 rounded-full animate-pulse bg-[#2DD4BF]/5" />
                   </div>
-                  <p className="text-sm text-[#8A857D]">
+                  <p className="text-sm text-[#7A8298]">
                     Abby is analyzing the clinical data
                     <span className="inline-flex ml-0.5">
                       <span className="animate-[bounce_1.4s_infinite_0ms] inline-block">.</span>
@@ -210,14 +210,14 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
 
               {/* Error */}
               {(analyzeMutation.isError || refineMutation.isError) && (
-                <div className="rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/5 px-4 py-3">
+                <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/5 px-4 py-3">
                   <div className="flex items-start gap-2">
-                    <AlertTriangle size={14} className="text-[#E85A6B] mt-0.5 shrink-0" />
+                    <AlertTriangle size={14} className="text-[#F0607A] mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-[#E85A6B]">
+                      <p className="text-sm font-medium text-[#F0607A]">
                         Something went wrong
                       </p>
-                      <p className="text-xs text-[#8A857D] mt-1">
+                      <p className="text-xs text-[#7A8298] mt-1">
                         {(analyzeMutation.error ?? refineMutation.error)?.message ??
                           "Failed to process your request. Please try again."}
                       </p>
@@ -230,11 +230,11 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
               {result && !isLoading && (
                 <div ref={resultsRef} className="space-y-4">
                   {/* Explanation */}
-                  <div className="rounded-lg border border-[#232328] bg-[#1C1C20] px-4 py-3">
-                    <p className="text-xs font-medium text-[#8A857D] uppercase tracking-wider mb-2">
+                  <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] px-4 py-3">
+                    <p className="text-xs font-medium text-[#7A8298] uppercase tracking-wider mb-2">
                       Analysis
                     </p>
-                    <p className="text-sm text-[#C5C0B8] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-sm text-[#B4BAC8] leading-relaxed whitespace-pre-wrap">
                       {result.explanation}
                     </p>
                   </div>
@@ -242,16 +242,16 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                   {/* Clinical findings */}
                   {result.clinical_findings.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-[#8A857D] uppercase tracking-wider mb-2">
+                      <p className="text-xs font-medium text-[#7A8298] uppercase tracking-wider mb-2">
                         Clinical Findings ({result.clinical_findings.length})
                       </p>
                       <div className="space-y-1.5">
                         {result.clinical_findings.map((finding) => (
                           <div
                             key={finding.name}
-                            className="flex items-center justify-between px-3 py-2 rounded-lg border border-[#232328] bg-[#151518]"
+                            className="flex items-center justify-between px-3 py-2 rounded-lg border border-[#1C1C48] bg-[#10102A]"
                           >
-                            <span className="text-sm text-[#F0EDE8] truncate">
+                            <span className="text-sm text-[#E8ECF4] truncate">
                               {finding.name}
                             </span>
                             <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-[#2DD4BF]/10 text-[#2DD4BF] shrink-0 ml-2">
@@ -293,7 +293,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                       className={cn(
                         "flex-1 inline-flex items-center justify-center gap-1.5",
                         "rounded-lg px-4 py-2.5 text-sm font-medium",
-                        "bg-[#2DD4BF] text-[#0E0E11] hover:bg-[#26B8A5]",
+                        "bg-[#2DD4BF] text-[#0A0A18] hover:bg-[#26B8A5]",
                         "transition-colors",
                       )}
                     >
@@ -305,8 +305,8 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                       className={cn(
                         "inline-flex items-center justify-center gap-1.5",
                         "rounded-lg px-4 py-2.5 text-sm font-medium",
-                        "border border-[#232328] bg-[#151518]",
-                        "text-[#8A857D] hover:text-[#F0EDE8] hover:border-[#2DD4BF]/30",
+                        "border border-[#1C1C48] bg-[#10102A]",
+                        "text-[#7A8298] hover:text-[#E8ECF4] hover:border-[#2DD4BF]/30",
                         "transition-colors",
                         refineMode && "border-[#A78BFA]/30 text-[#A78BFA]",
                       )}
@@ -324,8 +324,8 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                         placeholder="How would you like to refine this analysis?"
                         rows={3}
                         className={cn(
-                          "w-full rounded-lg border border-[#A78BFA]/30 bg-[#151518] px-3 py-2.5",
-                          "text-sm text-[#F0EDE8] placeholder:text-[#5A5650]",
+                          "w-full rounded-lg border border-[#A78BFA]/30 bg-[#10102A] px-3 py-2.5",
+                          "text-sm text-[#E8ECF4] placeholder:text-[#4A5068]",
                           "focus:outline-none focus:border-[#A78BFA]/60",
                           "resize-none transition-colors",
                         )}
@@ -338,7 +338,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                           "w-full inline-flex items-center justify-center gap-1.5",
                           "rounded-lg px-4 py-2 text-sm font-medium",
                           "bg-gradient-to-r from-[#2DD4BF] to-[#A78BFA]",
-                          "text-[#0E0E11] hover:opacity-90",
+                          "text-[#0A0A18] hover:opacity-90",
                           "transition-opacity disabled:opacity-40 disabled:cursor-not-allowed",
                         )}
                       >
@@ -356,7 +356,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
             </div>
 
             {/* Input area — fixed at bottom */}
-            <div className="border-t border-[#232328] px-5 py-4 space-y-2">
+            <div className="border-t border-[#1C1C48] px-5 py-4 space-y-2">
               <textarea
                 ref={textareaRef}
                 value={prompt}
@@ -373,15 +373,15 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                 rows={3}
                 disabled={isLoading}
                 className={cn(
-                  "w-full rounded-lg border border-[#232328] bg-[#151518] px-3 py-2.5",
-                  "text-sm text-[#F0EDE8] placeholder:text-[#5A5650]",
+                  "w-full rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2.5",
+                  "text-sm text-[#E8ECF4] placeholder:text-[#4A5068]",
                   "focus:outline-none focus:border-[#2DD4BF]/40",
                   "resize-none transition-colors",
                   "disabled:opacity-50",
                 )}
               />
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5A5650]">
+                <span className="text-[10px] text-[#4A5068]">
                   {prompt.length}/{MAX_CHARS}
                 </span>
                 <button
@@ -390,7 +390,7 @@ export function AbbyAiPanel({ isOpen, onClose, onApply }: AbbyAiPanelProps) {
                   disabled={!prompt.trim() || isLoading}
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium",
-                    "bg-[#2DD4BF] text-[#0E0E11] hover:bg-[#26B8A5]",
+                    "bg-[#2DD4BF] text-[#0A0A18] hover:bg-[#26B8A5]",
                     "transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
                   )}
                 >

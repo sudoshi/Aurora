@@ -75,16 +75,16 @@ export function SessionForm({
       />
 
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-lg rounded-xl border border-[#232328] bg-[#1C1C20] shadow-xl">
+      <div className="relative z-10 w-full max-w-lg rounded-xl border border-[#1C1C48] bg-[#16163A] shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#232328] px-5 py-4">
-          <h2 className="text-base font-semibold text-[#F0EDE8]">
+        <div className="flex items-center justify-between border-b border-[#1C1C48] px-5 py-4">
+          <h2 className="text-base font-semibold text-[#E8ECF4]">
             {isEdit ? "Edit Session" : "Schedule Session"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#2A2A30] hover:text-[#8A857D]"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#222256] hover:text-[#7A8298]"
           >
             <X size={16} />
           </button>
@@ -176,18 +176,18 @@ export function SessionForm({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 border-t border-[#232328] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#1C1C48] pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+              className="rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!isValid || isPending}
-              className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+              className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
             >
               {isPending
                 ? "Saving..."

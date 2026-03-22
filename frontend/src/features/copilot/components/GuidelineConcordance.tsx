@@ -20,19 +20,19 @@ function ConcordanceDisplay({ result }: { result: ConcordanceResult }) {
       <div
         className="flex items-center gap-3 rounded-lg p-4"
         style={{
-          backgroundColor: concordant ? "#2DD4BF10" : "#E85A6B10",
-          border: `1px solid ${concordant ? "#2DD4BF30" : "#E85A6B30"}`,
+          backgroundColor: concordant ? "#2DD4BF10" : "#F0607A10",
+          border: `1px solid ${concordant ? "#2DD4BF30" : "#F0607A30"}`,
         }}
       >
         {concordant ? (
           <CheckCircle2 size={20} className="text-[#2DD4BF] shrink-0" />
         ) : (
-          <XCircle size={20} className="text-[#E85A6B] shrink-0" />
+          <XCircle size={20} className="text-[#F0607A] shrink-0" />
         )}
         <div>
           <p
             className="text-sm font-semibold"
-            style={{ color: concordant ? "#2DD4BF" : "#E85A6B" }}
+            style={{ color: concordant ? "#2DD4BF" : "#F0607A" }}
           >
             {concordant ? "Concordant with Guidelines" : "Non-Concordant"}
           </p>
@@ -43,9 +43,9 @@ function ConcordanceDisplay({ result }: { result: ConcordanceResult }) {
         <span
           className="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase shrink-0"
           style={{
-            color: concordant ? "#2DD4BF" : "#E85A6B",
-            backgroundColor: concordant ? "#2DD4BF15" : "#E85A6B15",
-            border: `1px solid ${concordant ? "#2DD4BF30" : "#E85A6B30"}`,
+            color: concordant ? "#2DD4BF" : "#F0607A",
+            backgroundColor: concordant ? "#2DD4BF15" : "#F0607A15",
+            border: `1px solid ${concordant ? "#2DD4BF30" : "#F0607A30"}`,
           }}
         >
           {result.confidence}
@@ -77,7 +77,7 @@ function ConcordanceDisplay({ result }: { result: ConcordanceResult }) {
           </p>
           <ul className="space-y-1">
             {result.concerns.map((c, i) => (
-              <li key={i} className="text-xs text-[#E85A6B] flex items-start gap-2">
+              <li key={i} className="text-xs text-[#F0607A] flex items-start gap-2">
                 <span className="mt-0.5 shrink-0">&#8226;</span>
                 {c}
               </li>
@@ -163,8 +163,8 @@ export function GuidelineConcordance({ patientContext }: GuidelineConcordancePro
 
       {/* Error */}
       {mutation.isError && (
-        <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 text-center">
-          <p className="text-sm text-[#E85A6B]">Failed to check guidelines</p>
+        <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 text-center">
+          <p className="text-sm text-[#F0607A]">Failed to check guidelines</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">Please try again.</p>
         </div>
       )}

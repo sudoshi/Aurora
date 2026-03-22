@@ -74,16 +74,16 @@ export function UserModal({ user, roles, onClose }: Props) {
       />
 
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-lg rounded-xl border border-[#232328] bg-[#1C1C20] shadow-xl">
+      <div className="relative z-10 w-full max-w-lg rounded-xl border border-[#1C1C48] bg-[#16163A] shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#232328] px-6 py-4">
-          <h2 className="text-base font-semibold text-[#F0EDE8]">
+        <div className="flex items-center justify-between border-b border-[#1C1C48] px-6 py-4">
+          <h2 className="text-base font-semibold text-[#E8ECF4]">
             {isEdit ? "Edit User" : "New User"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#2A2A30] hover:text-[#8A857D]"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#222256] hover:text-[#7A8298]"
           >
             <X size={16} />
           </button>
@@ -92,7 +92,7 @@ export function UserModal({ user, roles, onClose }: Props) {
         {/* Body */}
         <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {error && (
-            <div className="rounded-lg border border-[#9B1B30]/30 bg-[#9B1B30]/10 px-3 py-2 text-sm text-[#E85A6B]">
+            <div className="rounded-lg border border-[#00D68F]/30 bg-[#00D68F]/10 px-3 py-2 text-sm text-[#F0607A]">
               {error}
             </div>
           )}
@@ -100,20 +100,20 @@ export function UserModal({ user, roles, onClose }: Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Name */}
             <label className="block">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
                 Full Name
               </span>
               <input
                 required
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+                className="mt-1.5 w-full rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
               />
             </label>
 
             {/* Email */}
             <label className="block">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
                 Email
               </span>
               <input
@@ -121,17 +121,17 @@ export function UserModal({ user, roles, onClose }: Props) {
                 required
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] font-['IBM_Plex_Mono',monospace] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+                className="mt-1.5 w-full rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] font-['IBM_Plex_Mono',monospace] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
               />
             </label>
           </div>
 
           {/* Password */}
           <label className="block">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
               Password{" "}
               {isEdit && (
-                <span className="normal-case font-normal text-[#3A3A42]">
+                <span className="normal-case font-normal text-[#2A2A60]">
                   (leave blank to keep current)
                 </span>
               )}
@@ -142,13 +142,13 @@ export function UserModal({ user, roles, onClose }: Props) {
               placeholder={isEdit ? "--------" : "Min 8 chars, mixed case + number"}
               value={form.password}
               onChange={(e) => set("password", e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+              className="mt-1.5 w-full rounded-lg border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:border-[#2DD4BF] focus:outline-none focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
             />
           </label>
 
           {/* Roles */}
           <div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
               Roles
             </span>
             <div className="mt-2 grid grid-cols-2 gap-2">
@@ -161,18 +161,18 @@ export function UserModal({ user, roles, onClose }: Props) {
                       "flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2 transition-colors",
                       checked
                         ? "border-[#2DD4BF]/30 bg-[#2DD4BF]/5"
-                        : "border-[#232328] bg-[#151518] hover:border-[#2A2A30]",
+                        : "border-[#1C1C48] bg-[#10102A] hover:border-[#222256]",
                     ].join(" ")}
                   >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleRole(r.name)}
-                      className="h-3.5 w-3.5 shrink-0 rounded border-[#3A3A42] accent-[#2DD4BF]"
+                      className="h-3.5 w-3.5 shrink-0 rounded border-[#2A2A60] accent-[#2DD4BF]"
                     />
                     <span
                       className="text-xs font-medium"
-                      style={{ color: checked ? "#2DD4BF" : "#8A857D" }}
+                      style={{ color: checked ? "#2DD4BF" : "#7A8298" }}
                     >
                       {r.name}
                     </span>
@@ -184,11 +184,11 @@ export function UserModal({ user, roles, onClose }: Props) {
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t border-[#232328] px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-[#1C1C48] px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+            className="rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
           >
             Cancel
           </button>
@@ -199,7 +199,7 @@ export function UserModal({ user, roles, onClose }: Props) {
               const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
               handleSubmit(fakeEvent);
             }}
-            className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0E0E11] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
+            className="rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5] disabled:opacity-50"
           >
             {isPending ? "Saving..." : isEdit ? "Save Changes" : "Create User"}
           </button>

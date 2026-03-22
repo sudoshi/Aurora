@@ -37,16 +37,16 @@ import { UploadDialog } from "../components/UploadDialog";
 type Tab = "uploads" | "clinvar";
 
 const STATUS_BADGE: Record<UploadStatus, string> = {
-  pending: "bg-[#232328] text-[#8A857D]",
+  pending: "bg-[#1C1C48] text-[#7A8298]",
   parsing: "bg-blue-400/15 text-blue-400",
   mapped: "bg-[#2DD4BF]/15 text-[#2DD4BF]",
   review: "bg-amber-400/15 text-amber-400",
   imported: "bg-[#2DD4BF]/20 text-[#2DD4BF]",
-  failed: "bg-[#E85A6B]/15 text-[#E85A6B]",
+  failed: "bg-[#F0607A]/15 text-[#F0607A]",
 };
 
 const SIG_BADGE: Record<string, string> = {
-  pathogenic: "bg-[#E85A6B]/15 text-[#E85A6B]",
+  pathogenic: "bg-[#F0607A]/15 text-[#F0607A]",
   "likely pathogenic": "bg-orange-400/15 text-orange-400",
   benign: "bg-[#2DD4BF]/15 text-[#2DD4BF]",
   "likely benign": "bg-[#2DD4BF]/10 text-[#2DD4BF]/80",
@@ -54,12 +54,12 @@ const SIG_BADGE: Record<string, string> = {
 };
 
 function sigBadgeClass(sig: string | null): string {
-  if (!sig) return "bg-[#232328] text-[#5A5650]";
+  if (!sig) return "bg-[#1C1C48] text-[#4A5068]";
   const key = sig.toLowerCase();
   for (const [k, v] of Object.entries(SIG_BADGE)) {
     if (key.includes(k)) return v;
   }
-  return "bg-[#232328] text-[#8A857D]";
+  return "bg-[#1C1C48] text-[#7A8298]";
 }
 
 function formatBytes(bytes: number): string {
@@ -121,15 +121,15 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
   return (
     <div className="space-y-4">
       {/* Status card */}
-      <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-md bg-[#E85A6B]/10 flex-shrink-0">
-              <ShieldAlert size={18} className="text-[#E85A6B]" />
+            <div className="flex items-center justify-center w-9 h-9 rounded-md bg-[#F0607A]/10 flex-shrink-0">
+              <ShieldAlert size={18} className="text-[#F0607A]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#F0EDE8]">ClinVar Reference Database</p>
-              <p className="text-xs text-[#5A5650] mt-0.5">
+              <p className="text-sm font-semibold text-[#E8ECF4]">ClinVar Reference Database</p>
+              <p className="text-xs text-[#4A5068] mt-0.5">
                 NCBI ClinVar -- GRCh38 -- Updated weekly
               </p>
             </div>
@@ -141,7 +141,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               onClick={() => handleSync(true)}
               disabled={syncMutation.isPending}
               title="Download P/LP variants only (~69 KB, fast)"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A2A30] bg-[#151518] px-3 py-2 text-xs font-medium text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#3A3A42] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#222256] bg-[#10102A] px-3 py-2 text-xs font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] transition-colors disabled:opacity-50"
             >
               {syncMutation.isPending && syncingPapu ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -155,7 +155,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               onClick={() => handleSync(false)}
               disabled={syncMutation.isPending}
               title="Download full ClinVar (~181 MB, slower)"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-2 text-xs font-medium text-[#0E0E11] hover:bg-[#26B8A5] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-2 text-xs font-medium text-[#0A0A18] hover:bg-[#26B8A5] transition-colors disabled:opacity-50"
             >
               {syncMutation.isPending && !syncingPapu ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -168,42 +168,42 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
         </div>
 
         {statusLoading ? (
-          <div className="mt-3 flex items-center gap-2 text-[#5A5650]">
+          <div className="mt-3 flex items-center gap-2 text-[#4A5068]">
             <Loader2 size={12} className="animate-spin" />
             <span className="text-xs">Loading status...</span>
           </div>
         ) : status ? (
           <div className="mt-3 grid grid-cols-3 gap-3">
             <div
-              className="rounded-md border border-[#232328] bg-[#1A1A1F] px-3 py-2 transition-colors hover:border-[#3A3A40] cursor-pointer"
+              className="rounded-md border border-[#1C1C48] bg-[#16163A] px-3 py-2 transition-colors hover:border-[#3A3A40] cursor-pointer"
               onClick={() => { setSearchQ(""); setGene(""); setSig(""); setPathogenicOnly(false); setPage(1); }}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setSearchQ(""); setGene(""); setSig(""); setPathogenicOnly(false); setPage(1); } }}
             >
-              <p className="text-xs text-[#5A5650] uppercase tracking-wider">Total Variants</p>
-              <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#F0EDE8] mt-0.5">
+              <p className="text-xs text-[#4A5068] uppercase tracking-wider">Total Variants</p>
+              <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#E8ECF4] mt-0.5">
                 {status.total_variants.toLocaleString()}
               </p>
             </div>
             <div
-              className="rounded-md border border-[#232328] bg-[#1A1A1F] px-3 py-2 transition-colors hover:border-[#3A3A40] cursor-pointer"
+              className="rounded-md border border-[#1C1C48] bg-[#16163A] px-3 py-2 transition-colors hover:border-[#3A3A40] cursor-pointer"
               onClick={() => { setPathogenicOnly(true); setSig(""); setSearchQ(""); setGene(""); setPage(1); }}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setPathogenicOnly(true); setSig(""); setSearchQ(""); setGene(""); setPage(1); } }}
             >
-              <p className="text-xs text-[#5A5650] uppercase tracking-wider">Pathogenic / LP</p>
-              <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#E85A6B] mt-0.5">
+              <p className="text-xs text-[#4A5068] uppercase tracking-wider">Pathogenic / LP</p>
+              <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#F0607A] mt-0.5">
                 {status.pathogenic_count.toLocaleString()}
               </p>
             </div>
-            <div className="rounded-md border border-[#232328] bg-[#1A1A1F] px-3 py-2">
-              <p className="text-xs text-[#5A5650] uppercase tracking-wider">Last Sync</p>
-              <p className="text-sm text-[#C5C0B8] mt-0.5">
+            <div className="rounded-md border border-[#1C1C48] bg-[#16163A] px-3 py-2">
+              <p className="text-xs text-[#4A5068] uppercase tracking-wider">Last Sync</p>
+              <p className="text-sm text-[#B4BAC8] mt-0.5">
                 {formatDate(status.last_sync)}
                 {status.last_sync_papu && (
-                  <span className="ml-1.5 text-[10px] text-[#8A857D] bg-[#232328] px-1.5 py-0.5 rounded">P/LP</span>
+                  <span className="ml-1.5 text-[10px] text-[#7A8298] bg-[#1C1C48] px-1.5 py-0.5 rounded">P/LP</span>
                 )}
               </p>
             </div>
@@ -217,7 +217,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
           </div>
         )}
         {syncMutation.isError && (
-          <div className="mt-3 flex items-center gap-2 rounded-md border border-[#E85A6B]/20 bg-[#E85A6B]/5 px-3 py-2 text-xs text-[#E85A6B]">
+          <div className="mt-3 flex items-center gap-2 rounded-md border border-[#F0607A]/20 bg-[#F0607A]/5 px-3 py-2 text-xs text-[#F0607A]">
             <AlertCircle size={12} />
             Sync failed -- check server logs
           </div>
@@ -225,9 +225,9 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
       </div>
 
       {isEmpty ? (
-        <div className="rounded-lg border border-[#232328] bg-[#151518] flex flex-col items-center justify-center py-14 text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] flex flex-col items-center justify-center py-14 text-[#4A5068]">
           <Database size={32} className="mb-3 opacity-40" />
-          <p className="text-sm font-medium text-[#8A857D]">No ClinVar data indexed yet</p>
+          <p className="text-sm font-medium text-[#7A8298]">No ClinVar data indexed yet</p>
           <p className="text-xs mt-1">Use "P/LP Only" for a fast 69 KB seed, or "Full Sync" for all 181 MB</p>
         </div>
       ) : (
@@ -235,13 +235,13 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
           {/* Search controls */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A5650]" />
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A5068]" />
               <input
                 type="text"
                 value={searchQ}
                 onChange={(e) => { setSearchQ(e.target.value); setPage(1); }}
                 placeholder="Search gene, HGVS, disease, RS ID..."
-                className="w-full pl-8 pr-3 py-2 text-sm bg-[#151518] border border-[#232328] rounded-lg text-[#F0EDE8] placeholder-[#5A5650] focus:outline-none focus:border-[#2DD4BF]/50 focus:ring-1 focus:ring-[#2DD4BF]/30"
+                className="w-full pl-8 pr-3 py-2 text-sm bg-[#10102A] border border-[#1C1C48] rounded-lg text-[#E8ECF4] placeholder-[#4A5068] focus:outline-none focus:border-[#2DD4BF]/50 focus:ring-1 focus:ring-[#2DD4BF]/30"
               />
             </div>
             <input
@@ -249,12 +249,12 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               value={gene}
               onChange={(e) => { setGene(e.target.value); setPage(1); }}
               placeholder="Gene"
-              className="w-28 px-3 py-2 text-sm bg-[#151518] border border-[#232328] rounded-lg text-[#F0EDE8] placeholder-[#5A5650] focus:outline-none focus:border-[#2DD4BF]/50 focus:ring-1 focus:ring-[#2DD4BF]/30"
+              className="w-28 px-3 py-2 text-sm bg-[#10102A] border border-[#1C1C48] rounded-lg text-[#E8ECF4] placeholder-[#4A5068] focus:outline-none focus:border-[#2DD4BF]/50 focus:ring-1 focus:ring-[#2DD4BF]/30"
             />
             <select
               value={sig}
               onChange={(e) => { setSig(e.target.value); setPage(1); }}
-              className="px-3 py-2 text-sm bg-[#151518] border border-[#232328] rounded-lg text-[#8A857D] focus:outline-none focus:border-[#2DD4BF]/50"
+              className="px-3 py-2 text-sm bg-[#10102A] border border-[#1C1C48] rounded-lg text-[#7A8298] focus:outline-none focus:border-[#2DD4BF]/50"
             >
               <option value="">All significance</option>
               <option value="pathogenic">Pathogenic</option>
@@ -269,8 +269,8 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               onClick={() => { setPathogenicOnly(!pathogenicOnly); setPage(1); }}
               className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border transition-colors ${
                 pathogenicOnly
-                  ? "bg-[#E85A6B]/15 border-[#E85A6B]/30 text-[#E85A6B]"
-                  : "bg-[#151518] border-[#232328] text-[#8A857D] hover:text-[#C5C0B8]"
+                  ? "bg-[#F0607A]/15 border-[#F0607A]/30 text-[#F0607A]"
+                  : "bg-[#10102A] border-[#1C1C48] text-[#7A8298] hover:text-[#B4BAC8]"
               }`}
             >
               <ShieldAlert size={12} />
@@ -280,42 +280,42 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
 
           {/* Results table */}
           {!hasFilters ? (
-            <div className="rounded-lg border border-[#232328] bg-[#151518] flex flex-col items-center justify-center py-10 text-[#5A5650]">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] flex flex-col items-center justify-center py-10 text-[#4A5068]">
               <Filter size={22} className="mb-2 opacity-40" />
-              <p className="text-sm text-[#8A857D]">Enter a search term or apply a filter to browse ClinVar</p>
+              <p className="text-sm text-[#7A8298]">Enter a search term or apply a filter to browse ClinVar</p>
             </div>
           ) : searching ? (
-            <div className="rounded-lg border border-[#232328] bg-[#151518] flex items-center justify-center py-12">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] flex items-center justify-center py-12">
               <Loader2 size={20} className="animate-spin text-[#2DD4BF]" />
             </div>
           ) : results && results.data.length === 0 ? (
-            <div className="rounded-lg border border-[#232328] bg-[#151518] flex flex-col items-center justify-center py-12 text-[#5A5650]">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] flex flex-col items-center justify-center py-12 text-[#4A5068]">
               <Dna size={28} className="mb-2 opacity-40" />
-              <p className="text-sm text-[#8A857D]">No variants match your search</p>
+              <p className="text-sm text-[#7A8298]">No variants match your search</p>
             </div>
           ) : results ? (
-            <div className="rounded-lg border border-[#232328] bg-[#151518]">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[#232328]">
+                    <tr className="border-b border-[#1C1C48]">
                       {["Gene", "HGVS / Variant", "Significance", "Disease", "Review Status", "Build", "IDs"].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                          className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                         >
                           {h}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1E1E23]">
+                  <tbody className="divide-y divide-[#16163A]">
                     {results.data.map((v: ClinVarVariant) => (
-                      <tr key={v.id} className="hover:bg-[#1A1A1F] transition-colors">
-                        <td className="px-4 py-3 font-semibold text-[#F0EDE8] text-xs">
-                          {v.gene_symbol ?? <span className="text-[#3A3A42]">{"\u2014"}</span>}
+                      <tr key={v.id} className="hover:bg-[#16163A] transition-colors">
+                        <td className="px-4 py-3 font-semibold text-[#E8ECF4] text-xs">
+                          {v.gene_symbol ?? <span className="text-[#2A2A60]">{"\u2014"}</span>}
                         </td>
-                        <td className="px-4 py-3 font-mono text-xs text-[#C5C0B8] max-w-xs truncate">
+                        <td className="px-4 py-3 font-mono text-xs text-[#B4BAC8] max-w-xs truncate">
                           {v.hgvs ?? `${v.chromosome}:${v.position} ${v.reference_allele}>${v.alternate_allele}`}
                         </td>
                         <td className="px-4 py-3">
@@ -323,18 +323,18 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
                             {v.clinical_significance ?? "\u2014"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#8A857D] max-w-[200px] truncate" title={v.disease_name ?? undefined}>
-                          {v.disease_name ?? <span className="text-[#3A3A42]">{"\u2014"}</span>}
+                        <td className="px-4 py-3 text-xs text-[#7A8298] max-w-[200px] truncate" title={v.disease_name ?? undefined}>
+                          {v.disease_name ?? <span className="text-[#2A2A60]">{"\u2014"}</span>}
                         </td>
-                        <td className="px-4 py-3 text-[10px] text-[#5A5650]">
+                        <td className="px-4 py-3 text-[10px] text-[#4A5068]">
                           {v.review_status ?? "\u2014"}
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#5A5650]">
+                        <td className="px-4 py-3 text-xs text-[#4A5068]">
                           {v.genome_build}
                         </td>
-                        <td className="px-4 py-3 text-[10px] text-[#5A5650] space-y-0.5">
+                        <td className="px-4 py-3 text-[10px] text-[#4A5068] space-y-0.5">
                           {v.variation_id && <div>VCV{v.variation_id}</div>}
-                          {v.rs_id && <div className="text-[#3A3A42]">{v.rs_id}</div>}
+                          {v.rs_id && <div className="text-[#2A2A60]">{v.rs_id}</div>}
                         </td>
                       </tr>
                     ))}
@@ -343,8 +343,8 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               </div>
               {/* Pagination */}
               {results.last_page > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-[#232328]">
-                  <p className="text-xs text-[#5A5650]">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-[#1C1C48]">
+                  <p className="text-xs text-[#4A5068]">
                     {results.total.toLocaleString()} variants -- page {results.current_page} of {results.last_page}
                   </p>
                   <div className="flex items-center gap-1">
@@ -352,7 +352,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
                       type="button"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={results.current_page === 1}
-                      className="p-1.5 rounded text-[#5A5650] hover:text-[#C5C0B8] hover:bg-[#232328] disabled:opacity-30 transition-colors"
+                      className="p-1.5 rounded text-[#4A5068] hover:text-[#B4BAC8] hover:bg-[#1C1C48] disabled:opacity-30 transition-colors"
                     >
                       <ChevronLeft size={14} />
                     </button>
@@ -360,7 +360,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
                       type="button"
                       onClick={() => setPage((p) => Math.min(results.last_page, p + 1))}
                       disabled={results.current_page === results.last_page}
-                      className="p-1.5 rounded text-[#5A5650] hover:text-[#C5C0B8] hover:bg-[#232328] disabled:opacity-30 transition-colors"
+                      className="p-1.5 rounded text-[#4A5068] hover:text-[#B4BAC8] hover:bg-[#1C1C48] disabled:opacity-30 transition-colors"
                     >
                       <ChevronRight size={14} />
                     </button>
@@ -410,8 +410,8 @@ export default function GenomicsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div>
-            <h1 className="text-2xl font-bold text-[#F0EDE8]">Molecular Genomics</h1>
-            <p className="mt-1 text-sm text-[#8A857D]">
+            <h1 className="text-2xl font-bold text-[#E8ECF4]">Molecular Genomics</h1>
+            <p className="mt-1 text-sm text-[#7A8298]">
               Variant ingestion, OMOP mapping, and cohort genomic criteria
             </p>
           </div>
@@ -420,7 +420,7 @@ export default function GenomicsPage() {
           <button
             type="button"
             onClick={() => navigate("/genomics/analysis")}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2.5 text-sm font-medium text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#3A3A42] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2.5 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] transition-colors"
           >
             <Activity size={16} />
             Analysis Suite
@@ -428,7 +428,7 @@ export default function GenomicsPage() {
           <button
             type="button"
             onClick={() => navigate("/genomics/tumor-board")}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2.5 text-sm font-medium text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#3A3A42] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2.5 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] transition-colors"
           >
             <Users size={16} />
             Tumor Board
@@ -436,7 +436,7 @@ export default function GenomicsPage() {
           <button
             type="button"
             onClick={() => setShowUpload(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2.5 text-sm font-medium text-[#0E0E11] hover:bg-[#26B8A5] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2.5 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] transition-colors"
           >
             <Upload size={16} />
             Upload Variants
@@ -446,7 +446,7 @@ export default function GenomicsPage() {
 
       {/* Stats bar */}
       {statsLoading ? (
-        <div className="flex items-center gap-2 text-[#5A5650]">
+        <div className="flex items-center gap-2 text-[#4A5068]">
           <Loader2 size={14} className="animate-spin" />
           <span className="text-sm">Loading stats...</span>
         </div>
@@ -455,7 +455,7 @@ export default function GenomicsPage() {
           {metricCards.map((card) => (
             <div
               key={card.label}
-              className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3"
+              className="flex items-center gap-3 rounded-lg border border-[#1C1C48] bg-[#10102A] px-4 py-3"
             >
               <div
                 className="flex items-center justify-center w-8 h-8 rounded-md flex-shrink-0"
@@ -470,7 +470,7 @@ export default function GenomicsPage() {
                 >
                   {card.value}
                 </p>
-                <p className="text-[10px] text-[#5A5650] uppercase tracking-wider">
+                <p className="text-[10px] text-[#4A5068] uppercase tracking-wider">
                   {card.label}
                 </p>
               </div>
@@ -481,10 +481,10 @@ export default function GenomicsPage() {
 
       {/* Top Genes */}
       {stats && Object.keys(stats.top_genes).length > 0 && (
-        <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp size={14} className="text-[#2DD4BF]" />
-            <h2 className="text-sm font-semibold text-[#F0EDE8]">Top Mutated Genes</h2>
+            <h2 className="text-sm font-semibold text-[#E8ECF4]">Top Mutated Genes</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {Object.entries(stats.top_genes).map(([gene, count]) => (
@@ -507,7 +507,7 @@ export default function GenomicsPage() {
       )}
 
       {/* Tabs */}
-      <div className="border-b border-[#232328]">
+      <div className="border-b border-[#1C1C48]">
         <div className="flex gap-0">
           {tabs.map((tab) => (
             <button
@@ -517,7 +517,7 @@ export default function GenomicsPage() {
               className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? "border-[#2DD4BF] text-[#2DD4BF]"
-                  : "border-transparent text-[#8A857D] hover:text-[#C5C0B8]"
+                  : "border-transparent text-[#7A8298] hover:text-[#B4BAC8]"
               }`}
             >
               <tab.icon size={14} />
@@ -529,10 +529,10 @@ export default function GenomicsPage() {
 
       {/* Tab: Uploads */}
       {activeTab === "uploads" && (
-        <div className="rounded-lg border border-[#232328] bg-[#151518]">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#232328]">
-            <FileText size={14} className="text-[#5A5650]" />
-            <h2 className="text-sm font-semibold text-[#F0EDE8]">Recent Uploads</h2>
+        <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1C1C48]">
+            <FileText size={14} className="text-[#4A5068]" />
+            <h2 className="text-sm font-semibold text-[#E8ECF4]">Recent Uploads</h2>
           </div>
 
           {uploadsLoading ? (
@@ -540,48 +540,48 @@ export default function GenomicsPage() {
               <Loader2 size={22} className="animate-spin text-[#2DD4BF]" />
             </div>
           ) : uploads.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-[#5A5650]">
+            <div className="flex flex-col items-center justify-center py-16 text-[#4A5068]">
               <FlaskConical size={36} className="mb-3 opacity-40" />
-              <p className="text-sm font-medium text-[#8A857D]">No variant files uploaded yet</p>
+              <p className="text-sm font-medium text-[#7A8298]">No variant files uploaded yet</p>
               <p className="text-xs mt-1">Upload a VCF or MAF file to begin genomic analysis</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#232328]">
+                  <tr className="border-b border-[#1C1C48]">
                     {["Filename", "Format", "Genome", "Variants", "Status", "Uploaded", ""].map((h) => (
                       <th
                         key={h}
-                        className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                        className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                       >
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1E1E23]">
+                <tbody className="divide-y divide-[#16163A]">
                   {uploads.map((upload: GenomicUpload) => (
                     <tr
                       key={upload.id}
-                      className="hover:bg-[#1A1A1F] cursor-pointer transition-colors"
+                      className="hover:bg-[#16163A] cursor-pointer transition-colors"
                       onClick={() => navigate(`/genomics/uploads/${upload.id}`)}
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-[#C5C0B8] max-w-xs truncate">
+                      <td className="px-4 py-3 font-mono text-xs text-[#B4BAC8] max-w-xs truncate">
                         {upload.filename}
                       </td>
-                      <td className="px-4 py-3 text-[#8A857D] uppercase text-xs">
+                      <td className="px-4 py-3 text-[#7A8298] uppercase text-xs">
                         {upload.file_format}
                       </td>
-                      <td className="px-4 py-3 text-[#8A857D] text-xs">
+                      <td className="px-4 py-3 text-[#7A8298] text-xs">
                         {upload.genome_build ?? "\u2014"}
                       </td>
-                      <td className="px-4 py-3 text-[#C5C0B8] text-sm">
+                      <td className="px-4 py-3 text-[#B4BAC8] text-sm">
                         {upload.total_variants.toLocaleString()}
                         {upload.status === "failed" && upload.error_message && (
                           <span title={upload.error_message}>
                             <AlertCircle
-                              className="inline ml-1 text-[#E85A6B] w-3 h-3"
+                              className="inline ml-1 text-[#F0607A] w-3 h-3"
                             />
                           </span>
                         )}
@@ -593,9 +593,9 @@ export default function GenomicsPage() {
                           {upload.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#5A5650] text-xs">
+                      <td className="px-4 py-3 text-[#4A5068] text-xs">
                         {new Date(upload.created_at).toLocaleDateString()}{" "}
-                        <span className="text-[#3A3A42]">({formatBytes(upload.file_size_bytes)})</span>
+                        <span className="text-[#2A2A60]">({formatBytes(upload.file_size_bytes)})</span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
@@ -607,7 +607,7 @@ export default function GenomicsPage() {
                             }}
                             disabled={annotate.isPending}
                             title="Annotate variants with ClinVar significance"
-                            className="p-1 rounded text-[#5A5650] hover:text-[#2DD4BF] hover:bg-[#2DD4BF]/10 transition-colors disabled:opacity-30"
+                            className="p-1 rounded text-[#4A5068] hover:text-[#2DD4BF] hover:bg-[#2DD4BF]/10 transition-colors disabled:opacity-30"
                           >
                             {annotate.isPending ? (
                               <Loader2 size={13} className="animate-spin" />
@@ -623,7 +623,7 @@ export default function GenomicsPage() {
                                 deleteUpload.mutate(upload.id);
                               }
                             }}
-                            className="p-1 rounded text-[#5A5650] hover:text-[#E85A6B] hover:bg-[#E85A6B]/10 transition-colors"
+                            className="p-1 rounded text-[#4A5068] hover:text-[#F0607A] hover:bg-[#F0607A]/10 transition-colors"
                             title="Delete upload"
                           >
                             <Trash2 size={13} />

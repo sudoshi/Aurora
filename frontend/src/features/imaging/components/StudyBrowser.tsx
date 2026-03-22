@@ -16,7 +16,7 @@ type AnyStudy = TimelineStudy | ImagingStudy;
 
 const MODALITY_COLORS: Record<string, string> = {
   CT: "#60A5FA", MR: "#A78BFA", PT: "#F59E0B", US: "#2DD4BF",
-  CR: "#8A857D", DX: "#8A857D", NM: "#F472B6",
+  CR: "#7A8298", DX: "#7A8298", NM: "#F472B6",
 };
 
 function formatDate(d: string | null): string {
@@ -41,17 +41,17 @@ function StudyCard({ study, onCompare, compareSelected }: {
   onCompare?: (s: AnyStudy) => void;
   compareSelected?: boolean;
 }) {
-  const color = MODALITY_COLORS[study.modality ?? ""] ?? "#8A857D";
+  const color = MODALITY_COLORS[study.modality ?? ""] ?? "#7A8298";
   const mc = getMeasurementCount(study);
 
   return (
     <div className={cn(
-      "group rounded-lg border bg-[#151518] overflow-hidden transition-all hover:border-[#3A3A42]",
-      compareSelected ? "border-[#C9A227] ring-1 ring-[#C9A227]/30" : "border-[#232328]",
+      "group rounded-lg border bg-[#10102A] overflow-hidden transition-all hover:border-[#2A2A60]",
+      compareSelected ? "border-[#9D75F8] ring-1 ring-[#9D75F8]/30" : "border-[#1C1C48]",
     )}>
       {/* Thumbnail placeholder */}
-      <div className="relative aspect-[4/3] bg-[#0E0E11] flex items-center justify-center">
-        <ScanLine size={28} className="text-[#1E1E23]" />
+      <div className="relative aspect-[4/3] bg-[#0A0A18] flex items-center justify-center">
+        <ScanLine size={28} className="text-[#16163A]" />
 
         {/* Modality badge */}
         <div
@@ -72,7 +72,7 @@ function StudyCard({ study, onCompare, compareSelected }: {
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
           <Link
             to={`/imaging/studies/${study.id}`}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0E0E11] hover:bg-[#26B8A5]"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#2DD4BF] px-3 py-1.5 text-xs font-semibold text-[#0A0A18] hover:bg-[#26B8A5]"
           >
             <ScanLine size={12} /> Details
           </Link>
@@ -80,7 +80,7 @@ function StudyCard({ study, onCompare, compareSelected }: {
             href={`/ohif/viewer?StudyInstanceUIDs=${encodeURIComponent(study.study_instance_uid)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#60A5FA] px-3 py-1.5 text-xs font-semibold text-[#0E0E11] hover:bg-[#3B82F6]"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#60A5FA] px-3 py-1.5 text-xs font-semibold text-[#0A0A18] hover:bg-[#3B82F6]"
           >
             <Monitor size={12} /> OHIF
           </a>
@@ -91,8 +91,8 @@ function StudyCard({ study, onCompare, compareSelected }: {
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold",
                 compareSelected
-                  ? "bg-[#C9A227] text-[#0E0E11]"
-                  : "bg-[#232328] text-[#C5C0B8] hover:bg-[#2A2A30]",
+                  ? "bg-[#9D75F8] text-[#0A0A18]"
+                  : "bg-[#1C1C48] text-[#B4BAC8] hover:bg-[#222256]",
               )}
             >
               <Columns2 size={12} /> {compareSelected ? "Selected" : "Compare"}
@@ -102,12 +102,12 @@ function StudyCard({ study, onCompare, compareSelected }: {
       </div>
 
       <div className="px-3 py-2.5 space-y-1">
-        <p className="text-xs font-medium text-[#F0EDE8] truncate">
+        <p className="text-xs font-medium text-[#E8ECF4] truncate">
           {study.study_description ?? study.body_part_examined ?? "DICOM Study"}
         </p>
         <div className="flex items-center justify-between">
-          <p className="text-[10px] text-[#5A5650]">{formatDate(getStudyDate(study))}</p>
-          <p className="text-[10px] text-[#5A5650]">{study.num_series}s · {study.num_images}i</p>
+          <p className="text-[10px] text-[#4A5068]">{formatDate(getStudyDate(study))}</p>
+          <p className="text-[10px] text-[#4A5068]">{study.num_series}s · {study.num_images}i</p>
         </div>
       </div>
     </div>
@@ -172,7 +172,7 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
     <div className="space-y-4">
       {/* Header + Filters */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h3 className="text-sm font-semibold text-[#F0EDE8] flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-[#E8ECF4] flex items-center gap-2">
           <ScanLine size={14} className="text-[#60A5FA]" />
           {title ?? `Imaging Studies (${studies.length})`}
         </h3>
@@ -180,11 +180,11 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
         <div className="flex items-center gap-2">
           {modalities.length > 1 && (
             <div className="relative">
-              <Filter size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#5A5650]" />
+              <Filter size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#4A5068]" />
               <select
                 value={modalityFilter}
                 onChange={(e) => setModalityFilter(e.target.value)}
-                className="appearance-none rounded-md border border-[#232328] bg-[#0E0E11] pl-7 pr-6 py-1.5 text-[10px] text-[#C5C0B8] focus:outline-none focus:border-[#60A5FA]"
+                className="appearance-none rounded-md border border-[#1C1C48] bg-[#0A0A18] pl-7 pr-6 py-1.5 text-[10px] text-[#B4BAC8] focus:outline-none focus:border-[#60A5FA]"
               >
                 <option value="all">All ({studies.length})</option>
                 {modalities.map((m) => (
@@ -193,11 +193,11 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
                   </option>
                 ))}
               </select>
-              <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#5A5650] pointer-events-none" />
+              <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4A5068] pointer-events-none" />
             </div>
           )}
 
-          <div className="flex items-center gap-0.5 rounded-md border border-[#232328] bg-[#0E0E11] p-0.5">
+          <div className="flex items-center gap-0.5 rounded-md border border-[#1C1C48] bg-[#0A0A18] p-0.5">
             {(["date", "modality"] as const).map((s) => (
               <button
                 key={s}
@@ -205,7 +205,7 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
                 onClick={() => setSortBy(s)}
                 className={cn(
                   "px-2.5 py-1 text-[10px] rounded transition-colors",
-                  sortBy === s ? "bg-[#60A5FA]/10 text-[#60A5FA] font-medium" : "text-[#5A5650] hover:text-[#8A857D]",
+                  sortBy === s ? "bg-[#60A5FA]/10 text-[#60A5FA] font-medium" : "text-[#4A5068] hover:text-[#7A8298]",
                 )}
               >
                 {s === "date" ? "Date" : "Modality"}
@@ -214,13 +214,13 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
           </div>
 
           {onCompareSelect && compareSelection.length > 0 && (
-            <div className="flex items-center gap-1.5 text-[10px] text-[#C9A227]">
+            <div className="flex items-center gap-1.5 text-[10px] text-[#9D75F8]">
               <Columns2 size={10} />
               {compareSelection.length}/2
               <button
                 type="button"
                 onClick={() => setCompareSelection([])}
-                className="text-[#5A5650] hover:text-[#8A857D] ml-1"
+                className="text-[#4A5068] hover:text-[#7A8298] ml-1"
               >
                 clear
               </button>
@@ -230,8 +230,8 @@ export default function StudyBrowser({ studies, isLoading, onCompareSelect, titl
       </div>
 
       {filtered.length === 0 ? (
-        <div className="flex items-center justify-center py-16 rounded-lg border border-dashed border-[#323238] bg-[#151518]">
-          <p className="text-sm text-[#5A5650]">No imaging studies found</p>
+        <div className="flex items-center justify-center py-16 rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A]">
+          <p className="text-sm text-[#4A5068]">No imaging studies found</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">

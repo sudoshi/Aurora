@@ -26,7 +26,7 @@ import { VariantCard } from "./VariantCard";
 import { ActionableGenes } from "./ActionableGenes";
 
 const CLINVAR_BADGE: Record<string, { cls: string; label: string; icon: typeof ShieldAlert }> = {
-  pathogenic:             { cls: "bg-[#E85A6B]/15 text-[#E85A6B]", label: "Pathogenic", icon: ShieldAlert },
+  pathogenic:             { cls: "bg-[#F0607A]/15 text-[#F0607A]", label: "Pathogenic", icon: ShieldAlert },
   "likely pathogenic":    { cls: "bg-orange-400/15 text-orange-400", label: "Likely Pathogenic", icon: ShieldAlert },
   "uncertain significance": { cls: "bg-amber-400/15 text-amber-400", label: "VUS", icon: ShieldQuestion },
   "likely benign":        { cls: "bg-blue-400/15 text-blue-400", label: "Likely Benign", icon: ShieldCheck },
@@ -84,9 +84,9 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
 
   if (variants.length === 0 && page === 1) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-[#5A5650]">
+      <div className="flex flex-col items-center justify-center py-16 text-[#4A5068]">
         <Dna size={36} className="mb-3 opacity-40" />
-        <p className="text-sm font-medium text-[#8A857D]">No genomic data available</p>
+        <p className="text-sm font-medium text-[#7A8298]">No genomic data available</p>
         <p className="text-xs mt-1">Upload variant files to see genomic data for this patient</p>
       </div>
     );
@@ -98,9 +98,9 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Dna size={16} className="text-[#A78BFA]" />
-          <h3 className="text-sm font-semibold text-[#F0EDE8]">
+          <h3 className="text-sm font-semibold text-[#E8ECF4]">
             Genomic Variants
-            <span className="ml-2 text-xs text-[#5A5650] font-normal">
+            <span className="ml-2 text-xs text-[#4A5068] font-normal">
               ({totalVariants} total)
             </span>
           </h3>
@@ -129,22 +129,22 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
       )}
 
       {/* Variants table */}
-      <div className="rounded-lg border border-[#232328] bg-[#151518]">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-[#232328]">
+              <tr className="border-b border-[#1C1C48]">
                 {["Gene", "Alteration", "Type", "AF", "ClinVar", ""].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                    className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                   >
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E1E23]">
+            <tbody className="divide-y divide-[#16163A]">
               {variants.map((v) => {
                 const badge = getClinvarBadge(v.clinvar_significance);
                 const BadgeIcon = badge?.icon ?? ShieldQuestion;
@@ -153,24 +153,24 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                 return (
                   <tr
                     key={v.id}
-                    className="hover:bg-[#1A1A1F] cursor-pointer transition-colors"
+                    className="hover:bg-[#16163A] cursor-pointer transition-colors"
                     onClick={() => setSelectedVariant(v)}
                   >
                     <td className="px-4 py-2.5">
-                      <span className={`font-semibold ${isActionable ? "text-[#E85A6B]" : "text-[#A78BFA]"}`}>
+                      <span className={`font-semibold ${isActionable ? "text-[#F0607A]" : "text-[#A78BFA]"}`}>
                         {v.gene_symbol ?? "\u2014"}
                       </span>
                       {isActionable && (
-                        <AlertTriangle size={10} className="inline ml-1 text-[#E85A6B]" />
+                        <AlertTriangle size={10} className="inline ml-1 text-[#F0607A]" />
                       )}
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-[#C5C0B8]">
+                    <td className="px-4 py-2.5 font-mono text-[#B4BAC8]">
                       {v.hgvs_p ?? v.hgvs_c ?? `${v.chromosome}:${v.position}`}
                     </td>
-                    <td className="px-4 py-2.5 text-[#8A857D]">
+                    <td className="px-4 py-2.5 text-[#7A8298]">
                       {v.variant_type ?? "\u2014"}
                     </td>
-                    <td className="px-4 py-2.5 text-[#8A857D]">
+                    <td className="px-4 py-2.5 text-[#7A8298]">
                       {v.allele_frequency != null
                         ? (v.allele_frequency * 100).toFixed(1) + "%"
                         : "\u2014"}
@@ -182,10 +182,10 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                           {badge.label}
                         </span>
                       ) : (
-                        <span className="text-[#3A3A42] text-[10px]">{"\u2014"}</span>
+                        <span className="text-[#2A2A60] text-[10px]">{"\u2014"}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-[#5A5650]">
+                    <td className="px-4 py-2.5 text-[#4A5068]">
                       <ChevronRight size={12} />
                     </td>
                   </tr>
@@ -197,8 +197,8 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#232328]">
-            <p className="text-xs text-[#5A5650]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#1C1C48]">
+            <p className="text-xs text-[#4A5068]">
               Page {page} of {totalPages}
             </p>
             <div className="flex items-center gap-1">
@@ -206,7 +206,7 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded text-[#5A5650] hover:text-[#C5C0B8] hover:bg-[#232328] disabled:opacity-30 transition-colors"
+                className="p-1.5 rounded text-[#4A5068] hover:text-[#B4BAC8] hover:bg-[#1C1C48] disabled:opacity-30 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -214,7 +214,7 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-1.5 rounded text-[#5A5650] hover:text-[#C5C0B8] hover:bg-[#232328] disabled:opacity-30 transition-colors"
+                className="p-1.5 rounded text-[#4A5068] hover:text-[#B4BAC8] hover:bg-[#1C1C48] disabled:opacity-30 transition-colors"
               >
                 <ChevronRight size={14} />
               </button>

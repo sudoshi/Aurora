@@ -15,22 +15,22 @@ import { useGenomicVariants, useMatchPersons, useImportToOmop } from "../hooks/u
 import type { GenomicVariant, UploadStatus } from "../types";
 
 const STATUS_COLOR: Record<UploadStatus, string> = {
-  pending: "text-[#8A857D]",
+  pending: "text-[#7A8298]",
   parsing: "text-blue-400",
   mapped: "text-[#2DD4BF]",
   review: "text-amber-400",
   imported: "text-[#2DD4BF]",
-  failed: "text-[#E85A6B]",
+  failed: "text-[#F0607A]",
 };
 
 const MAPPING_BADGE: Record<string, string> = {
   mapped: "bg-[#2DD4BF]/15 text-[#2DD4BF]",
   review: "bg-amber-400/15 text-amber-400",
-  unmapped: "bg-[#232328] text-[#5A5650]",
+  unmapped: "bg-[#1C1C48] text-[#4A5068]",
 };
 
 const CLINVAR_COLOR: Record<string, string> = {
-  Pathogenic: "text-[#E85A6B]",
+  Pathogenic: "text-[#F0607A]",
   "Likely pathogenic": "text-orange-400",
   "Uncertain significance": "text-amber-400",
   "Likely benign": "text-blue-400",
@@ -72,7 +72,7 @@ export default function UploadDetailPage() {
 
   if (!upload) {
     return (
-      <div className="flex items-center justify-center py-24 text-[#8A857D]">
+      <div className="flex items-center justify-center py-24 text-[#7A8298]">
         Upload not found
       </div>
     );
@@ -84,7 +84,7 @@ export default function UploadDetailPage() {
       <button
         type="button"
         onClick={() => navigate("/genomics")}
-        className="inline-flex items-center gap-1.5 text-sm text-[#8A857D] hover:text-[#F0EDE8] transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors"
       >
         <ArrowLeft size={14} />
         Back to Genomics
@@ -97,8 +97,8 @@ export default function UploadDetailPage() {
             <Dna size={18} style={{ color: "#A78BFA" }} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#F0EDE8] font-mono">{upload.filename}</h1>
-            <div className="flex items-center gap-2 text-sm text-[#8A857D] mt-0.5">
+            <h1 className="text-xl font-bold text-[#E8ECF4] font-mono">{upload.filename}</h1>
+            <div className="flex items-center gap-2 text-sm text-[#7A8298] mt-0.5">
               <span className="uppercase text-xs">{upload.file_format}</span>
               {upload.genome_build && <span>-- {upload.genome_build}</span>}
               {upload.sample_id && <span>-- {upload.sample_id}</span>}
@@ -112,7 +112,7 @@ export default function UploadDetailPage() {
                 type="button"
                 onClick={() => matchPersons.mutate(uploadId)}
                 disabled={matchPersons.isPending}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A2A30] bg-[#151518] px-3 py-2 text-xs font-medium text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#3A3A42] disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#222256] bg-[#10102A] px-3 py-2 text-xs font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
               >
                 {matchPersons.isPending ? (
                   <Loader2 size={12} className="animate-spin" />
@@ -125,7 +125,7 @@ export default function UploadDetailPage() {
                 type="button"
                 onClick={() => importOmop.mutate(uploadId)}
                 disabled={importOmop.isPending}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-2 text-xs font-medium text-[#0E0E11] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-2 text-xs font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
               >
                 {importOmop.isPending ? (
                   <Loader2 size={12} className="animate-spin" />
@@ -153,7 +153,7 @@ export default function UploadDetailPage() {
 
       {/* Error banner */}
       {upload.error_message && (
-        <div className="rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 p-4 text-[#E85A6B] text-sm">
+        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 p-4 text-[#F0607A] text-sm">
           <strong>Parse error:</strong> {upload.error_message}
         </div>
       )}
@@ -165,8 +165,8 @@ export default function UploadDetailPage() {
           { label: "OMOP Mapped", value: upload.mapped_variants.toLocaleString(), color: "#2DD4BF" },
           { label: "Needs Review", value: upload.review_required.toLocaleString(), color: "#F59E0B" },
         ].map((c) => (
-          <div key={c.label} className="rounded-lg border border-[#232328] bg-[#151518] px-4 py-3">
-            <p className="text-[10px] text-[#5A5650] uppercase tracking-wider mb-1">{c.label}</p>
+          <div key={c.label} className="rounded-lg border border-[#1C1C48] bg-[#10102A] px-4 py-3">
+            <p className="text-[10px] text-[#4A5068] uppercase tracking-wider mb-1">{c.label}</p>
             <p
               className="text-2xl font-semibold font-['IBM_Plex_Mono',monospace]"
               style={{ color: c.color }}
@@ -178,10 +178,10 @@ export default function UploadDetailPage() {
       </div>
 
       {/* Variants table */}
-      <div className="rounded-lg border border-[#232328] bg-[#151518]">
-        <div className="px-4 py-3 border-b border-[#232328] flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#F0EDE8]">Variants</h2>
-          <span className="text-xs text-[#5A5650]">{variants.length.toLocaleString()} shown</span>
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
+        <div className="px-4 py-3 border-b border-[#1C1C48] flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-[#E8ECF4]">Variants</h2>
+          <span className="text-xs text-[#4A5068]">{variants.length.toLocaleString()} shown</span>
         </div>
 
         {variantsLoading ? (
@@ -189,40 +189,40 @@ export default function UploadDetailPage() {
             <Loader2 size={22} className="animate-spin text-[#2DD4BF]" />
           </div>
         ) : variants.length === 0 ? (
-          <div className="text-center py-12 text-[#8A857D] text-sm">
+          <div className="text-center py-12 text-[#7A8298] text-sm">
             {upload.status === "parsing" ? "Parsing in progress..." : "No variants available"}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[#232328]">
+                <tr className="border-b border-[#1C1C48]">
                   {["Gene", "Variant", "HGVS", "Type", "Zygosity", "AF", "ClinVar", "OMOP"].map((h) => (
                     <th
                       key={h}
-                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                     >
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E1E23]">
+              <tbody className="divide-y divide-[#16163A]">
                 {variants.map((v: GenomicVariant) => (
-                  <tr key={v.id} className="hover:bg-[#1A1A1F] transition-colors">
+                  <tr key={v.id} className="hover:bg-[#16163A] transition-colors">
                     <td className="px-4 py-2.5 font-semibold text-[#A78BFA]">{v.gene_symbol ?? "\u2014"}</td>
-                    <td className="px-4 py-2.5 font-mono text-[#C5C0B8]">
+                    <td className="px-4 py-2.5 font-mono text-[#B4BAC8]">
                       {v.chromosome}:{v.position} {v.reference_allele}{"\u2192"}{v.alternate_allele}
                     </td>
                     <td
-                      className="px-4 py-2.5 font-mono text-[#8A857D] max-w-[180px] truncate"
+                      className="px-4 py-2.5 font-mono text-[#7A8298] max-w-[180px] truncate"
                       title={v.hgvs_p ?? v.hgvs_c ?? ""}
                     >
                       {v.hgvs_p ?? v.hgvs_c ?? "\u2014"}
                     </td>
-                    <td className="px-4 py-2.5 text-[#8A857D]">{v.variant_type ?? "\u2014"}</td>
-                    <td className="px-4 py-2.5 text-[#8A857D]">{v.zygosity ?? "\u2014"}</td>
-                    <td className="px-4 py-2.5 text-[#8A857D]">
+                    <td className="px-4 py-2.5 text-[#7A8298]">{v.variant_type ?? "\u2014"}</td>
+                    <td className="px-4 py-2.5 text-[#7A8298]">{v.zygosity ?? "\u2014"}</td>
+                    <td className="px-4 py-2.5 text-[#7A8298]">
                       {v.allele_frequency != null
                         ? (v.allele_frequency * 100).toFixed(1) + "%"
                         : "\u2014"}
@@ -231,13 +231,13 @@ export default function UploadDetailPage() {
                       {v.clinvar_significance ? (
                         <span
                           className={`text-xs font-medium ${
-                            CLINVAR_COLOR[v.clinvar_significance] ?? "text-[#8A857D]"
+                            CLINVAR_COLOR[v.clinvar_significance] ?? "text-[#7A8298]"
                           }`}
                         >
                           {v.clinvar_significance}
                         </span>
                       ) : (
-                        <span className="text-[#3A3A42]">{"\u2014"}</span>
+                        <span className="text-[#2A2A60]">{"\u2014"}</span>
                       )}
                     </td>
                     <td className="px-4 py-2.5">

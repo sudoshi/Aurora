@@ -160,7 +160,7 @@ export function MessageItem({
               className="mt-2 flex items-center gap-2 rounded-md border border-white/[0.04] bg-white/[0.02] px-2.5 py-1.5 text-xs text-primary hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-150 group/thread"
             >
               <div className="flex -space-x-1.5">
-                <div className="h-5 w-5 rounded-full bg-primary/20 border border-[#0e0e11] flex items-center justify-center text-[7px] font-semibold text-primary">
+                <div className="h-5 w-5 rounded-full bg-primary/20 border border-[#0A0A18] flex items-center justify-center text-[7px] font-semibold text-primary">
                   {message.reply_count}
                 </div>
               </div>

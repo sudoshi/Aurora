@@ -21,12 +21,12 @@ const DOMAIN_CONFIG: Record<
 
 // Resolved colors for SVG rendering (CSS vars don't work in SVG fill/stroke)
 const DOMAIN_RESOLVED: Record<ClinicalDomain, string> = {
-  condition:   "#9B1B30",
+  condition:   "#00D68F",
   medication:  "#60A5FA",
   procedure:   "#F472B6",
   measurement: "#2DD4BF",
   observation: "#A78BFA",
-  visit:       "#2A9D8F",
+  visit:       "#9D75F8",
 };
 
 const ALL_DOMAINS: ClinicalDomain[] = [
@@ -581,18 +581,18 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
               x2={svgWidth}
               y1={26}
               y2={26}
-              stroke="#323238"
+              stroke="#2A2A60"
               strokeWidth={1}
             />
             {ticks.map((tick, i) => (
               <g key={i}>
-                <line x1={tick.x} x2={tick.x} y1={22} y2={30} stroke="#5A5650" strokeWidth={1} />
-                <text x={tick.x} y={18} textAnchor="middle" fill="#8A857D" style={{ fontSize: 9 }}>
+                <line x1={tick.x} x2={tick.x} y1={22} y2={30} stroke="#4A5068" strokeWidth={1} />
+                <text x={tick.x} y={18} textAnchor="middle" fill="#7A8298" style={{ fontSize: 9 }}>
                   {tick.label}
                 </text>
                 <line
                   x1={tick.x} x2={tick.x} y1={30} y2={svgHeight}
-                  stroke="#1C1C20" strokeWidth={1} strokeDasharray="2 4"
+                  stroke="#16163A" strokeWidth={1} strokeDasharray="2 4"
                 />
               </g>
             ))}
@@ -601,9 +601,9 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
               <g>
                 <line
                   x1={todayX} x2={todayX} y1={26} y2={svgHeight}
-                  stroke="#C9A227" strokeWidth={1} strokeDasharray="3 3" opacity={0.5}
+                  stroke="#9D75F8" strokeWidth={1} strokeDasharray="3 3" opacity={0.5}
                 />
-                <text x={todayX + 3} y={18} fill="#C9A227" style={{ fontSize: 8 }}>
+                <text x={todayX + 3} y={18} fill="#9D75F8" style={{ fontSize: 8 }}>
                   Today
                 </text>
               </g>
@@ -620,18 +620,18 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
             return (
               <g key={domain}>
                 <rect x={0} y={y} width={svgWidth} height={height} fill={`${resolvedColor}04`} />
-                <line x1={0} x2={svgWidth} y1={y} y2={y} stroke="#1C1C20" strokeWidth={1} />
+                <line x1={0} x2={svgWidth} y1={y} y2={y} stroke="#16163A" strokeWidth={1} />
 
                 <g className="cursor-pointer" onClick={() => toggleCollapse(domain)}>
                   <rect x={0} y={y} width={LABEL_WIDTH} height={LANE_HEIGHT} fill="transparent" />
-                  <text x={10} y={y + LANE_HEIGHT / 2 + 4} fill="#5A5650" style={{ fontSize: 8 }}>
+                  <text x={10} y={y + LANE_HEIGHT / 2 + 4} fill="#4A5068" style={{ fontSize: 8 }}>
                     {isCollapsed ? "\u25B6" : "\u25BC"}
                   </text>
                   <rect x={22} y={y + LANE_HEIGHT / 2 - 4} width={8} height={8} rx={2} fill={resolvedColor} />
-                  <text x={36} y={y + LANE_HEIGHT / 2 + 3} fill="#C5C0B8" style={{ fontSize: 10, fontWeight: 500 }}>
+                  <text x={36} y={y + LANE_HEIGHT / 2 + 3} fill="#B4BAC8" style={{ fontSize: 10, fontWeight: 500 }}>
                     {config.label}
                   </text>
-                  <text x={LABEL_WIDTH - 6} y={y + LANE_HEIGHT / 2 + 3} textAnchor="end" fill="#5A5650" style={{ fontSize: 9 }}>
+                  <text x={LABEL_WIDTH - 6} y={y + LANE_HEIGHT / 2 + 3} textAnchor="end" fill="#4A5068" style={{ fontSize: 9 }}>
                     {domEvts.length}
                   </text>
                 </g>

@@ -42,14 +42,14 @@ const MODALITY_COLORS: Record<string, string> = {
   MR: "bg-[#A78BFA]/15 text-[#A78BFA]",
   PT: "bg-orange-400/15 text-orange-400",
   US: "bg-[#2DD4BF]/15 text-[#2DD4BF]",
-  CR: "bg-[#8A857D]/15 text-[#8A857D]",
-  DX: "bg-[#8A857D]/15 text-[#8A857D]",
+  CR: "bg-[#7A8298]/15 text-[#7A8298]",
+  DX: "bg-[#7A8298]/15 text-[#7A8298]",
   MG: "bg-pink-400/15 text-pink-400",
 };
 
 function ModalityBadge({ modality }: { modality: string | null }) {
-  if (!modality) return <span className="text-[#5A5650] text-sm">--</span>;
-  const cls = MODALITY_COLORS[modality] ?? "bg-[#232328] text-[#8A857D]";
+  if (!modality) return <span className="text-[#4A5068] text-sm">--</span>;
+  const cls = MODALITY_COLORS[modality] ?? "bg-[#1C1C48] text-[#7A8298]";
   return (
     <span className={`inline-block rounded px-2 py-0.5 text-[10px] font-semibold ${cls}`}>
       {modality}
@@ -62,8 +62,8 @@ function StudyStatusBadge({ status }: { status: string }) {
     status === "processed"
       ? "bg-[#2DD4BF]/15 text-[#2DD4BF]"
       : status === "error"
-        ? "bg-[#E85A6B]/15 text-[#E85A6B]"
-        : "bg-[#232328] text-[#8A857D]";
+        ? "bg-[#F0607A]/15 text-[#F0607A]"
+        : "bg-[#1C1C48] text-[#7A8298]";
   return (
     <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${cls}`}>
       {status}
@@ -90,7 +90,7 @@ function StatsBar() {
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex items-center gap-3 rounded-lg border border-[#232328] bg-[#151518] px-4 py-3"
+          className="flex items-center gap-3 rounded-lg border border-[#1C1C48] bg-[#10102A] px-4 py-3"
         >
           <div
             className="flex items-center justify-center w-8 h-8 rounded-md flex-shrink-0"
@@ -105,7 +105,7 @@ function StatsBar() {
             >
               {isLoading ? "--" : item.value.toLocaleString()}
             </p>
-            <p className="text-[10px] text-[#5A5650] uppercase tracking-wider">{item.label}</p>
+            <p className="text-[10px] text-[#4A5068] uppercase tracking-wider">{item.label}</p>
           </div>
         </div>
       ))}
@@ -122,17 +122,17 @@ function LocalImportPanel() {
   };
 
   return (
-    <div className="rounded-lg border border-[#232328] bg-[#151518] p-4 space-y-3">
+    <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 space-y-3">
       <div className="flex items-center gap-2 mb-1">
         <FolderInput size={14} className="text-[#60A5FA]" />
-        <h3 className="text-sm font-semibold text-[#F0EDE8]">Import Local DICOM Files</h3>
-        <span className="ml-auto text-[10px] text-[#5A5650] uppercase tracking-wider">Server-side scan</span>
+        <h3 className="text-sm font-semibold text-[#E8ECF4]">Import Local DICOM Files</h3>
+        <span className="ml-auto text-[10px] text-[#4A5068] uppercase tracking-wider">Server-side scan</span>
       </div>
       <div className="flex items-end gap-3 flex-wrap">
         <div className="flex-1 min-w-[200px]">
-          <label className="block text-xs text-[#8A857D] mb-1.5">Directory (relative to repo root)</label>
+          <label className="block text-xs text-[#7A8298] mb-1.5">Directory (relative to repo root)</label>
           <input
-            className="w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors font-mono"
+            className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors font-mono"
             value={dir}
             onChange={(e) => setDir(e.target.value)}
             placeholder="dicom_samples"
@@ -142,7 +142,7 @@ function LocalImportPanel() {
           type="button"
           onClick={handleImport}
           disabled={importMutation.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0E0E11] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
         >
           {importMutation.isPending ? (
             <Loader2 size={14} className="animate-spin" />
@@ -160,11 +160,11 @@ function LocalImportPanel() {
         </div>
       )}
       {importMutation.isError && (
-        <div className="rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 px-4 py-3 text-sm text-[#E85A6B]">
+        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-sm text-[#F0607A]">
           Import failed: {importMutation.error instanceof Error ? importMutation.error.message : "Unknown error"}
         </div>
       )}
-      <p className="text-[10px] text-[#5A5650]">
+      <p className="text-[10px] text-[#4A5068]">
         Scans DICOM files on the server at the specified path. Files must be accessible from the Aurora backend container.
       </p>
     </div>
@@ -187,9 +187,9 @@ function StudiesTab() {
       {/* DICOMweb filter + index */}
       <div className="flex items-end gap-3">
         <div>
-          <label className="block text-xs text-[#8A857D] mb-1.5">Modality</label>
+          <label className="block text-xs text-[#7A8298] mb-1.5">Modality</label>
           <input
-            className="w-40 rounded-lg bg-[#151518] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+            className="w-40 rounded-lg bg-[#10102A] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
             placeholder="CT, MR..."
             value={modality}
             onChange={(e) => setModality(e.target.value)}
@@ -203,7 +203,7 @@ function StudiesTab() {
             })
           }
           disabled={indexMutation.isPending}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm font-medium text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#3A3A42] disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
         >
           <RefreshCw size={14} className={indexMutation.isPending ? "animate-spin" : ""} />
           Index from DICOMweb
@@ -217,16 +217,16 @@ function StudiesTab() {
         </div>
       )}
 
-      <div className="rounded-lg border border-[#232328] bg-[#151518]">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#232328]">
+              <tr className="border-b border-[#1C1C48]">
                 {["Study Date", "Modality", "Body Part", "Description", "Series", "Images", "Person", "Status", ""].map(
                   (h) => (
                     <th
                       key={h}
-                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                     >
                       {h}
                     </th>
@@ -234,7 +234,7 @@ function StudiesTab() {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E1E23]">
+            <tbody className="divide-y divide-[#16163A]">
               {isLoading && (
                 <tr>
                   <td colSpan={9} className="text-center py-10">
@@ -244,30 +244,30 @@ function StudiesTab() {
               )}
               {!isLoading && !data?.data?.length && (
                 <tr>
-                  <td colSpan={9} className="text-center py-10 text-sm text-[#5A5650]">
+                  <td colSpan={9} className="text-center py-10 text-sm text-[#4A5068]">
                     No studies indexed. Use "Import Local DICOM Files" above or click "Index from DICOMweb".
                   </td>
                 </tr>
               )}
               {data?.data?.map((study: ImagingStudy) => (
-                <tr key={study.id} className="hover:bg-[#1A1A1F] transition-colors">
-                  <td className="px-4 py-3 text-[#C5C0B8] text-xs">{study.study_date ?? "--"}</td>
+                <tr key={study.id} className="hover:bg-[#16163A] transition-colors">
+                  <td className="px-4 py-3 text-[#B4BAC8] text-xs">{study.study_date ?? "--"}</td>
                   <td className="px-4 py-3">
                     <ModalityBadge modality={study.modality} />
                   </td>
-                  <td className="px-4 py-3 text-[#8A857D] text-xs">
+                  <td className="px-4 py-3 text-[#7A8298] text-xs">
                     {study.body_part_examined ?? "--"}
                   </td>
-                  <td className="px-4 py-3 text-[#8A857D] text-xs max-w-xs truncate">
+                  <td className="px-4 py-3 text-[#7A8298] text-xs max-w-xs truncate">
                     {study.study_description ?? "--"}
                   </td>
-                  <td className="px-4 py-3 text-[#C5C0B8] text-xs text-center">
+                  <td className="px-4 py-3 text-[#B4BAC8] text-xs text-center">
                     {study.num_series}
                   </td>
-                  <td className="px-4 py-3 text-[#C5C0B8] text-xs text-center">
+                  <td className="px-4 py-3 text-[#B4BAC8] text-xs text-center">
                     {study.num_images}
                   </td>
-                  <td className="px-4 py-3 text-[#8A857D] text-xs">{study.person_id ?? "--"}</td>
+                  <td className="px-4 py-3 text-[#7A8298] text-xs">{study.person_id ?? "--"}</td>
                   <td className="px-4 py-3">
                     <StudyStatusBadge status={study.status} />
                   </td>
@@ -285,7 +285,7 @@ function StudiesTab() {
           </table>
         </div>
         {data && (
-          <div className="px-4 py-2.5 text-xs text-[#5A5650] border-t border-[#232328]">
+          <div className="px-4 py-2.5 text-xs text-[#4A5068] border-t border-[#1C1C48]">
             {data.total.toLocaleString()} total studies · page {data.current_page} of{" "}
             {data.last_page}
           </div>
@@ -303,16 +303,16 @@ function FeaturesTab() {
   });
 
   const ConfidenceBar = ({ v }: { v: number | null }) => {
-    if (v === null) return <span className="text-[#5A5650]">--</span>;
+    if (v === null) return <span className="text-[#4A5068]">--</span>;
     const pct = Math.round(v * 100);
     const barColor =
-      pct >= 80 ? "#2DD4BF" : pct >= 60 ? "#F59E0B" : "#E85A6B";
+      pct >= 80 ? "#2DD4BF" : pct >= 60 ? "#F59E0B" : "#F0607A";
     return (
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-1.5 bg-[#0E0E11] rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-[#0A0A18] rounded-full overflow-hidden">
           <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
         </div>
-        <span className="text-xs text-[#8A857D] w-8 text-right">{pct}%</span>
+        <span className="text-xs text-[#7A8298] w-8 text-right">{pct}%</span>
       </div>
     );
   };
@@ -320,9 +320,9 @@ function FeaturesTab() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-[#8A857D] mb-1.5">Feature Type</label>
+        <label className="block text-xs text-[#7A8298] mb-1.5">Feature Type</label>
         <select
-          className="w-52 rounded-lg bg-[#151518] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+          className="w-52 rounded-lg bg-[#10102A] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors"
           value={featureType}
           onChange={(e) => setFeatureType(e.target.value)}
         >
@@ -334,16 +334,16 @@ function FeaturesTab() {
         </select>
       </div>
 
-      <div className="rounded-lg border border-[#232328] bg-[#151518]">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#232328]">
+              <tr className="border-b border-[#1C1C48]">
                 {["Feature", "Type", "Body Site", "Value", "Algorithm", "Confidence", "OMOP Concept"].map(
                   (h) => (
                     <th
                       key={h}
-                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#5A5650] uppercase tracking-wider"
+                      className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider"
                     >
                       {h}
                     </th>
@@ -351,7 +351,7 @@ function FeaturesTab() {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E1E23]">
+            <tbody className="divide-y divide-[#16163A]">
               {isLoading && (
                 <tr>
                   <td colSpan={7} className="text-center py-10">
@@ -361,30 +361,30 @@ function FeaturesTab() {
               )}
               {!isLoading && !data?.data?.length && (
                 <tr>
-                  <td colSpan={7} className="text-center py-10 text-sm text-[#5A5650]">
+                  <td colSpan={7} className="text-center py-10 text-sm text-[#4A5068]">
                     No features extracted yet. Use "Extract NLP" on a study to populate.
                   </td>
                 </tr>
               )}
               {data?.data?.map((f: ImagingFeature) => (
-                <tr key={f.id} className="hover:bg-[#1A1A1F] transition-colors">
-                  <td className="px-4 py-3 font-medium text-[#F0EDE8] text-xs">{f.feature_name}</td>
+                <tr key={f.id} className="hover:bg-[#16163A] transition-colors">
+                  <td className="px-4 py-3 font-medium text-[#E8ECF4] text-xs">{f.feature_name}</td>
                   <td className="px-4 py-3">
-                    <span className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium bg-[#232328] text-[#8A857D]">
+                    <span className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium bg-[#1C1C48] text-[#7A8298]">
                       {f.feature_type}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-[#8A857D] text-xs">{f.body_site ?? "--"}</td>
-                  <td className="px-4 py-3 text-[#C5C0B8] text-xs">
+                  <td className="px-4 py-3 text-[#7A8298] text-xs">{f.body_site ?? "--"}</td>
+                  <td className="px-4 py-3 text-[#B4BAC8] text-xs">
                     {f.value_as_number !== null
                       ? `${f.value_as_number} ${f.unit_source_value ?? ""}`
                       : f.value_as_string ?? "--"}
                   </td>
-                  <td className="px-4 py-3 text-[#5A5650] text-xs">{f.algorithm_name ?? "--"}</td>
+                  <td className="px-4 py-3 text-[#4A5068] text-xs">{f.algorithm_name ?? "--"}</td>
                   <td className="px-4 py-3" style={{ width: 140 }}>
                     <ConfidenceBar v={f.confidence} />
                   </td>
-                  <td className="px-4 py-3 text-xs font-mono text-[#5A5650]">
+                  <td className="px-4 py-3 text-xs font-mono text-[#4A5068]">
                     {f.value_concept_id ?? "--"}
                   </td>
                 </tr>
@@ -393,7 +393,7 @@ function FeaturesTab() {
           </table>
         </div>
         {data && (
-          <div className="px-4 py-2.5 text-xs text-[#5A5650] border-t border-[#232328]">
+          <div className="px-4 py-2.5 text-xs text-[#4A5068] border-t border-[#1C1C48]">
             {data.total.toLocaleString()} total features
           </div>
         )}
@@ -416,20 +416,20 @@ function CriteriaTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-[#8A857D]">
+      <p className="text-sm text-[#7A8298]">
         Saved imaging cohort criteria. Use these in the Cohort Builder to select patients based on
         imaging characteristics.
       </p>
 
       {isLoading && (
-        <div className="flex items-center gap-2 text-[#5A5650]">
+        <div className="flex items-center gap-2 text-[#4A5068]">
           <Loader2 size={14} className="animate-spin" />
           <span className="text-sm">Loading...</span>
         </div>
       )}
 
       {!isLoading && !criteria?.length && (
-        <div className="rounded-lg border border-[#232328] bg-[#151518] p-10 text-center text-sm text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-10 text-center text-sm text-[#4A5068]">
           No imaging criteria saved yet.
         </div>
       )}
@@ -438,12 +438,12 @@ function CriteriaTab() {
         {criteria?.map((c) => (
           <div
             key={c.id}
-            className="rounded-lg border border-[#232328] bg-[#151518] p-4 flex items-start gap-4"
+            className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 flex items-start gap-4"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="font-medium text-[#F0EDE8] text-sm">{c.name}</span>
-                <span className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium bg-[#232328] text-[#8A857D]">
+                <span className="font-medium text-[#E8ECF4] text-sm">{c.name}</span>
+                <span className="inline-block rounded-full px-2 py-0.5 text-[10px] font-medium bg-[#1C1C48] text-[#7A8298]">
                   {TYPE_LABELS[c.criteria_type] ?? c.criteria_type}
                 </span>
                 {c.is_shared && (
@@ -453,9 +453,9 @@ function CriteriaTab() {
                 )}
               </div>
               {c.description && (
-                <p className="text-sm text-[#8A857D] mb-2">{c.description}</p>
+                <p className="text-sm text-[#7A8298] mb-2">{c.description}</p>
               )}
-              <pre className="text-xs text-[#5A5650] mt-2 bg-[#0E0E11] border border-[#232328] rounded-lg p-2 overflow-auto">
+              <pre className="text-xs text-[#4A5068] mt-2 bg-[#0A0A18] border border-[#1C1C48] rounded-lg p-2 overflow-auto">
                 {JSON.stringify(c.criteria_definition, null, 2)}
               </pre>
             </div>
@@ -463,7 +463,7 @@ function CriteriaTab() {
               type="button"
               onClick={() => deleteMutation.mutate(c.id)}
               disabled={deleteMutation.isPending}
-              className="p-1.5 rounded text-[#5A5650] hover:text-[#E85A6B] hover:bg-[#E85A6B]/10 disabled:opacity-40 transition-colors flex-shrink-0"
+              className="p-1.5 rounded text-[#4A5068] hover:text-[#F0607A] hover:bg-[#F0607A]/10 disabled:opacity-40 transition-colors flex-shrink-0"
               title="Delete criterion"
             >
               <Trash2 size={13} />
@@ -484,14 +484,14 @@ function AnalyticsTab() {
   return (
     <div className="space-y-6">
       {isLoading && (
-        <div className="flex items-center gap-2 text-[#5A5650]">
+        <div className="flex items-center gap-2 text-[#4A5068]">
           <Loader2 size={14} className="animate-spin text-[#2DD4BF]" />
           <span className="text-sm">Loading analytics...</span>
         </div>
       )}
 
       {!isLoading && !data && (
-        <div className="rounded-lg border border-[#232328] bg-[#151518] p-10 text-center text-sm text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-10 text-center text-sm text-[#4A5068]">
           No imaging analytics data available yet.
         </div>
       )}
@@ -499,8 +499,8 @@ function AnalyticsTab() {
       {data && (
         <div className="grid grid-cols-2 gap-4">
           {/* By Modality */}
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
-            <h3 className="text-sm font-semibold text-[#F0EDE8] mb-4 flex items-center gap-2">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
+            <h3 className="text-sm font-semibold text-[#E8ECF4] mb-4 flex items-center gap-2">
               <ScanLine size={14} className="text-[#60A5FA]" />
               Studies by Modality
             </h3>
@@ -508,12 +508,12 @@ function AnalyticsTab() {
               {data.by_modality.map((row) => (
                 <div key={row.modality}>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="font-mono font-semibold text-[#C5C0B8]">{row.modality}</span>
-                    <span className="text-[#5A5650]">
+                    <span className="font-mono font-semibold text-[#B4BAC8]">{row.modality}</span>
+                    <span className="text-[#4A5068]">
                       {row.n.toLocaleString()} ({row.unique_persons.toLocaleString()} persons)
                     </span>
                   </div>
-                  <div className="h-1.5 bg-[#0E0E11] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-[#0A0A18] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -528,8 +528,8 @@ function AnalyticsTab() {
           </div>
 
           {/* By Body Part */}
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
-            <h3 className="text-sm font-semibold text-[#F0EDE8] mb-4 flex items-center gap-2">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
+            <h3 className="text-sm font-semibold text-[#E8ECF4] mb-4 flex items-center gap-2">
               <Layers size={14} className="text-[#60A5FA]" />
               Studies by Body Part
             </h3>
@@ -537,10 +537,10 @@ function AnalyticsTab() {
               {data.by_body_part.map((row) => (
                 <div key={row.body_part_examined}>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-[#C5C0B8]">{row.body_part_examined}</span>
-                    <span className="text-[#5A5650]">{row.n.toLocaleString()}</span>
+                    <span className="text-[#B4BAC8]">{row.body_part_examined}</span>
+                    <span className="text-[#4A5068]">{row.n.toLocaleString()}</span>
                   </div>
-                  <div className="h-1.5 bg-[#0E0E11] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-[#0A0A18] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -556,16 +556,16 @@ function AnalyticsTab() {
 
           {/* Top Features */}
           {data.top_features.length > 0 && (
-            <div className="rounded-lg border border-[#232328] bg-[#151518] p-4 col-span-2">
-              <h3 className="text-sm font-semibold text-[#F0EDE8] mb-4 flex items-center gap-2">
+            <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 col-span-2">
+              <h3 className="text-sm font-semibold text-[#E8ECF4] mb-4 flex items-center gap-2">
                 <Brain size={14} className="text-[#A78BFA]" />
                 Top AI / NLP Features
               </h3>
               <div className="grid grid-cols-4 gap-3">
                 {data.top_features.map((f, i) => (
-                  <div key={i} className="rounded-lg bg-[#0E0E11] border border-[#232328] p-3">
-                    <p className="font-medium text-sm text-[#F0EDE8] truncate">{f.feature_name}</p>
-                    <p className="text-xs text-[#5A5650] mt-0.5">{f.feature_type}</p>
+                  <div key={i} className="rounded-lg bg-[#0A0A18] border border-[#1C1C48] p-3">
+                    <p className="font-medium text-sm text-[#E8ECF4] truncate">{f.feature_name}</p>
+                    <p className="text-xs text-[#4A5068] mt-0.5">{f.feature_type}</p>
                     <p
                       className="text-lg font-semibold font-['IBM_Plex_Mono',monospace] text-[#A78BFA] mt-1"
                     >
@@ -593,8 +593,8 @@ export default function ImagingPage() {
           <ScanLine size={18} style={{ color: "#60A5FA" }} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#F0EDE8]">Medical Imaging</h1>
-          <p className="text-sm text-[#8A857D]">
+          <h1 className="text-2xl font-bold text-[#E8ECF4]">Medical Imaging</h1>
+          <p className="text-sm text-[#7A8298]">
             Longitudinal imaging analysis, treatment response assessment, and outcomes research
           </p>
         </div>
@@ -603,7 +603,7 @@ export default function ImagingPage() {
       <StatsBar />
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-[#232328]">
+      <div className="flex gap-1 border-b border-[#1C1C48]">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -612,7 +612,7 @@ export default function ImagingPage() {
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               tab === id
                 ? "border-[#2DD4BF] text-[#2DD4BF]"
-                : "border-transparent text-[#5A5650] hover:text-[#8A857D]"
+                : "border-transparent text-[#4A5068] hover:text-[#7A8298]"
             }`}
           >
             <Icon size={14} />

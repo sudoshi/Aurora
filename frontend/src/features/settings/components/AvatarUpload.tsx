@@ -60,8 +60,8 @@ export function AvatarUpload() {
       <div className="relative">
         <div
           className={cn(
-            "w-[120px] h-[120px] rounded-full border-2 border-[#232328] overflow-hidden",
-            "flex items-center justify-center bg-[#1A1A1F] text-[#5A5650]",
+            "w-[120px] h-[120px] rounded-full border-2 border-[#1C1C48] overflow-hidden",
+            "flex items-center justify-center bg-[#16163A] text-[#4A5068]",
           )}
         >
           {isLoading ? (
@@ -95,7 +95,7 @@ export function AvatarUpload() {
           disabled={isLoading}
           className={cn(
             "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-            "border border-[#232328] bg-[#151518] text-[#C5C0B8] hover:bg-[#1A1A1F] disabled:opacity-50",
+            "border border-[#1C1C48] bg-[#10102A] text-[#B4BAC8] hover:bg-[#16163A] disabled:opacity-50",
           )}
         >
           <Camera size={14} />
@@ -108,15 +108,15 @@ export function AvatarUpload() {
             disabled={isLoading}
             className={cn(
               "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-              "text-[#E85A6B] hover:bg-[#E85A6B]/10 disabled:opacity-50",
+              "text-[#F0607A] hover:bg-[#F0607A]/10 disabled:opacity-50",
             )}
           >
             <Trash2 size={14} />
             Remove
           </button>
         )}
-        {error && <p className="text-xs text-[#E85A6B]">{error}</p>}
-        <p className="text-xs text-[#5A5650]">JPEG, PNG, or WebP. Max 5MB.</p>
+        {error && <p className="text-xs text-[#F0607A]">{error}</p>}
+        <p className="text-xs text-[#4A5068]">JPEG, PNG, or WebP. Max 5MB.</p>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  diagnosis: "bg-[#E85A6B]/15 text-[#E85A6B]",
+  diagnosis: "bg-[#F0607A]/15 text-[#F0607A]",
   medication: "bg-[#2DD4BF]/15 text-[#2DD4BF]",
   procedure: "bg-[#A78BFA]/15 text-[#A78BFA]",
   lab_result: "bg-[#F59E0B]/15 text-[#F59E0B]",
@@ -75,24 +75,24 @@ export function AbbySuggestPanel({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className={cn(
-            "w-full max-w-lg rounded-xl border border-[#232328]",
-            "bg-[#0E0E11] shadow-2xl shadow-black/50",
+            "w-full max-w-lg rounded-xl border border-[#1C1C48]",
+            "bg-[#0A0A18] shadow-2xl shadow-black/50",
             "animate-in fade-in zoom-in-95 duration-200",
           )}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#232328]">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1C1C48]">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-[#2DD4BF]" />
-              <h3 className="text-sm font-semibold text-[#F0EDE8]">
+              <h3 className="text-sm font-semibold text-[#E8ECF4]">
                 Clinical Suggestions
               </h3>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-md text-[#8A857D] hover:text-[#F0EDE8] hover:bg-[#1C1C20] transition-colors"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-md text-[#7A8298] hover:text-[#E8ECF4] hover:bg-[#16163A] transition-colors"
             >
               <X size={16} />
             </button>
@@ -102,7 +102,7 @@ export function AbbySuggestPanel({
           <div className="px-5 py-4 space-y-4">
             {/* Category selector */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#8A857D]">
+              <label className="text-xs font-medium text-[#7A8298]">
                 Category
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -115,7 +115,7 @@ export function AbbySuggestPanel({
                       "inline-flex items-center rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                       selectedCategory === c.value
                         ? "bg-[#2DD4BF]/15 text-[#2DD4BF] border border-[#2DD4BF]/30"
-                        : "bg-[#151518] text-[#8A857D] border border-[#232328] hover:text-[#C5C0B8]",
+                        : "bg-[#10102A] text-[#7A8298] border border-[#1C1C48] hover:text-[#B4BAC8]",
                     )}
                   >
                     {c.label}
@@ -126,14 +126,14 @@ export function AbbySuggestPanel({
 
             {/* Description input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#8A857D]">
+              <label className="text-xs font-medium text-[#7A8298]">
                 Description
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                   <Search
                     size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A5650]"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4A5068]"
                   />
                   <input
                     type="text"
@@ -147,9 +147,9 @@ export function AbbySuggestPanel({
                     }}
                     placeholder="e.g., blood pressure medications"
                     className={cn(
-                      "w-full rounded-lg border border-[#232328] bg-[#151518]",
-                      "pl-9 pr-3 py-2 text-sm text-[#F0EDE8]",
-                      "placeholder:text-[#5A5650]",
+                      "w-full rounded-lg border border-[#1C1C48] bg-[#10102A]",
+                      "pl-9 pr-3 py-2 text-sm text-[#E8ECF4]",
+                      "placeholder:text-[#4A5068]",
                       "focus:outline-none focus:border-[#2DD4BF]/40",
                       "transition-colors",
                     )}
@@ -161,7 +161,7 @@ export function AbbySuggestPanel({
                   disabled={!description.trim() || suggestMutation.isPending}
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium",
-                    "bg-[#2DD4BF] text-[#0E0E11] hover:bg-[#26B8A5]",
+                    "bg-[#2DD4BF] text-[#0A0A18] hover:bg-[#26B8A5]",
                     "transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
                   )}
                 >
@@ -178,7 +178,7 @@ export function AbbySuggestPanel({
             {/* Results */}
             {suggestMutation.data && (
               <div className="space-y-1.5">
-                <p className="text-xs font-medium text-[#8A857D]">
+                <p className="text-xs font-medium text-[#7A8298]">
                   Results ({suggestMutation.data.suggestions.length})
                 </p>
                 <div className="max-h-64 overflow-y-auto space-y-1 -mx-1 px-1">
@@ -191,11 +191,11 @@ export function AbbySuggestPanel({
                           "flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors",
                           isSelected
                             ? "border-[#2DD4BF]/40 bg-[#2DD4BF]/5"
-                            : "border-[#232328] bg-[#151518] hover:border-[#2DD4BF]/20",
+                            : "border-[#1C1C48] bg-[#10102A] hover:border-[#2DD4BF]/20",
                         )}
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-[#F0EDE8] truncate">
+                          <p className="text-sm text-[#E8ECF4] truncate">
                             {suggestion.finding_name}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
@@ -204,15 +204,15 @@ export function AbbySuggestPanel({
                                 "inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium",
                                 CATEGORY_COLORS[
                                   suggestion.category.toLowerCase()
-                                ] ?? "bg-[#232328] text-[#8A857D]",
+                                ] ?? "bg-[#1C1C48] text-[#7A8298]",
                               )}
                             >
                               {suggestion.category}
                             </span>
-                            <span className="text-[10px] text-[#5A5650]">
+                            <span className="text-[10px] text-[#4A5068]">
                               {suggestion.source}
                             </span>
-                            <span className="text-[10px] text-[#5A5650]">
+                            <span className="text-[10px] text-[#4A5068]">
                               ID: {suggestion.finding_id}
                             </span>
                           </div>
@@ -220,7 +220,7 @@ export function AbbySuggestPanel({
 
                         {/* Score bar */}
                         <div className="flex items-center gap-2 shrink-0">
-                          <div className="w-12 h-1.5 rounded-full bg-[#232328] overflow-hidden">
+                          <div className="w-12 h-1.5 rounded-full bg-[#1C1C48] overflow-hidden">
                             <div
                               className="h-full rounded-full bg-[#2DD4BF]"
                               style={{
@@ -239,8 +239,8 @@ export function AbbySuggestPanel({
                             className={cn(
                               "inline-flex items-center justify-center w-7 h-7 rounded-md text-sm transition-colors",
                               isSelected
-                                ? "bg-[#2DD4BF] text-[#0E0E11]"
-                                : "border border-[#232328] text-[#8A857D] hover:text-[#2DD4BF] hover:border-[#2DD4BF]/30",
+                                ? "bg-[#2DD4BF] text-[#0A0A18]"
+                                : "border border-[#1C1C48] text-[#7A8298] hover:text-[#2DD4BF] hover:border-[#2DD4BF]/30",
                             )}
                           >
                             {isSelected ? (
@@ -259,7 +259,7 @@ export function AbbySuggestPanel({
 
             {/* Empty / error */}
             {suggestMutation.isError && (
-              <p className="text-xs text-[#E85A6B] text-center py-2">
+              <p className="text-xs text-[#F0607A] text-center py-2">
                 {suggestMutation.error?.message ??
                   "Failed to get suggestions. Please try again."}
               </p>
@@ -267,11 +267,11 @@ export function AbbySuggestPanel({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[#232328]">
+          <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[#1C1C48]">
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm text-[#8A857D] hover:text-[#F0EDE8] transition-colors"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors"
             >
               Close
             </button>

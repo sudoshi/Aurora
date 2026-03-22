@@ -13,7 +13,7 @@ type AnyStudy = TimelineStudy | ImagingStudy;
 
 const MODALITY_COLORS: Record<string, string> = {
   CT: "#60A5FA", MR: "#A78BFA", PT: "#F59E0B", US: "#2DD4BF",
-  CR: "#8A857D", DX: "#8A857D", NM: "#F472B6",
+  CR: "#7A8298", DX: "#7A8298", NM: "#F472B6",
 };
 
 function formatDate(d: string | null): string {
@@ -51,12 +51,12 @@ export default function StudyComparisonViewer({
   return (
     <div className="space-y-3">
       {/* Header bar */}
-      <div className="flex items-center justify-between rounded-lg border border-[#C9A227]/30 bg-[#C9A227]/5 px-4 py-2.5">
+      <div className="flex items-center justify-between rounded-lg border border-[#9D75F8]/30 bg-[#9D75F8]/5 px-4 py-2.5">
         <div className="flex items-center gap-3">
-          <Columns2 size={14} className="text-[#C9A227]" />
-          <span className="text-sm font-semibold text-[#F0EDE8]">Study Comparison</span>
+          <Columns2 size={14} className="text-[#9D75F8]" />
+          <span className="text-sm font-semibold text-[#E8ECF4]">Study Comparison</span>
           {daysBetween !== null && (
-            <span className="text-[10px] text-[#C9A227] bg-[#C9A227]/10 px-2 py-0.5 rounded">
+            <span className="text-[10px] text-[#9D75F8] bg-[#9D75F8]/10 px-2 py-0.5 rounded">
               {daysBetween}d interval
             </span>
           )}
@@ -67,7 +67,7 @@ export default function StudyComparisonViewer({
             <button
               type="button"
               onClick={onSwap}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#8A857D] hover:text-[#F0EDE8] hover:bg-[#232328] transition-colors"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#7A8298] hover:text-[#E8ECF4] hover:bg-[#1C1C48] transition-colors"
             >
               <ArrowLeftRight size={10} /> Swap
             </button>
@@ -75,14 +75,14 @@ export default function StudyComparisonViewer({
           <button
             type="button"
             onClick={() => setLayout(layout === "side" ? "stack" : "side")}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#8A857D] hover:text-[#F0EDE8] hover:bg-[#232328] transition-colors"
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#7A8298] hover:text-[#E8ECF4] hover:bg-[#1C1C48] transition-colors"
           >
             <Maximize2 size={10} /> {layout === "side" ? "Stack" : "Side-by-side"}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#E85A6B] hover:bg-[#E85A6B]/10 transition-colors"
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-[#F0607A] hover:bg-[#F0607A]/10 transition-colors"
           >
             <X size={10} /> Close
           </button>
@@ -125,7 +125,7 @@ export default function StudyComparisonViewer({
 }
 
 function StudyLabel({ label, study, color }: { label: string; study: AnyStudy; color: string }) {
-  const modColor = MODALITY_COLORS[study.modality ?? ""] ?? "#8A857D";
+  const modColor = MODALITY_COLORS[study.modality ?? ""] ?? "#7A8298";
   return (
     <div className="flex items-center gap-2 px-1">
       <span
@@ -140,10 +140,10 @@ function StudyLabel({ label, study, color }: { label: string; study: AnyStudy; c
       >
         {study.modality ?? "?"}
       </span>
-      <span className="text-[10px] text-[#8A857D] truncate max-w-[200px]">
+      <span className="text-[10px] text-[#7A8298] truncate max-w-[200px]">
         {study.study_description ?? study.body_part_examined ?? "--"}
       </span>
-      <span className="text-[10px] text-[#5A5650] ml-auto">
+      <span className="text-[10px] text-[#4A5068] ml-auto">
         {formatDate(getStudyDate(study))}
       </span>
     </div>

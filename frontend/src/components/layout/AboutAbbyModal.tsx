@@ -114,7 +114,7 @@ export function AboutAbbyModal({ open, onClose }: AboutAbbyModalProps) {
             style={{
               fontSize: 18,
               fontWeight: 700,
-              color: "var(--text-primary, #F0EDE8)",
+              color: "var(--text-primary, #E8ECF4)",
               margin: "0 0 16px",
             }}
           >
@@ -129,7 +129,7 @@ export function AboutAbbyModal({ open, onClose }: AboutAbbyModalProps) {
             }}
           >
             Abby is named in honor of{" "}
-            <strong style={{ color: "var(--text-primary, #F0EDE8)" }}>
+            <strong style={{ color: "var(--text-primary, #E8ECF4)" }}>
               Abigail A. Geisinger
             </strong>{" "}
             (1827-1921), the pioneering philanthropist who founded what would
@@ -240,7 +240,7 @@ export function AboutAbbyModal({ open, onClose }: AboutAbbyModalProps) {
             style={{
               fontSize: 18,
               fontWeight: 700,
-              color: "var(--text-primary, #F0EDE8)",
+              color: "var(--text-primary, #E8ECF4)",
               margin: "0 0 16px",
             }}
           >

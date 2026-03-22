@@ -85,18 +85,18 @@ function KaplanMeierChart({ data }: { data: SurvivalData }) {
           x2={W - PR}
           y1={yScale(s)}
           y2={yScale(s)}
-          stroke="#232328"
+          stroke="#1C1C48"
           strokeDasharray="3,3"
         />
       ))}
       {/* Y axis labels */}
       {[0, 0.25, 0.5, 0.75, 1.0].map((s) => (
-        <text key={s} x={PL - 4} y={yScale(s) + 4} textAnchor="end" fontSize="9" fill="#5A5650">
+        <text key={s} x={PL - 4} y={yScale(s) + 4} textAnchor="end" fontSize="9" fill="#4A5068">
           {(s * 100).toFixed(0)}%
         </text>
       ))}
       {/* X axis label */}
-      <text x={(W - PL - PR) / 2 + PL} y={H - 4} textAnchor="middle" fontSize="9" fill="#5A5650">
+      <text x={(W - PL - PR) / 2 + PL} y={H - 4} textAnchor="middle" fontSize="9" fill="#4A5068">
         Days
       </text>
 
@@ -105,16 +105,16 @@ function KaplanMeierChart({ data }: { data: SurvivalData }) {
         <path d={stepPath(wildKM)} fill="none" stroke="#60A5FA" strokeWidth="1.5" />
       )}
       {mutedKM.length > 0 && (
-        <path d={stepPath(mutedKM)} fill="none" stroke="#E85A6B" strokeWidth="1.5" />
+        <path d={stepPath(mutedKM)} fill="none" stroke="#F0607A" strokeWidth="1.5" />
       )}
 
       {/* Legend */}
-      <rect x={PL + 8} y={PT + 4} width={8} height={2} fill="#E85A6B" />
-      <text x={PL + 20} y={PT + 10} fontSize="9" fill="#C5C0B8">
+      <rect x={PL + 8} y={PT + 4} width={8} height={2} fill="#F0607A" />
+      <text x={PL + 20} y={PT + 10} fontSize="9" fill="#B4BAC8">
         {data.gene} mutated (n={data.n_mutated})
       </text>
       <rect x={PL + 8} y={PT + 16} width={8} height={2} fill="#60A5FA" />
-      <text x={PL + 20} y={PT + 22} fontSize="9" fill="#C5C0B8">
+      <text x={PL + 20} y={PT + 22} fontSize="9" fill="#B4BAC8">
         Wild-type (n={data.n_wildtype})
       </text>
     </svg>
@@ -137,7 +137,7 @@ function TreatmentMatrix({ rows }: { rows: MatrixRow[] }) {
 
   if (!rows.length) {
     return (
-      <p className="text-xs text-[#5A5650] py-4">
+      <p className="text-xs text-[#4A5068] py-4">
         No data. Upload variants + ensure CDM connection for drug exposure data.
       </p>
     );
@@ -148,11 +148,11 @@ function TreatmentMatrix({ rows }: { rows: MatrixRow[] }) {
       <table className="text-[10px] border-collapse">
         <thead>
           <tr>
-            <th className="px-2 py-1 text-[#5A5650] font-normal text-left min-w-[60px]">Gene</th>
+            <th className="px-2 py-1 text-[#4A5068] font-normal text-left min-w-[60px]">Gene</th>
             {drugs.map((d) => (
               <th
                 key={d}
-                className="px-1 py-1 text-[#5A5650] font-normal"
+                className="px-1 py-1 text-[#4A5068] font-normal"
                 style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", maxWidth: 80 }}
                 title={d}
               >
@@ -171,7 +171,7 @@ function TreatmentMatrix({ rows }: { rows: MatrixRow[] }) {
                   <td
                     key={drug}
                     className="w-8 h-8 text-center"
-                    style={{ backgroundColor: cell ? colorFor(cell.event_rate) : "#151518" }}
+                    style={{ backgroundColor: cell ? colorFor(cell.event_rate) : "#10102A" }}
                     title={cell ? `n=${cell.n}, rate=${(cell.event_rate * 100).toFixed(1)}%` : "No data"}
                   >
                     {cell ? (
@@ -245,8 +245,8 @@ export default function GenomicAnalysisPage() {
             <Dna size={18} style={{ color: "#A78BFA" }} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#F0EDE8]">Variant-Outcome Analysis Suite</h1>
-            <p className="text-sm text-[#8A857D]">
+            <h1 className="text-2xl font-bold text-[#E8ECF4]">Variant-Outcome Analysis Suite</h1>
+            <p className="text-sm text-[#7A8298]">
               Population-level genomic analytics linked to OMOP clinical outcomes
             </p>
           </div>
@@ -254,7 +254,7 @@ export default function GenomicAnalysisPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-[#232328]">
+      <div className="flex gap-1 border-b border-[#1C1C48]">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -263,7 +263,7 @@ export default function GenomicAnalysisPage() {
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               tab === id
                 ? "border-[#2DD4BF] text-[#2DD4BF]"
-                : "border-transparent text-[#5A5650] hover:text-[#8A857D]"
+                : "border-transparent text-[#4A5068] hover:text-[#7A8298]"
             }`}
           >
             <Icon size={14} />
@@ -277,34 +277,34 @@ export default function GenomicAnalysisPage() {
         <div className="space-y-4">
           <div className="flex items-end gap-3">
             <div>
-              <label className="block text-xs text-[#8A857D] mb-1.5">Gene</label>
+              <label className="block text-xs text-[#7A8298] mb-1.5">Gene</label>
               <input
                 value={gene}
                 onChange={(e) => setGene(e.target.value.toUpperCase())}
-                className="w-28 rounded-lg bg-[#151518] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+                className="w-28 rounded-lg bg-[#10102A] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
                 placeholder="EGFR"
               />
             </div>
             <div>
-              <label className="block text-xs text-[#8A857D] mb-1.5">HGVS (optional)</label>
+              <label className="block text-xs text-[#7A8298] mb-1.5">HGVS (optional)</label>
               <input
                 value={hgvs}
                 onChange={(e) => setHgvs(e.target.value)}
-                className="w-40 rounded-lg bg-[#151518] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+                className="w-40 rounded-lg bg-[#10102A] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
                 placeholder="p.Leu858Arg"
               />
             </div>
           </div>
 
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             {survivalQuery.isLoading && (
-              <div className="flex items-center gap-2 text-[#8A857D] py-8 justify-center">
+              <div className="flex items-center gap-2 text-[#7A8298] py-8 justify-center">
                 <Loader2 size={18} className="animate-spin text-[#2DD4BF]" />
                 <span className="text-sm">Running survival analysis...</span>
               </div>
             )}
             {survivalQuery.isError && (
-              <div className="flex items-center gap-2 text-[#E85A6B] py-4">
+              <div className="flex items-center gap-2 text-[#F0607A] py-4">
                 <AlertCircle size={14} />
                 <span className="text-sm">
                   Analysis failed. Ensure CDM source has genomic + outcome data.
@@ -313,11 +313,11 @@ export default function GenomicAnalysisPage() {
             )}
             {survivalQuery.data && (
               <>
-                <h3 className="text-sm font-semibold text-[#F0EDE8] mb-3">
+                <h3 className="text-sm font-semibold text-[#E8ECF4] mb-3">
                   {survivalQuery.data.gene} {survivalQuery.data.hgvs ?? ""} -- Overall Survival
                 </h3>
                 {survivalQuery.data.mutated.length === 0 ? (
-                  <p className="text-sm text-[#5A5650] py-4">
+                  <p className="text-sm text-[#4A5068] py-4">
                     No matched survival data. Upload VCF files with person_id matching and ensure
                     patients have observation periods.
                   </p>
@@ -334,17 +334,17 @@ export default function GenomicAnalysisPage() {
       {tab === "matrix" && (
         <div className="space-y-4">
           <div>
-            <label className="block text-xs text-[#8A857D] mb-1.5">Genes (comma-separated)</label>
+            <label className="block text-xs text-[#7A8298] mb-1.5">Genes (comma-separated)</label>
             <input
               value={matrixGenes}
               onChange={(e) => setMatrixGenes(e.target.value)}
-              className="w-80 rounded-lg bg-[#151518] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+              className="w-80 rounded-lg bg-[#10102A] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
               placeholder="EGFR,KRAS,ALK,BRAF"
             />
           </div>
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             {matrixQuery.isLoading && (
-              <div className="flex items-center gap-2 text-[#8A857D] py-8 justify-center">
+              <div className="flex items-center gap-2 text-[#7A8298] py-8 justify-center">
                 <Loader2 size={18} className="animate-spin text-[#2DD4BF]" />
               </div>
             )}
@@ -356,18 +356,18 @@ export default function GenomicAnalysisPage() {
       {/* Characterization panel */}
       {tab === "characterization" && (
         <div className="space-y-4">
-          <div className="rounded-lg border border-[#232328] bg-[#151518] p-4">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
             {charQuery.isLoading && (
-              <div className="flex items-center gap-2 text-[#8A857D] py-8 justify-center">
+              <div className="flex items-center gap-2 text-[#7A8298] py-8 justify-center">
                 <Loader2 size={18} className="animate-spin text-[#2DD4BF]" />
               </div>
             )}
             {charQuery.data && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#F0EDE8] mb-3">
+                  <h3 className="text-sm font-semibold text-[#E8ECF4] mb-3">
                     Top Mutated Genes
-                    <span className="ml-2 text-xs text-[#5A5650]">
+                    <span className="ml-2 text-xs text-[#4A5068]">
                       ({charQuery.data.total_variants.toLocaleString()} total variants)
                     </span>
                   </h3>
@@ -377,7 +377,7 @@ export default function GenomicAnalysisPage() {
                         <span className="w-16 text-xs font-semibold text-[#A78BFA] text-right">
                           {g.gene}
                         </span>
-                        <div className="flex-1 bg-[#0E0E11] rounded-full h-4 overflow-hidden">
+                        <div className="flex-1 bg-[#0A0A18] rounded-full h-4 overflow-hidden">
                           <div
                             className="h-4 rounded-full flex items-center justify-end pr-2"
                             style={{
@@ -385,10 +385,10 @@ export default function GenomicAnalysisPage() {
                               background: "linear-gradient(to right, #2DD4BF, #26B8A5)",
                             }}
                           >
-                            <span className="text-[9px] text-[#0E0E11] font-medium">{g.pct}%</span>
+                            <span className="text-[9px] text-[#0A0A18] font-medium">{g.pct}%</span>
                           </div>
                         </div>
-                        <span className="w-12 text-xs text-[#5A5650] text-right">
+                        <span className="w-12 text-xs text-[#4A5068] text-right">
                           {g.n.toLocaleString()}
                         </span>
                       </div>
@@ -398,15 +398,15 @@ export default function GenomicAnalysisPage() {
 
                 {Object.keys(charQuery.data.variant_type_dist).length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-[#F0EDE8] mb-3">Variant Types</h3>
+                    <h3 className="text-sm font-semibold text-[#E8ECF4] mb-3">Variant Types</h3>
                     <div className="flex flex-wrap gap-2">
                       {Object.entries(charQuery.data.variant_type_dist).map(([type, n]) => (
                         <div
                           key={type}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E0E11] rounded-lg border border-[#232328]"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0A0A18] rounded-lg border border-[#1C1C48]"
                         >
-                          <span className="text-xs font-semibold text-[#F0EDE8]">{type}</span>
-                          <span className="text-xs text-[#5A5650]">{Number(n).toLocaleString()}</span>
+                          <span className="text-xs font-semibold text-[#E8ECF4]">{type}</span>
+                          <span className="text-xs text-[#4A5068]">{Number(n).toLocaleString()}</span>
                         </div>
                       ))}
                     </div>
@@ -415,7 +415,7 @@ export default function GenomicAnalysisPage() {
 
                 {charQuery.data.tmb_distribution.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-[#F0EDE8] mb-3">
+                    <h3 className="text-sm font-semibold text-[#E8ECF4] mb-3">
                       Mutation Load per Sample
                     </h3>
                     <div className="flex items-end gap-2 h-24">
@@ -425,7 +425,7 @@ export default function GenomicAnalysisPage() {
                         );
                         return (
                           <div key={b.bucket} className="flex flex-col items-center gap-1 flex-1">
-                            <span className="text-[9px] text-[#5A5650]">{b.count}</span>
+                            <span className="text-[9px] text-[#4A5068]">{b.count}</span>
                             <div
                               className="w-full rounded-t"
                               style={{
@@ -433,7 +433,7 @@ export default function GenomicAnalysisPage() {
                                 backgroundColor: "#2DD4BF",
                               }}
                             />
-                            <span className="text-[9px] text-[#5A5650]">{b.bucket}</span>
+                            <span className="text-[9px] text-[#4A5068]">{b.bucket}</span>
                           </div>
                         );
                       })}
@@ -443,7 +443,7 @@ export default function GenomicAnalysisPage() {
               </div>
             )}
             {charQuery.data?.total_variants === 0 && (
-              <p className="text-sm text-[#5A5650] py-4">
+              <p className="text-sm text-[#4A5068] py-4">
                 No variants loaded. Upload VCF/MAF files first.
               </p>
             )}

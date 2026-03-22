@@ -146,17 +146,17 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
         className="flex cursor-pointer items-center gap-4"
         onClick={() => setExpanded((v) => !v)}
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#1C1C20]">
-          <Bot className="h-5 w-5 text-[#8A857D]" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#16163A]">
+          <Bot className="h-5 w-5 text-[#7A8298]" />
         </div>
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#F0EDE8]">{provider.display_name}</span>
+            <span className="font-semibold text-[#E8ECF4]">{provider.display_name}</span>
             {provider.is_active && <Badge variant="primary">Active</Badge>}
             <Badge variant={meta.regionBadge}>{meta.region}</Badge>
           </div>
-          <p className="text-sm text-[#8A857D]">{provider.model || "No model selected"}</p>
+          <p className="text-sm text-[#7A8298]">{provider.model || "No model selected"}</p>
         </div>
 
         {/* Enable toggle */}
@@ -172,29 +172,29 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
               toggleMutation.mutate({ type: provider.provider_type, enabled: e.target.checked })
             }
           />
-          <div className="peer h-5 w-9 rounded-full bg-[#3A3A42] after:absolute after:left-[2px] after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#2DD4BF] peer-checked:after:translate-x-4" />
-          <span className="ml-2 text-sm text-[#8A857D]">
+          <div className="peer h-5 w-9 rounded-full bg-[#2A2A60] after:absolute after:left-[2px] after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#2DD4BF] peer-checked:after:translate-x-4" />
+          <span className="ml-2 text-sm text-[#7A8298]">
             {provider.is_enabled ? "Enabled" : "Disabled"}
           </span>
         </label>
 
         {expanded ? (
-          <ChevronUp className="h-4 w-4 text-[#8A857D]" />
+          <ChevronUp className="h-4 w-4 text-[#7A8298]" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-[#8A857D]" />
+          <ChevronDown className="h-4 w-4 text-[#7A8298]" />
         )}
       </div>
 
       {/* Expanded config */}
       {expanded && (
-        <div className="border-t border-[#232328] mt-4 pt-4">
+        <div className="border-t border-[#1C1C48] mt-4 pt-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Model selector */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">Model</label>
+              <label className="mb-1 block text-sm font-medium text-[#E8ECF4]">Model</label>
               {meta.models.length > 0 ? (
                 <select
-                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  className="w-full rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
                   value={model}
                   onChange={(e) => {
                     setModel(e.target.value);
@@ -208,7 +208,7 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
               ) : (
                 <input
                   type="text"
-                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  className="w-full rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
                   value={model}
                   onChange={(e) => {
                     setModel(e.target.value);
@@ -222,11 +222,11 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
             {/* API key or base URL */}
             {meta.hasApiKey && (
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">API Key</label>
+                <label className="mb-1 block text-sm font-medium text-[#E8ECF4]">API Key</label>
                 <div className="relative">
                   <input
                     type={showKey ? "text" : "password"}
-                    className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 pr-10 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                    className="w-full rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2 pr-10 text-sm text-[#E8ECF4] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
                     value={apiKey}
                     onChange={(e) => {
                       setApiKey(e.target.value);
@@ -237,7 +237,7 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
                   />
                   <button
                     type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8A857D] hover:text-[#F0EDE8]"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#7A8298] hover:text-[#E8ECF4]"
                     onClick={() => setShowKey((v) => !v)}
                   >
                     {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -248,12 +248,12 @@ function ProviderCard({ provider }: { provider: AiProviderSetting }) {
 
             {meta.hasBaseUrl && (
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#F0EDE8]">
+                <label className="mb-1 block text-sm font-medium text-[#E8ECF4]">
                   Ollama Base URL
                 </label>
                 <input
                   type="text"
-                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  className="w-full rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
                   value={baseUrl}
                   onChange={(e) => {
                     setBaseUrl(e.target.value);
@@ -318,8 +318,8 @@ export default function AiProvidersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#F0EDE8]">AI Provider Configuration</h1>
-        <p className="mt-1 text-sm text-[#8A857D]">
+        <h1 className="text-2xl font-bold text-[#E8ECF4]">AI Provider Configuration</h1>
+        <p className="mt-1 text-sm text-[#7A8298]">
           Choose which AI backend powers Abby. Only one provider is active at a time. API keys are
           stored encrypted.
         </p>
@@ -330,11 +330,11 @@ export default function AiProvidersPage() {
         <Panel>
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="text-sm font-medium text-[#F0EDE8]">
+            <span className="text-sm font-medium text-[#E8ECF4]">
               Active provider:{" "}
               <span className="font-semibold">{activeProvider.display_name}</span>
               {activeProvider.model && (
-                <span className="ml-2 font-normal text-[#8A857D]">
+                <span className="ml-2 font-normal text-[#7A8298]">
                   / {activeProvider.model}
                 </span>
               )}
@@ -347,7 +347,7 @@ export default function AiProvidersPage() {
       {/* Provider list */}
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-6 w-6 animate-spin text-[#8A857D]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#7A8298]" />
         </div>
       ) : (
         <div className="space-y-3">

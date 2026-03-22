@@ -24,15 +24,15 @@ import type { UpdateCaseData } from "../types/case";
 // ── Color maps ───────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  draft:     { bg: "#3A3A4220", text: "#8A857D" },
+  draft:     { bg: "#2A2A6020", text: "#7A8298" },
   active:    { bg: "#2DD4BF15", text: "#2DD4BF" },
   in_review: { bg: "#60A5FA15", text: "#60A5FA" },
-  closed:    { bg: "#5A565015", text: "#5A5650" },
-  archived:  { bg: "#3A3A4215", text: "#5A5650" },
+  closed:    { bg: "#4A506815", text: "#4A5068" },
+  archived:  { bg: "#2A2A6015", text: "#4A5068" },
 };
 
 const SPECIALTY_COLORS: Record<string, string> = {
-  oncology:        "#E85A6B",
+  oncology:        "#F0607A",
   surgical:        "#60A5FA",
   rare_disease:    "#A78BFA",
   complex_medical: "#F59E0B",
@@ -41,7 +41,7 @@ const SPECIALTY_COLORS: Record<string, string> = {
 const URGENCY_COLORS: Record<string, string> = {
   routine:  "#2DD4BF",
   urgent:   "#F59E0B",
-  emergent: "#E85A6B",
+  emergent: "#F0607A",
 };
 
 // ── Tab definitions ──────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ function DocumentsTab({ caseId }: { caseId: number }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="text-sm text-[#5A5650]">Loading documents...</span>
+        <span className="text-sm text-[#4A5068]">Loading documents...</span>
       </div>
     );
   }
@@ -116,16 +116,16 @@ function DocumentsTab({ caseId }: { caseId: number }) {
           {(documents ?? []).map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center justify-between rounded-lg border border-[#232328] bg-[#1A1A1E] p-3"
+              className="flex items-center justify-between rounded-lg border border-[#1C1C48] bg-[#16163A] p-3"
             >
               <div className="flex items-center gap-3">
-                <FileText size={16} className="text-[#5A5650]" />
+                <FileText size={16} className="text-[#4A5068]" />
                 <div>
-                  <p className="text-sm font-medium text-[#C5C0B8]">
+                  <p className="text-sm font-medium text-[#B4BAC8]">
                     {doc.filename}
                   </p>
-                  <div className="flex items-center gap-2 text-[10px] text-[#5A5650]">
-                    <span className="rounded bg-[#232328] px-1.5 py-0.5 font-['IBM_Plex_Mono',monospace]">
+                  <div className="flex items-center gap-2 text-[10px] text-[#4A5068]">
+                    <span className="rounded bg-[#1C1C48] px-1.5 py-0.5 font-['IBM_Plex_Mono',monospace]">
                       {doc.document_type.replace(/_/g, " ")}
                     </span>
                     <span>&middot;</span>
@@ -146,7 +146,7 @@ function DocumentsTab({ caseId }: { caseId: number }) {
                   href={doc.filepath}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#232328] hover:text-[#8A857D]"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#1C1C48] hover:text-[#7A8298]"
                   title="Download"
                 >
                   <Download size={14} />
@@ -155,7 +155,7 @@ function DocumentsTab({ caseId }: { caseId: number }) {
                   type="button"
                   onClick={() => deleteDoc.mutate(doc.id)}
                   disabled={deleteDoc.isPending}
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-[#5A5650] transition-colors hover:bg-[#9B1B3015] hover:text-[#E85A6B]"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-[#4A5068] transition-colors hover:bg-[#00D68F15] hover:text-[#F0607A]"
                   title="Delete"
                 >
                   <Trash2 size={14} />
@@ -165,15 +165,15 @@ function DocumentsTab({ caseId }: { caseId: number }) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#323238] bg-[#151518] py-12">
-          <FileText size={24} className="mb-2 text-[#5A5650]" />
-          <p className="text-sm text-[#8A857D]">No documents uploaded</p>
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-12">
+          <FileText size={24} className="mb-2 text-[#4A5068]" />
+          <p className="text-sm text-[#7A8298]">No documents uploaded</p>
         </div>
       )}
 
       {/* Upload form */}
-      <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+      <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
           Upload Document
         </h4>
         <div className="grid grid-cols-2 gap-3 mb-3">
@@ -211,13 +211,13 @@ function DocumentsTab({ caseId }: { caseId: number }) {
         <label
           htmlFor="doc-file"
           className={cn(
-            "flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#323238] py-6 transition-colors",
-            "hover:border-[#2DD4BF]/30 hover:bg-[#151518]",
+            "flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#2A2A60] py-6 transition-colors",
+            "hover:border-[#2DD4BF]/30 hover:bg-[#10102A]",
             uploadDoc.isPending && "pointer-events-none opacity-50",
           )}
         >
-          <Upload size={16} className="text-[#5A5650]" />
-          <span className="text-sm text-[#8A857D]">
+          <Upload size={16} className="text-[#4A5068]" />
+          <span className="text-sm text-[#7A8298]">
             {uploadDoc.isPending ? "Uploading..." : "Click to select a file"}
           </span>
           <input
@@ -244,11 +244,11 @@ function OverviewTab({
     <div className="space-y-6">
       {/* Clinical question */}
       {clinicalCase.clinical_question && (
-        <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
             Clinical Question
           </h4>
-          <p className="text-sm text-[#C5C0B8] whitespace-pre-wrap">
+          <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
             {clinicalCase.clinical_question}
           </p>
         </div>
@@ -256,11 +256,11 @@ function OverviewTab({
 
       {/* Summary */}
       {clinicalCase.summary && (
-        <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8A857D]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
             Summary
           </h4>
-          <p className="text-sm text-[#C5C0B8] whitespace-pre-wrap">
+          <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
             {clinicalCase.summary}
           </p>
         </div>
@@ -268,19 +268,19 @@ function OverviewTab({
 
       {/* Details grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
             Case Type
           </p>
-          <p className="mt-1 text-sm font-medium text-[#C5C0B8]">
+          <p className="mt-1 text-sm font-medium text-[#B4BAC8]">
             {clinicalCase.case_type.replace(/_/g, " ")}
           </p>
         </div>
-        <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
             Created
           </p>
-          <p className="mt-1 text-sm font-medium text-[#C5C0B8] font-['IBM_Plex_Mono',monospace]">
+          <p className="mt-1 text-sm font-medium text-[#B4BAC8] font-['IBM_Plex_Mono',monospace]">
             {new Date(clinicalCase.created_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -289,11 +289,11 @@ function OverviewTab({
           </p>
         </div>
         {clinicalCase.scheduled_at && (
-          <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+          <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
               Scheduled
             </p>
-            <p className="mt-1 text-sm font-medium text-[#C5C0B8] font-['IBM_Plex_Mono',monospace]">
+            <p className="mt-1 text-sm font-medium text-[#B4BAC8] font-['IBM_Plex_Mono',monospace]">
               {new Date(clinicalCase.scheduled_at).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -302,11 +302,11 @@ function OverviewTab({
             </p>
           </div>
         )}
-        <div className="rounded-lg border border-[#232328] bg-[#1A1A1E] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A5650]">
+        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
             Creator
           </p>
-          <p className="mt-1 text-sm font-medium text-[#C5C0B8]">
+          <p className="mt-1 text-sm font-medium text-[#B4BAC8]">
             {clinicalCase.creator?.name ?? `User #${clinicalCase.created_by}`}
           </p>
         </div>
@@ -314,31 +314,31 @@ function OverviewTab({
 
       {/* Activity stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="flex items-center gap-2 rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
-          <MessageSquare size={14} className="text-[#5A5650]" />
-          <span className="text-xs text-[#8A857D]">Discussions</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#C5C0B8]">
+        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
+          <MessageSquare size={14} className="text-[#4A5068]" />
+          <span className="text-xs text-[#7A8298]">Discussions</span>
+          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
             {clinicalCase.discussions_count ?? 0}
           </span>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
-          <Tag size={14} className="text-[#5A5650]" />
-          <span className="text-xs text-[#8A857D]">Annotations</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#C5C0B8]">
+        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
+          <Tag size={14} className="text-[#4A5068]" />
+          <span className="text-xs text-[#7A8298]">Annotations</span>
+          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
             {clinicalCase.annotations_count ?? 0}
           </span>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
-          <FileText size={14} className="text-[#5A5650]" />
-          <span className="text-xs text-[#8A857D]">Documents</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#C5C0B8]">
+        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
+          <FileText size={14} className="text-[#4A5068]" />
+          <span className="text-xs text-[#7A8298]">Documents</span>
+          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
             {clinicalCase.documents_count ?? 0}
           </span>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#232328] bg-[#1A1A1E] p-3">
-          <Gavel size={14} className="text-[#5A5650]" />
-          <span className="text-xs text-[#8A857D]">Decisions</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#C5C0B8]">
+        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
+          <Gavel size={14} className="text-[#4A5068]" />
+          <span className="text-xs text-[#7A8298]">Decisions</span>
+          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
             {clinicalCase.decisions_count ?? 0}
           </span>
         </div>
@@ -364,7 +364,7 @@ export default function CaseDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 size={24} className="animate-spin text-[#5A5650]" />
+        <Loader2 size={24} className="animate-spin text-[#4A5068]" />
       </div>
     );
   }
@@ -372,14 +372,14 @@ export default function CaseDetailPage() {
   if (!clinicalCase) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <h2 className="text-lg font-semibold text-[#F0EDE8]">Case not found</h2>
-        <p className="mt-1 text-sm text-[#8A857D]">
+        <h2 className="text-lg font-semibold text-[#E8ECF4]">Case not found</h2>
+        <p className="mt-1 text-sm text-[#7A8298]">
           The case you are looking for does not exist.
         </p>
         <button
           type="button"
           onClick={() => navigate("/cases")}
-          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#2A2A30] bg-[#151518] px-4 py-2 text-sm text-[#8A857D] transition-colors hover:text-[#C5C0B8]"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:text-[#B4BAC8]"
         >
           <ArrowLeft size={14} />
           Back to Cases
@@ -388,9 +388,9 @@ export default function CaseDetailPage() {
     );
   }
 
-  const statusColors = STATUS_COLORS[clinicalCase.status] ?? { bg: "#3A3A4220", text: "#8A857D" };
-  const specialtyColor = SPECIALTY_COLORS[clinicalCase.specialty] ?? "#8A857D";
-  const urgencyColor = URGENCY_COLORS[clinicalCase.urgency] ?? "#8A857D";
+  const statusColors = STATUS_COLORS[clinicalCase.status] ?? { bg: "#2A2A6020", text: "#7A8298" };
+  const specialtyColor = SPECIALTY_COLORS[clinicalCase.specialty] ?? "#7A8298";
+  const urgencyColor = URGENCY_COLORS[clinicalCase.urgency] ?? "#7A8298";
 
   const handleUpdate = (data: UpdateCaseData) => {
     updateCase.mutate(
@@ -406,7 +406,7 @@ export default function CaseDetailPage() {
         <button
           type="button"
           onClick={() => navigate("/cases")}
-          className="mb-4 inline-flex items-center gap-1.5 text-xs text-[#5A5650] transition-colors hover:text-[#8A857D]"
+          className="mb-4 inline-flex items-center gap-1.5 text-xs text-[#4A5068] transition-colors hover:text-[#7A8298]"
         >
           <ArrowLeft size={12} />
           Back to Cases
@@ -414,7 +414,7 @@ export default function CaseDetailPage() {
 
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#F0EDE8]">
+            <h1 className="text-2xl font-bold text-[#E8ECF4]">
               {clinicalCase.title}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -446,7 +446,7 @@ export default function CaseDetailPage() {
           <button
             type="button"
             onClick={() => setShowEditForm(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#2A2A30] bg-[#151518] px-3 py-2 text-sm text-[#8A857D] transition-colors hover:border-[#3A3A42] hover:text-[#C5C0B8]"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-3 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
           >
             <Pencil size={14} />
             Edit

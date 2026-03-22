@@ -23,7 +23,7 @@ const CRITERIA_TYPES: {
   { value: "anatomy", label: "Anatomy / Body Part", icon: MapPin, color: "#2DD4BF", desc: "Chest, Abdomen, Brain..." },
   { value: "quantitative", label: "Quantitative Feature", icon: BarChart2, color: "#A78BFA", desc: "Radiomic or AI numeric measurement" },
   { value: "ai_classification", label: "AI Classification", icon: Brain, color: "#F59E0B", desc: "AI-derived label with confidence" },
-  { value: "dose", label: "Radiation Dose", icon: Zap, color: "#E85A6B", desc: "Maximum cumulative dose (Gy)" },
+  { value: "dose", label: "Radiation Dose", icon: Zap, color: "#F0607A", desc: "Maximum cumulative dose (Gy)" },
 ];
 
 const COMMON_MODALITIES = ["CT", "MR", "PT", "US", "CR", "DX", "MG", "XA", "NM", "RF"];
@@ -99,21 +99,21 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
   };
 
   const inputCls =
-    "w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-2 py-1.5 text-xs text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors";
+    "w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-2 py-1.5 text-xs text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors";
   const selectCls =
-    "rounded-lg bg-[#0E0E11] border border-[#232328] px-2 py-1.5 text-xs text-[#F0EDE8] focus:outline-none focus:border-[#2DD4BF] transition-colors";
+    "rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-2 py-1.5 text-xs text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors";
 
   return (
-    <div className="rounded-lg border border-[#232328] bg-[#151518] p-4 space-y-4">
+    <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-[#F0EDE8] flex items-center gap-1.5">
+        <h4 className="text-sm font-semibold text-[#E8ECF4] flex items-center gap-1.5">
           <ScanLine size={14} className="text-[#60A5FA]" />
           Add Imaging Criterion
         </h4>
         <button
           type="button"
           onClick={onCancel}
-          className="text-[#5A5650] hover:text-[#8A857D] transition-colors"
+          className="text-[#4A5068] hover:text-[#7A8298] transition-colors"
         >
           <X size={14} />
         </button>
@@ -131,13 +131,13 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs text-left transition-colors ${
                 type === ct.value
                   ? "border-[#2DD4BF]/40 bg-[#2DD4BF]/10 text-[#2DD4BF]"
-                  : "border-[#232328] bg-[#0E0E11] text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#2A2A30]"
+                  : "border-[#1C1C48] bg-[#0A0A18] text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#222256]"
               }`}
             >
               <Icon size={13} style={{ color: ct.color }} />
               <div>
                 <div className="font-medium">{ct.label}</div>
-                <div className="text-[#5A5650] text-[10px] mt-0.5">{ct.desc}</div>
+                <div className="text-[#4A5068] text-[10px] mt-0.5">{ct.desc}</div>
               </div>
             </button>
           );
@@ -147,7 +147,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
       {/* Modality */}
       {type === "modality" && (
         <div>
-          <label className="block text-[10px] text-[#8A857D] mb-1.5 uppercase tracking-wider">
+          <label className="block text-[10px] text-[#7A8298] mb-1.5 uppercase tracking-wider">
             Modality *
           </label>
           <div className="flex flex-wrap gap-1 mb-2">
@@ -159,7 +159,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
                 className={`px-2 py-1 rounded text-xs font-mono transition-colors ${
                   modality === m
                     ? "bg-[#2DD4BF]/20 border border-[#2DD4BF]/40 text-[#2DD4BF]"
-                    : "bg-[#0E0E11] border border-[#232328] text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#2A2A30]"
+                    : "bg-[#0A0A18] border border-[#1C1C48] text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#222256]"
                 }`}
               >
                 {m}
@@ -178,7 +178,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
       {/* Anatomy */}
       {type === "anatomy" && (
         <div>
-          <label className="block text-[10px] text-[#8A857D] mb-1.5 uppercase tracking-wider">
+          <label className="block text-[10px] text-[#7A8298] mb-1.5 uppercase tracking-wider">
             Body Part *
           </label>
           <div className="flex flex-wrap gap-1 mb-2">
@@ -190,7 +190,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
                 className={`px-2 py-1 rounded text-xs transition-colors ${
                   bodyPart === b
                     ? "bg-[#2DD4BF]/20 border border-[#2DD4BF]/40 text-[#2DD4BF]"
-                    : "bg-[#0E0E11] border border-[#232328] text-[#8A857D] hover:text-[#C5C0B8] hover:border-[#2A2A30]"
+                    : "bg-[#0A0A18] border border-[#1C1C48] text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#222256]"
                 }`}
               >
                 {b}
@@ -210,7 +210,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
       {type === "quantitative" && (
         <div className="space-y-2">
           <div>
-            <label className="block text-[10px] text-[#8A857D] mb-1.5 uppercase tracking-wider">
+            <label className="block text-[10px] text-[#7A8298] mb-1.5 uppercase tracking-wider">
               Feature name *
             </label>
             <input
@@ -232,12 +232,12 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
             </select>
             <input
               type="number"
-              className="w-24 rounded-lg bg-[#0E0E11] border border-[#232328] px-2 py-1.5 text-xs text-[#F0EDE8] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+              className="w-24 rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-2 py-1.5 text-xs text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors"
               value={value}
               onChange={(e) => setValue(Number(e.target.value))}
             />
             <input
-              className="w-20 rounded-lg bg-[#0E0E11] border border-[#232328] px-2 py-1.5 text-xs text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+              className="w-20 rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-2 py-1.5 text-xs text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] transition-colors"
               placeholder="unit"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
@@ -250,7 +250,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
       {type === "ai_classification" && (
         <div className="space-y-2">
           <div>
-            <label className="block text-[10px] text-[#8A857D] mb-1.5 uppercase tracking-wider">
+            <label className="block text-[10px] text-[#7A8298] mb-1.5 uppercase tracking-wider">
               Classification label *
             </label>
             <input
@@ -261,7 +261,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
             />
           </div>
           <div className="flex items-center gap-3">
-            <label className="text-xs text-[#8A857D]">Min confidence</label>
+            <label className="text-xs text-[#7A8298]">Min confidence</label>
             <input
               type="range"
               min={0}
@@ -271,7 +271,7 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
               onChange={(e) => setMinConfidence(Number(e.target.value))}
               className="flex-1 accent-[#2DD4BF]"
             />
-            <span className="text-xs text-[#C5C0B8] w-10 text-right font-mono">
+            <span className="text-xs text-[#B4BAC8] w-10 text-right font-mono">
               {Math.round(minConfidence * 100)}%
             </span>
           </div>
@@ -281,14 +281,14 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
       {/* Dose */}
       {type === "dose" && (
         <div className="flex items-center gap-3">
-          <span className="text-xs text-[#8A857D]">Max cumulative dose</span>
+          <span className="text-xs text-[#7A8298]">Max cumulative dose</span>
           <input
             type="number"
-            className="w-24 rounded-lg bg-[#0E0E11] border border-[#232328] px-2 py-1.5 text-xs text-[#F0EDE8] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+            className="w-24 rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-2 py-1.5 text-xs text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors"
             value={maxDoseGy}
             onChange={(e) => setMaxDoseGy(Number(e.target.value))}
           />
-          <span className="text-xs text-[#5A5650]">Gy</span>
+          <span className="text-xs text-[#4A5068]">Gy</span>
         </div>
       )}
 
@@ -300,15 +300,15 @@ export function ImagingCriteriaPanel({ onAdd, onCancel }: Props) {
               type="checkbox"
               checked={exclude}
               onChange={(e) => setExclude(e.target.checked)}
-              className="rounded border-[#232328] bg-[#0E0E11] text-[#E85A6B] focus:ring-[#E85A6B]/40"
+              className="rounded border-[#1C1C48] bg-[#0A0A18] text-[#F0607A] focus:ring-[#F0607A]/40"
             />
-            <span className="text-xs text-[#8A857D]">Exclude patients with this feature</span>
+            <span className="text-xs text-[#7A8298]">Exclude patients with this feature</span>
           </label>
           <button
             type="button"
             onClick={handleAdd}
             disabled={!canAdd()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2DD4BF] text-[#0E0E11] text-xs font-medium hover:bg-[#26B8A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2DD4BF] text-[#0A0A18] text-xs font-medium hover:bg-[#26B8A5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Check size={12} />
             Add Criterion

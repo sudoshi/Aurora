@@ -13,7 +13,7 @@ import type { TrialSuggestion } from "../types/decision-support";
 const CONFIDENCE_STYLES: Record<string, { color: string; bg: string; border: string }> = {
   high:   { color: "#2DD4BF", bg: "#2DD4BF15", border: "#2DD4BF30" },
   medium: { color: "#F59E0B", bg: "#F59E0B15", border: "#F59E0B30" },
-  low:    { color: "#E85A6B", bg: "#E85A6B15", border: "#E85A6B30" },
+  low:    { color: "#F0607A", bg: "#F0607A15", border: "#F0607A30" },
 };
 
 // ---------------------------------------------------------------------------
@@ -124,8 +124,8 @@ export function TrialMatchResults({ trials, isLoading, isError }: TrialMatchResu
 
   if (isError) {
     return (
-      <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 text-center">
-        <p className="text-sm text-[#E85A6B]">Failed to load trial matches</p>
+      <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 text-center">
+        <p className="text-sm text-[#F0607A]">Failed to load trial matches</p>
         <p className="text-xs text-[var(--text-muted)] mt-1">Please try again later.</p>
       </div>
     );

@@ -16,9 +16,9 @@ const SEVERITY_CONFIG: Record<
   { color: string; bg: string; border: string; icon: React.ReactNode; label: string }
 > = {
   major: {
-    color: "#E85A6B",
-    bg: "#E85A6B10",
-    border: "#E85A6B30",
+    color: "#F0607A",
+    bg: "#F0607A10",
+    border: "#F0607A30",
     icon: <AlertCircle size={14} />,
     label: "Major",
   },
@@ -171,8 +171,8 @@ export function DrugInteractionPanel({ currentMedications }: DrugInteractionPane
 
       {/* Error */}
       {mutation.isError && (
-        <div className="rounded-lg border border-[#E85A6B]/20 bg-[#E85A6B]/5 p-4 text-center">
-          <p className="text-sm text-[#E85A6B]">Failed to check drug interactions</p>
+        <div className="rounded-lg border border-[#F0607A]/20 bg-[#F0607A]/5 p-4 text-center">
+          <p className="text-sm text-[#F0607A]">Failed to check drug interactions</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">Please try again.</p>
         </div>
       )}

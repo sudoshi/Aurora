@@ -105,17 +105,17 @@ function ProviderCard({ provider }: { provider: AuthProviderSetting }) {
       {/* Card header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`flex h-9 w-9 items-center justify-center rounded-lg bg-[#1C1C20] ${meta.color}`}>
+          <div className={`flex h-9 w-9 items-center justify-center rounded-lg bg-[#16163A] ${meta.color}`}>
             <meta.icon className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-medium text-[#F0EDE8]">{meta.label}</p>
+              <p className="font-medium text-[#E8ECF4]">{meta.label}</p>
               <Badge variant={provider.is_enabled ? "success" : "inactive"}>
                 {provider.is_enabled ? "Enabled" : "Disabled"}
               </Badge>
             </div>
-            <p className="text-xs text-[#8A857D]">{meta.description}</p>
+            <p className="text-xs text-[#7A8298]">{meta.description}</p>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ function ProviderCard({ provider }: { provider: AuthProviderSetting }) {
               />
               <div
                 className={`h-5 w-9 rounded-full transition-colors ${
-                  provider.is_enabled ? "bg-[#2DD4BF]" : "bg-[#3A3A42]"
+                  provider.is_enabled ? "bg-[#2DD4BF]" : "bg-[#2A2A60]"
                 }`}
               />
               <div
@@ -153,16 +153,16 @@ function ProviderCard({ provider }: { provider: AuthProviderSetting }) {
 
       {/* Collapsible config form */}
       {open && (
-        <div className="border-t border-[#232328] mt-4 pt-4">
+        <div className="border-t border-[#1C1C48] mt-4 pt-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {Object.entries(settings).map(([key, value]) => (
               <div key={key}>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-[#8A857D]">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-[#7A8298]">
                   {key.replace(/_/g, " ")}
                 </label>
                 <input
                   type={key.toLowerCase().includes("secret") || key.toLowerCase().includes("password") ? "password" : "text"}
-                  className="w-full rounded-md border border-[#232328] bg-[#151518] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
+                  className="w-full rounded-md border border-[#1C1C48] bg-[#10102A] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:ring-2 focus:ring-[#2DD4BF]"
                   value={value}
                   onChange={(e) => setSettings((s) => ({ ...s, [key]: e.target.value }))}
                   autoComplete="off"
@@ -207,8 +207,8 @@ export default function AuthProvidersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#F0EDE8]">Authentication Providers</h1>
-        <p className="mt-1 text-sm text-[#8A857D]">
+        <h1 className="text-2xl font-bold text-[#E8ECF4]">Authentication Providers</h1>
+        <p className="mt-1 text-sm text-[#7A8298]">
           Enable one or more external identity providers for single sign-on. Sanctum
           username/password is always available as a fallback.
         </p>
@@ -217,15 +217,15 @@ export default function AuthProvidersPage() {
       {/* Sanctum (always-on) */}
       <Panel className="opacity-70">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1C1C20] text-[#2DD4BF]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#16163A] text-[#2DD4BF]">
             <Fingerprint className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <p className="font-medium text-[#F0EDE8]">Username &amp; Password</p>
+              <p className="font-medium text-[#E8ECF4]">Username &amp; Password</p>
               <Badge variant="success">Always on</Badge>
             </div>
-            <p className="text-xs text-[#8A857D]">
+            <p className="text-xs text-[#7A8298]">
               Built-in Sanctum authentication -- always active.
             </p>
           </div>
@@ -233,7 +233,7 @@ export default function AuthProvidersPage() {
       </Panel>
 
       {isLoading ? (
-        <p className="text-[#8A857D]">Loading providers...</p>
+        <p className="text-[#7A8298]">Loading providers...</p>
       ) : (
         <div className="space-y-4">
           {ordered.map((p) => <ProviderCard key={p.provider_type} provider={p} />)}

@@ -72,19 +72,19 @@ export function UploadDialog({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#151518] border border-[#232328] rounded-xl shadow-2xl w-full max-w-lg mx-4">
+      <div className="bg-[#10102A] border border-[#1C1C48] rounded-xl shadow-2xl w-full max-w-lg mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#232328]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1C1C48]">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-7 h-7 rounded-md bg-[#A78BFA]/12">
               <Dna size={14} style={{ color: "#A78BFA" }} />
             </div>
-            <h2 className="text-sm font-semibold text-[#F0EDE8]">Upload Variant File</h2>
+            <h2 className="text-sm font-semibold text-[#E8ECF4]">Upload Variant File</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#5A5650] hover:text-[#8A857D] transition-colors"
+            className="text-[#4A5068] hover:text-[#7A8298] transition-colors"
           >
             <X size={16} />
           </button>
@@ -100,7 +100,7 @@ export function UploadDialog({ onClose }: Props) {
             className={`relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-8 cursor-pointer transition-colors ${
               dragOver
                 ? "border-[#2DD4BF] bg-[#2DD4BF]/10"
-                : "border-[#2A2A30] hover:border-[#3A3A42] bg-[#0E0E11]"
+                : "border-[#222256] hover:border-[#2A2A60] bg-[#0A0A18]"
             }`}
           >
             <input
@@ -113,21 +113,21 @@ export function UploadDialog({ onClose }: Props) {
             {file ? (
               <div className="flex items-center gap-2 text-[#2DD4BF]">
                 <CheckCircle2 size={16} />
-                <span className="text-sm font-medium text-[#F0EDE8]">{file.name}</span>
-                <span className="text-xs text-[#5A5650]">({(file.size / 1024).toFixed(0)} KB)</span>
+                <span className="text-sm font-medium text-[#E8ECF4]">{file.name}</span>
+                <span className="text-xs text-[#4A5068]">({(file.size / 1024).toFixed(0)} KB)</span>
               </div>
             ) : (
               <>
-                <Upload size={24} className="text-[#5A5650] mb-2" />
-                <p className="text-sm text-[#8A857D]">Drop file here or click to browse</p>
-                <p className="text-xs text-[#5A5650] mt-1">.vcf, .maf, .json</p>
+                <Upload size={24} className="text-[#4A5068] mb-2" />
+                <p className="text-sm text-[#7A8298]">Drop file here or click to browse</p>
+                <p className="text-xs text-[#4A5068] mt-1">.vcf, .maf, .json</p>
               </>
             )}
           </div>
 
           {/* Format selector */}
           <div>
-            <label className="block text-xs text-[#8A857D] mb-1.5">File Format</label>
+            <label className="block text-xs text-[#7A8298] mb-1.5">File Format</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(FORMAT_INFO) as FileFormat[]).map((f) => (
                 <button
@@ -137,47 +137,47 @@ export function UploadDialog({ onClose }: Props) {
                   className={`text-left p-2.5 rounded-lg border text-xs transition-colors ${
                     format === f
                       ? "border-[#2DD4BF] bg-[#2DD4BF]/10 text-[#2DD4BF]"
-                      : "border-[#232328] hover:border-[#2A2A30] text-[#8A857D]"
+                      : "border-[#1C1C48] hover:border-[#222256] text-[#7A8298]"
                   }`}
                 >
-                  <div className={`font-medium ${format === f ? "text-[#F0EDE8]" : "text-[#C5C0B8]"}`}>
+                  <div className={`font-medium ${format === f ? "text-[#E8ECF4]" : "text-[#B4BAC8]"}`}>
                     {FORMAT_INFO[f].label}
                   </div>
-                  <div className="text-[#5A5650] mt-0.5">{FORMAT_INFO[f].ext}</div>
+                  <div className="text-[#4A5068] mt-0.5">{FORMAT_INFO[f].ext}</div>
                 </button>
               ))}
             </div>
-            <p className="text-xs text-[#5A5650] mt-1.5">{FORMAT_INFO[format].desc}</p>
+            <p className="text-xs text-[#4A5068] mt-1.5">{FORMAT_INFO[format].desc}</p>
           </div>
 
           {/* Genome build + sample ID */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-[#8A857D] mb-1.5">Genome Build</label>
+              <label className="block text-xs text-[#7A8298] mb-1.5">Genome Build</label>
               <select
                 value={build}
                 onChange={(e) => setBuild(e.target.value as GenomeBuild)}
-                className="w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+                className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors"
               >
                 <option value="GRCh38">GRCh38 / hg38</option>
                 <option value="GRCh37">GRCh37 / hg19</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs text-[#8A857D] mb-1.5">Sample ID (optional)</label>
+              <label className="block text-xs text-[#7A8298] mb-1.5">Sample ID (optional)</label>
               <input
                 type="text"
                 value={sampleId}
                 onChange={(e) => setSampleId(e.target.value)}
                 placeholder="SAMPLE_001"
-                className="w-full rounded-lg bg-[#0E0E11] border border-[#232328] px-3 py-2 text-sm text-[#F0EDE8] placeholder:text-[#5A5650] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+                className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] transition-colors"
               />
             </div>
           </div>
 
           {/* Error */}
           {upload.isError && (
-            <div className="flex items-center gap-2 rounded-lg border border-[#E85A6B]/30 bg-[#E85A6B]/10 p-3 text-[#E85A6B] text-xs">
+            <div className="flex items-center gap-2 rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 p-3 text-[#F0607A] text-xs">
               <AlertCircle size={14} />
               <span>Upload failed. Please check the file format and try again.</span>
             </div>
@@ -185,11 +185,11 @@ export function UploadDialog({ onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-[#232328]">
+        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-[#1C1C48]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[#5A5650] hover:text-[#8A857D] transition-colors"
+            className="px-4 py-2 text-sm text-[#4A5068] hover:text-[#7A8298] transition-colors"
           >
             Cancel
           </button>
@@ -197,7 +197,7 @@ export function UploadDialog({ onClose }: Props) {
             type="button"
             onClick={handleSubmit}
             disabled={!file || upload.isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0E0E11] hover:bg-[#26B8A5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {upload.isPending ? (
               <>

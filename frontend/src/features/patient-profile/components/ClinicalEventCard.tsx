@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 import type { ClinicalEvent, ClinicalDomain } from "../types/profile";
 
 const DOMAIN_COLORS: Record<ClinicalDomain, string> = {
-  condition:   "#9B1B30",
+  condition:   "#00D68F",
   medication:  "#60A5FA",
   procedure:   "#F472B6",
   measurement: "#2DD4BF",
   observation: "#A78BFA",
-  visit:       "#2A9D8F",
+  visit:       "#9D75F8",
 };
 
 const DOMAIN_LABELS: Record<ClinicalDomain, string> = {
@@ -80,7 +80,7 @@ export function GroupedConceptCard({
   lastDate,
 }: GroupedConceptCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const color = DOMAIN_COLORS[domain] ?? "#8A857D";
+  const color = DOMAIN_COLORS[domain] ?? "#7A8298";
   const label = DOMAIN_LABELS[domain] ?? domain;
   const count = events.length;
   const latestWithValue = domain === "measurement" ? events.find((e) => e.value_numeric != null) : null;
@@ -166,7 +166,7 @@ interface ClinicalEventCardProps {
 }
 
 export function ClinicalEventCard({ event }: ClinicalEventCardProps) {
-  const color = DOMAIN_COLORS[event.domain] ?? "#8A857D";
+  const color = DOMAIN_COLORS[event.domain] ?? "#7A8298";
   const label = DOMAIN_LABELS[event.domain] ?? event.domain;
 
   const displayValue =

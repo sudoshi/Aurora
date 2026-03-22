@@ -15,7 +15,7 @@ import {
 import type { GenomicVariant } from "@/features/genomics/types";
 
 const CLINVAR_INFO: Record<string, { color: string; bg: string; icon: typeof ShieldAlert; label: string }> = {
-  pathogenic:             { color: "#E85A6B", bg: "bg-[#E85A6B]/10", icon: ShieldAlert, label: "Pathogenic" },
+  pathogenic:             { color: "#F0607A", bg: "bg-[#F0607A]/10", icon: ShieldAlert, label: "Pathogenic" },
   "likely pathogenic":    { color: "#F97316", bg: "bg-orange-400/10", icon: ShieldAlert, label: "Likely Pathogenic" },
   "uncertain significance": { color: "#F59E0B", bg: "bg-amber-400/10", icon: ShieldQuestion, label: "VUS" },
   "likely benign":        { color: "#60A5FA", bg: "bg-blue-400/10", icon: ShieldCheck, label: "Likely Benign" },
@@ -50,10 +50,10 @@ export function VariantCard({ variant, onClose }: VariantCardProps) {
         <div className="flex items-center gap-2">
           <Dna size={16} className="text-[#A78BFA]" />
           <div>
-            <span className="text-sm font-semibold text-[#F0EDE8]">
+            <span className="text-sm font-semibold text-[#E8ECF4]">
               {variant.gene_symbol ?? "Unknown Gene"}
             </span>
-            <span className="ml-2 text-xs font-mono text-[#C5C0B8]">
+            <span className="ml-2 text-xs font-mono text-[#B4BAC8]">
               {variant.hgvs_p ?? variant.hgvs_c ?? `${variant.chromosome}:${variant.position}`}
             </span>
           </div>
@@ -61,7 +61,7 @@ export function VariantCard({ variant, onClose }: VariantCardProps) {
         <button
           type="button"
           onClick={onClose}
-          className="text-[#5A5650] hover:text-[#C5C0B8] transition-colors"
+          className="text-[#4A5068] hover:text-[#B4BAC8] transition-colors"
         >
           <X size={14} />
         </button>
@@ -79,7 +79,7 @@ export function VariantCard({ variant, onClose }: VariantCardProps) {
           </span>
         )}
         {isActionable && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#E85A6B]/10 text-[#E85A6B] border border-[#E85A6B]/20">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F0607A]/10 text-[#F0607A] border border-[#F0607A]/20">
             <ShieldAlert size={10} />
             Actionable
           </span>
@@ -115,21 +115,21 @@ export function VariantCard({ variant, onClose }: VariantCardProps) {
       </div>
 
       {/* Additional info row */}
-      <div className="flex flex-wrap gap-3 text-xs text-[#8A857D]">
+      <div className="flex flex-wrap gap-3 text-xs text-[#7A8298]">
         {variant.variant_type && (
-          <span>Type: <span className="text-[#C5C0B8]">{variant.variant_type}</span></span>
+          <span>Type: <span className="text-[#B4BAC8]">{variant.variant_type}</span></span>
         )}
         {variant.variant_class && (
-          <span>Class: <span className="text-[#C5C0B8]">{variant.variant_class}</span></span>
+          <span>Class: <span className="text-[#B4BAC8]">{variant.variant_class}</span></span>
         )}
         {variant.clinvar_id && (
-          <span>ClinVar: <span className="text-[#C5C0B8]">{variant.clinvar_id}</span></span>
+          <span>ClinVar: <span className="text-[#B4BAC8]">{variant.clinvar_id}</span></span>
         )}
         {variant.cosmic_id && (
-          <span>COSMIC: <span className="text-[#C5C0B8]">{variant.cosmic_id}</span></span>
+          <span>COSMIC: <span className="text-[#B4BAC8]">{variant.cosmic_id}</span></span>
         )}
         {variant.genome_build && (
-          <span>Build: <span className="text-[#C5C0B8]">{variant.genome_build}</span></span>
+          <span>Build: <span className="text-[#B4BAC8]">{variant.genome_build}</span></span>
         )}
       </div>
     </div>
@@ -147,10 +147,10 @@ function DetailItem({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <Icon size={12} className="text-[#5A5650] flex-shrink-0" />
+      <Icon size={12} className="text-[#4A5068] flex-shrink-0" />
       <div>
-        <p className="text-[10px] text-[#5A5650] uppercase tracking-wider">{label}</p>
-        <p className="text-xs text-[#C5C0B8] font-mono">{value}</p>
+        <p className="text-[10px] text-[#4A5068] uppercase tracking-wider">{label}</p>
+        <p className="text-xs text-[#B4BAC8] font-mono">{value}</p>
       </div>
     </div>
   );
