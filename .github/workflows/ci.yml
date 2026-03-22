@@ -123,7 +123,7 @@ jobs:
 
       - name: Pest tests
         working-directory: backend
-        run: ./vendor/bin/pest --parallel --coverage --min=40
+        run: ./vendor/bin/pest --coverage --min=40
         env:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
