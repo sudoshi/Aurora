@@ -554,11 +554,11 @@ class UndiagnosedPatient3_APS1
 
         // Month 12 ED/PICU (2024-03-15)
         $this->addLabPanel($patient, '2024-03-15', [
-            ['Calcium', '17861-6', 6.8, 'mg/dL', 8.8, 10.8, 'CRITICAL LOW'],
+            ['Calcium', '17861-6', 6.8, 'mg/dL', 8.8, 10.8, 'CL'],
             ['Phosphorus', '2777-1', 7.2, 'mg/dL', 3.7, 5.6, 'H'],
             ['Magnesium', '19123-9', 1.6, 'mg/dL', 1.7, 2.2, 'L'],
             ['Albumin', '1751-7', 4.0, 'g/dL', 3.5, 5.0, null],
-            ['PTH', '2731-8', 4, 'pg/mL', 15, 65, 'CRITICAL LOW'],
+            ['PTH', '2731-8', 4, 'pg/mL', 15, 65, 'CL'],
             ['25-OH Vitamin D', '1989-3', 32, 'ng/mL', 30, 100, null],
         ]);
 
@@ -643,9 +643,9 @@ class UndiagnosedPatient3_APS1
 
         // Month 34 Endocrinology (2026-06-10)
         $this->addLabPanel($patient, '2026-06-10', [
-            ['AM Cortisol', '2143-6', 3.2, 'mcg/dL', 6, 24, 'CRITICAL LOW'],
+            ['AM Cortisol', '2143-6', 3.2, 'mcg/dL', 6, 24, 'CL'],
             ['ACTH', '2141-0', 280, 'pg/mL', 10, 60, 'H'],
-            ['ACTH stim 60min cortisol', '14675-3', 4.8, 'mcg/dL', 18, null, 'CRITICAL LOW'],
+            ['ACTH stim 60min cortisol', '14675-3', 4.8, 'mcg/dL', 18, null, 'CL'],
             ['Aldosterone', '1763-2', 2, 'ng/dL', 3, 35, 'L'],
             ['Renin', '2915-7', 18, 'ng/mL/hr', 0.5, 4.0, 'H'],
             ['Sodium', '2951-2', 132, 'mEq/L', 136, 145, 'L'],
@@ -808,62 +808,56 @@ class UndiagnosedPatient3_APS1
         $this->addGenomicVariant($patient, [
             'gene' => 'AIRE',
             'variant' => 'p.Arg257Ter',
-            'hgvs_c' => 'c.769C>T',
             'variant_type' => 'SNV',
             'chromosome' => 'chr21',
             'zygosity' => 'heterozygous',
             'allele_frequency' => 0.50,
             'clinical_significance' => 'pathogenic',
             'actionability' => 'diagnostic',
-            'sample_type' => 'peripheral blood',
-            'reported_at' => '2026-09-15',
         ]);
 
         $this->addGenomicVariant($patient, [
             'gene' => 'AIRE',
             'variant' => 'p.Leu323fsX372',
-            'hgvs_c' => 'c.967_979del13',
             'variant_type' => 'indel',
             'chromosome' => 'chr21',
             'zygosity' => 'heterozygous',
             'allele_frequency' => 0.50,
             'clinical_significance' => 'pathogenic',
             'actionability' => 'diagnostic',
-            'sample_type' => 'peripheral blood',
-            'reported_at' => '2026-09-15',
         ]);
 
         // ── Condition Eras ──────────────────────────────────────
         $this->addConditionEra($patient, [
-            'condition_name' => 'Candidiasis era',
+            'concept_name' => 'Candidiasis era',
             'era_start' => '2023-03-01',
             'era_end' => null,
             'occurrence_count' => 8,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Hypoparathyroidism era',
+            'concept_name' => 'Hypoparathyroidism era',
             'era_start' => '2024-03-01',
             'era_end' => null,
             'occurrence_count' => 6,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Autoimmune hepatitis era',
+            'concept_name' => 'Autoimmune hepatitis era',
             'era_start' => '2025-07-01',
             'era_end' => null,
             'occurrence_count' => 4,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Adrenal insufficiency era',
+            'concept_name' => 'Adrenal insufficiency era',
             'era_start' => '2026-06-01',
             'era_end' => null,
             'occurrence_count' => 2,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Arthritis era',
+            'concept_name' => 'Arthritis era',
             'era_start' => '2025-03-01',
             'era_end' => '2026-09-01',
             'occurrence_count' => 4,

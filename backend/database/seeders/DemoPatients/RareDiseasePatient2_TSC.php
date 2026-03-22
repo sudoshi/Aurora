@@ -953,7 +953,15 @@ class RareDiseasePatient2_TSC
             ['AST', '1920-8', 38, 'U/L', 10, 40, null],
             ['ALT', '1742-6', 40, 'U/L', 7, 35, 'H'],
             ['Fasting Glucose', '1558-6', 98, 'mg/dL', 70, 100, null],
-            ['Urinalysis Protein', '5804-0', 'trace', 'mg/dL', null, null, null],
+        ]);
+        $this->addMeasurement($patient, [
+            'measurement_name' => 'Urinalysis Protein',
+            'concept_code' => '5804-0',
+            'vocabulary' => 'LOINC',
+            'value_text' => 'trace',
+            'unit' => 'mg/dL',
+            'abnormal_flag' => 'A',
+            'measured_at' => '2022-01-10',
         ]);
 
         // Age 14 (2026-01-10)
@@ -968,7 +976,15 @@ class RareDiseasePatient2_TSC
             ['AST', '1920-8', 35, 'U/L', 10, 40, null],
             ['ALT', '1742-6', 36, 'U/L', 7, 35, 'H'],
             ['Fasting Glucose', '1558-6', 102, 'mg/dL', 70, 100, 'H'],
-            ['Urinalysis Protein', '5804-0', 'trace', 'mg/dL', null, null, null],
+        ]);
+        $this->addMeasurement($patient, [
+            'measurement_name' => 'Urinalysis Protein',
+            'concept_code' => '5804-0',
+            'vocabulary' => 'LOINC',
+            'value_text' => 'trace',
+            'unit' => 'mg/dL',
+            'abnormal_flag' => 'A',
+            'measured_at' => '2026-01-10',
         ]);
 
         // ── Observations ────────────────────────────────────────

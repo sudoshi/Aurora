@@ -186,7 +186,6 @@ trait DemoSeederHelper
                 'concept_code' => $lab[1],
                 'vocabulary' => 'LOINC',
                 'value_numeric' => $lab[2],
-                'unit' => $lab[3],
                 'reference_range_low' => $lab[4] ?? null,
                 'reference_range_high' => $lab[5] ?? null,
                 'abnormal_flag' => $lab[6] ?? null,

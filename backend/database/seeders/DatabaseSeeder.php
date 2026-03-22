@@ -14,5 +14,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SuperuserSeeder::class,
         ]);
+
+        // To seed 12 demo clinical patients (clinically defensible synthetic data):
+        // php artisan db:seed --class=ClinicalDemoSeeder
     }
 }

@@ -699,41 +699,38 @@ class UndiagnosedPatient2_VEXAS
         $this->addGenomicVariant($patient, [
             'gene' => 'UBA1',
             'variant' => 'p.Met41Thr',
-            'hgvs_c' => 'c.122T>C',
             'variant_type' => 'SNV',
             'chromosome' => 'chrX',
             'zygosity' => 'hemizygous',
             'allele_frequency' => 0.62,
             'clinical_significance' => 'pathogenic',
             'actionability' => 'emerging_therapies',
-            'sample_type' => 'peripheral blood',
-            'reported_at' => '2026-06-01',
         ]);
 
         // ── Condition Eras ──────────────────────────────────────
         $this->addConditionEra($patient, [
-            'condition_name' => 'Systemic inflammation era',
+            'concept_name' => 'Systemic inflammation era',
             'era_start' => '2023-07-01',
             'era_end' => null,
             'occurrence_count' => 20,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Cytopenias era',
+            'concept_name' => 'Cytopenias era',
             'era_start' => '2023-07-01',
             'era_end' => null,
             'occurrence_count' => 12,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Chondritis era',
+            'concept_name' => 'Chondritis era',
             'era_start' => '2024-04-01',
             'era_end' => null,
             'occurrence_count' => 6,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'DVT era',
+            'concept_name' => 'DVT era',
             'era_start' => '2024-08-01',
             'era_end' => null,
             'occurrence_count' => 3,

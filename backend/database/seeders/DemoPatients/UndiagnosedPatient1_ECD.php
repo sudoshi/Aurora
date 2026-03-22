@@ -777,40 +777,37 @@ class UndiagnosedPatient1_ECD
         $this->addGenomicVariant($patient, [
             'gene' => 'BRAF',
             'variant' => 'p.V600E',
-            'hgvs_c' => 'c.1799T>A',
             'variant_type' => 'SNV',
             'chromosome' => 'chr7',
             'allele_frequency' => 0.028,
             'clinical_significance' => 'pathogenic',
             'actionability' => 'FDA_approved_therapy',
-            'sample_type' => 'cfDNA (liquid biopsy), confirmed on tissue',
-            'reported_at' => '2025-04-15',
         ]);
 
         // ── Condition Eras ──────────────────────────────────────
         $this->addConditionEra($patient, [
-            'condition_name' => 'Bone pain era',
+            'concept_name' => 'Bone pain era',
             'era_start' => '2023-06-01',
             'era_end' => null,
             'occurrence_count' => 8,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Central diabetes insipidus era',
+            'concept_name' => 'Central diabetes insipidus era',
             'era_start' => '2024-02-01',
             'era_end' => null,
             'occurrence_count' => 6,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Retroperitoneal fibrosis era',
+            'concept_name' => 'Retroperitoneal fibrosis era',
             'era_start' => '2024-08-01',
             'era_end' => null,
             'occurrence_count' => 5,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Pericardial disease era',
+            'concept_name' => 'Pericardial disease era',
             'era_start' => '2025-02-01',
             'era_end' => null,
             'occurrence_count' => 4,

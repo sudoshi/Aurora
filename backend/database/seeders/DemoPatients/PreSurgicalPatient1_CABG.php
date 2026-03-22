@@ -115,7 +115,7 @@ class PreSurgicalPatient1_CABG
             'domain' => 'complex_medical',
             'status' => 'resolved',
             'onset_date' => '2023-01-01',
-            'resolved_date' => '2023-07-01',
+            'resolution_date' => '2023-07-01',
         ]);
 
         // ── Medications ─────────────────────────────────────────
@@ -212,112 +212,102 @@ class PreSurgicalPatient1_CABG
             'procedure_name' => 'Coronary artery bypass graft x2 (SVG-LAD, SVG-RCA)',
             'concept_code' => '33533',
             'vocabulary' => 'CPT',
-            'performed_at' => '2015-03-20',
-            'specialty' => 'Cardiac Surgery',
+            'performed_date' => '2015-03-20',
+            'performer' => 'Cardiac Surgery',
         ]);
 
         $this->addProcedure($patient, [
             'procedure_name' => 'Cardiac catheterization with coronary angiography',
             'concept_code' => '93458',
             'vocabulary' => 'CPT',
-            'performed_at' => '2025-10-15',
-            'specialty' => 'Interventional Cardiology',
+            'performed_date' => '2025-10-15',
+            'performer' => 'Interventional Cardiology',
         ]);
 
         $this->addProcedure($patient, [
             'procedure_name' => 'Pulmonary function tests (spirometry with DLCO)',
             'concept_code' => '94729',
             'vocabulary' => 'CPT',
-            'performed_at' => '2025-12-10',
-            'specialty' => 'Pulmonology',
+            'performed_date' => '2025-12-10',
+            'performer' => 'Pulmonology',
         ]);
 
         // ── Visits ──────────────────────────────────────────────
         $cardioInitial = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2025-09-15',
+            'admission_date' => '2025-09-15',
             'department' => 'Cardiology',
-            'provider_name' => 'Dr. Sarah Chen',
-            'reason' => 'Initial evaluation — new murmur, dyspnea on exertion, echocardiography',
+            'attending_provider' => 'Dr. Sarah Chen',
         ]);
 
         $cathVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient_procedure',
-            'visit_date' => '2025-10-15',
+            'admission_date' => '2025-10-15',
             'department' => 'Interventional Cardiology',
-            'provider_name' => 'Dr. James Morton',
-            'reason' => 'Cardiac catheterization — coronary angiography and hemodynamic assessment',
+            'attending_provider' => 'Dr. James Morton',
         ]);
 
         $heartTeam = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2025-11-05',
+            'admission_date' => '2025-11-05',
             'department' => 'Cardiac Surgery / Heart Team',
-            'provider_name' => 'Dr. Raj Patel',
-            'reason' => 'Heart Team conference — TAVR vs surgical AVR decision',
+            'attending_provider' => 'Dr. Raj Patel',
         ]);
 
         $hepatoVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2025-11-15',
+            'admission_date' => '2025-11-15',
             'department' => 'Hepatology',
-            'provider_name' => 'Dr. Lisa Nguyen',
-            'reason' => 'Hepatic optimization for cardiac surgery — cirrhosis management',
+            'attending_provider' => 'Dr. Lisa Nguyen',
         ]);
 
         $nephroVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2025-12-01',
+            'admission_date' => '2025-12-01',
             'department' => 'Nephrology',
-            'provider_name' => 'Dr. Ahmed Hassan',
-            'reason' => 'Renal clearance for cardiac surgery — CKD 3b assessment',
+            'attending_provider' => 'Dr. Ahmed Hassan',
         ]);
 
         $pulmoVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2025-12-10',
+            'admission_date' => '2025-12-10',
             'department' => 'Pulmonology',
-            'provider_name' => 'Dr. Maria Santos',
-            'reason' => 'Pulmonary function testing and COPD optimization pre-op',
+            'attending_provider' => 'Dr. Maria Santos',
         ]);
 
         $endoVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2026-01-10',
+            'admission_date' => '2026-01-10',
             'department' => 'Endocrinology',
-            'provider_name' => 'Dr. Karen Liu',
-            'reason' => 'Perioperative insulin protocol planning — HbA1c optimization',
+            'attending_provider' => 'Dr. Karen Liu',
         ]);
 
         $hemeVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2026-01-20',
+            'admission_date' => '2026-01-20',
             'department' => 'Hematology',
-            'provider_name' => 'Dr. David Park',
-            'reason' => 'Coagulopathy assessment — thrombocytopenia and INR management for surgery',
+            'attending_provider' => 'Dr. David Park',
         ]);
 
         $anesthVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2026-02-15',
+            'admission_date' => '2026-02-15',
             'department' => 'Anesthesiology',
-            'provider_name' => 'Dr. Michael Torres',
-            'reason' => 'Pre-operative anesthesia assessment — ASA IV, multi-organ risk',
+            'attending_provider' => 'Dr. Michael Torres',
         ]);
 
         $consentVisit = $this->addVisit($patient, [
             'visit_type' => 'outpatient',
-            'visit_date' => '2026-03-01',
+            'admission_date' => '2026-03-01',
             'department' => 'Cardiac Surgery',
-            'provider_name' => 'Dr. Raj Patel',
-            'reason' => 'Surgical consent — redo CABG + AVR, risk discussion',
+            'attending_provider' => 'Dr. Raj Patel',
         ]);
 
         // ── Clinical Notes ──────────────────────────────────────
         $this->addNote($patient, [
             'visit_id' => $heartTeam->id,
             'note_type' => 'Heart Team Decision Note',
-            'note_date' => '2025-11-05',
+            'authored_at' => '2025-11-05',
             'author' => 'Dr. Raj Patel',
             'content' => "HEART TEAM CONFERENCE — DECISION NOTE\n\nPatient: Robert Kowalski, 67M\nDate: 2025-11-05\n\nPRESENTATION: Severe aortic stenosis (AVA 0.7 cm², mean gradient 48 mmHg) with three-vessel CAD and prior CABG x2 (2015). SVG-LAD occluded, native LAD 95%, LCx 80%, RCA 90%. LVEF 40%, moderate MR.\n\nDISCUSSION:\n- TAVR considered but REJECTED: concurrent three-vessel CAD requiring revascularization precludes transcatheter approach. Occluded SVG-LAD mandates redo surgical grafting.\n- Surgical risk elevated: STS mortality 8.2%, EuroSCORE II 9.6%. Major risk factors include cirrhosis (Child-Pugh B, MELD 14), CKD 3b (eGFR 38), thrombocytopenia (Plt 78), COPD (FEV1 58%).\n- Porcelain aorta identified on CT — will require modified cannulation strategy. RV adherent to sternum — femoral cannulation planned.\n\nDECISION: Proceed with redo CABG + surgical AVR after 4-month multidisciplinary optimization period.\n\nPLAN:\n1. Hepatology optimization — lactulose/rifaximin titration, MELD trending\n2. Nephrology — pre-op hydration protocol, hold nephrotoxins\n3. Pulmonology — PFTs, bronchodilator optimization\n4. Endocrinology — perioperative insulin protocol\n5. Hematology — platelet optimization, warfarin bridging strategy\n6. Target surgery date: March 2026",
         ]);
@@ -325,7 +315,7 @@ class PreSurgicalPatient1_CABG
         $this->addNote($patient, [
             'visit_id' => $hepatoVisit->id,
             'note_type' => 'Hepatology Optimization Note',
-            'note_date' => '2025-11-15',
+            'authored_at' => '2025-11-15',
             'author' => 'Dr. Lisa Nguyen',
             'content' => "HEPATOLOGY PRE-SURGICAL OPTIMIZATION\n\nDiagnosis: Alcohol-related liver cirrhosis, Child-Pugh B (8 points)\nMELD Score: 14 (Cr 1.6, Bili 1.8, INR 1.4)\n\nCurrent Status: Compensated cirrhosis with portal hypertension. Splenomegaly (16 cm) with hypersplenism contributing to thrombocytopenia. Small volume ascites managed with diuretics. No recent variceal bleeding. Hepatic encephalopathy controlled on lactulose/rifaximin.\n\nOPTIMIZATION PLAN:\n1. Continue lactulose 30 mL TID — titrate to 3-4 BMs/day\n2. Continue rifaximin 550 mg BID\n3. Spironolactone 50 mg daily / Furosemide 40 mg daily — monitor electrolytes\n4. Trend MELD monthly — proceed with surgery if MELD remains <20\n5. Pre-op albumin infusion protocol to target albumin >3.0\n6. Avoid hepatotoxic medications peri-operatively\n7. Platelet transfusion threshold: <50K for surgery\n\nRISK: Cardiac surgery in Child-Pugh B cirrhosis carries 30-50% mortality in literature. Patient counseled extensively. Benefit of AVR + CABG outweighs medical management given progressive symptoms.",
         ]);
@@ -333,7 +323,7 @@ class PreSurgicalPatient1_CABG
         $this->addNote($patient, [
             'visit_id' => $nephroVisit->id,
             'note_type' => 'Nephrology Clearance Note',
-            'note_date' => '2025-12-01',
+            'authored_at' => '2025-12-01',
             'author' => 'Dr. Ahmed Hassan',
             'content' => "NEPHROLOGY PRE-OPERATIVE CLEARANCE\n\nDiagnosis: CKD stage 3b (eGFR 38 mL/min), likely multifactorial — diabetic nephropathy and cardiorenal syndrome.\n\nCurrent Labs: Cr 1.7, BUN 30, K 4.9, Cystatin C 1.6\n\nRISK ASSESSMENT:\n- High risk for AKI with cardiopulmonary bypass — estimated 40-50% risk\n- Possible need for temporary RRT post-operatively (15-20% risk)\n- Contrast exposure from recent catheterization — adequate washout period observed\n\nRECOMMENDATIONS:\n1. Pre-operative IV hydration with isotonic bicarbonate\n2. Hold metformin (not currently on), hold NSAIDs\n3. Minimize bypass time — discuss with surgical team\n4. Post-op nephrology follow-up for AKI monitoring\n5. Potassium monitoring Q6H post-operatively\n6. CLEARED for surgery with above precautions",
         ]);
@@ -341,7 +331,7 @@ class PreSurgicalPatient1_CABG
         $this->addNote($patient, [
             'visit_id' => $pulmoVisit->id,
             'note_type' => 'Pulmonology Clearance Note',
-            'note_date' => '2025-12-10',
+            'authored_at' => '2025-12-10',
             'author' => 'Dr. Maria Santos',
             'content' => "PULMONOLOGY PRE-OPERATIVE CLEARANCE\n\nDiagnosis: COPD, GOLD stage II (moderate)\n\nPFTs (2025-12-10):\n- FEV1: 1.68 L (58% predicted)\n- FVC: 2.94 L (74% predicted)\n- FEV1/FVC: 0.57\n- DLCO: 52% predicted\n\nAssessment: Moderate obstructive ventilatory defect with reduced diffusion capacity. Reduced DLCO likely multifactorial — COPD, CHF, possible hepatopulmonary contribution.\n\nOPTIMIZATION:\n1. Continue tiotropium 18 mcg daily\n2. Albuterol PRN — use 30 min before activity\n3. Smoking cessation confirmed — quit 2020\n4. Incentive spirometry education — begin pre-operatively\n5. Post-op: early extubation protocol preferred, ICU respiratory therapy\n\nCLEARED for surgery — moderate risk for prolonged ventilation. FEV1 >40% predicted is acceptable threshold for cardiac surgery.",
         ]);
@@ -349,7 +339,7 @@ class PreSurgicalPatient1_CABG
         $this->addNote($patient, [
             'visit_id' => $anesthVisit->id,
             'note_type' => 'Pre-operative Anesthesia Assessment',
-            'note_date' => '2026-02-15',
+            'authored_at' => '2026-02-15',
             'author' => 'Dr. Michael Torres',
             'content' => "PRE-OPERATIVE ANESTHESIA ASSESSMENT\n\nASA Physical Status: IV (severe systemic disease — constant threat to life)\n\nPATIENT SUMMARY: 67M scheduled for redo CABG + AVR. Major comorbidities: cirrhosis Child-Pugh B (MELD 17), CKD 3b, chronic AFib on warfarin, COPD GOLD II, DM2 on insulin, obesity (BMI 32.4).\n\nAIRWAY: Mallampati II, full cervical ROM, BMI 32.4 — standard induction anticipated.\n\nCARDIOVASCULAR: LVEF 40%, severe AS (AVA 0.7), moderate MR, AFib. TEE planned intra-operatively. Avoid hypotension — fixed cardiac output with severe AS.\n\nHEPATIC: Child-Pugh B. Drug metabolism significantly altered. Avoid halothane. Reduce doses of hepatically cleared medications. Coagulopathy baseline — FFP and platelet availability confirmed with blood bank.\n\nRENAL: eGFR 38. Avoid nephrotoxins. Minimize bypass time.\n\nPULMONARY: FEV1 58%, DLCO 52%. Lung-protective ventilation. Early extubation if stable.\n\nBLOOD PRODUCTS: Type and crossmatch 6 units PRBCs, 4 units FFP, 2 units platelets, cryoprecipitate on standby. Cell saver requested.\n\nPLAN: GA with arterial line, PA catheter, TEE. Femoral cannulation planned (redo sternotomy with RV adhesion). Discuss intraoperative TEE findings for valve sizing.",
         ]);
@@ -357,7 +347,7 @@ class PreSurgicalPatient1_CABG
         $this->addNote($patient, [
             'visit_id' => $consentVisit->id,
             'note_type' => 'Surgical Consent Note',
-            'note_date' => '2026-03-01',
+            'authored_at' => '2026-03-01',
             'author' => 'Dr. Raj Patel',
             'content' => "INFORMED CONSENT — REDO CABG + AORTIC VALVE REPLACEMENT\n\nProcedure: Redo coronary artery bypass grafting (LIMA-LAD, SVG-OM, SVG-RCA) with aortic valve replacement (tissue prosthesis).\n\nIndication: Severe symptomatic aortic stenosis with three-vessel CAD and failed prior SVG-LAD graft.\n\nRISKS DISCUSSED:\n- Operative mortality: 8-10% (STS predicted 8.2%, EuroSCORE II 9.6%)\n- Stroke: 3-5%\n- Renal failure requiring dialysis: 15-20%\n- Prolonged ventilation: 20-30%\n- Deep sternal wound infection: 3-5% (redo, obesity, DM)\n- Hepatic decompensation: 15-25% (Child-Pugh B)\n- Bleeding requiring re-exploration: 10-15% (coagulopathy, thrombocytopenia)\n\nALTERNATIVES: Medical management (progressive decline expected), TAVR not suitable (concurrent CAD requiring CABG).\n\nPATIENT UNDERSTANDING: Mr. Kowalski demonstrates understanding of risks. He has discussed with family. He accepts the risks given progressive symptoms (NYHA III dyspnea, angina).\n\nConsent signed: 2026-03-01\nWitness: RN Jennifer Adams",
         ]);
@@ -425,7 +415,6 @@ class PreSurgicalPatient1_CABG
             'observation_name' => 'STS Predicted Mortality',
             'category' => 'clinical_score',
             'value_numeric' => 8.2,
-            'unit' => '%',
             'observed_at' => '2026-03-01',
         ]);
 
@@ -433,7 +422,6 @@ class PreSurgicalPatient1_CABG
             'observation_name' => 'EuroSCORE II',
             'category' => 'clinical_score',
             'value_numeric' => 9.6,
-            'unit' => '%',
             'observed_at' => '2026-03-01',
         ]);
 
@@ -470,7 +458,6 @@ class PreSurgicalPatient1_CABG
             'observation_name' => 'Lee Revised Cardiac Risk Index',
             'category' => 'clinical_score',
             'value_numeric' => 4,
-            'unit' => 'points',
             'observed_at' => '2026-03-01',
         ]);
 
@@ -486,7 +473,6 @@ class PreSurgicalPatient1_CABG
             'observation_name' => 'FEV1',
             'category' => 'pulmonary_function',
             'value_numeric' => 1.68,
-            'unit' => 'L',
             'value_text' => '58% predicted',
             'observed_at' => '2025-12-10',
         ]);
@@ -495,7 +481,6 @@ class PreSurgicalPatient1_CABG
             'observation_name' => 'FVC',
             'category' => 'pulmonary_function',
             'value_numeric' => 2.94,
-            'unit' => 'L',
             'value_text' => '74% predicted',
             'observed_at' => '2025-12-10',
         ]);
@@ -518,32 +503,30 @@ class PreSurgicalPatient1_CABG
         $echo = $this->addImagingStudy($patient, [
             'study_date' => '2025-09-15',
             'modality' => 'US',
-            'body_site' => 'Heart',
+            'body_part' => 'Heart',
             'description' => 'Transthoracic Echocardiogram',
-            'indication' => 'New systolic murmur, dyspnea on exertion',
-            'findings' => 'Severe aortic stenosis: AVA 0.7 cm², mean gradient 48 mmHg, peak gradient 78 mmHg. LVEF 40% with global hypokinesis. Moderate mitral regurgitation. RVSP 48 mmHg (moderate pulmonary hypertension). Concentric LVH. LA dilation.',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'Aortic Valve Area',
+            'measurement_type' => 'Aortic Valve Area',
             'value_numeric' => 0.7,
             'unit' => 'cm²',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'Mean Aortic Gradient',
+            'measurement_type' => 'Mean Aortic Gradient',
             'value_numeric' => 48,
             'unit' => 'mmHg',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'LVEF',
+            'measurement_type' => 'LVEF',
             'value_numeric' => 40,
             'unit' => '%',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'RVSP',
+            'measurement_type' => 'RVSP',
             'value_numeric' => 48,
             'unit' => 'mmHg',
         ]);
@@ -551,47 +534,41 @@ class PreSurgicalPatient1_CABG
         $angio = $this->addImagingStudy($patient, [
             'study_date' => '2025-10-15',
             'modality' => 'XR',
-            'body_site' => 'Heart',
+            'body_part' => 'Heart',
             'description' => 'Coronary Angiography',
-            'indication' => 'Known CAD, prior CABG, new aortic stenosis — assess graft patency and native vessels',
-            'findings' => 'SVG-LAD: occluded (chronic total occlusion). SVG-RCA: patent with 50% proximal stenosis. Native LAD: 95% proximal stenosis. Left circumflex: 80% mid-vessel stenosis. RCA: 90% proximal stenosis. LMCA: 30% ostial plaque. Aortic root calcification noted.',
         ]);
 
         $ctChest = $this->addImagingStudy($patient, [
             'study_date' => '2025-11-01',
             'modality' => 'CT',
-            'body_site' => 'Chest',
+            'body_part' => 'Chest',
             'description' => 'CT Chest with Contrast — Redo Sternotomy Planning',
-            'indication' => 'Pre-operative planning for redo cardiac surgery',
-            'findings' => 'Right ventricle adherent to posterior sternum — high risk for injury during redo sternotomy. Porcelain aorta: extensive circumferential calcification of ascending aorta — will require modified cannulation and cross-clamp strategy. Patent SVG-RCA courses directly posterior to sternum. Bilateral pleural effusions, small. No pulmonary embolism.',
         ]);
 
         $abdUS = $this->addImagingStudy($patient, [
             'study_date' => '2025-11-15',
             'modality' => 'US',
-            'body_site' => 'Abdomen',
+            'body_part' => 'Abdomen',
             'description' => 'Abdominal Ultrasound with Doppler',
-            'indication' => 'Cirrhosis surveillance, pre-operative hepatic assessment',
-            'findings' => 'Nodular liver contour consistent with cirrhosis. Splenomegaly measuring 16 cm (upper limit 12 cm). Small volume ascites in Morison pouch and pelvis. Patent portal vein with hepatopetal flow, velocity 18 cm/s (borderline low). No focal hepatic lesions. Common bile duct normal caliber.',
         ]);
 
         // ── Condition Eras ───────────────────────────────────────
         $this->addConditionEra($patient, [
-            'condition_name' => 'Coronary artery disease',
+            'concept_name' => 'Coronary artery disease',
             'era_start' => '2015-03-01',
             'era_end' => null,
             'occurrence_count' => 20,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Alcohol-related liver cirrhosis',
+            'concept_name' => 'Alcohol-related liver cirrhosis',
             'era_start' => '2020-01-01',
             'era_end' => null,
             'occurrence_count' => 10,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Chronic kidney disease',
+            'concept_name' => 'Chronic kidney disease',
             'era_start' => '2022-01-01',
             'era_end' => null,
             'occurrence_count' => 8,

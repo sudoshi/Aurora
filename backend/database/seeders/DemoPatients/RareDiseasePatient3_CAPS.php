@@ -153,7 +153,6 @@ class RareDiseasePatient3_CAPS
             'frequency' => 'daily',
             'start_date' => '2022-04-15',
             'status' => 'active',
-            'notes' => 'INR target 3.0-4.0 post-CAPS; pharmacogenomic dosing (CYP2C9*3/*1 + VKORC1 -1639G>A)',
         ]);
 
         $this->addMedication($patient, [
@@ -190,7 +189,6 @@ class RareDiseasePatient3_CAPS
             'frequency' => 'every 6 months',
             'start_date' => '2026-05-01',
             'status' => 'active',
-            'notes' => 'Maintenance dosing post-CAPS',
         ]);
 
         $this->addMedication($patient, [
@@ -204,7 +202,6 @@ class RareDiseasePatient3_CAPS
             'start_date' => '2021-01-01',
             'end_date' => '2021-09-01',
             'status' => 'completed',
-            'notes' => 'Pregnancy thromboprophylaxis',
         ]);
 
         $this->addMedication($patient, [
@@ -218,7 +215,6 @@ class RareDiseasePatient3_CAPS
             'start_date' => '2026-04-02',
             'end_date' => '2026-04-04',
             'status' => 'completed',
-            'notes' => 'CAPS pulse steroid therapy',
         ]);
 
         $this->addMedication($patient, [
@@ -245,7 +241,6 @@ class RareDiseasePatient3_CAPS
             'start_date' => '2026-04-05',
             'end_date' => '2026-04-19',
             'status' => 'completed',
-            'notes' => 'Acute CAPS rescue therapy',
         ]);
 
         // ── Procedures ──────────────────────────────────────────
@@ -909,47 +904,47 @@ class RareDiseasePatient3_CAPS
         $this->addImagingStudy($patient, [
             'study_date' => '2018-10-14',
             'modality' => 'US',
-            'body_site' => 'Pelvis',
+            'body_part' => 'Pelvis',
             'description' => 'Obstetric ultrasound — intrauterine fetal demise at 14 weeks. No fetal cardiac activity. Placenta appears small for gestational age.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2019-04-10',
             'modality' => 'US',
-            'body_site' => 'Pelvis',
+            'body_part' => 'Pelvis',
             'description' => 'Obstetric ultrasound — intrauterine fetal demise at 10 weeks. No fetal cardiac activity detected. Second pregnancy loss.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2022-04-08',
             'modality' => 'US',
-            'body_site' => 'Left lower extremity',
+            'body_part' => 'Left lower extremity',
             'description' => 'Lower extremity duplex — acute DVT in left common femoral, superficial femoral, and popliteal veins. No flow augmentation with compression.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2024-04-15',
             'modality' => 'MRI',
-            'body_site' => 'Brain',
+            'body_part' => 'Brain',
             'description' => 'Brain MRI — three chronic periventricular white matter T2/FLAIR hyperintensities consistent with prior small vessel ischemia. No acute infarct on DWI. No hemorrhage.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2026-04-01',
             'modality' => 'US',
-            'body_site' => 'Bilateral lower extremity',
+            'body_part' => 'Bilateral lower extremity',
             'description' => 'Bilateral lower extremity duplex — acute DVT in bilateral common femoral, superficial femoral, and popliteal veins. Bilateral involvement in setting of known APS.',
         ]);
 
         $ctpa = $this->addImagingStudy($patient, [
             'study_date' => '2026-04-02',
             'modality' => 'CT',
-            'body_site' => 'Chest',
+            'body_part' => 'Chest',
             'description' => 'CT pulmonary angiography — bilateral pulmonary emboli involving segmental and subsegmental branches. RV/LV ratio 1.3 suggesting right heart strain.',
         ]);
 
         $this->addImagingMeasurement($ctpa, [
-            'measurement_name' => 'RV/LV ratio',
+            'measurement_type' => 'RV/LV ratio',
             'value_numeric' => 1.3,
             'unit' => 'ratio',
         ]);
@@ -957,25 +952,25 @@ class RareDiseasePatient3_CAPS
         $ctAbd = $this->addImagingStudy($patient, [
             'study_date' => '2026-04-02',
             'modality' => 'CT',
-            'body_site' => 'Abdomen',
+            'body_part' => 'Abdomen',
             'description' => 'CT abdomen/pelvis with contrast — bilateral wedge-shaped renal infarcts involving upper and lower poles bilaterally. Multiple hepatic infarcts in right lobe. Findings consistent with multiorgan thrombotic event.',
         ]);
 
         $echo = $this->addImagingStudy($patient, [
             'study_date' => '2026-04-02',
             'modality' => 'US',
-            'body_site' => 'Heart',
+            'body_part' => 'Heart',
             'description' => 'Echocardiogram — RV dilation with reduced systolic function. TAPSE 12mm (reduced). Estimated RVSP 55 mmHg. No valvular vegetations. LV function preserved.',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'TAPSE',
+            'measurement_type' => 'TAPSE',
             'value_numeric' => 12,
             'unit' => 'mm',
         ]);
 
         $this->addImagingMeasurement($echo, [
-            'measurement_name' => 'RVSP',
+            'measurement_type' => 'RVSP',
             'value_numeric' => 55,
             'unit' => 'mmHg',
         ]);
@@ -983,100 +978,96 @@ class RareDiseasePatient3_CAPS
         $this->addImagingStudy($patient, [
             'study_date' => '2026-04-02',
             'modality' => 'XR',
-            'body_site' => 'Chest',
+            'body_part' => 'Chest',
             'description' => 'Chest X-ray — bilateral diffuse ground-glass opacities consistent with ARDS. ET tube in satisfactory position. No pleural effusion.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2026-04-06',
             'modality' => 'XR',
-            'body_site' => 'Chest',
+            'body_part' => 'Chest',
             'description' => 'Chest X-ray — bilateral ground-glass opacities improving compared to prior. Patient remains intubated.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2026-04-10',
             'modality' => 'XR',
-            'body_site' => 'Chest',
+            'body_part' => 'Chest',
             'description' => 'Chest X-ray — resolving bilateral opacities. ET tube removed. No pneumothorax. Clear costophrenic angles.',
         ]);
 
         $this->addImagingStudy($patient, [
             'study_date' => '2026-08-15',
             'modality' => 'MRI',
-            'body_site' => 'Kidneys',
+            'body_part' => 'Kidneys',
             'description' => 'MRA renal — bilateral cortical scarring from prior infarcts. Bilateral kidneys mildly atrophic (right 9.5cm, left 9.8cm). No renal artery stenosis. Findings consistent with chronic APS nephropathy.',
         ]);
 
         // ── Genomic Variants ────────────────────────────────────
         $this->addGenomicVariant($patient, [
             'gene' => 'HLA-DRB1',
-            'variant_name' => 'HLA-DRB1*04:01',
+            'variant' => 'HLA-DRB1*04:01',
             'variant_type' => 'SNV',
             'chromosome' => 'chr6',
             'zygosity' => 'heterozygous',
-            'classification' => 'VUS',
+            'clinical_significance' => 'VUS',
             'actionability' => 'risk_factor',
-            'notes' => 'HLA-DRB1*04:01 allele associated with increased susceptibility to antiphospholipid syndrome',
         ]);
 
         $this->addGenomicVariant($patient, [
             'gene' => 'CFH',
-            'variant_name' => 'CFH c.2850G>T (p.Gln950His)',
+            'variant' => 'CFH c.2850G>T (p.Gln950His)',
             'variant_type' => 'SNV',
             'chromosome' => 'chr1',
             'zygosity' => 'heterozygous',
-            'classification' => 'VUS',
+            'clinical_significance' => 'VUS',
             'actionability' => 'risk_factor',
-            'notes' => 'Complement Factor H variant associated with TMA susceptibility; may contribute to complement-mediated injury during CAPS',
         ]);
 
         $this->addGenomicVariant($patient, [
             'gene' => 'CYP2C9',
-            'variant_name' => 'CYP2C9*3/*1',
+            'variant' => 'CYP2C9*3/*1',
             'variant_type' => 'SNV',
             'chromosome' => 'chr10',
             'zygosity' => 'heterozygous',
-            'classification' => 'VUS',
+            'clinical_significance' => 'VUS',
             'actionability' => 'warfarin_dose_reduction',
-            'notes' => 'CYP2C9*3 carrier — reduced warfarin metabolism; contributes to lower maintenance dose of 3mg daily',
         ]);
 
         $this->addGenomicVariant($patient, [
             'gene' => 'VKORC1',
-            'variant_name' => 'VKORC1 -1639G>A',
+            'variant' => 'VKORC1 -1639G>A',
             'variant_type' => 'SNV',
             'chromosome' => 'chr16',
             'zygosity' => 'heterozygous',
-            'classification' => 'VUS',
+            'clinical_significance' => 'VUS',
             'actionability' => 'warfarin_dose_reduction',
-            'notes' => 'VKORC1 -1639G>A — increased warfarin sensitivity; pharmacogenomic dosing algorithm applied',
         ]);
 
         // ── Condition Eras ──────────────────────────────────────
         $this->addConditionEra($patient, [
-            'condition_name' => 'Antiphospholipid syndrome',
+            'concept_name' => 'Antiphospholipid syndrome',
             'era_start' => '2019-04-01',
             'era_end' => null,
             'occurrence_count' => 12,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Thrombotic events',
+            'concept_name' => 'Thrombotic events',
             'era_start' => '2022-04-01',
             'era_end' => null,
             'occurrence_count' => 5,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Chronic kidney disease',
+            'concept_name' => 'Chronic kidney disease',
             'era_start' => '2026-05-01',
             'era_end' => null,
             'occurrence_count' => 4,
         ]);
 
         $this->addConditionEra($patient, [
-            'condition_name' => 'Pregnancy loss',
+            'concept_name' => 'Pregnancy loss',
             'era_start' => '2018-04-01',
             'era_end' => '2019-10-01',
             'occurrence_count' => 2,
