@@ -243,7 +243,7 @@ export default function PatientProfilePage() {
             />
           )}
 
-          {viewMode === "labs" && <PatientLabPanel events={allEvents} />}
+          {viewMode === "labs" && parsedPersonId && <PatientLabPanel events={allEvents} patientId={parsedPersonId} />}
           {viewMode === "visits" && <PatientVisitView events={allEvents} />}
           {viewMode === "notes" && parsedPersonId && (
             <PatientNotesTab patientId={parsedPersonId} />

@@ -1,10 +1,13 @@
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronRight, FlaskConical, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { FlaskConical, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ClinicalEvent } from "../types/profile";
+import { InlineActionMenu } from "./InlineActionMenu";
+import { SelectActToolbar } from "./SelectActToolbar";
 
 interface PatientLabPanelProps {
   events: ClinicalEvent[];
+  patientId: number;
 }
 
 interface LabGroup {
@@ -16,6 +19,7 @@ interface LabGroup {
   range_high: number | null;
   latest: number;
   count: number;
+  first_id: number;
 }
 
 function formatDate(iso: string): string {
@@ -26,6 +30,7 @@ function formatDate(iso: string): string {
   });
 }
 
+// Wide sparkline for the expanded card layout
 function Sparkline({
   values,
   rangeLow,
@@ -37,32 +42,39 @@ function Sparkline({
 }) {
   if (values.length === 0) return null;
 
-  const w = 100;
+  const w = 140;
   const h = 28;
-  const pad = 2;
+  const padX = 3;
+  const padY = 4;
 
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const allVals = [...values];
+  if (rangeLow != null) allVals.push(rangeLow);
+  if (rangeHigh != null) allVals.push(rangeHigh);
+  const min = Math.min(...allVals);
+  const max = Math.max(...allVals);
   const range = max - min || 1;
 
-  const toY = (v: number) => pad + ((max - v) / range) * (h - pad * 2);
+  const toY = (v: number) => padY + ((max - v) / range) * (h - padY * 2);
   const toX = (i: number) =>
-    pad + (i / Math.max(values.length - 1, 1)) * (w - pad * 2);
+    padX + (i / Math.max(values.length - 1, 1)) * (w - padX * 2);
 
   const points = values.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
 
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0">
+    <svg width="100%" viewBox={`0 0 ${w} ${h}`} className="block">
+      {/* Reference range band */}
       {rangeLow != null && rangeHigh != null && (
         <rect
-          x={pad}
+          x={padX}
           y={toY(Math.min(rangeHigh, max))}
-          width={w - pad * 2}
-          height={Math.max(toY(Math.max(rangeLow, min)) - toY(Math.min(rangeHigh, max)), 0)}
+          width={w - padX * 2}
+          height={Math.max(toY(Math.max(rangeLow, min)) - toY(Math.min(rangeHigh, max)), 1)}
           fill="#22C55E"
-          opacity={0.12}
+          opacity={0.1}
+          rx={2}
         />
       )}
+      {/* Line */}
       <polyline
         points={points}
         fill="none"
@@ -71,11 +83,12 @@ function Sparkline({
         strokeLinejoin="round"
         strokeLinecap="round"
       />
+      {/* Latest dot */}
       {values.length > 0 && (
         <circle
           cx={toX(values.length - 1)}
           cy={toY(values[values.length - 1])}
-          r={2.5}
+          r={2}
           fill="#A78BFA"
         />
       )}
@@ -93,34 +106,41 @@ function RangeIndicator({
   rangeHigh: number | null;
 }) {
   if (rangeLow == null || rangeHigh == null) {
-    return <Minus size={12} className="text-[var(--text-ghost)]" />;
+    return <Minus size={10} className="text-[var(--text-ghost)]" />;
   }
   if (value < rangeLow) {
     return (
       <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[var(--info)]">
-        <TrendingDown size={11} />
-        Low
+        <TrendingDown size={10} /> Low
       </span>
     );
   }
   if (value > rangeHigh) {
     return (
       <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[var(--critical)]">
-        <TrendingUp size={11} />
-        High
+        <TrendingUp size={10} /> High
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[var(--success)]">
-      <Minus size={11} />
-      Normal
+      <Minus size={10} /> Normal
     </span>
   );
 }
 
-function LabRow({ group }: { group: LabGroup }) {
-  const [expanded, setExpanded] = useState(false);
+function LabCard({
+  group,
+  patientId,
+  isSelected,
+  onToggleSelect,
+}: {
+  group: LabGroup;
+  patientId: number;
+  isSelected: boolean;
+  onToggleSelect: () => void;
+}) {
+  const [showHistory, setShowHistory] = useState(false);
   const sparkValues = group.values.map((v) => v.value);
 
   const trend =
@@ -133,86 +153,86 @@ function LabRow({ group }: { group: LabGroup }) {
       : "flat";
 
   return (
-    <div className="border-b border-[var(--surface-overlay)] last:border-0">
-      <button
-        type="button"
-        onClick={() => setExpanded((p) => !p)}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface-overlay)] transition-colors text-left"
-      >
-        <span className="text-[var(--text-ghost)] shrink-0">
-          {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-        </span>
-
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-[var(--text-primary)] truncate">
+    <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)] overflow-hidden">
+      {/* Header row */}
+      <div className="flex items-center justify-between gap-2 px-3 py-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onToggleSelect}
+            className="rounded border-gray-600 bg-transparent shrink-0"
+          />
+          <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
             {group.concept_name}
           </p>
+          <span className="text-[9px] text-[var(--text-ghost)] shrink-0">x{group.count}</span>
         </div>
-
-        <span className="text-[10px] text-[var(--text-ghost)] shrink-0 w-8 text-right">
-          x{group.count}
-        </span>
-
-        <div className="shrink-0">
-          <Sparkline values={sparkValues} rangeLow={group.range_low} rangeHigh={group.range_high} />
-        </div>
-
-        <div className="shrink-0 w-28 text-right">
-          <p className="text-sm font-bold text-[var(--text-primary)]">
-            {group.latest.toLocaleString(undefined, { maximumFractionDigits: 3 })}
-            {group.unit ? (
-              <span className="text-[10px] font-normal text-[var(--text-muted)] ml-1">{group.unit}</span>
-            ) : null}
-          </p>
-          {group.range_low != null && group.range_high != null && (
-            <p className="text-[9px] text-[var(--text-ghost)]">
-              ref: {group.range_low}&ndash;{group.range_high}
-            </p>
-          )}
-        </div>
-
-        <div className="shrink-0 w-6 flex justify-center">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="text-right">
+            <span className="text-sm font-bold text-[var(--text-primary)]">
+              {group.latest.toLocaleString(undefined, { maximumFractionDigits: 3 })}
+            </span>
+            {group.unit && (
+              <span className="text-[10px] text-[var(--text-muted)] ml-0.5">{group.unit}</span>
+            )}
+          </div>
           {trend === "up" ? (
-            <TrendingUp size={14} className="text-[var(--critical)]" />
+            <TrendingUp size={12} className="text-[var(--critical)]" />
           ) : trend === "down" ? (
-            <TrendingDown size={14} className="text-[var(--info)]" />
+            <TrendingDown size={12} className="text-[var(--info)]" />
           ) : (
-            <Minus size={14} className="text-[var(--text-ghost)]" />
+            <Minus size={12} className="text-[var(--text-ghost)]" />
           )}
-        </div>
-
-        <div className="shrink-0 w-14">
           <RangeIndicator value={group.latest} rangeLow={group.range_low} rangeHigh={group.range_high} />
+          <InlineActionMenu
+            recordRef={`measurement:${group.first_id}`}
+            domain="measurement"
+            patientId={patientId}
+            onDiscuss={() => {}}
+          />
         </div>
-      </button>
+      </div>
 
-      {expanded && (
-        <div className="px-4 pb-3 bg-[var(--surface-base)]">
+      {/* Sparkline */}
+      <div className="px-3 pb-1">
+        <Sparkline
+          values={sparkValues}
+          rangeLow={group.range_low}
+          rangeHigh={group.range_high}
+        />
+        {group.range_low != null && group.range_high != null && (
+          <p className="text-[8px] text-[var(--text-ghost)] text-right mt-0.5">
+            ref: {group.range_low}&ndash;{group.range_high}
+          </p>
+        )}
+      </div>
+
+      {/* Expandable history */}
+      {group.count > 1 && (
+        <button
+          type="button"
+          onClick={() => setShowHistory((p) => !p)}
+          className="w-full text-[10px] text-[var(--text-ghost)] hover:text-[var(--text-muted)] px-3 py-1.5 border-t border-[var(--border-default)] hover:bg-[var(--surface-overlay)] transition-colors text-center"
+        >
+          {showHistory ? "Hide history" : `Show ${group.count} values`}
+        </button>
+      )}
+
+      {showHistory && (
+        <div className="px-3 pb-2 bg-[var(--surface-base)]">
           <table className="w-full">
-            <thead>
-              <tr>
-                <th className="py-1.5 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Date</th>
-                <th className="py-1.5 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Value</th>
-                <th className="py-1.5 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Range</th>
-                <th className="py-1.5 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Status</th>
-              </tr>
-            </thead>
             <tbody>
               {[...group.values]
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((v, i) => (
                   <tr key={i} className="border-t border-[var(--surface-overlay)]">
-                    <td className="py-1.5 text-[11px] text-[var(--text-muted)]">{formatDate(v.date)}</td>
-                    <td className="py-1.5 text-right text-[11px] font-medium text-[var(--text-primary)]">
+                    <td className="py-1 text-[10px] text-[var(--text-muted)]">{formatDate(v.date)}</td>
+                    <td className="py-1 text-right text-[10px] font-medium text-[var(--text-primary)]">
                       {v.value.toLocaleString(undefined, { maximumFractionDigits: 3 })}
-                      {group.unit && <span className="text-[var(--text-ghost)] ml-1">{group.unit}</span>}
+                      {group.unit && <span className="text-[var(--text-ghost)] ml-0.5">{group.unit}</span>}
                     </td>
-                    <td className="py-1.5 text-right text-[10px] text-[var(--text-ghost)]">
-                      {group.range_low != null && group.range_high != null
-                        ? `${group.range_low}\u2013${group.range_high}`
-                        : "\u2014"}
-                    </td>
-                    <td className="py-1.5 text-right">
+                    <td className="py-1 text-right w-14">
                       <RangeIndicator value={v.value} rangeLow={group.range_low} rangeHigh={group.range_high} />
                     </td>
                   </tr>
@@ -225,8 +245,18 @@ function LabRow({ group }: { group: LabGroup }) {
   );
 }
 
-export function PatientLabPanel({ events }: PatientLabPanelProps) {
+export function PatientLabPanel({ events, patientId }: PatientLabPanelProps) {
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (key: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const labGroups = useMemo<LabGroup[]>(() => {
     const measurements = events.filter((e) => e.domain === "measurement");
@@ -258,6 +288,7 @@ export function PatientLabPanel({ events }: PatientLabPanelProps) {
           range_high: m.reference_range_high ?? null,
           latest: numVal,
           count: 1,
+          first_id: m.id,
         });
       }
     }
@@ -287,9 +318,18 @@ export function PatientLabPanel({ events }: PatientLabPanelProps) {
     );
   }
 
+  // Split into two columns, distributing evenly
+  const leftCol: LabGroup[] = [];
+  const rightCol: LabGroup[] = [];
+  filtered.forEach((g, i) => {
+    if (i % 2 === 0) leftCol.push(g);
+    else rightCol.push(g);
+  });
+
   return (
-    <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)] overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[var(--surface-overlay)] border-b border-[var(--border-default)]">
+    <div className="space-y-3">
+      {/* Header bar */}
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <FlaskConical size={14} className="text-[var(--domain-measurement)]" />
           <span className="text-xs font-semibold text-[var(--text-primary)]">Lab Panel</span>
@@ -310,23 +350,50 @@ export function PatientLabPanel({ events }: PatientLabPanelProps) {
         />
       </div>
 
-      <div className="flex items-center gap-3 px-4 py-1.5 bg-[var(--surface-raised)] border-b border-[var(--border-default)]">
-        <div className="w-5 shrink-0" />
-        <div className="flex-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Test</div>
-        <div className="w-8 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">N</div>
-        <div className="w-[100px] text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Trend</div>
-        <div className="w-28 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Latest</div>
-        <div className="w-6" />
-        <div className="w-14 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">Status</div>
-      </div>
-
       {filtered.length === 0 ? (
-        <div className="flex items-center justify-center h-24">
+        <div className="flex items-center justify-center h-24 rounded-lg border border-dashed border-[var(--border-default)]">
           <p className="text-sm text-[var(--text-muted)]">No tests match &quot;{search}&quot;</p>
         </div>
       ) : (
-        filtered.map((group) => <LabRow key={group.concept_key} group={group} />)
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
+            {leftCol.map((g) => (
+              <LabCard
+                key={g.concept_key}
+                group={g}
+                patientId={patientId}
+                isSelected={selected.has(g.concept_key)}
+                onToggleSelect={() => toggleSelect(g.concept_key)}
+              />
+            ))}
+          </div>
+          <div className="flex flex-col gap-3">
+            {rightCol.map((g) => (
+              <LabCard
+                key={g.concept_key}
+                group={g}
+                patientId={patientId}
+                isSelected={selected.has(g.concept_key)}
+                onToggleSelect={() => toggleSelect(g.concept_key)}
+              />
+            ))}
+          </div>
+        </div>
       )}
+
+      <SelectActToolbar
+        selectedCount={selected.size}
+        selectedRefs={Array.from(selected).map(key => {
+          const group = labGroups.find(g => g.concept_key === key);
+          return `measurement:${group?.first_id ?? key}`;
+        })}
+        domain="measurement"
+        patientId={patientId}
+        onClear={() => setSelected(new Set())}
+        onDiscuss={() => {}}
+        onFlag={() => {}}
+        onExport={() => {}}
+      />
     </div>
   );
 }

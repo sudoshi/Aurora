@@ -24,6 +24,8 @@ import { useGenomicVariants } from "@/features/genomics/hooks/useGenomics";
 import type { GenomicVariant } from "@/features/genomics/types";
 import { VariantCard } from "./VariantCard";
 import { ActionableGenes } from "./ActionableGenes";
+import { InlineActionMenu } from "./InlineActionMenu";
+import { SelectActToolbar } from "./SelectActToolbar";
 
 const CLINVAR_BADGE: Record<string, { cls: string; label: string; icon: typeof ShieldAlert }> = {
   pathogenic:             { cls: "bg-[#F0607A]/15 text-[#F0607A]", label: "Pathogenic", icon: ShieldAlert },
@@ -50,6 +52,16 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<GenomicVariant | null>(null);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+
+  const toggleSelect = (id: number) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const { data: variantsPage, isLoading } = useGenomicVariants({
     person_id: patientId,
@@ -134,6 +146,7 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-[#1C1C48]">
+                <th className="px-2 py-2.5 w-8" />
                 {["Gene", "Alteration", "Type", "AF", "ClinVar", ""].map((h) => (
                   <th
                     key={h}
@@ -142,6 +155,7 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                     {h}
                   </th>
                 ))}
+                <th className="px-2 py-2.5 w-8" />
               </tr>
             </thead>
             <tbody className="divide-y divide-[#16163A]">
@@ -156,6 +170,14 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                     className="hover:bg-[#16163A] cursor-pointer transition-colors"
                     onClick={() => setSelectedVariant(v)}
                   >
+                    <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selected.has(v.id)}
+                        onChange={() => toggleSelect(v.id)}
+                        className="rounded border-gray-600 bg-transparent"
+                      />
+                    </td>
                     <td className="px-4 py-2.5">
                       <span className={`font-semibold ${isActionable ? "text-[#F0607A]" : "text-[#A78BFA]"}`}>
                         {v.gene_symbol ?? "\u2014"}
@@ -187,6 +209,14 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
                     </td>
                     <td className="px-4 py-2.5 text-[#4A5068]">
                       <ChevronRight size={12} />
+                    </td>
+                    <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
+                      <InlineActionMenu
+                        recordRef={`genomic:${v.id}`}
+                        domain="genomic"
+                        patientId={patientId}
+                        onDiscuss={() => {/* will be wired in Task 18 */}}
+                      />
                     </td>
                   </tr>
                 );
@@ -222,6 +252,17 @@ export default function PatientGenomicsTab({ patientId }: PatientGenomicsTabProp
           </div>
         )}
       </div>
+
+      <SelectActToolbar
+        selectedCount={selected.size}
+        selectedRefs={Array.from(selected).map(id => `genomic:${id}`)}
+        domain="genomic"
+        patientId={patientId}
+        onClear={() => setSelected(new Set())}
+        onDiscuss={() => {}}
+        onFlag={() => {}}
+        onExport={() => {}}
+      />
     </div>
   );
 }
