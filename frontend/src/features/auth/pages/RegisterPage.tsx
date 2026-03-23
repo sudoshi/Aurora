@@ -36,6 +36,10 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout>
+      <div className="flex flex-col items-center mb-6">
+        <img src="/image/aurora.svg" alt="Aurora" className="w-20 h-20 mb-3" />
+        <span className="text-lg font-semibold tracking-wide" style={{ color: 'var(--text-primary)' }}>Aurora</span>
+      </div>
       <h2>Create Account</h2>
       <p className="auth-form-subtitle">Join Aurora</p>
 
