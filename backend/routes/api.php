@@ -32,7 +32,9 @@ use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\GenomicsController;
 use App\Http\Controllers\ImagingController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientCollaborationController;
 use App\Http\Controllers\PatientFlagController;
+use App\Http\Controllers\PatientTaskController;
 use App\Http\Controllers\RadiogenomicsController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +87,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patient}/flags', [PatientFlagController::class, 'store']);
     Route::patch('/flags/{flag}', [PatientFlagController::class, 'update']);
     Route::delete('/flags/{flag}', [PatientFlagController::class, 'destroy']);
+
+    // Patient Tasks
+    Route::get('/patients/{patient}/tasks', [PatientTaskController::class, 'index']);
+    Route::post('/patients/{patient}/tasks', [PatientTaskController::class, 'store']);
+    Route::patch('/tasks/{task}', [PatientTaskController::class, 'update']);
+    Route::delete('/tasks/{task}', [PatientTaskController::class, 'destroy']);
 
     // Patient routes
     Route::prefix('patients')->group(function () {
