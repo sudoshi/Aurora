@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Pencil, Loader2, Clock,
   MessageSquare, Tag, FileText, Gavel, Users,
-  Download, Trash2, Upload,
+  Download, Trash2, Upload, ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -13,12 +13,8 @@ import {
   useUploadDocument,
   useDeleteDocument,
 } from "../hooks/useCases";
-import { useDecisions } from "../../collaboration/hooks/useDecisions";
 import { CaseForm } from "../components/CaseForm";
-import { CaseDiscussionThread } from "../components/CaseDiscussionThread";
-import { CaseAnnotationPanel } from "../components/CaseAnnotationPanel";
 import { CaseTeamPanel } from "../components/CaseTeamPanel";
-import { DecisionCapture } from "../../collaboration/components/DecisionCapture";
 import type { UpdateCaseData } from "../types/case";
 
 // ── Color maps ───────────────────────────────────────────────────────────────
@@ -47,12 +43,9 @@ const URGENCY_COLORS: Record<string, string> = {
 // ── Tab definitions ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "overview",    label: "Overview",    icon: <Clock size={14} /> },
-  { id: "discussion",  label: "Discussion",  icon: <MessageSquare size={14} /> },
-  { id: "annotations", label: "Annotations", icon: <Tag size={14} /> },
-  { id: "documents",   label: "Documents",   icon: <FileText size={14} /> },
-  { id: "decisions",   label: "Decisions",   icon: <Gavel size={14} /> },
-  { id: "team",        label: "Team",        icon: <Users size={14} /> },
+  { id: "overview",   label: "Overview",   icon: <Clock size={14} /> },
+  { id: "documents",  label: "Documents",  icon: <FileText size={14} /> },
+  { id: "team",       label: "Team",       icon: <Users size={14} /> },
 ];
 
 // ── Documents tab content ────────────────────────────────────────────────────
@@ -242,6 +235,17 @@ function OverviewTab({
 }) {
   return (
     <div className="space-y-6">
+      {/* Patient link */}
+      {clinicalCase.patient_id && (
+        <Link
+          to={`/profiles/${clinicalCase.patient_id}`}
+          className="flex items-center justify-between rounded-lg border border-[#2DD4BF]/20 bg-[#2DD4BF]/5 px-4 py-3 transition-colors hover:bg-[#2DD4BF]/10"
+        >
+          <span className="text-sm font-medium text-[#2DD4BF]">Open Patient</span>
+          <ExternalLink size={14} className="text-[#2DD4BF]" />
+        </Link>
+      )}
+
       {/* Clinical question */}
       {clinicalCase.clinical_question && (
         <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
@@ -356,7 +360,6 @@ export default function CaseDetailPage() {
 
   const { data: clinicalCase, isLoading } = useCase(caseId);
   const updateCase = useUpdateCase();
-  const { data: decisionsData } = useDecisions({ case_id: caseId });
 
   const [activeTab, setActiveTab] = useState("overview");
   const [showEditForm, setShowEditForm] = useState(false);
@@ -472,15 +475,7 @@ export default function CaseDetailPage() {
 
       {/* Tab content */}
       {activeTab === "overview" && <OverviewTab clinicalCase={clinicalCase} />}
-      {activeTab === "discussion" && <CaseDiscussionThread caseId={caseId} />}
-      {activeTab === "annotations" && <CaseAnnotationPanel caseId={caseId} />}
       {activeTab === "documents" && <DocumentsTab caseId={caseId} />}
-      {activeTab === "decisions" && (
-        <DecisionCapture
-          caseId={caseId}
-          decisions={decisionsData?.data ?? []}
-        />
-      )}
       {activeTab === "team" && (
         <CaseTeamPanel
           caseId={caseId}
