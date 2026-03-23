@@ -1,8 +1,16 @@
-import { User, Calendar, Heart, Globe } from "lucide-react";
-import type { ClinicalPatient } from "../types/profile";
+import {
+  User,
+  Calendar,
+  Heart,
+  Globe,
+} from "lucide-react";
+import type { ClinicalPatient, PatientProfile, PatientStats } from "../types/profile";
 
 interface PatientDemographicsCardProps {
   patient: ClinicalPatient;
+  profile?: PatientProfile;
+  stats?: PatientStats;
+  onDrillDown?: (view: string, domain?: string) => void;
 }
 
 function computeAge(dob: string | null, deceasedAt: string | null): number | null {
@@ -25,22 +33,12 @@ function formatDate(iso: string): string {
   });
 }
 
-interface FieldProps {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}
-
-function Field({ icon, label, value }: FieldProps) {
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-ghost)]">
-        {icon}
-        {label}
-      </div>
-      <div className="text-sm font-medium text-[var(--text-primary)]">{value}</div>
-    </div>
-  );
+function formatDob(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function PatientDemographicsCard({ patient }: PatientDemographicsCardProps) {
@@ -48,67 +46,62 @@ export function PatientDemographicsCard({ patient }: PatientDemographicsCardProp
   const fullName = `${patient.first_name} ${patient.last_name}`.trim();
 
   return (
-    <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-5">
+    <div className="flex items-center gap-4 flex-wrap rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)] px-5 py-3">
+      {/* Avatar + Name + MRN */}
+      <div className="flex items-center gap-3 shrink-0">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--accent-pale)]">
           <User size={18} className="text-[var(--accent)]" />
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-[var(--text-primary)]">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">
               {fullName || `Patient #${patient.id}`}
             </h2>
             {patient.deceased_at && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--critical-bg)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--critical)] border border-[var(--critical-border)]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--critical-bg)] px-2 py-0.5 text-[10px] font-semibold text-[var(--critical)] border border-[var(--critical-border)]">
                 Deceased
               </span>
             )}
           </div>
           <p className="text-xs text-[var(--text-muted)]">
-            MRN: {patient.mrn} &middot; Patient Demographics
+            MRN: <span className="font-mono">{patient.mrn}</span>
           </p>
         </div>
       </div>
 
-      {/* Core demographics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 pb-5 border-b border-[var(--border-default)]">
-        <Field
-          icon={<Heart size={10} />}
-          label="Sex"
-          value={patient.sex || "Unknown"}
-        />
-        <Field
-          icon={<Calendar size={10} />}
-          label="Age / DOB"
-          value={
-            age != null
-              ? patient.deceased_at
-                ? `${age} yrs at death${patient.date_of_birth ? ` (${patient.date_of_birth})` : ""}`
-                : `${age} yrs${patient.date_of_birth ? ` (${patient.date_of_birth})` : ""}`
-              : patient.date_of_birth ?? "Unknown"
-          }
-        />
-        <Field
-          icon={<Globe size={10} />}
-          label="Race"
-          value={patient.race || "Unknown"}
-        />
-        <Field
-          icon={<Globe size={10} />}
-          label="Ethnicity"
-          value={patient.ethnicity || "Unknown"}
-        />
+      {/* Demographics badges */}
+      <div className="flex items-center gap-4 flex-wrap text-xs text-[var(--text-secondary)] ml-auto">
+        {age != null && (
+          <span className="inline-flex items-center gap-1">
+            <Calendar size={12} className="text-[var(--text-ghost)]" />
+            {age} yrs
+            {patient.date_of_birth && (
+              <span className="text-[var(--text-ghost)]">({formatDob(patient.date_of_birth)})</span>
+            )}
+          </span>
+        )}
+        {patient.sex && (
+          <span className="inline-flex items-center gap-1">
+            <Heart size={12} className="text-[var(--text-ghost)]" />
+            {patient.sex}
+          </span>
+        )}
+        {patient.race && (
+          <span className="inline-flex items-center gap-1">
+            <Globe size={12} className="text-[var(--text-ghost)]" />
+            {patient.race}
+          </span>
+        )}
+        {patient.ethnicity && (
+          <span className="text-[var(--text-ghost)]">
+            {patient.ethnicity}
+          </span>
+        )}
         {patient.deceased_at && (
-          <Field
-            icon={<Calendar size={10} />}
-            label="Date of Death"
-            value={
-              <span className="text-[var(--critical)]">
-                {formatDate(patient.deceased_at)}
-              </span>
-            }
-          />
+          <span className="inline-flex items-center gap-1 text-[var(--critical)]">
+            <Calendar size={12} />
+            Deceased {formatDate(patient.deceased_at)}
+          </span>
         )}
       </div>
     </div>
