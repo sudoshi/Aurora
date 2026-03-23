@@ -38,9 +38,8 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <div className="flex flex-col items-center mb-6">
-        <img src="/image/aurora.svg" alt="Aurora" className="w-20 h-20 mb-3" />
-        <span className="text-lg font-semibold tracking-wide" style={{ color: 'var(--text-primary)' }}>Aurora</span>
+      <div className="flex justify-center mb-6">
+        <img src="/image/aurora.svg" alt="Aurora" className="w-32 h-32" />
       </div>
       <h2>Sign In</h2>
       <p className="auth-form-subtitle">Welcome back to Aurora</p>
