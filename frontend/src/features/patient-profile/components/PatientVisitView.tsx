@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { ChevronDown, ChevronRight, Hospital } from "lucide-react";
 import type { ClinicalEvent, ClinicalDomain } from "../types/profile";
+import { InlineActionMenu } from "./InlineActionMenu";
 
 const DOMAIN_CONFIG: Record<
   ClinicalDomain,
@@ -86,7 +87,7 @@ function EventRow({ event }: { event: ClinicalEvent }) {
   );
 }
 
-function VisitCard({ visitGroup }: { visitGroup: VisitGroup }) {
+function VisitCard({ visitGroup, patientId }: { visitGroup: VisitGroup; patientId: number }) {
   const [expanded, setExpanded] = useState(false);
   const { visit, events } = visitGroup;
 
@@ -117,15 +118,28 @@ function VisitCard({ visitGroup }: { visitGroup: VisitGroup }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="text-sm font-semibold text-[var(--text-primary)]">{visit.concept_name}</p>
-            <span className="text-xs text-[var(--text-muted)] shrink-0">
-              {formatDate(visit.start_date)}
-              {visit.end_date && visit.end_date !== visit.start_date
-                ? ` \u2013 ${formatDate(visit.end_date)}`
-                : ""}
-              {durationDays > 0 && (
-                <span className="ml-1 text-[10px] text-[var(--text-ghost)]">({durationDays}d)</span>
-              )}
-            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs text-[var(--text-muted)]">
+                {formatDate(visit.start_date)}
+                {visit.end_date && visit.end_date !== visit.start_date
+                  ? ` \u2013 ${formatDate(visit.end_date)}`
+                  : ""}
+                {durationDays > 0 && (
+                  <span className="ml-1 text-[10px] text-[var(--text-ghost)]">({durationDays}d)</span>
+                )}
+              </span>
+              <span
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <InlineActionMenu
+                  recordRef={`general:${visit.id}`}
+                  domain="general"
+                  patientId={patientId}
+                  onDiscuss={() => {}}
+                />
+              </span>
+            </div>
           </div>
 
           {events.length > 0 ? (
@@ -170,9 +184,10 @@ function VisitCard({ visitGroup }: { visitGroup: VisitGroup }) {
 
 interface PatientVisitViewProps {
   events: ClinicalEvent[];
+  patientId: number;
 }
 
-export function PatientVisitView({ events }: PatientVisitViewProps) {
+export function PatientVisitView({ events, patientId }: PatientVisitViewProps) {
   const [showUnassociated, setShowUnassociated] = useState(false);
 
   const { visitGroups, unassociated } = useMemo(() => {
@@ -224,7 +239,7 @@ export function PatientVisitView({ events }: PatientVisitViewProps) {
       </div>
 
       {visitGroups.map((group, i) => (
-        <VisitCard key={i} visitGroup={group} />
+        <VisitCard key={i} visitGroup={group} patientId={patientId} />
       ))}
 
       {unassociated.length > 0 && (

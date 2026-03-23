@@ -244,13 +244,13 @@ export default function PatientProfilePage() {
           )}
 
           {viewMode === "labs" && parsedPersonId && <PatientLabPanel events={allEvents} patientId={parsedPersonId} />}
-          {viewMode === "visits" && <PatientVisitView events={allEvents} />}
+          {viewMode === "visits" && parsedPersonId && <PatientVisitView events={allEvents} patientId={parsedPersonId} />}
           {viewMode === "notes" && parsedPersonId && (
             <PatientNotesTab patientId={parsedPersonId} />
           )}
 
-          {viewMode === "imaging" && (
-            <PatientImagingTab studies={profile.imaging ?? []} />
+          {viewMode === "imaging" && parsedPersonId && (
+            <PatientImagingTab studies={profile.imaging ?? []} patientId={parsedPersonId} />
           )}
 
           {viewMode === "genomics" && parsedPersonId && (

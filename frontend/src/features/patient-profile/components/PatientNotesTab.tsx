@@ -3,12 +3,13 @@ import { Loader2, FileText, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, C
 import { cn } from "@/lib/utils";
 import { usePatientNotes } from "../hooks/useProfiles";
 import type { ClinicalNote } from "../types/profile";
+import { InlineActionMenu } from "./InlineActionMenu";
 
 interface PatientNotesTabProps {
   patientId: number;
 }
 
-function NoteCard({ note, isExpanded, onToggle }: { note: ClinicalNote; isExpanded: boolean; onToggle: () => void }) {
+function NoteCard({ note, isExpanded, onToggle, patientId }: { note: ClinicalNote; isExpanded: boolean; onToggle: () => void; patientId: number }) {
   const previewLength = 300;
   const needsTruncation = note.content.length > previewLength;
 
@@ -27,6 +28,18 @@ function NoteCard({ note, isExpanded, onToggle }: { note: ClinicalNote; isExpand
             <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-[var(--info-bg)] px-2 py-0.5 text-[10px] font-medium text-[var(--info)]">
               <Tag size={9} />
               {note.note_type}
+            </span>
+            <span
+              className="shrink-0"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              <InlineActionMenu
+                recordRef={`general:${note.id}`}
+                domain="general"
+                patientId={patientId}
+                onDiscuss={() => {}}
+              />
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1.5 text-[11px] text-[var(--text-muted)]">
@@ -118,7 +131,7 @@ export function PatientNotesTab({ patientId }: PatientNotesTabProps) {
         <div className="flex items-center gap-2">
           <FileText size={14} className="text-[var(--info)]" />
           <span className="text-sm font-semibold text-[var(--text-primary)]">Clinical Notes</span>
-          <span className="text-xs text-[var(--text-muted)]">({meta.total.toLocaleString()} total)</span>
+          <span className="text-xs text-[var(--text-muted)]">({(meta.total ?? 0).toLocaleString()} total)</span>
         </div>
         {meta.last_page > 1 && (
           <div className="flex items-center gap-2">
@@ -166,6 +179,7 @@ export function PatientNotesTab({ patientId }: PatientNotesTabProps) {
             onToggle={() =>
               setExpandedNoteId((prev) => (prev === note.id ? null : note.id))
             }
+            patientId={patientId}
           />
         ))}
       </div>
