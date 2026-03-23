@@ -19,6 +19,7 @@ class CaseAnnotation extends Model
         'record_ref',
         'content',
         'anchored_to',
+        'patient_id',
     ];
 
     protected function casts(): array
@@ -31,6 +32,11 @@ class CaseAnnotation extends Model
     public function case(): BelongsTo
     {
         return $this->belongsTo(ClinicalCase::class, 'case_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Clinical\ClinicalPatient::class, 'patient_id');
     }
 
     public function user(): BelongsTo

@@ -19,11 +19,19 @@ class CaseDiscussion extends Model
         'user_id',
         'parent_id',
         'content',
+        'domain',
+        'record_ref',
+        'patient_id',
     ];
 
     public function case(): BelongsTo
     {
         return $this->belongsTo(ClinicalCase::class, 'case_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Clinical\ClinicalPatient::class, 'patient_id');
     }
 
     public function user(): BelongsTo

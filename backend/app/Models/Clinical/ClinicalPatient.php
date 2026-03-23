@@ -134,4 +134,29 @@ class ClinicalPatient extends Model
     {
         return $this->hasOne(PatientEmbedding::class, 'patient_id');
     }
+
+    public function flags(): HasMany
+    {
+        return $this->hasMany(\App\Models\PatientFlag::class, 'patient_id');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(\App\Models\PatientTask::class, 'patient_id');
+    }
+
+    public function decisions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Decision::class, 'patient_id');
+    }
+
+    public function followUps(): HasMany
+    {
+        return $this->hasMany(\App\Models\FollowUp::class, 'patient_id');
+    }
+
+    public function discussions(): HasMany
+    {
+        return $this->hasMany(\App\Models\CaseDiscussion::class, 'patient_id');
+    }
 }

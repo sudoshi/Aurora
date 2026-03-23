@@ -14,6 +14,7 @@ class FollowUp extends Model
 
     protected $fillable = [
         'decision_id',
+        'patient_id',
         'assigned_to',
         'title',
         'description',
@@ -35,6 +36,11 @@ class FollowUp extends Model
     public function decision(): BelongsTo
     {
         return $this->belongsTo(Decision::class);
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Clinical\ClinicalPatient::class, 'patient_id');
     }
 
     public function assignee(): BelongsTo

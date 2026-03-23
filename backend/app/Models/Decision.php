@@ -16,6 +16,7 @@ class Decision extends Model
     protected $fillable = [
         'case_id',
         'session_id',
+        'patient_id',
         'proposed_by',
         'decision_type',
         'recommendation',
@@ -25,12 +26,14 @@ class Decision extends Model
         'finalized_at',
         'finalized_by',
         'urgency',
+        'record_refs',
     ];
 
     protected function casts(): array
     {
         return [
             'finalized_at' => 'datetime',
+            'record_refs' => 'array',
         ];
     }
 
@@ -39,6 +42,11 @@ class Decision extends Model
     public function clinicalCase(): BelongsTo
     {
         return $this->belongsTo(ClinicalCase::class, 'case_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Clinical\ClinicalPatient::class, 'patient_id');
     }
 
     public function session(): BelongsTo
