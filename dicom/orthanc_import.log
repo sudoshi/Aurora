@@ -1,0 +1,28 @@
+=== Importing HCC-TACE-Seg ===
+  Scanning for .dcm files...
+  Files:    51264
+  Parallel: 8
+  Target:   http://localhost:8042
+
+  Results: 51264 uploaded, 0
+0 already existed, 0
+0 failed
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 150: [[: 0
+0: syntax error in expression (error token is "0")
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 155: [[: 0
+0: syntax error in expression (error token is "0")
+
+=== Final Orthanc Statistics ===
+  Patients:  727
+  Studies:   845
+  Series:    3871
+  Instances: 367036
+  Disk:      185266 MB
+
+Done.
+=== Importing CPTAC-PDA ===
+  Scanning for .dcm files...
+  Files:    132852
+  Parallel: 8
+  Target:   http://localhost:8042
+

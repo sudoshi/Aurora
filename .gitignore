@@ -12,6 +12,10 @@
 /frontend/dist/
 /backend/public/build/
 /backend/public/hot
+/backend/public/ohif/
+
+# Claude tooling
+.superpowers/
 
 # Laravel
 /backend/storage/*.key
