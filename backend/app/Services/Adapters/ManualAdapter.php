@@ -118,16 +118,113 @@ class ManualAdapter implements ClinicalDataAdapter
 
         return [
             'patient' => $patient,
-            'conditions' => $this->getConditions($patientId),
-            'medications' => $this->getMedications($patientId),
-            'procedures' => $this->getProcedures($patientId),
-            'measurements' => $this->getMeasurements($patientId),
-            'observations' => $this->getObservations($patientId),
-            'visits' => $this->getVisits($patientId),
+            'conditions' => $this->normalizeConditions($this->getConditions($patientId)),
+            'medications' => $this->normalizeMedications($this->getMedications($patientId)),
+            'procedures' => $this->normalizeProcedures($this->getProcedures($patientId)),
+            'measurements' => $this->normalizeMeasurements($this->getMeasurements($patientId)),
+            'observations' => $this->normalizeObservations($this->getObservations($patientId)),
+            'visits' => $this->normalizeVisits($this->getVisits($patientId)),
             'notes' => $this->getNotes($patientId),
             'imaging' => $this->getImaging($patientId),
             'genomics' => $this->getGenomics($patientId),
+            'condition_eras' => [],
+            'drug_eras' => [],
+            'observation_periods' => [],
         ];
+    }
+
+    // ── Normalization helpers ────────────────────────────────────────────
+
+    private function normalizeConditions(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'condition',
+            'concept_name' => $r['concept_name'],
+            'concept_code' => $r['concept_code'] ?? null,
+            'start_date' => $r['onset_date'],
+            'end_date' => $r['resolution_date'] ?? null,
+            'type_name' => $r['status'] ?? null,
+            'aurora_domain' => $r['domain'] ?? null,
+        ], $rows);
+    }
+
+    private function normalizeMedications(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'medication',
+            'concept_name' => $r['drug_name'],
+            'concept_code' => $r['concept_code'] ?? null,
+            'start_date' => $r['start_date'] ?? $r['created_at'],
+            'end_date' => $r['end_date'] ?? null,
+            'drug_name' => $r['drug_name'],
+            'route' => $r['route'] ?? null,
+            'dose_value' => isset($r['dose_value']) ? (float) $r['dose_value'] : null,
+            'dose_unit' => $r['dose_unit'] ?? null,
+            'frequency' => $r['frequency'] ?? null,
+            'type_name' => $r['status'] ?? null,
+        ], $rows);
+    }
+
+    private function normalizeProcedures(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'procedure',
+            'concept_name' => $r['procedure_name'],
+            'concept_code' => $r['concept_code'] ?? null,
+            'start_date' => $r['performed_date'],
+            'end_date' => null,
+            'type_name' => $r['status'] ?? null,
+        ], $rows);
+    }
+
+    private function normalizeMeasurements(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'measurement',
+            'concept_name' => $r['measurement_name'],
+            'concept_code' => $r['concept_code'] ?? null,
+            'start_date' => $r['measured_at'],
+            'end_date' => null,
+            'value_numeric' => isset($r['value_numeric']) ? (float) $r['value_numeric'] : null,
+            'value_as_string' => $r['value_text'] ?? null,
+            'unit' => $r['unit'] ?? null,
+            'reference_range_low' => isset($r['reference_range_low']) ? (float) $r['reference_range_low'] : null,
+            'reference_range_high' => isset($r['reference_range_high']) ? (float) $r['reference_range_high'] : null,
+            'abnormal_flag' => $r['abnormal_flag'] ?? null,
+        ], $rows);
+    }
+
+    private function normalizeObservations(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'observation',
+            'concept_name' => $r['observation_name'],
+            'concept_code' => $r['concept_code'] ?? null,
+            'start_date' => $r['observed_at'],
+            'end_date' => null,
+            'value_as_string' => $r['value_text'] ?? null,
+            'value_numeric' => isset($r['value_numeric']) ? (float) $r['value_numeric'] : null,
+            'unit' => $r['unit'] ?? null,
+        ], $rows);
+    }
+
+    private function normalizeVisits(array $rows): array
+    {
+        return array_map(fn (array $r) => [
+            'id' => $r['id'],
+            'domain' => 'visit',
+            'concept_name' => $r['visit_type'] ?? 'Visit',
+            'concept_code' => null,
+            'start_date' => $r['admission_date'],
+            'end_date' => $r['discharge_date'] ?? null,
+            'type_name' => $r['visit_type'] ?? null,
+            'visit_id' => $r['id'],
+        ], $rows);
     }
 
     public function searchPatients(string $query, int $limit = 20): array

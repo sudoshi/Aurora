@@ -12,6 +12,7 @@ export interface ClinicalPatient {
   race: string | null;
   ethnicity: string | null;
   deceased_at: string | null;
+  category?: AuroraDomainCategory | null;
 }
 
 export type ClinicalDomain =

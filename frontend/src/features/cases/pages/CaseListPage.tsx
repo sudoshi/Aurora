@@ -236,7 +236,7 @@ export default function CaseListPage() {
             </span>
             {" "}&middot;{" "}
             <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
-              {data.total.toLocaleString()}
+              {(data.total ?? 0).toLocaleString()}
             </span>{" "}
             cases
           </span>

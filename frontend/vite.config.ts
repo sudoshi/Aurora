@@ -19,6 +19,7 @@ export default defineConfig({
       },
     },
   },
+  base: '/build/',
   build: {
     outDir: 'dist',
     manifest: true,

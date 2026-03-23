@@ -9,6 +9,29 @@ import type {
 } from "../types/profile";
 
 // ---------------------------------------------------------------------------
+// Patient list (paginated)
+// ---------------------------------------------------------------------------
+
+export interface PatientListResponse {
+  data: ClinicalPatient[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export async function fetchPatients(
+  page = 1,
+  perPage = 50,
+): Promise<PatientListResponse> {
+  const { data } = await apiClient.get<{ success: boolean; data: PatientListResponse }>(
+    `/patients`,
+    { params: { page, per_page: perPage } },
+  );
+  return data.data;
+}
+
+// ---------------------------------------------------------------------------
 // Patient profile
 // ---------------------------------------------------------------------------
 

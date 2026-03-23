@@ -146,6 +146,158 @@ function packDomainEvents(
 }
 
 // ---------------------------------------------------------------------------
+// Time Range Slider
+// ---------------------------------------------------------------------------
+
+const SLIDER_HANDLE_W = 8;
+
+function TimeRangeSlider({
+  viewStart,
+  viewEnd,
+  onViewChange,
+  timeMin,
+  timeMax,
+  years,
+}: {
+  viewStart: number;
+  viewEnd: number;
+  onViewChange: (start: number, end: number) => void;
+  timeMin: number;
+  timeMax: number;
+  years: number[];
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef<"start" | "end" | "middle" | null>(null);
+  const dragOrigin = useRef({ x: 0, start: 0, end: 0 });
+
+  const fracToMs = (f: number) => timeMin + f * (timeMax - timeMin);
+
+  const formatLabel = (f: number) => {
+    const d = new Date(fracToMs(f));
+    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  };
+
+  const getFrac = (clientX: number) => {
+    const rect = trackRef.current?.getBoundingClientRect();
+    if (!rect) return 0;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  };
+
+  const handlePointerDown = (e: React.PointerEvent, target: "start" | "end" | "middle") => {
+    e.preventDefault();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    dragging.current = target;
+    dragOrigin.current = { x: e.clientX, start: viewStart, end: viewEnd };
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const minSpan = 0.02;
+
+    if (dragging.current === "start") {
+      const frac = getFrac(e.clientX);
+      onViewChange(Math.min(frac, viewEnd - minSpan), viewEnd);
+    } else if (dragging.current === "end") {
+      const frac = getFrac(e.clientX);
+      onViewChange(viewStart, Math.max(frac, viewStart + minSpan));
+    } else {
+      const dx = e.clientX - dragOrigin.current.x;
+      const rect = trackRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const fracDx = dx / rect.width;
+      const span = dragOrigin.current.end - dragOrigin.current.start;
+      let newStart = dragOrigin.current.start + fracDx;
+      let newEnd = newStart + span;
+      if (newStart < 0) { newEnd -= newStart; newStart = 0; }
+      if (newEnd > 1) { newStart -= newEnd - 1; newEnd = 1; }
+      onViewChange(Math.max(0, newStart), Math.min(1, newEnd));
+    }
+  };
+
+  const handlePointerUp = () => { dragging.current = null; };
+
+  // Year tick marks for the slider track
+  const yearTicks = years.map((y) => {
+    const ms = new Date(`${y}-01-01`).getTime();
+    return { year: y, frac: (ms - timeMin) / (timeMax - timeMin) };
+  }).filter((t) => t.frac > 0.02 && t.frac < 0.98);
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-2.5 bg-[var(--surface-base)] border-b border-[var(--surface-overlay)]">
+      <span className="text-[10px] text-[var(--text-muted)] tabular-nums shrink-0 w-16 text-right">
+        {formatLabel(viewStart)}
+      </span>
+
+      {/* Slider track */}
+      <div
+        ref={trackRef}
+        className="relative flex-1 h-6 select-none"
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      >
+        {/* Background track */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1.5 rounded-full bg-[var(--surface-overlay)]" />
+
+        {/* Year tick marks */}
+        {yearTicks.map((t) => (
+          <div
+            key={t.year}
+            className="absolute top-0 flex flex-col items-center"
+            style={{ left: `${t.frac * 100}%`, transform: "translateX(-50%)" }}
+          >
+            <span className="text-[8px] text-[var(--text-ghost)] leading-none">{t.year}</span>
+            <div className="w-px h-1 bg-[var(--text-ghost)] opacity-40 mt-0.5" />
+          </div>
+        ))}
+
+        {/* Active range fill */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full cursor-grab active:cursor-grabbing"
+          style={{
+            left: `${viewStart * 100}%`,
+            width: `${(viewEnd - viewStart) * 100}%`,
+            background: "linear-gradient(90deg, #22D3EE, #00D68F, #9D75F8)",
+            opacity: 0.7,
+          }}
+          onPointerDown={(e) => handlePointerDown(e, "middle")}
+        />
+
+        {/* Start handle */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 rounded-sm cursor-ew-resize"
+          style={{
+            left: `calc(${viewStart * 100}% - ${SLIDER_HANDLE_W / 2}px)`,
+            width: SLIDER_HANDLE_W,
+            height: 18,
+            backgroundColor: "#22D3EE",
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
+          onPointerDown={(e) => handlePointerDown(e, "start")}
+        />
+
+        {/* End handle */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 rounded-sm cursor-ew-resize"
+          style={{
+            left: `calc(${viewEnd * 100}% - ${SLIDER_HANDLE_W / 2}px)`,
+            width: SLIDER_HANDLE_W,
+            height: 18,
+            backgroundColor: "#9D75F8",
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
+          onPointerDown={(e) => handlePointerDown(e, "end")}
+        />
+      </div>
+
+      <span className="text-[10px] text-[var(--text-muted)] tabular-nums shrink-0 w-16">
+        {formatLabel(viewEnd)}
+      </span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -169,11 +321,12 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
   const instanceId = useId();
   const clipId = `chart-clip-${instanceId}`;
 
-  const [zoom, setZoom] = useState(1);
-  const [panOffset, setPanOffset] = useState(0);
+  // View range: 0–1 fractions of the full time range
+  const [viewStart, setViewStart] = useState(0);
+  const [viewEnd, setViewEnd] = useState(1);
   const isDragging = useRef(false);
   const dragStart = useRef(0);
-  const panStart = useRef(0);
+  const viewStartOnDrag = useRef(0);
   const hasSetInitialView = useRef(false);
 
   const [containerWidth, setContainerWidth] = useState(0);
@@ -190,6 +343,11 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
   }, []);
   const svgWidth = containerWidth > 0 ? Math.round(containerWidth) : 900;
   const chartWidth = svgWidth - LABEL_WIDTH - TIMELINE_PADDING;
+
+  // Derive zoom and panOffset from the view range
+  const viewSpan = Math.max(viewEnd - viewStart, 0.01);
+  const zoom = 1 / viewSpan;
+  const panOffset = -viewStart * chartWidth * zoom;
 
   // Group events by domain
   const domainEvents = useMemo(() => {
@@ -209,10 +367,10 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
     return grouped;
   }, [events, hiddenDomains]);
 
-  // Compute time bounds
+  // Compute time bounds — always extend to today so the "Today" marker is visible
   const { timeMin, timeMax } = useMemo(() => {
+    const now = Date.now();
     if (events.length === 0) {
-      const now = Date.now();
       return { timeMin: now - 365 * 24 * 60 * 60 * 1000, timeMax: now };
     }
     let min = Infinity;
@@ -232,23 +390,24 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
       if (s < min) min = s;
       if (e > max) max = e;
     }
+    // Ensure today is always within the visible range
+    if (now > max) max = now;
     const range = max - min || 365 * 24 * 60 * 60 * 1000;
-    return { timeMin: min - range * 0.03, timeMax: max + range * 0.03 };
+    return { timeMin: min - range * 0.03, timeMax: max + range * 0.02 };
   }, [events, observationPeriods]);
 
   const timeRange = timeMax - timeMin;
 
-  // Smart initial zoom: show last 5 years for long histories
+  // Smart initial view: show last 5 years for long histories
   useEffect(() => {
     if (hasSetInitialView.current || events.length === 0) return;
     hasSetInitialView.current = true;
     const FIVE_YEARS_MS = 5 * 365.25 * 24 * 60 * 60 * 1000;
     const totalMs = timeMax - timeMin;
     if (totalMs <= FIVE_YEARS_MS) return;
-    const z = Math.min(totalMs / FIVE_YEARS_MS, 10);
-    const pan = chartWidth * (1 - z);
-    setZoom(z);
-    setPanOffset(pan);
+    const startFrac = Math.max(0, 1 - FIVE_YEARS_MS / totalMs);
+    setViewStart(startFrac);
+    setViewEnd(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
@@ -367,40 +526,54 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
   const handleWheel = (e: React.WheelEvent) => {
     if (!e.ctrlKey && !e.metaKey) return;
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    const newZoom = Math.max(0.5, Math.min(10, zoom * delta));
     const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
-      const cursorX = e.clientX - rect.left - LABEL_WIDTH;
-      const newPan = panOffset - cursorX * (newZoom / zoom - 1);
-      setPanOffset(newPan);
-    }
-    setZoom(newZoom);
+    if (!rect) return;
+    const cursorFrac = viewStart + ((e.clientX - rect.left - LABEL_WIDTH) / chartWidth) * viewSpan;
+    const factor = e.deltaY > 0 ? 1.1 : 0.9;
+    const newSpan = Math.max(0.01, Math.min(1, viewSpan * factor));
+    const ratio = (cursorFrac - viewStart) / viewSpan;
+    let newStart = cursorFrac - ratio * newSpan;
+    let newEnd = newStart + newSpan;
+    if (newStart < 0) { newEnd -= newStart; newStart = 0; }
+    if (newEnd > 1) { newStart -= newEnd - 1; newEnd = 1; }
+    setViewStart(Math.max(0, newStart));
+    setViewEnd(Math.min(1, newEnd));
   };
 
-  const handleZoomIn = () => setZoom((z) => Math.min(10, z * 1.3));
-  const handleZoomOut = () => setZoom((z) => Math.max(0.5, z / 1.3));
+  const zoomBy = (factor: number) => {
+    const center = (viewStart + viewEnd) / 2;
+    const newSpan = Math.max(0.01, Math.min(1, viewSpan * factor));
+    let newStart = center - newSpan / 2;
+    let newEnd = center + newSpan / 2;
+    if (newStart < 0) { newEnd -= newStart; newStart = 0; }
+    if (newEnd > 1) { newStart -= newEnd - 1; newEnd = 1; }
+    setViewStart(Math.max(0, newStart));
+    setViewEnd(Math.min(1, newEnd));
+  };
+
+  const handleZoomIn = () => zoomBy(0.7);
+  const handleZoomOut = () => zoomBy(1.4);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     dragStart.current = e.clientX;
-    panStart.current = panOffset;
+    viewStartOnDrag.current = viewStart;
     setTooltip(null);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging.current) return;
-    setPanOffset(panStart.current + (e.clientX - dragStart.current));
+    const dx = e.clientX - dragStart.current;
+    const fracDx = -(dx / chartWidth) * viewSpan;
+    let newStart = viewStartOnDrag.current + fracDx;
+    let newEnd = newStart + viewSpan;
+    if (newStart < 0) { newEnd -= newStart; newStart = 0; }
+    if (newEnd > 1) { newStart -= newEnd - 1; newEnd = 1; }
+    setViewStart(Math.max(0, newStart));
+    setViewEnd(Math.min(1, newEnd));
   };
 
   const handleMouseUp = () => { isDragging.current = false; };
-
-  const jumpToYear = (year: number) => {
-    const yearMs = new Date(`${year}-01-01`).getTime();
-    const normalized = (yearMs - timeMin) / timeRange;
-    const targetX = normalized * chartWidth * zoom;
-    setPanOffset(chartWidth / 2 - targetX);
-  };
 
   if (events.length === 0) {
     return (
@@ -471,7 +644,7 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
           </div>
           <button
             type="button"
-            onClick={() => { setZoom(1); setPanOffset(0); }}
+            onClick={() => { setViewStart(0); setViewEnd(1); }}
             className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors px-2 py-1 rounded border border-[var(--border-default)]"
           >
             Reset
@@ -512,22 +685,15 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
         })}
       </div>
 
-      {/* Year quick-nav */}
-      {years.length > 1 && (
-        <div className="flex items-center gap-1 px-4 py-1.5 bg-[var(--surface-base)] border-b border-[var(--surface-overlay)] overflow-x-auto">
-          <span className="text-[10px] text-[var(--text-ghost)] shrink-0 mr-1">Jump:</span>
-          {years.map((y) => (
-            <button
-              key={y}
-              type="button"
-              onClick={() => jumpToYear(y)}
-              className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] px-1.5 py-0.5 rounded transition-colors shrink-0"
-            >
-              {y}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Time range slider */}
+      <TimeRangeSlider
+        viewStart={viewStart}
+        viewEnd={viewEnd}
+        onViewChange={(s, e) => { setViewStart(s); setViewEnd(e); }}
+        timeMin={timeMin}
+        timeMax={timeMax}
+        years={years}
+      />
 
       {/* SVG Timeline */}
       <div

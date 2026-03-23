@@ -161,9 +161,9 @@ export default function UploadDetailPage() {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Total Variants", value: upload.total_variants.toLocaleString(), color: "#A78BFA" },
-          { label: "OMOP Mapped", value: upload.mapped_variants.toLocaleString(), color: "#2DD4BF" },
-          { label: "Needs Review", value: upload.review_required.toLocaleString(), color: "#F59E0B" },
+          { label: "Total Variants", value: (upload.total_variants ?? 0).toLocaleString(), color: "#A78BFA" },
+          { label: "OMOP Mapped", value: (upload.mapped_variants ?? 0).toLocaleString(), color: "#2DD4BF" },
+          { label: "Needs Review", value: (upload.review_required ?? 0).toLocaleString(), color: "#F59E0B" },
         ].map((c) => (
           <div key={c.label} className="rounded-lg border border-[#1C1C48] bg-[#10102A] px-4 py-3">
             <p className="text-[10px] text-[#4A5068] uppercase tracking-wider mb-1">{c.label}</p>
@@ -181,7 +181,7 @@ export default function UploadDetailPage() {
       <div className="rounded-lg border border-[#1C1C48] bg-[#10102A]">
         <div className="px-4 py-3 border-b border-[#1C1C48] flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[#E8ECF4]">Variants</h2>
-          <span className="text-xs text-[#4A5068]">{variants.length.toLocaleString()} shown</span>
+          <span className="text-xs text-[#4A5068]">{(variants.length ?? 0).toLocaleString()} shown</span>
         </div>
 
         {variantsLoading ? (

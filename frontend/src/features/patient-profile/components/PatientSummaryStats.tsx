@@ -105,7 +105,7 @@ export function PatientSummaryStats({ profile, stats: domainStats, onDrillDown }
       <StatPill
         icon={<Activity size={16} />}
         label="Total Events"
-        value={stats.totalEvents.toLocaleString()}
+        value={(stats.totalEvents ?? 0).toLocaleString()}
         color="var(--accent)"
         onClick={onDrillDown ? () => onDrillDown("list", "all") : undefined}
       />
@@ -135,14 +135,14 @@ export function PatientSummaryStats({ profile, stats: domainStats, onDrillDown }
       <StatPill
         icon={<FlaskConical size={16} />}
         label="Labs"
-        value={stats.measurementCount.toLocaleString()}
+        value={(stats.measurementCount ?? 0).toLocaleString()}
         color="var(--domain-measurement)"
         onClick={onDrillDown ? () => onDrillDown("labs") : undefined}
       />
       <StatPill
         icon={<Eye size={16} />}
         label="Observations"
-        value={stats.observationCount.toLocaleString()}
+        value={(stats.observationCount ?? 0).toLocaleString()}
         color="var(--domain-observation)"
         onClick={onDrillDown ? () => onDrillDown("list", "observation") : undefined}
       />

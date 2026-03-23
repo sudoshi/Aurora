@@ -183,7 +183,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
             >
               <p className="text-xs text-[#4A5068] uppercase tracking-wider">Total Variants</p>
               <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#E8ECF4] mt-0.5">
-                {status.total_variants.toLocaleString()}
+                {(status.total_variants ?? 0).toLocaleString()}
               </p>
             </div>
             <div
@@ -195,7 +195,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
             >
               <p className="text-xs text-[#4A5068] uppercase tracking-wider">Pathogenic / LP</p>
               <p className="text-base font-semibold font-['IBM_Plex_Mono',monospace] text-[#F0607A] mt-0.5">
-                {status.pathogenic_count.toLocaleString()}
+                {(status.pathogenic_count ?? 0).toLocaleString()}
               </p>
             </div>
             <div className="rounded-md border border-[#1C1C48] bg-[#16163A] px-3 py-2">
@@ -213,7 +213,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
         {syncMutation.isSuccess && (
           <div className="mt-3 flex items-center gap-2 rounded-md border border-[#2DD4BF]/20 bg-[#2DD4BF]/5 px-3 py-2 text-xs text-[#2DD4BF]">
             <CheckCircle2 size={12} />
-            Sync complete -- {syncMutation.data?.inserted.toLocaleString()} inserted, {syncMutation.data?.updated.toLocaleString()} updated
+            Sync complete -- {(syncMutation.data?.inserted ?? 0).toLocaleString()} inserted, {(syncMutation.data?.updated ?? 0).toLocaleString()} updated
           </div>
         )}
         {syncMutation.isError && (
@@ -345,7 +345,7 @@ function ClinVarPanel({ initialGene }: { initialGene?: string }) {
               {results.last_page > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t border-[#1C1C48]">
                   <p className="text-xs text-[#4A5068]">
-                    {results.total.toLocaleString()} variants -- page {results.current_page} of {results.last_page}
+                    {(results.total ?? 0).toLocaleString()} variants -- page {results.current_page} of {results.last_page}
                   </p>
                   <div className="flex items-center gap-1">
                     <button
@@ -393,9 +393,9 @@ export default function GenomicsPage() {
   const metricCards = stats
     ? [
         { label: "Total Uploads", value: stats.total_uploads, icon: Upload, color: "#60A5FA" },
-        { label: "Total Variants", value: stats.total_variants.toLocaleString(), icon: Dna, color: "#A78BFA" },
-        { label: "OMOP Mapped", value: stats.mapped_variants.toLocaleString(), icon: CheckCircle2, color: "#2DD4BF" },
-        { label: "Pending Review", value: stats.review_required.toLocaleString(), icon: Clock, color: "#F59E0B" },
+        { label: "Total Variants", value: (stats.total_variants ?? 0).toLocaleString(), icon: Dna, color: "#A78BFA" },
+        { label: "OMOP Mapped", value: (stats.mapped_variants ?? 0).toLocaleString(), icon: CheckCircle2, color: "#2DD4BF" },
+        { label: "Pending Review", value: (stats.review_required ?? 0).toLocaleString(), icon: Clock, color: "#F59E0B" },
       ]
     : [];
 
@@ -480,7 +480,7 @@ export default function GenomicsPage() {
       )}
 
       {/* Top Genes */}
-      {stats && Object.keys(stats.top_genes).length > 0 && (
+      {stats && stats.top_genes && Object.keys(stats.top_genes).length > 0 && (
         <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp size={14} className="text-[#2DD4BF]" />
@@ -499,7 +499,7 @@ export default function GenomicsPage() {
               >
                 <Dna size={10} />
                 {gene}
-                <span className="text-[#2DD4BF]/70">{count.toLocaleString()}</span>
+                <span className="text-[#2DD4BF]/70">{(count ?? 0).toLocaleString()}</span>
               </button>
             ))}
           </div>
@@ -577,7 +577,7 @@ export default function GenomicsPage() {
                         {upload.genome_build ?? "\u2014"}
                       </td>
                       <td className="px-4 py-3 text-[#B4BAC8] text-sm">
-                        {upload.total_variants.toLocaleString()}
+                        {(upload.total_variants ?? 0).toLocaleString()}
                         {upload.status === "failed" && upload.error_message && (
                           <span title={upload.error_message}>
                             <AlertCircle

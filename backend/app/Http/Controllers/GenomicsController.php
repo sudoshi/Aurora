@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Models\Clinical\ClinVarSyncLog;
+use App\Models\Clinical\ClinVarVariant;
 use App\Models\Clinical\GenomicVariant;
+use App\Services\Genomics\ClinVarAnnotationService;
+use App\Services\Genomics\ClinVarSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GenomicsController extends Controller
 {
+    public function __construct(
+        private readonly ClinVarSyncService $clinVarSync,
+        private readonly ClinVarAnnotationService $clinVarAnnotation,
+    ) {}
     // ── Stats ────────────────────────────────────────────────────────────
 
     /**
@@ -292,18 +300,27 @@ class GenomicsController extends Controller
         return ApiResponse::success(null, 'Criterion deleted');
     }
 
-    // ── ClinVar (stubs) ─────────────────────────────────────────────────
+    // ── ClinVar ──────────────────────────────────────────────────────────
 
     /**
      * GET /api/genomics/clinvar/status
      */
     public function clinvarStatus(): JsonResponse
     {
-        return ApiResponse::success([
-            'last_sync' => null,
-            'total_entries' => 0,
-            'status' => 'not_configured',
-        ], 'ClinVar status retrieved');
+        $latestSync = ClinVarSyncLog::where('status', 'completed')
+            ->orderByDesc('finished_at')
+            ->first();
+
+        return response()->json([
+            'data' => [
+                'total_variants' => ClinVarVariant::count(),
+                'pathogenic_count' => ClinVarVariant::where('is_pathogenic', true)->count(),
+                'last_sync' => $latestSync?->finished_at,
+                'last_sync_build' => $latestSync?->genome_build,
+                'last_sync_papu' => $latestSync?->papu_only,
+                'syncs' => ClinVarSyncLog::orderByDesc('created_at')->limit(5)->get(),
+            ],
+        ]);
     }
 
     /**
@@ -312,25 +329,43 @@ class GenomicsController extends Controller
     public function clinvarSearch(Request $request): JsonResponse
     {
         $request->validate([
-            'q' => 'sometimes|string|max:255',
-            'gene' => 'sometimes|string|max:50',
-            'significance' => 'sometimes|string|max:100',
-            'pathogenic_only' => 'sometimes|boolean',
-            'per_page' => 'sometimes|integer|min:1|max:100',
-            'page' => 'sometimes|integer|min:1',
+            'q' => 'nullable|string|max:200',
+            'gene' => 'nullable|string|max:100',
+            'significance' => 'nullable|string|max:100',
+            'pathogenic_only' => 'nullable|boolean',
+            'per_page' => 'nullable|integer|min:1|max:200',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'ClinVar search results',
-            'data' => [],
-            'meta' => [
-                'total' => 0,
-                'page' => (int) $request->input('page', 1),
-                'per_page' => (int) $request->input('per_page', 25),
-                'last_page' => 1,
-            ],
-        ]);
+        $query = ClinVarVariant::query();
+
+        if ($request->filled('q')) {
+            $term = '%'.$request->string('q').'%';
+            $query->where(function ($q) use ($term) {
+                $q->where('gene_symbol', 'ilike', $term)
+                    ->orWhere('hgvs', 'ilike', $term)
+                    ->orWhere('disease_name', 'ilike', $term)
+                    ->orWhere('variation_id', 'ilike', $term)
+                    ->orWhere('rs_id', 'ilike', $term);
+            });
+        }
+
+        if ($request->filled('gene')) {
+            $query->where('gene_symbol', 'ilike', $request->string('gene').'%');
+        }
+
+        if ($request->filled('significance')) {
+            $query->where('clinical_significance', 'ilike', '%'.$request->string('significance').'%');
+        }
+
+        if ($request->boolean('pathogenic_only')) {
+            $query->where('is_pathogenic', true);
+        }
+
+        $results = $query->orderBy('gene_symbol')
+            ->orderByDesc('is_pathogenic')
+            ->paginate($request->integer('per_page', 50));
+
+        return response()->json($results);
     }
 
     /**
@@ -338,11 +373,18 @@ class GenomicsController extends Controller
      */
     public function clinvarSync(Request $request): JsonResponse
     {
-        return ApiResponse::success([
-            'inserted' => 0,
-            'updated' => 0,
-            'errors' => 0,
-            'log_id' => 0,
-        ], 'ClinVar sync complete');
+        $request->validate([
+            'papu_only' => 'nullable|boolean',
+        ]);
+
+        $papuOnly = $request->boolean('papu_only', false);
+
+        try {
+            $result = $this->clinVarSync->sync($papuOnly);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Sync failed: '.$e->getMessage()], 500);
+        }
+
+        return response()->json(['data' => $result]);
     }
 }

@@ -327,7 +327,7 @@ export default function TumorBoardPage() {
                   {panel.similar_patients.map((s) => (
                     <tr key={s.gene} className="hover:bg-[#16163A] transition-colors">
                       <td className="px-4 py-2.5 font-semibold text-[#A78BFA]">{s.gene}</td>
-                      <td className="px-4 py-2.5 text-[#B4BAC8]">{s.n_similar.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-[#B4BAC8]">{(s.n_similar ?? 0).toLocaleString()}</td>
                       <td className="px-4 py-2.5 text-[#B4BAC8]">
                         {s.median_survival_days !== null
                           ? `${Math.round(s.median_survival_days / 30.4)} months`

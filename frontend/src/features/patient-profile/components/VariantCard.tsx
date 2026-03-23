@@ -91,7 +91,7 @@ export function VariantCard({ variant, onClose }: VariantCardProps) {
         <DetailItem
           icon={MapPin}
           label="Location"
-          value={`chr${variant.chromosome}:${variant.position.toLocaleString()}`}
+          value={`chr${variant.chromosome}:${(variant.position ?? 0).toLocaleString()}`}
         />
         <DetailItem
           icon={Dna}

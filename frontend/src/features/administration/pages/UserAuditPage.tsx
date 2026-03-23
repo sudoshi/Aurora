@@ -343,7 +343,7 @@ export default function UserAuditPage() {
             </span>
             {" "}&middot;{" "}
             <span className="font-['IBM_Plex_Mono',monospace] text-[#B4BAC8]">
-              {data.meta.total.toLocaleString()}
+              {(data.meta.total ?? 0).toLocaleString()}
             </span>{" "}
             events
           </span>

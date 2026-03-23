@@ -103,7 +103,7 @@ function StatsBar() {
               className="text-lg font-semibold font-['IBM_Plex_Mono',monospace]"
               style={{ color: item.color }}
             >
-              {isLoading ? "--" : item.value.toLocaleString()}
+              {isLoading ? "--" : item.value?.toLocaleString() ?? "0"}
             </p>
             <p className="text-[10px] text-[#4A5068] uppercase tracking-wider">{item.label}</p>
           </div>
@@ -286,7 +286,7 @@ function StudiesTab() {
         </div>
         {data && (
           <div className="px-4 py-2.5 text-xs text-[#4A5068] border-t border-[#1C1C48]">
-            {data.total.toLocaleString()} total studies · page {data.current_page} of{" "}
+            {data.total?.toLocaleString() ?? "0"} total studies · page {data.current_page} of{" "}
             {data.last_page}
           </div>
         )}
@@ -394,7 +394,7 @@ function FeaturesTab() {
         </div>
         {data && (
           <div className="px-4 py-2.5 text-xs text-[#4A5068] border-t border-[#1C1C48]">
-            {data.total.toLocaleString()} total features
+            {data.total?.toLocaleString() ?? "0"} total features
           </div>
         )}
       </div>
@@ -510,7 +510,7 @@ function AnalyticsTab() {
                   <div className="flex justify-between text-xs mb-1">
                     <span className="font-mono font-semibold text-[#B4BAC8]">{row.modality}</span>
                     <span className="text-[#4A5068]">
-                      {row.n.toLocaleString()} ({row.unique_persons.toLocaleString()} persons)
+                      {row.n?.toLocaleString() ?? "0"} ({row.unique_persons?.toLocaleString() ?? "0"} persons)
                     </span>
                   </div>
                   <div className="h-1.5 bg-[#0A0A18] rounded-full overflow-hidden">
@@ -538,7 +538,7 @@ function AnalyticsTab() {
                 <div key={row.body_part_examined}>
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-[#B4BAC8]">{row.body_part_examined}</span>
-                    <span className="text-[#4A5068]">{row.n.toLocaleString()}</span>
+                    <span className="text-[#4A5068]">{row.n?.toLocaleString() ?? "0"}</span>
                   </div>
                   <div className="h-1.5 bg-[#0A0A18] rounded-full overflow-hidden">
                     <div
@@ -569,7 +569,7 @@ function AnalyticsTab() {
                     <p
                       className="text-lg font-semibold font-['IBM_Plex_Mono',monospace] text-[#A78BFA] mt-1"
                     >
-                      {f.n.toLocaleString()}
+                      {f.n?.toLocaleString() ?? "0"}
                     </p>
                   </div>
                 ))}

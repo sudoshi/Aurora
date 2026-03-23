@@ -368,7 +368,7 @@ export default function GenomicAnalysisPage() {
                   <h3 className="text-sm font-semibold text-[#E8ECF4] mb-3">
                     Top Mutated Genes
                     <span className="ml-2 text-xs text-[#4A5068]">
-                      ({charQuery.data.total_variants.toLocaleString()} total variants)
+                      ({(charQuery.data.total_variants ?? 0).toLocaleString()} total variants)
                     </span>
                   </h3>
                   <div className="space-y-1.5">
@@ -389,7 +389,7 @@ export default function GenomicAnalysisPage() {
                           </div>
                         </div>
                         <span className="w-12 text-xs text-[#4A5068] text-right">
-                          {g.n.toLocaleString()}
+                          {(g.n ?? 0).toLocaleString()}
                         </span>
                       </div>
                     ))}

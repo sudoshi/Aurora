@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  fetchPatients,
   fetchPatientProfile,
   fetchPatientStats,
   searchPatients,
   fetchPatientNotes,
 } from "../api/profileApi";
+
+export function usePatients(page = 1, perPage = 50) {
+  return useQuery({
+    queryKey: ["patients", { page, perPage }],
+    queryFn: () => fetchPatients(page, perPage),
+    staleTime: 60_000,
+  });
+}
 
 export function usePatientProfile(patientId: number | null) {
   return useQuery({
