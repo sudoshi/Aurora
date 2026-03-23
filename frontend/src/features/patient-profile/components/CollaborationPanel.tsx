@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { ClinicalDomain } from '../types/collaboration';
+import { PanelDiscussionTab } from './PanelDiscussionTab';
+import { PanelTasksTab } from './PanelTasksTab';
+import { PanelFlagsTab } from './PanelFlagsTab';
+import { PanelDecisionsTab } from './PanelDecisionsTab';
+import { usePatientCollaboration, useUpdateFlag, useUpdateTask } from '../hooks/useCollaboration';
 
 type PanelTab = 'discuss' | 'tasks' | 'flags' | 'decisions';
 
@@ -33,7 +38,7 @@ const TABS: { key: PanelTab; label: string }[] = [
 ];
 
 export function CollaborationPanel({
-  patientId: _patientId,
+  patientId,
   domain,
   isOpen,
   onClose,
@@ -41,6 +46,10 @@ export function CollaborationPanel({
   initialRecordRef: _initialRecordRef,
 }: CollaborationPanelProps) {
   const [activeTab, setActiveTab] = useState<PanelTab>(initialTab);
+
+  const { data: collab, isLoading } = usePatientCollaboration(patientId, domain);
+  const updateFlag = useUpdateFlag(patientId);
+  const updateTask = useUpdateTask(patientId);
 
   const headerTitle = domain
     ? `${DOMAIN_LABELS[domain] ?? domain} Context`
@@ -104,25 +113,29 @@ export function CollaborationPanel({
 
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto">
-            {activeTab === 'discuss' && (
-              <div className="p-3 text-sm text-gray-500">
-                Discussion threads will appear here
-              </div>
+            {isLoading && (
+              <div className="p-3 text-sm text-gray-500">Loading...</div>
             )}
-            {activeTab === 'tasks' && (
-              <div className="p-3 text-sm text-gray-500">
-                Tasks will appear here
-              </div>
+            {activeTab === 'discuss' && collab && (
+              <PanelDiscussionTab discussions={collab.discussions} patientId={patientId} domain={domain} />
             )}
-            {activeTab === 'flags' && (
-              <div className="p-3 text-sm text-gray-500">
-                Flags will appear here
-              </div>
+            {activeTab === 'tasks' && collab && (
+              <PanelTasksTab
+                tasks={collab.tasks}
+                followUps={collab.follow_ups}
+                patientId={patientId}
+                onCompleteTask={(id) => updateTask.mutate({ taskId: id, data: { status: 'completed' } })}
+                onCompleteFollowUp={() => {/* follow-up completion requires Decision API */}}
+              />
             )}
-            {activeTab === 'decisions' && (
-              <div className="p-3 text-sm text-gray-500">
-                Decisions will appear here
-              </div>
+            {activeTab === 'flags' && collab && (
+              <PanelFlagsTab
+                flags={collab.flags}
+                onResolve={(id) => updateFlag.mutate({ flagId: id, data: { resolve: true } })}
+              />
+            )}
+            {activeTab === 'decisions' && collab && (
+              <PanelDecisionsTab decisions={collab.decisions} />
             )}
           </div>
         </motion.div>

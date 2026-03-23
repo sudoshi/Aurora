@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -33,6 +33,8 @@ import PatientImagingTab from "../components/PatientImagingTab";
 import PatientGenomicsTab from "../components/PatientGenomicsTab";
 import { useProfileStore } from "@/stores/profileStore";
 import type { ClinicalEvent } from "../types/profile";
+import { CollaborationPanel } from '../components/CollaborationPanel';
+import { VIEW_TAB_TO_DOMAIN } from '../types/collaboration';
 
 type ViewMode = "briefing" | "timeline" | "list" | "labs" | "visits" | "notes" | "imaging" | "genomics" | "similar";
 
@@ -94,6 +96,20 @@ export default function PatientProfilePage() {
   const parsedPersonId = personId ? Number(personId) : null;
   const [viewMode, setViewMode] = useState<ViewMode>("briefing");
   const [domainTab, setDomainTab] = useState<DomainTab>("all");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelTab, _setPanelTab] = useState<'discuss' | 'tasks' | 'flags' | 'decisions'>('discuss');
+  const [panelRecordRef, _setPanelRecordRef] = useState<string | undefined>();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') {
+        e.preventDefault();
+        setPanelOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const { recentProfiles, clearRecentProfiles } = useProfileStore();
 
@@ -138,6 +154,7 @@ export default function PatientProfilePage() {
 
   // Profile view
   return (
+    <div className={`flex-1 transition-all duration-300 ${panelOpen ? 'mr-80' : ''}`}>
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -225,6 +242,13 @@ export default function PatientProfilePage() {
                   Export CSV
                 </button>
               )}
+              <button
+                onClick={() => setPanelOpen(prev => !prev)}
+                className="ml-auto px-3 py-1.5 rounded text-xs font-semibold"
+                style={{ background: 'rgba(167,139,250,0.15)', color: '#a78bfa' }}
+              >
+                {panelOpen ? 'Close Panel' : 'Collaborate »'}
+              </button>
             </div>
           </div>
 
@@ -306,6 +330,16 @@ export default function PatientProfilePage() {
           )}
         </>
       )}
+    </div>
+
+      <CollaborationPanel
+        patientId={parsedPersonId!}
+        domain={VIEW_TAB_TO_DOMAIN[viewMode]}
+        isOpen={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        initialTab={panelTab}
+        initialRecordRef={panelRecordRef}
+      />
     </div>
   );
 }
