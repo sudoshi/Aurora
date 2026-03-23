@@ -94,6 +94,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/tasks/{task}', [PatientTaskController::class, 'update']);
     Route::delete('/tasks/{task}', [PatientTaskController::class, 'destroy']);
 
+    // Patient Collaboration (aggregate)
+    Route::get('/patients/{patient}/collaboration', [PatientCollaborationController::class, 'index']);
+    Route::get('/patients/{patient}/decisions', [PatientCollaborationController::class, 'decisions']);
+
     // Patient routes
     Route::prefix('patients')->group(function () {
         Route::get('/', [PatientController::class, 'index']);
