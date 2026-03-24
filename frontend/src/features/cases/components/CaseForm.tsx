@@ -58,6 +58,9 @@ export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFor
     clinicalCase?.clinical_question ?? "",
   );
   const [summary, setSummary] = useState(clinicalCase?.summary ?? "");
+  const [patientId, setPatientId] = useState(
+    clinicalCase?.patient_id?.toString() ?? "",
+  );
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -68,6 +71,7 @@ export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFor
       urgency,
       clinical_question: clinicalQuestion.trim() || undefined,
       summary: summary.trim() || undefined,
+      patient_id: patientId.trim() ? parseInt(patientId.trim(), 10) : undefined,
     };
     onSubmit(data);
   };
@@ -204,6 +208,22 @@ export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFor
               placeholder="Brief case summary..."
               rows={3}
               className="form-input resize-none"
+            />
+          </div>
+
+          {/* Patient ID */}
+          <div className="form-group">
+            <label htmlFor="case-patient-id" className="form-label">
+              Patient ID (optional)
+            </label>
+            <input
+              id="case-patient-id"
+              type="number"
+              value={patientId}
+              onChange={(e) => setPatientId(e.target.value)}
+              placeholder="e.g., 154"
+              className="form-input"
+              min={1}
             />
           </div>
 
