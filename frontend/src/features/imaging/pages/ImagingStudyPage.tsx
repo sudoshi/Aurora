@@ -7,9 +7,9 @@ import OhifViewer from "../components/OhifViewer";
 import MeasurementPanel from "../components/MeasurementPanel";
 
 const STUDY_TABS = [
+  { id: "viewer",   label: "View Scan", icon: Monitor },
   { id: "metadata", label: "Metadata", icon: ScanLine },
   { id: "measurements", label: "Measurements", icon: Ruler },
-  { id: "viewer",   label: "View Scan", icon: Monitor },
 ] as const;
 
 type StudyTab = (typeof STUDY_TABS)[number]["id"];
@@ -17,7 +17,7 @@ type StudyTab = (typeof STUDY_TABS)[number]["id"];
 export default function ImagingStudyPage() {
   const { id } = useParams<{ id: string }>();
   const studyId = parseInt(id ?? "0");
-  const [activeTab, setActiveTab] = useState<StudyTab>("metadata");
+  const [activeTab, setActiveTab] = useState<StudyTab>("viewer");
 
   const { data: study, isLoading } = useImagingStudy(studyId);
   const { data: features } = useImagingFeatures({ study_id: studyId, per_page: 50 });
