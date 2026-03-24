@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Pencil, Loader2, Clock,
   MessageSquare, Tag, FileText, Gavel, Users,
   Download, Trash2, Upload, ExternalLink,
   ChevronDown, ChevronUp,
+  Activity, FlaskConical, Hospital, LayoutList, ScanLine, Dna, Brain, User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -17,6 +18,20 @@ import {
 import { CaseForm } from "../components/CaseForm";
 import { CaseTeamPanel } from "../components/CaseTeamPanel";
 import type { UpdateCaseData } from "../types/case";
+import { usePatientProfile, usePatientStats } from "@/features/patient-profile/hooks/useProfiles";
+import { PatientDemographicsCard } from "@/features/patient-profile/components/PatientDemographicsCard";
+import { PatientBriefing } from "@/features/patient-profile/components/PatientBriefing";
+import { PatientTimeline } from "@/features/patient-profile/components/PatientTimeline";
+import { PatientLabPanel } from "@/features/patient-profile/components/PatientLabPanel";
+import { PatientVisitView } from "@/features/patient-profile/components/PatientVisitView";
+import { PatientNotesTab } from "@/features/patient-profile/components/PatientNotesTab";
+import PatientImagingTab from "@/features/patient-profile/components/PatientImagingTab";
+import PatientGenomicsTab from "@/features/patient-profile/components/PatientGenomicsTab";
+import { PatientsLikeThis } from "@/features/patient-profile/components/PatientsLikeThis";
+import { ClinicalEventCard } from "@/features/patient-profile/components/ClinicalEventCard";
+import { CollaborationPanel } from "@/features/patient-profile/components/CollaborationPanel";
+import { VIEW_TAB_TO_DOMAIN } from "@/features/patient-profile/types/collaboration";
+import { downloadEventsAsCsv } from "@/features/patient-profile/utils/csvExport";
 
 // ── Color maps ───────────────────────────────────────────────────────────────
 
@@ -47,6 +62,32 @@ const TABS = [
   { id: "overview",   label: "Overview",   icon: <Clock size={14} /> },
   { id: "documents",  label: "Documents",  icon: <FileText size={14} /> },
   { id: "team",       label: "Team",       icon: <Users size={14} /> },
+];
+
+type ViewMode = "briefing" | "timeline" | "list" | "labs" | "visits" | "notes" | "imaging" | "genomics" | "similar";
+
+type DomainTab = "all" | "condition" | "medication" | "procedure" | "measurement" | "observation" | "visit";
+
+const VIEW_BUTTONS: { mode: ViewMode; icon: React.ReactNode; label: string }[] = [
+  { mode: "briefing", icon: <User size={12} />, label: "Briefing" },
+  { mode: "timeline", icon: <Activity size={12} />, label: "Timeline" },
+  { mode: "list", icon: <LayoutList size={12} />, label: "List" },
+  { mode: "labs", icon: <FlaskConical size={12} />, label: "Labs" },
+  { mode: "visits", icon: <Hospital size={12} />, label: "Visits" },
+  { mode: "notes", icon: <FileText size={12} />, label: "Notes" },
+  { mode: "imaging", icon: <ScanLine size={12} />, label: "Imaging" },
+  { mode: "genomics", icon: <Dna size={12} />, label: "Genomics" },
+  { mode: "similar", icon: <Brain size={12} />, label: "Similar Patients" },
+];
+
+const DOMAIN_TABS: { key: DomainTab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "condition", label: "Conditions" },
+  { key: "medication", label: "Medications" },
+  { key: "procedure", label: "Procedures" },
+  { key: "measurement", label: "Measurements" },
+  { key: "observation", label: "Observations" },
+  { key: "visit", label: "Visits" },
 ];
 
 // ── Documents tab content ────────────────────────────────────────────────────
@@ -227,131 +268,6 @@ function DocumentsTab({ caseId }: { caseId: number }) {
   );
 }
 
-// ── Overview tab content ─────────────────────────────────────────────────────
-
-function OverviewTab({
-  clinicalCase,
-}: {
-  clinicalCase: NonNullable<ReturnType<typeof useCase>["data"]>;
-}) {
-  return (
-    <div className="space-y-6">
-      {/* Patient link */}
-      {clinicalCase.patient_id && (
-        <Link
-          to={`/profiles/${clinicalCase.patient_id}`}
-          className="flex items-center justify-between rounded-lg border border-[#2DD4BF]/20 bg-[#2DD4BF]/5 px-4 py-3 transition-colors hover:bg-[#2DD4BF]/10"
-        >
-          <span className="text-sm font-medium text-[#2DD4BF]">Open Patient</span>
-          <ExternalLink size={14} className="text-[#2DD4BF]" />
-        </Link>
-      )}
-
-      {/* Clinical question */}
-      {clinicalCase.clinical_question && (
-        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
-            Clinical Question
-          </h4>
-          <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
-            {clinicalCase.clinical_question}
-          </p>
-        </div>
-      )}
-
-      {/* Summary */}
-      {clinicalCase.summary && (
-        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
-            Summary
-          </h4>
-          <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
-            {clinicalCase.summary}
-          </p>
-        </div>
-      )}
-
-      {/* Details grid */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
-            Case Type
-          </p>
-          <p className="mt-1 text-sm font-medium text-[#B4BAC8]">
-            {clinicalCase.case_type.replace(/_/g, " ")}
-          </p>
-        </div>
-        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
-            Created
-          </p>
-          <p className="mt-1 text-sm font-medium text-[#B4BAC8] font-['IBM_Plex_Mono',monospace]">
-            {new Date(clinicalCase.created_at).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </p>
-        </div>
-        {clinicalCase.scheduled_at && (
-          <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
-              Scheduled
-            </p>
-            <p className="mt-1 text-sm font-medium text-[#B4BAC8] font-['IBM_Plex_Mono',monospace]">
-              {new Date(clinicalCase.scheduled_at).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </p>
-          </div>
-        )}
-        <div className="rounded-lg border border-[#1C1C48] bg-[#16163A] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
-            Creator
-          </p>
-          <p className="mt-1 text-sm font-medium text-[#B4BAC8]">
-            {clinicalCase.creator?.name ?? `User #${clinicalCase.created_by}`}
-          </p>
-        </div>
-      </div>
-
-      {/* Activity stats */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
-          <MessageSquare size={14} className="text-[#4A5068]" />
-          <span className="text-xs text-[#7A8298]">Discussions</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
-            {clinicalCase.discussions_count ?? 0}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
-          <Tag size={14} className="text-[#4A5068]" />
-          <span className="text-xs text-[#7A8298]">Annotations</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
-            {clinicalCase.annotations_count ?? 0}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
-          <FileText size={14} className="text-[#4A5068]" />
-          <span className="text-xs text-[#7A8298]">Documents</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
-            {clinicalCase.documents_count ?? 0}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-[#1C1C48] bg-[#16163A] p-3">
-          <Gavel size={14} className="text-[#4A5068]" />
-          <span className="text-xs text-[#7A8298]">Decisions</span>
-          <span className="ml-auto font-['IBM_Plex_Mono',monospace] text-sm font-semibold text-[#B4BAC8]">
-            {clinicalCase.decisions_count ?? 0}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function CaseDetailPage() {
@@ -365,6 +281,61 @@ export default function CaseDetailPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [showEditForm, setShowEditForm] = useState(false);
   const [contextCollapsed, setContextCollapsed] = useState(false);
+
+  // Patient profile state (for Overview tab)
+  const [viewMode, setViewMode] = useState<ViewMode>("briefing");
+  const [domainTab, setDomainTab] = useState<DomainTab>("all");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelTab] = useState<"discuss" | "tasks" | "flags" | "decisions">("discuss");
+  const [panelRecordRef, _setPanelRecordRef] = useState<string | undefined>();
+
+  // Fetch patient profile when case has a patient_id
+  const patientId = clinicalCase?.patient_id ?? null;
+  const {
+    data: profile,
+    isLoading: loadingProfile,
+    error: profileError,
+  } = usePatientProfile(patientId);
+  const { data: profileStats } = usePatientStats(patientId);
+
+  // Derived events (same logic as PatientProfilePage)
+  const allEvents = useMemo(() => {
+    if (!profile) return [];
+    return [
+      ...(profile.conditions ?? []),
+      ...(profile.medications ?? []),
+      ...(profile.procedures ?? []),
+      ...(profile.measurements ?? []),
+      ...(profile.observations ?? []),
+      ...(profile.visits ?? []),
+    ].sort(
+      (a, b) =>
+        new Date(b.start_date).getTime() - new Date(a.start_date).getTime(),
+    );
+  }, [profile]);
+
+  const filteredEvents = useMemo(() => {
+    if (domainTab === "all") return allEvents;
+    return allEvents.filter((e) => e.domain === domainTab);
+  }, [allEvents, domainTab]);
+
+  const handleExportCsv = () => {
+    if (!profile || !patientId) return;
+    downloadEventsAsCsv(filteredEvents, `patient-${patientId}-${domainTab}.csv`);
+  };
+
+  // Keyboard shortcut: Cmd/Ctrl+Shift+C toggles collaboration panel (Overview tab only)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "c") {
+        if (activeTab !== "overview" || !patientId) return;
+        e.preventDefault();
+        setPanelOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [activeTab, patientId]);
 
   if (isLoading) {
     return (
@@ -572,7 +543,221 @@ export default function CaseDetailPage() {
       </div>
 
       {/* Tab content */}
-      {activeTab === "overview" && <OverviewTab clinicalCase={clinicalCase} />}
+      {activeTab === "overview" && (
+  <div className={`transition-all duration-300 ${panelOpen ? "mr-80" : ""}`}>
+    {/* No patient linked */}
+    {!clinicalCase.patient_id && (
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A] py-16">
+        <Users size={32} className="mb-3 text-[#4A5068]" />
+        <h3 className="text-base font-semibold text-[#E8ECF4]">No Patient Linked</h3>
+        <p className="mt-1 text-sm text-[#7A8298]">
+          Link a patient to this case to view their full clinical profile here.
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowEditForm(true)}
+          className="mt-4 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-semibold text-[#0A0A18] transition-colors hover:bg-[#25B8A5]"
+        >
+          Link Patient
+        </button>
+      </div>
+    )}
+
+    {/* Loading profile */}
+    {clinicalCase.patient_id && loadingProfile && (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 size={24} className="animate-spin text-[#4A5068]" />
+      </div>
+    )}
+
+    {/* Profile error */}
+    {clinicalCase.patient_id && profileError && (
+      <div className="flex flex-col items-center justify-center py-16">
+        <p className="text-sm text-[#F0607A]">Failed to load patient profile</p>
+        <p className="mt-1 text-xs text-[#7A8298]">
+          Patient #{clinicalCase.patient_id} may not exist.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="mt-4 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm text-[#7A8298] transition-colors hover:border-[#2A2A60] hover:text-[#B4BAC8]"
+        >
+          Retry
+        </button>
+      </div>
+    )}
+
+    {/* Patient profile loaded */}
+    {clinicalCase.patient_id && profile && (
+      <div className="space-y-5">
+        {/* Demographics + open full profile link */}
+        <div className="relative">
+          <PatientDemographicsCard
+            patient={profile.patient}
+            profile={profile}
+            stats={profileStats}
+            onDrillDown={(view, domain) => {
+              setViewMode(view as ViewMode);
+              if (domain) setDomainTab(domain as DomainTab);
+            }}
+          />
+          <Link
+            to={`/profiles/${clinicalCase.patient_id}`}
+            className="absolute right-3 top-3 flex items-center gap-1 text-xs text-[#7A8298] hover:text-[#2DD4BF] transition-colors"
+            title="Open full profile"
+          >
+            <ExternalLink size={12} />
+            Full profile
+          </Link>
+        </div>
+
+        {/* View controls */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <span className="text-sm font-semibold text-[#E8ECF4]">
+            Clinical Events ({allEvents.length})
+          </span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 rounded-lg border border-[#1C1C48] bg-[#0A0A18] p-0.5">
+              {VIEW_BUTTONS.filter((b) => {
+                if (b.mode === "imaging" && (profile.imaging ?? []).length === 0) return false;
+                if (b.mode === "genomics" && (profile.genomics ?? []).length === 0) return false;
+                return true;
+              }).map(({ mode, icon, label }) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    viewMode === mode
+                      ? "bg-[#2DD4BF]/10 text-[#2DD4BF]"
+                      : "text-[#7A8298] hover:text-[#B4BAC8]",
+                  )}
+                >
+                  {icon}
+                  {label}
+                </button>
+              ))}
+            </div>
+            {viewMode === "list" && (
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A2A60] px-3 py-1.5 text-xs text-[#7A8298] hover:text-[#E8ECF4] hover:border-[#4A5068] transition-colors"
+              >
+                <Download size={12} />
+                Export CSV
+              </button>
+            )}
+            <button
+              onClick={() => setPanelOpen((prev) => !prev)}
+              className="ml-auto px-3 py-1.5 rounded text-xs font-semibold"
+              style={{ background: "rgba(167,139,250,0.15)", color: "#a78bfa" }}
+            >
+              {panelOpen ? "Close Panel" : "Collaborate \u00BB"}
+            </button>
+          </div>
+        </div>
+
+        {/* Active view */}
+        {viewMode === "briefing" && (
+          <PatientBriefing
+            patientId={clinicalCase.patient_id}
+            profile={profile}
+            onNavigate={(tab) => setViewMode(tab as ViewMode)}
+          />
+        )}
+
+        {viewMode === "timeline" && (
+          <PatientTimeline
+            events={allEvents}
+            observationPeriods={profile.observation_periods}
+          />
+        )}
+
+        {viewMode === "labs" && (
+          <PatientLabPanel events={allEvents} patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "visits" && (
+          <PatientVisitView events={allEvents} patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "notes" && (
+          <PatientNotesTab patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "imaging" && (
+          <PatientImagingTab studies={profile.imaging ?? []} patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "genomics" && (
+          <PatientGenomicsTab patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "similar" && (
+          <PatientsLikeThis patientId={clinicalCase.patient_id} />
+        )}
+
+        {viewMode === "list" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-1 border-b border-[#1C1C48] overflow-x-auto">
+              {DOMAIN_TABS.map((tab) => {
+                const count =
+                  tab.key === "all"
+                    ? allEvents.length
+                    : allEvents.filter((e) => e.domain === tab.key).length;
+                if (tab.key !== "all" && count === 0) return null;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setDomainTab(tab.key)}
+                    className={cn(
+                      "relative px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap",
+                      domainTab === tab.key
+                        ? "text-[#2DD4BF]"
+                        : "text-[#7A8298] hover:text-[#B4BAC8]",
+                    )}
+                  >
+                    {tab.label} <span className="text-[10px] opacity-60">({count})</span>
+                    {domainTab === tab.key && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2DD4BF]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {filteredEvents.length === 0 ? (
+              <div className="flex items-center justify-center h-32 rounded-lg border border-dashed border-[#2A2A60] bg-[#10102A]">
+                <p className="text-sm text-[#7A8298]">No events in this category</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {filteredEvents.map((event, i) => (
+                  <ClinicalEventCard key={i} event={event} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* Collaboration panel */}
+    {clinicalCase.patient_id && (
+      <CollaborationPanel
+        patientId={clinicalCase.patient_id}
+        domain={VIEW_TAB_TO_DOMAIN[viewMode]}
+        isOpen={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        initialTab={panelTab}
+        initialRecordRef={panelRecordRef}
+      />
+    )}
+  </div>
+)}
       {activeTab === "documents" && <DocumentsTab caseId={caseId} />}
       {activeTab === "team" && (
         <CaseTeamPanel
