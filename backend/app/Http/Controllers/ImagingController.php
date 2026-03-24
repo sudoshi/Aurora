@@ -17,19 +17,28 @@ class ImagingController extends Controller
 
     private function formatStudy(ImagingStudy $study): array
     {
+        $isIndexed = $study->dicom_endpoint === 'orthanc';
+
         return [
             'id' => $study->id,
             'patient_id' => $study->patient_id,
+            'person_id' => $study->patient_id,
             'study_uid' => $study->study_uid,
+            'study_instance_uid' => $study->study_uid,
             'modality' => $study->modality,
             'study_date' => $study->study_date?->toDateString(),
+            'study_description' => $study->description,
             'description' => $study->description,
             'body_part' => $study->body_part,
             'laterality' => $study->laterality,
             'accession_number' => $study->accession_number,
             'num_series' => $study->num_series,
+            'num_images' => $study->num_instances,
             'num_instances' => $study->num_instances,
             'dicom_endpoint' => $study->dicom_endpoint,
+            'orthanc_study_id' => $isIndexed ? $study->study_uid : null,
+            'wadors_uri' => $isIndexed ? '/orthanc/dicom-web' : null,
+            'status' => $isIndexed ? 'indexed' : 'pending',
             'source_id' => $study->source_id,
             'source_type' => $study->source_type,
             'measurement_count' => $study->imagingMeasurements()->count(),
