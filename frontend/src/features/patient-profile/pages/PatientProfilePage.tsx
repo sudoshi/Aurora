@@ -32,9 +32,9 @@ import { PatientsLikeThis } from "../components/PatientsLikeThis";
 import PatientImagingTab from "../components/PatientImagingTab";
 import PatientGenomicsTab from "../components/PatientGenomicsTab";
 import { useProfileStore } from "@/stores/profileStore";
-import type { ClinicalEvent } from "../types/profile";
 import { CollaborationPanel } from '../components/CollaborationPanel';
 import { VIEW_TAB_TO_DOMAIN } from '../types/collaboration';
+import { downloadEventsAsCsv } from "../utils/csvExport";
 
 type ViewMode = "briefing" | "timeline" | "list" | "labs" | "visits" | "notes" | "imaging" | "genomics" | "similar";
 
@@ -72,22 +72,6 @@ const VIEW_BUTTONS: {
   { mode: "genomics", icon: <Dna size={12} />, label: "Genomics" },
   { mode: "similar", icon: <Brain size={12} />, label: "Similar Patients" },
 ];
-
-function downloadEventsAsCsv(events: ClinicalEvent[], filename: string) {
-  if (events.length === 0) return;
-  const headers = ["domain", "concept_code", "concept_name", "start_date", "end_date", "value", "unit"];
-  const rows = events.map((e) =>
-    [e.domain, e.concept_code ?? "", `"${(e.concept_name ?? "").replace(/"/g, '""')}"`, e.start_date, e.end_date ?? "", e.value_as_string ?? e.value_numeric ?? "", e.unit ?? ""].join(","),
-  );
-  const csv = [headers.join(","), ...rows].join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 export default function PatientProfilePage() {
   const { personId } = useParams<{ personId: string }>();
