@@ -1,5 +1,7 @@
 # Aurora
 
+<img width="5120" height="2674" alt="image" src="https://github.com/user-attachments/assets/7ff53769-4110-44e7-ab67-7366ff78184c" />
+
 A secure, real-time collaboration platform designed for multidisciplinary clinical teams to coordinate patient care efficiently. Built with Laravel, React, Tailwind CSS, and PostgreSQL.
 
 ## Features
