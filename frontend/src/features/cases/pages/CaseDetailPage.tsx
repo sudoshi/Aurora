@@ -4,6 +4,7 @@ import {
   ArrowLeft, Pencil, Loader2, Clock,
   MessageSquare, Tag, FileText, Gavel, Users,
   Download, Trash2, Upload, ExternalLink,
+  ChevronDown, ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -363,6 +364,7 @@ export default function CaseDetailPage() {
 
   const [activeTab, setActiveTab] = useState("overview");
   const [showEditForm, setShowEditForm] = useState(false);
+  const [contextCollapsed, setContextCollapsed] = useState(false);
 
   if (isLoading) {
     return (
@@ -455,6 +457,102 @@ export default function CaseDetailPage() {
             Edit
           </button>
         </div>
+      </div>
+
+      {/* Collapsible case context */}
+      <div className="rounded-lg border border-[#1C1C48] bg-[#16163A]">
+        <button
+          type="button"
+          onClick={() => setContextCollapsed((prev) => !prev)}
+          className="flex w-full items-center justify-between px-4 py-3 text-left"
+        >
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
+            Case Context
+          </span>
+          {contextCollapsed ? (
+            <ChevronDown size={14} className="text-[#4A5068]" />
+          ) : (
+            <ChevronUp size={14} className="text-[#4A5068]" />
+          )}
+        </button>
+
+        {!contextCollapsed && (
+          <div className="space-y-4 border-t border-[#1C1C48] px-4 pb-4 pt-3">
+            {/* Clinical question */}
+            {clinicalCase.clinical_question && (
+              <div>
+                <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
+                  Clinical Question
+                </h4>
+                <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
+                  {clinicalCase.clinical_question}
+                </p>
+              </div>
+            )}
+
+            {/* Summary */}
+            {clinicalCase.summary && (
+              <div>
+                <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#4A5068]">
+                  Summary
+                </h4>
+                <p className="text-sm text-[#B4BAC8] whitespace-pre-wrap">
+                  {clinicalCase.summary}
+                </p>
+              </div>
+            )}
+
+            {/* Details row */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-[#7A8298]">
+              <span>
+                <span className="text-[#4A5068]">Type:</span>{" "}
+                {clinicalCase.case_type.replace(/_/g, " ")}
+              </span>
+              <span>
+                <span className="text-[#4A5068]">Created:</span>{" "}
+                {new Date(clinicalCase.created_at).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+              {clinicalCase.scheduled_at && (
+                <span>
+                  <span className="text-[#4A5068]">Scheduled:</span>{" "}
+                  {new Date(clinicalCase.scheduled_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
+              <span>
+                <span className="text-[#4A5068]">By:</span>{" "}
+                {clinicalCase.creator?.name ?? `User #${clinicalCase.created_by}`}
+              </span>
+            </div>
+
+            {/* Activity stats row */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-1.5 text-xs text-[#7A8298]">
+                <MessageSquare size={12} className="text-[#4A5068]" />
+                <span>{clinicalCase.discussions_count ?? 0} discussions</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#7A8298]">
+                <Tag size={12} className="text-[#4A5068]" />
+                <span>{clinicalCase.annotations_count ?? 0} annotations</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#7A8298]">
+                <FileText size={12} className="text-[#4A5068]" />
+                <span>{clinicalCase.documents_count ?? 0} documents</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#7A8298]">
+                <Gavel size={12} className="text-[#4A5068]" />
+                <span>{clinicalCase.decisions_count ?? 0} decisions</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}
