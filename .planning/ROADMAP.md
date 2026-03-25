@@ -61,10 +61,10 @@ Plans:
   1. Running `php artisan test` executes Pest with DatabaseTruncation across app, clinical, and public schemas
   2. Factories exist for User, Patient, ClinicalCase, GeneDrugInteraction, and GenomicVariant and produce valid model instances
   3. A sample test using factories passes against the test database
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: Configure Pest multi-schema and create model factories
+- [ ] 03-01-PLAN.md — Configure Pest multi-schema and create model factories
 
 ### Phase 4: Frontend & AI Test Infrastructure
 **Goal**: Vitest, MSW, pytest, and Playwright are all configured and a smoke test passes in each
