@@ -59,9 +59,9 @@ describe('GET /api/genomics/interactions', function () {
     });
 
     it('filters by gene', function () {
-        GeneDrugInteraction::factory()->create(['gene' => 'BRAF']);
-        GeneDrugInteraction::factory()->create(['gene' => 'BRAF']);
-        GeneDrugInteraction::factory()->create(['gene' => 'KRAS']);
+        GeneDrugInteraction::factory()->create(['gene' => 'BRAF', 'drug' => 'Vemurafenib']);
+        GeneDrugInteraction::factory()->create(['gene' => 'BRAF', 'drug' => 'Dabrafenib']);
+        GeneDrugInteraction::factory()->create(['gene' => 'KRAS', 'drug' => 'Sotorasib']);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/genomics/interactions?gene=BRAF');
