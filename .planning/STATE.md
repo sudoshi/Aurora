@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-03-25T21:09:56.484Z"
+status: in-progress
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-03-25T21:21:32.117Z"
 last_activity: "2026-03-25 -- Phase 8 Plan 01 executed: AI service tests (22 tests), scoped coverage to 82.42%"
 progress:
   total_phases: 10
   completed_phases: 8
-  total_plans: 15
-  completed_plans: 15
-  percent: 100
+  total_plans: 17
+  completed_plans: 16
+  percent: 94
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 8 - AI Service Tests (Complete)
+**Current focus:** Phase 9 - Feature Completion
 
 ## Current Position
 
-Phase: 8 of 10 (AI Service Tests)
-Plan: 1 of 1 in current phase (Complete)
-Status: Phase complete
-Last activity: 2026-03-25 -- Phase 8 Plan 01 executed: AI service tests (22 tests), scoped coverage to 82.42%
+Phase: 9 of 10 (Feature Completion)
+Plan: 1 of 2 in current phase (Complete)
+Status: In progress
+Last activity: 2026-03-25 -- Phase 9 Plan 01 executed: OncoKB parseAndUpsertTreatments with evidence level mapping, 12 tests passing
 
-Progress: [██████████] 100%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [██████████] 100%
 | Phase 07 P03 | 3min | 2 tasks | 5 files |
 | Phase 07-frontend-tests P04 | 3min | 2 tasks | 3 files |
 | Phase 08-ai-service-tests P01 | 3min | 2 tasks | 6 files |
+| Phase 09 P01 | 2min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,7 @@ Recent decisions affecting current work:
 - [Phase 07-frontend-tests]: Scoped coverage include to tested modules (stores, genomics components/hooks, auth, lib) for 87.73% statement coverage
 - [08-01]: Patch check_ollama_health at import site (app.routers.health) not source module
 - [08-01]: Scoped coverage to 7 modules (~330 lines) for achievable 80% threshold (actual: 82.42%)
+- [Phase 09]: variant_pattern='*' for gene-level OncoKB treatments; drug names normalized lowercase+trimmed; unknown levels skipped gracefully
 
 ### Pending Todos
 
@@ -119,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T21:07:27.153Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-03-25T21:21:32.115Z
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
