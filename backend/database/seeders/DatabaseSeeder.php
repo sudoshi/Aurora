@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             GeneDrugInteractionSeeder::class,
             ClinicalDemoSeeder::class,
             SampleCaseSeeder::class,
+            FusionWeightConfigSeeder::class,
         ]);
     }
 }
