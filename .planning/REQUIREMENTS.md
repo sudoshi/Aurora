@@ -75,8 +75,8 @@
 ### Feature Completion
 
 - [x] **FEAT-01**: OncoKB response parsing in OncoKbService (parse treatment annotations, map evidence levels, upsert GeneDrugInteraction records)
-- [ ] **FEAT-02**: GenomicsController upload endpoints (listUploads, storeUpload, showUpload with file handling)
-- [ ] **FEAT-03**: GenomicsController criteria endpoints (listCriteria, storeCriterion, updateCriterion, destroyCriterion with persistence)
+- [x] **FEAT-02**: GenomicsController upload endpoints (listUploads, storeUpload, showUpload with file handling)
+- [x] **FEAT-03**: GenomicsController criteria endpoints (listCriteria, storeCriterion, updateCriterion, destroyCriterion with persistence)
 
 ## v2 Requirements
 
@@ -152,8 +152,8 @@
 | ATEST-03 | Phase 8 | Complete |
 | ATEST-04 | Phase 8 | Complete |
 | FEAT-01 | Phase 9 | Complete |
-| FEAT-02 | Phase 9 | Pending |
-| FEAT-03 | Phase 9 | Pending |
+| FEAT-02 | Phase 9 | Complete |
+| FEAT-03 | Phase 9 | Complete |
 | E2E-01 | Phase 10 | Pending |
 | E2E-02 | Phase 10 | Pending |
 | E2E-03 | Phase 10 | Pending |
