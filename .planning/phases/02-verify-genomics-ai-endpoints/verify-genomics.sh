@@ -19,7 +19,7 @@ LOGIN_RESP=$(curl -s -X POST "$BASE_URL/api/auth/login" \
   -H 'Content-Type: application/json' \
   -d '{"email":"admin@acumenus.net","password":"superuser"}')
 
-TOKEN=$(echo "$LOGIN_RESP" | jq -r '.data.access_token')
+TOKEN=$(echo "$LOGIN_RESP" | jq -r '.data.access_token // .access_token')
 
 if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
   echo "[AUTH] FAIL - Could not obtain auth token"
