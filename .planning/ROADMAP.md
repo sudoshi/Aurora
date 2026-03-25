@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Frontend & AI Test Infrastructure** - Configure Vitest with coverage, set up MSW handlers, configure pytest, and update Playwright (completed 2026-03-25)
 - [x] **Phase 5: Backend Feature Tests** - Write feature tests for all six controllers plus dashboard, reaching 80%+ backend coverage (completed 2026-03-25)
 - [x] **Phase 6: Backend Unit Tests** - Write unit tests for all service classes (Auth, Patient, Case, Radiogenomics, OncoKb) (completed 2026-03-25)
-- [ ] **Phase 7: Frontend Tests** - Write store, hook, and component tests for auth, genomics, and UI components
+- [x] **Phase 7: Frontend Tests** - Write store, hook, and component tests for auth, genomics, and UI components (completed 2026-03-25)
 - [ ] **Phase 8: AI Service Tests** - Write endpoint and service tests for FastAPI health and genomic briefing
 - [ ] **Phase 9: Feature Completion** - Implement OncoKB response parsing, genomics upload endpoints, and criteria endpoints
 - [ ] **Phase 10: E2E Tests** - Write Playwright tests for login, patient profile, genomics tab, and case management flows
@@ -190,7 +190,7 @@ Note: Phases 3 and 4 can run in parallel (both depend only on Phase 1). Phases 5
 | 4. Frontend & AI Test Infrastructure | 2/2 | Complete   | 2026-03-25 |
 | 5. Backend Feature Tests | 3/3 | Complete    | 2026-03-25 |
 | 6. Backend Unit Tests | 2/2 | Complete    | 2026-03-25 |
-| 7. Frontend Tests | 3/4 | In Progress|  |
+| 7. Frontend Tests | 3/4 | Complete    | 2026-03-25 |
 | 8. AI Service Tests | 0/1 | Not started | - |
 | 9. Feature Completion | 0/2 | Not started | - |
 | 10. E2E Tests | 0/2 | Not started | - |
