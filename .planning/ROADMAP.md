@@ -95,9 +95,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Fix .env.testing, verify AuthController tests, add PatientController and DashboardController tests
-- [ ] 05-02-PLAN.md — Feature tests for CaseController and SessionController
-- [ ] 05-03-PLAN.md — Feature tests for GenomicsController and RadiogenomicsController, coverage gate
+- [ ] 05-01-PLAN.md ï¿½ Fix .env.testing, verify AuthController tests, add PatientController and DashboardController tests
+- [ ] 05-02-PLAN.md ï¿½ Feature tests for CaseController and SessionController
+- [ ] 05-03-PLAN.md ï¿½ Feature tests for GenomicsController and RadiogenomicsController, coverage gate
 
 ### Phase 6: Backend Unit Tests
 **Goal**: All service classes have unit tests validating business logic independently of HTTP layer

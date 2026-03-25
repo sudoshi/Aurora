@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-25T18:38:52.758Z"
-last_activity: "2026-03-25 -- Phase 4 Plan 02 executed: pytest coverage/asyncio, conftest fixtures, Playwright smoke test"
+status: in-progress
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-25T19:04:00Z"
+last_activity: "2026-03-25 -- Phase 5 Plan 01 executed: fixed DB_HOST blocker, added Patient index/notes/gap tests and Dashboard tests"
 progress:
   total_phases: 10
   completed_phases: 4
-  total_plans: 5
-  completed_plans: 5
-  percent: 50
+  total_plans: 8
+  completed_plans: 7
+  percent: 75
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 4 - Frontend & AI Test Infrastructure
+**Current focus:** Phase 5 - Backend Feature Tests
 
 ## Current Position
 
-Phase: 4 of 10 (Frontend & AI Test Infrastructure) -- COMPLETE
-Plan: 2 of 2 in current phase (COMPLETE)
-Status: Phase 4 complete
-Last activity: 2026-03-25 -- Phase 4 Plan 02 executed: pytest coverage/asyncio, conftest fixtures, Playwright smoke test
+Phase: 5 of 10 (Backend Feature Tests) -- IN PROGRESS
+Plan: 1 of 3 in current phase (Plan 01 complete)
+Status: Executing Phase 5
+Last activity: 2026-03-25 -- Phase 5 Plan 01 executed: fixed DB_HOST blocker, added Patient index/notes/gap tests and Dashboard tests
 
-Progress: [█████-----] 50%
+Progress: [████████--] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 4.0min
-- Total execution time: 0.40 hours
+- Total plans completed: 7
+- Average duration: 3.9min
+- Total execution time: 0.45 hours
 
 **By Phase:**
 
@@ -47,9 +47,10 @@ Progress: [█████-----] 50%
 | 02-verify-genomics-ai | 1 | 3min | 3min |
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
+| 05-backend-feature-tests | 1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8min), 02-01 (3min), 03-01 (5min), 04-01 (3min), 04-02 (2min)
+- Last 5 plans: 02-01 (3min), 03-01 (5min), 04-01 (3min), 04-02 (2min), 05-01 (3min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [04-02]: cov-fail-under=0 for infrastructure phase; Phase 8 raises to 80
 - [04-02]: httpx.AsyncClient.post patch for Ollama mock (matches actual client usage)
 - [04-02]: npm install needed in e2e/ as node_modules not committed
+- [05-01]: Assert >=400 for unimplemented endpoints because catch-all exception handler converts all exceptions to 500
+- [05-01]: Index pagination tests use data.data path since ApiResponse::success wraps paginator differently than ApiResponse::paginated
 
 ### Pending Todos
 
@@ -92,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T18:33:19Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-25T19:04:00Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
