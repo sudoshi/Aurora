@@ -1,5 +1,33 @@
 # Aurora Devlog
 
+## 2026-03-25 — Nginx Static Assets Fix, Seeder Safety, DB Data Restoration
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Nginx Static Asset Serving Fix
+
+Aurora SVG logo was displaying as a broken image. Root cause: no `/image/` location block in nginx config — requests fell through to the Vite dev server catch-all, which returned SPA HTML (content-type `text/html`) instead of the SVG file.
+
+**Fix:** Added explicit `/image/` alias block in `docker/nginx/default.conf` alongside existing `/build/` and `/storage/` blocks.
+
+### Database Seeder Safety (Critical)
+
+After a migration, only the superuser was being seeded — all demo patients, cases, and gene-drug interactions were lost. Two problems:
+
+1. **DatabaseSeeder only called SuperuserSeeder** — all other seeders (ClinicalDemoSeeder, SampleCaseSeeder, GeneDrugInteractionSeeder, SpecialtyTemplateSeeder) were commented out or required manual invocation.
+2. **SampleCaseSeeder deleted ALL cases** — `DB::table('app.cases')->whereNull('deleted_at')->delete()` wiped user-created cases on every re-seed.
+
+**Fixes:**
+- **DatabaseSeeder** now includes all 5 seeders in the correct dependency order
+- **SampleCaseSeeder** made safe — only deletes cases linked to `DEMO-%` patients, never touches user-created data
+- All seeders verified idempotent: `updateOrCreate`, `firstOrCreate`, `insertOrIgnore`, or scoped deletes
+
+**Data restored:** 1 superuser, 13 patients, 12 cases, 42 gene-drug interactions, specialty templates.
+
+**Files changed:** `docker/nginx/default.conf`, `database/seeders/DatabaseSeeder.php`, `database/seeders/SampleCaseSeeder.php`
+
+---
+
 ## 2026-03-24 — Case-Patient Integration + Fully Dockerized Dev Environment
 
 **Branch:** `v2/phase-0-scaffold`

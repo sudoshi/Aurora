@@ -19,8 +19,16 @@ class SampleCaseSeeder extends Seeder
             return;
         }
 
-        // Delete existing sample cases to re-seed with linked patients
-        DB::table('app.cases')->whereNull('deleted_at')->delete();
+        // Only delete demo-linked cases (idempotent — won't touch user-created cases)
+        $demoPatientIds = ClinicalPatient::where('mrn', 'like', 'DEMO-%')
+            ->pluck('id')
+            ->toArray();
+
+        if (! empty($demoPatientIds)) {
+            DB::table('app.cases')
+                ->whereIn('patient_id', $demoPatientIds)
+                ->delete();
+        }
 
         // Map MRN → patient_id for linking
         $patients = ClinicalPatient::where('mrn', 'like', 'DEMO-%')
