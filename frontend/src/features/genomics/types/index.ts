@@ -124,3 +124,115 @@ export interface ClinVarStatus {
   last_sync_papu: boolean | null;
   syncs: ClinVarSyncLogEntry[];
 }
+
+// --- Gene-Drug Interactions ---
+
+export interface GeneDrugInteraction {
+  id: number;
+  gene: string;
+  variant_pattern: string;
+  drug: string;
+  drug_class: string | null;
+  relationship: "sensitive" | "resistant" | "dose_adjustment";
+  evidence_level: string;
+  indication: string | null;
+  mechanism: string | null;
+  source: "oncokb" | "nccn" | "fda" | "pharmgkb" | "manual";
+  source_url: string | null;
+  oncokb_last_synced_at: string | null;
+  last_verified_at: string | null;
+}
+
+// --- Genomic Briefing (AI) ---
+
+export interface GenomicBriefingVariant {
+  gene: string;
+  variant: string;
+  classification: string;
+  evidence_level: string | null;
+  therapies: string[];
+}
+
+export interface GenomicBriefingDrugExposure {
+  drug_name: string;
+  start_date: string | null;
+  end_date: string | null;
+}
+
+export interface GenomicBriefingInteraction {
+  gene: string;
+  drug: string;
+  relationship: string;
+  evidence_level: string;
+  mechanism: string | null;
+}
+
+export interface GenomicBriefingRequest {
+  patient_id: number;
+  variants: GenomicBriefingVariant[];
+  drug_exposures: GenomicBriefingDrugExposure[];
+  interactions: GenomicBriefingInteraction[];
+  total_variant_count: number;
+}
+
+export interface GenomicBriefingResponse {
+  briefing: string;
+  generated_at: string;
+  variant_count: number;
+  actionable_count: number;
+  error?: string;
+}
+
+// --- Radiogenomics (absorbed from features/radiogenomics) ---
+
+export interface DrugExposure {
+  drug_name: string;
+  drug_class: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  total_days: number | null;
+}
+
+export interface VariantDrugCorrelation {
+  variant_id: number;
+  gene_symbol: string;
+  variant: string;
+  clinical_significance: string;
+  drug_name: string;
+  relationship: string;
+  evidence_level: string;
+  mechanism: string | null;
+  source: string | null;
+  last_verified_at: string | null;
+  patient_exposed: boolean;
+  exposure_start: string | null;
+  exposure_end: string | null;
+}
+
+export interface PrecisionRecommendation {
+  gene: string;
+  variant: string;
+  drugs_avoid: string[];
+  drugs_consider: string[];
+  rationale: string;
+}
+
+export interface RadiogenomicsPanel {
+  patient: {
+    person_id: number;
+    gender: string | null;
+    year_of_birth: number | null;
+    race: string | null;
+    ethnicity: string | null;
+  };
+  variants: {
+    all: number;
+    actionable: number;
+    vus: number;
+    other: number;
+    details: GenomicVariant[];
+  };
+  drug_exposures: DrugExposure[];
+  correlations: VariantDrugCorrelation[];
+  recommendations: PrecisionRecommendation[];
+}

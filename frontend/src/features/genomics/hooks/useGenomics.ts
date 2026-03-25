@@ -14,8 +14,12 @@ import {
   searchClinVar,
   syncClinVar,
   annotateClinVar,
+  getInteractions,
+  getRadiogenomicsPanel,
+  generateGenomicBriefing,
+  interpretVariant,
 } from "../api/genomicsApi";
-import type { FileFormat, GenomeBuild, CriteriaType } from "../types";
+import type { FileFormat, GenomeBuild, CriteriaType, GenomicBriefingRequest } from "../types";
 
 // -- Stats ------------------------------------------------------------------
 
@@ -174,5 +178,35 @@ export function useAnnotateClinVar() {
       qc.invalidateQueries({ queryKey: ["genomics", "uploads"] });
       qc.invalidateQueries({ queryKey: ["genomics", "variants"] });
     },
+  });
+}
+
+export function useGeneDrugInteractions(gene?: string) {
+  return useQuery({
+    queryKey: ["gene-drug-interactions", gene],
+    queryFn: () => getInteractions(gene ? { gene } : {}),
+    staleTime: 300_000,
+  });
+}
+
+export function useRadiogenomicsPanel(patientId: number | null) {
+  return useQuery({
+    queryKey: ["radiogenomics-panel", patientId],
+    queryFn: () => getRadiogenomicsPanel(patientId!),
+    enabled: patientId != null && patientId > 0,
+    staleTime: 60_000,
+  });
+}
+
+export function useGenomicBriefing() {
+  return useMutation({
+    mutationFn: (data: GenomicBriefingRequest) => generateGenomicBriefing(data),
+  });
+}
+
+export function useVariantInterpretation() {
+  return useMutation({
+    mutationFn: ({ gene, variant, cancerType }: { gene: string; variant: string; cancerType?: string }) =>
+      interpretVariant(gene, variant, cancerType),
   });
 }

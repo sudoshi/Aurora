@@ -10,6 +10,10 @@ import type {
   CriteriaType,
   ClinVarVariant,
   ClinVarStatus,
+  GeneDrugInteraction,
+  GenomicBriefingRequest,
+  GenomicBriefingResponse,
+  RadiogenomicsPanel,
 } from "../types";
 
 const BASE = "/genomics";
@@ -166,4 +170,58 @@ export async function annotateClinVar(uploadId: number): Promise<{
 }> {
   const { data } = await apiClient.post(`${BASE}/uploads/${uploadId}/annotate-clinvar`);
   return data.data;
+}
+
+// --- Gene-Drug Interactions ---
+
+export async function getInteractions(
+  params: { gene?: string; evidence_level?: string; relationship?: string } = {},
+): Promise<GeneDrugInteraction[]> {
+  const { data } = await apiClient.get("/genomics/interactions", { params });
+  return data.data ?? data;
+}
+
+// --- Radiogenomics Panel (absorbed from features/radiogenomics) ---
+
+export async function getRadiogenomicsPanel(
+  patientId: number,
+): Promise<RadiogenomicsPanel> {
+  const { data } = await apiClient.get(`/radiogenomics/patients/${patientId}`);
+  return data.data ?? data;
+}
+
+// --- AI Genomic Briefing ---
+
+const AI_BASE = (import.meta as unknown as { env: Record<string, string | undefined> }).env.VITE_AI_URL ?? "http://localhost:8100/api";
+
+export async function generateGenomicBriefing(
+  payload: GenomicBriefingRequest,
+): Promise<GenomicBriefingResponse> {
+  const resp = await fetch(`${AI_BASE}/decision-support/genomic-briefing`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!resp.ok) {
+    return { briefing: "", generated_at: "", variant_count: 0, actionable_count: 0, error: `HTTP ${resp.status}` };
+  }
+  return resp.json();
+}
+
+// --- AI Variant Interpretation ---
+
+export async function interpretVariant(
+  gene: string,
+  variant: string,
+  cancerType?: string,
+): Promise<{ interpretation?: { gene: string; variant: string; classification: string; clinical_significance: string; actionable: boolean; targeted_therapies: string[]; clinical_trials: string[]; references: string[] }; error?: string }> {
+  const resp = await fetch(`${AI_BASE}/decision-support/variant-interpret`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ gene, variant, cancer_type: cancerType }),
+  });
+  if (!resp.ok) {
+    return { error: `HTTP ${resp.status}` };
+  }
+  return resp.json();
 }
