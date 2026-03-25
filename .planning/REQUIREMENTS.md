@@ -20,8 +20,8 @@
 
 ### Test Infrastructure
 
-- [ ] **INFRA-01**: Configure Pest with multi-schema PostgreSQL support (DatabaseTruncation or custom)
-- [ ] **INFRA-02**: Create Laravel model factories for User, Patient, ClinicalCase, GeneDrugInteraction, GenomicVariant
+- [x] **INFRA-01**: Configure Pest with multi-schema PostgreSQL support (DatabaseTruncation or custom)
+- [x] **INFRA-02**: Create Laravel model factories for User, Patient, ClinicalCase, GeneDrugInteraction, GenomicVariant
 - [ ] **INFRA-03**: Configure Vitest with coverage in `vite.config.ts` (test block, jsdom/happy-dom)
 - [ ] **INFRA-04**: Set up MSW 2.x handlers mirroring real API responses
 - [ ] **INFRA-05**: Create React test utilities (provider wrappers for QueryClient, Router, Zustand)
@@ -116,8 +116,8 @@
 | BUG-08 | Phase 2 | Complete |
 | BUG-09 | Phase 2 | Complete |
 | BUG-10 | Phase 2 | Complete |
-| INFRA-01 | Phase 3 | Pending |
-| INFRA-02 | Phase 3 | Pending |
+| INFRA-01 | Phase 3 | Complete |
+| INFRA-02 | Phase 3 | Complete |
 | INFRA-03 | Phase 4 | Pending |
 | INFRA-04 | Phase 4 | Pending |
 | INFRA-05 | Phase 4 | Pending |
