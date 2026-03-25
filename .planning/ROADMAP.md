@@ -170,11 +170,11 @@ Plans:
   2. User can navigate to a patient profile and view demographic, timeline, and clinical tabs
   3. User can open the Genomics tab and see the AI briefing, variant table, interactions, and treatment timeline
   4. User can create a clinical case, add a team member, and view the case detail page
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: E2E tests for login and patient profile flows
-- [ ] 10-02: E2E tests for genomics tab and case management flows
+- [ ] 10-01-PLAN.md — E2E tests for login and patient profile flows
+- [ ] 10-02-PLAN.md — E2E tests for genomics tab and case management flows
 
 ## Progress
 
