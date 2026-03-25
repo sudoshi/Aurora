@@ -11,15 +11,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5175,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-    },
+    host: '0.0.0.0',
+    port: 5173,
   },
-  base: '/build/',
+  base: process.env.NODE_ENV === 'production' ? '/build/' : '/',
   build: {
     outDir: 'dist',
     manifest: true,
