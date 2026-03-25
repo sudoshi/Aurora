@@ -155,11 +155,11 @@ Plans:
   1. OncoKbService parses treatment annotations from OncoKB API responses, maps evidence levels, and upserts GeneDrugInteraction records
   2. `POST /api/genomics/uploads` accepts a file, stores it, and `GET /api/genomics/uploads` lists stored uploads
   3. Criteria CRUD endpoints (list, store, update, destroy) persist and retrieve genomic criteria records
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 09-01: Implement OncoKB response parsing
-- [ ] 09-02: Implement genomics upload and criteria endpoints
+- [ ] 09-01-PLAN.md — OncoKB response parsing with evidence level mapping and upsert
+- [ ] 09-02-PLAN.md — GenomicUpload and GenomicCriteria models, migrations, and persistence
 
 ### Phase 10: E2E Tests
 **Goal**: Critical user flows are validated end-to-end through the browser with Playwright
