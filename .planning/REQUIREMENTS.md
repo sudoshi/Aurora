@@ -25,9 +25,9 @@
 - [x] **INFRA-03**: Configure Vitest with coverage in `vite.config.ts` (test block, jsdom/happy-dom)
 - [x] **INFRA-04**: Set up MSW 2.x handlers mirroring real API responses
 - [x] **INFRA-05**: Create React test utilities (provider wrappers for QueryClient, Router, Zustand)
-- [ ] **INFRA-06**: Configure pytest with coverage and `asyncio_mode = auto`
-- [ ] **INFRA-07**: Create FastAPI test client fixtures with mocked Ollama
-- [ ] **INFRA-08**: Update Playwright configuration for current app state
+- [x] **INFRA-06**: Configure pytest with coverage and `asyncio_mode = auto`
+- [x] **INFRA-07**: Create FastAPI test client fixtures with mocked Ollama
+- [x] **INFRA-08**: Update Playwright configuration for current app state
 
 ### Backend Tests
 
@@ -121,9 +121,9 @@
 | INFRA-03 | Phase 4 | Complete |
 | INFRA-04 | Phase 4 | Complete |
 | INFRA-05 | Phase 4 | Complete |
-| INFRA-06 | Phase 4 | Pending |
-| INFRA-07 | Phase 4 | Pending |
-| INFRA-08 | Phase 4 | Pending |
+| INFRA-06 | Phase 4 | Complete |
+| INFRA-07 | Phase 4 | Complete |
+| INFRA-08 | Phase 4 | Complete |
 | BTEST-01 | Phase 5 | Pending |
 | BTEST-02 | Phase 5 | Pending |
 | BTEST-03 | Phase 5 | Pending |

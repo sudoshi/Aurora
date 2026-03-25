@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-25T18:00:26.830Z"
-last_activity: "2026-03-25 -- Phase 3 Plan 01 executed: Pest test infrastructure with DatabaseTruncation, clinical factories, smoke tests"
+status: executing
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-25T18:33:58.321Z"
+last_activity: "2026-03-25 -- Phase 4 Plan 02 executed: pytest coverage/asyncio, conftest fixtures, Playwright smoke test"
 progress:
   total_phases: 10
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
-  percent: 40
+  completed_phases: 4
+  total_plans: 5
+  completed_plans: 6
+  percent: 50
 ---
 
 # Project State
@@ -25,19 +25,19 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 
 ## Current Position
 
-Phase: 4 of 10 (Frontend & AI Test Infrastructure)
-Plan: 1 of 2 in current phase (COMPLETE)
-Status: Executing phase 4
-Last activity: 2026-03-25 -- Phase 4 Plan 01 executed: Vitest with V8 coverage, MSW 2.x mock server, React test utilities
+Phase: 4 of 10 (Frontend & AI Test Infrastructure) -- COMPLETE
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase 4 complete
+Last activity: 2026-03-25 -- Phase 4 Plan 02 executed: pytest coverage/asyncio, conftest fixtures, Playwright smoke test
 
-Progress: [████------] 40%
+Progress: [█████-----] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 4.8min
-- Total execution time: 0.32 hours
+- Total plans completed: 6
+- Average duration: 4.0min
+- Total execution time: 0.40 hours
 
 **By Phase:**
 
@@ -46,10 +46,10 @@ Progress: [████------] 40%
 | 01-fix-critical-blocker | 1 | 8min | 8min |
 | 02-verify-genomics-ai | 1 | 3min | 3min |
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
-| 04-frontend-ai-test-infrastructure | 1 | 3min | 3min |
+| 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8min), 02-01 (3min), 03-01 (5min), 04-01 (3min)
+- Last 5 plans: 01-01 (8min), 02-01 (3min), 03-01 (5min), 04-01 (3min), 04-02 (2min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -76,6 +76,9 @@ Recent decisions affecting current work:
 - [04-01]: onUnhandledRequest: 'warn' (not 'error') to prevent false test failures
 - [04-01]: V8 coverage provider over istanbul for native speed
 - [04-01]: resetStores() covers all 4 Zustand stores for test isolation
+- [04-02]: cov-fail-under=0 for infrastructure phase; Phase 8 raises to 80
+- [04-02]: httpx.AsyncClient.post patch for Ollama mock (matches actual client usage)
+- [04-02]: npm install needed in e2e/ as node_modules not committed
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T18:18:03Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-25T18:33:19Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
