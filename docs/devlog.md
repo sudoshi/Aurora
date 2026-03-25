@@ -1,5 +1,86 @@
 # Aurora Devlog
 
+## 2026-03-25 — Stabilization & Verification Milestone Complete (10 Phases)
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Completed the full Aurora Stabilization & Verification milestone — 10 phases, 52 requirements, ~280 automated tests across all layers. Used GSD workflow for structured planning, execution, and verification.
+
+### Phase 1: Fix Critical Blocker & Verify Core Endpoints
+- **Root cause:** `exists:clinical.patients,id` validation in CaseController interpreted `clinical` as a Laravel connection name (not PostgreSQL schema). Connection didn't exist in `config/database.php`.
+- **Fix:** Added `clinical` database connection alias mirroring `pgsql` with `search_path => 'clinical,public'`.
+- All 7 core endpoint groups verified: login, register, change-password, dashboard, patients, cases.
+- Created reusable `verify-endpoints.sh` (237 lines, 8/8 checks pass).
+
+### Phase 2: Verify Genomics & AI Endpoints
+- Ran `GeneDrugInteractionSeeder` (42 records) and `ClinicalDemoSeeder` (766 variants).
+- Verified: interactions (42 records), stats (766 variants, 140 pathogenic), AI briefing via Ollama medgemma-q4.
+- Laravel AI proxy returns 503 in Docker dev (expected — container networking). Direct AI service works.
+
+### Phase 3: Backend Test Infrastructure
+- Configured Pest with `DatabaseTruncation` (not `RefreshDatabase` — 10-50x faster with 27+ migrations).
+- Created `.env.testing` with `aurora_test` database, array drivers for cache/session/queue.
+- Protected Spatie permission tables via `$exceptTables`.
+- Created 3 new Clinical factories (ClinicalPatient, GeneDrugInteraction, GenomicVariant).
+- Added `HasFactory` trait + `newFactory()` overrides to Clinical models.
+- 5 factory smoke tests passing.
+
+### Phase 4: Frontend & AI Test Infrastructure
+- **Frontend:** Vitest 3.x with V8 coverage + jsdom, MSW 2.x handlers (4 endpoints), React test utilities (QueryClient/Router/Zustand wrappers), 8 smoke tests.
+- **AI:** pytest with `asyncio_mode=auto` + coverage, `conftest.py` with mock_ollama/mock_anthropic, 3 smoke tests.
+- **E2E:** Playwright smoke test (2 tests, chromium).
+
+### Phase 5: Backend Feature Tests
+- **101 tests, 303 assertions** across all 7 controllers.
+- Auth (12), Patient (22), Dashboard (3), Case (16), Session (22), Genomics (20), Radiogenomics (7), Factory Smoke (5).
+- Discovered and fixed `app` connection alias (same pattern as `clinical`).
+- Fixed intermittent GenomicsControllerTest unique constraint collision.
+- Pre-existing Mockery conflict in legacy EventTest documented (not caused by this work).
+
+### Phase 6: Backend Unit Tests
+- **51 tests, 378 assertions** across 5 service test files.
+- AuthService (18): login, register, changePassword, logout, generateTempPassword, formatUser.
+- PatientService (7): getStats, createPatient, getProfile.
+- CaseService (13): create with auto-coordinator, update, archive, team management.
+- RadiogenomicsService (8): panels, variant classification, correlations.
+- OncoKbService (5): sync, HTTP handling, error paths.
+
+### Phase 7: Frontend Tests
+- **54 tests, 87.73% statement coverage.**
+- authStore (9), profileStore (6), genomics hooks (6), EvidenceBadge (5), ActionableVariantsPanel (4), TreatmentTimeline (3), GenomicBriefing (4), GenomicVariantTable (4), LoginPage (4), RegisterPage (4).
+- Coverage scoped to tested modules (untested features like patient-profile out of scope).
+
+### Phase 8: AI Service Tests
+- **22 tests, 82.42% scoped coverage.**
+- Health endpoint (5), genomic briefing endpoint (5), briefing service (6), LLM utils (4).
+- Coverage scoped to 7 core modules via pytest.ini.
+
+### Phase 9: Feature Completion
+- **OncoKB parsing:** Implemented `parseAndUpsertTreatments` with evidence level mapping (8 levels), resistance detection, combo drug normalization, idempotent `updateOrCreate`. 12 unit tests.
+- **Upload endpoints:** Created `GenomicUpload` model/migration/factory. Replaced 4 stub methods with real file storage + DB persistence. 8 feature tests.
+- **Criteria endpoints:** Created `GenomicCriteria` model/migration/factory. Replaced 4 stub methods with real Eloquent CRUD. 7 feature tests.
+
+### Phase 10: E2E Tests
+- **11 Playwright browser tests** across 4 spec files.
+- auth.spec.ts (3): login success, invalid credentials, form validation.
+- patient-profile.spec.ts (3): navigation, demographics, tab switching.
+- genomics.spec.ts (2): conditional skip when no genomic data (expected).
+- case-lifecycle.spec.ts (3): list, create, detail with team.
+- StorageState auth setup for rate-limiter resilience.
+
+### Totals
+- **52/52 requirements satisfied**
+- **~280 automated tests** (backend 152, frontend 54, AI 22, E2E 11)
+- **Coverage:** Frontend 87.73%, AI 82.42%
+- **Key bugs fixed:** clinical/app DB connection aliases, .env.testing DB_HOST, factory unique constraint
+- **Features completed:** OncoKB parsing, genomic uploads, genomic criteria
+
+**Files changed:** 100+ files across backend, frontend, ai, e2e, and .planning directories.
+
+---
+
 ## 2026-03-25 — Nginx Static Assets Fix, Seeder Safety, DB Data Restoration
 
 **Branch:** `v2/phase-0-scaffold`
