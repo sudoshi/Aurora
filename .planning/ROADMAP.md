@@ -109,11 +109,11 @@ Plans:
   3. CaseService tests validate create, update, archive, and team management logic
   4. RadiogenomicsService tests validate variant classification and panel generation
   5. OncoKbService tests validate connectivity check and response parsing logic
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Unit tests for AuthService and PatientService
-- [ ] 06-02: Unit tests for CaseService, RadiogenomicsService, and OncoKbService
+- [ ] 06-01-PLAN.md — Unit tests for AuthService and PatientService
+- [ ] 06-02-PLAN.md — Unit tests for CaseService, RadiogenomicsService, and OncoKbService
 
 ### Phase 7: Frontend Tests
 **Goal**: Zustand stores, TanStack Query hooks, and all genomics/auth components have passing tests
