@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 06-02-PLAN.md
+status: in-progress
+stopped_at: Completed 07-01-PLAN.md
 last_updated: "2026-03-25T20:07:55.467Z"
-last_activity: "2026-03-25 -- Phase 6 Plan 02 executed: CaseService (13 tests), RadiogenomicsService (8 tests), OncoKbService (5 tests), 26 new tests green"
+last_activity: "2026-03-25 -- Phase 7 Plan 01 executed: authStore (9 tests), profileStore (6 tests), shared mock factories"
 progress:
   total_phases: 10
   completed_phases: 6
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_plans: 14
+  completed_plans: 11
+  percent: 78
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 6 - Backend Unit Tests
+**Current focus:** Phase 7 - Frontend Tests
 
 ## Current Position
 
-Phase: 6 of 10 (Backend Unit Tests) -- COMPLETE
-Plan: 2 of 2 in current phase (phase complete)
-Status: Phase 6 complete, ready for Phase 7
-Last activity: 2026-03-25 -- Phase 6 Plan 02 executed: CaseService (13 tests), RadiogenomicsService (8 tests), OncoKbService (5 tests), 26 new tests green
+Phase: 7 of 10 (Frontend Tests)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-25 -- Phase 7 Plan 01 executed: authStore (9 tests), profileStore (6 tests), shared mock factories
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [██████████] 100%
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
 | 05-backend-feature-tests | 3 | 8min | 2.7min |
 | 06-backend-unit-tests | 2 | 4min | 2min |
+| 07-frontend-tests | 1/4 | 2min | 2min |
 
 **Recent Trend:**
 - Last 5 plans: 05-01 (3min), 05-02 (3min), 05-03 (2min), 06-01 (2min), 06-02 (2min)
@@ -93,6 +94,7 @@ Recent decisions affecting current work:
 - [06-02]: case_type required in createCase test data (NOT NULL constraint on app.cases table)
 - [06-02]: Test RadiogenomicsService correlations via GeneDrugInteraction factory seeding
 - [06-02]: Config override before OncoKbService instantiation since constructor reads token at init
+- [07-01]: Factory pattern for shared mock data avoids inline duplication across test files
 
 ### Pending Todos
 
@@ -106,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T20:01:59Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-25T20:25:35Z
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
