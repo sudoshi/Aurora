@@ -12,7 +12,7 @@ Aurora has a fully-built Patient Genomics Tab feature across all layers (Laravel
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Fix Critical Blocker & Verify Core Endpoints** - Fix database connection alias and verify auth, dashboard, patient, and case endpoints return correct responses
+- [x] **Phase 1: Fix Critical Blocker & Verify Core Endpoints** - Fix database connection alias and verify auth, dashboard, patient, and case endpoints return correct responses (completed 2026-03-25)
 - [ ] **Phase 2: Verify Genomics & AI Endpoints** - Verify genomics interactions, stats, and AI briefing endpoints return correct data
 - [ ] **Phase 3: Backend Test Infrastructure** - Configure Pest with multi-schema PostgreSQL and create model factories for all clinical models
 - [ ] **Phase 4: Frontend & AI Test Infrastructure** - Configure Vitest with coverage, set up MSW handlers, configure pytest, and update Playwright
@@ -184,7 +184,7 @@ Note: Phases 3 and 4 can run in parallel (both depend only on Phase 1). Phases 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Fix Critical Blocker & Verify Core Endpoints | 0/1 | Not started | - |
+| 1. Fix Critical Blocker & Verify Core Endpoints | 1/1 | Complete   | 2026-03-25 |
 | 2. Verify Genomics & AI Endpoints | 0/1 | Not started | - |
 | 3. Backend Test Infrastructure | 0/1 | Not started | - |
 | 4. Frontend & AI Test Infrastructure | 0/2 | Not started | - |

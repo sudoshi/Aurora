@@ -7,13 +7,13 @@
 
 ### Bug Fixes
 
-- [ ] **BUG-01**: Add `clinical` database connection alias to `config/database.php` so `exists:clinical.patients,id` validation resolves
-- [ ] **BUG-02**: Verify `/api/login` returns 200 with valid credentials after DB fix
-- [ ] **BUG-03**: Verify `/api/register` returns success response for new email
-- [ ] **BUG-04**: Verify `/api/change-password` works under auth
-- [ ] **BUG-05**: Verify `/api/dashboard` returns patient counts without error
-- [ ] **BUG-06**: Verify `/api/patients` CRUD endpoints respond correctly
-- [ ] **BUG-07**: Verify `/api/cases` CRUD endpoints respond correctly (the validation fix target)
+- [x] **BUG-01**: Add `clinical` database connection alias to `config/database.php` so `exists:clinical.patients,id` validation resolves
+- [x] **BUG-02**: Verify `/api/login` returns 200 with valid credentials after DB fix
+- [x] **BUG-03**: Verify `/api/register` returns success response for new email
+- [x] **BUG-04**: Verify `/api/change-password` works under auth
+- [x] **BUG-05**: Verify `/api/dashboard` returns patient counts without error
+- [x] **BUG-06**: Verify `/api/patients` CRUD endpoints respond correctly
+- [x] **BUG-07**: Verify `/api/cases` CRUD endpoints respond correctly (the validation fix target)
 - [ ] **BUG-08**: Verify `/api/genomics/interactions` returns seeded gene-drug data
 - [ ] **BUG-09**: Verify `/api/genomics/stats` returns variant statistics
 - [ ] **BUG-10**: Verify AI service `/decision-support/genomic-briefing` endpoint responds
@@ -106,13 +106,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | Phase 1 | Pending |
-| BUG-02 | Phase 1 | Pending |
-| BUG-03 | Phase 1 | Pending |
-| BUG-04 | Phase 1 | Pending |
-| BUG-05 | Phase 1 | Pending |
-| BUG-06 | Phase 1 | Pending |
-| BUG-07 | Phase 1 | Pending |
+| BUG-01 | Phase 1 | Complete |
+| BUG-02 | Phase 1 | Complete |
+| BUG-03 | Phase 1 | Complete |
+| BUG-04 | Phase 1 | Complete |
+| BUG-05 | Phase 1 | Complete |
+| BUG-06 | Phase 1 | Complete |
+| BUG-07 | Phase 1 | Complete |
 | BUG-08 | Phase 2 | Pending |
 | BUG-09 | Phase 2 | Pending |
 | BUG-10 | Phase 2 | Pending |
