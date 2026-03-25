@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-25T19:23:21.671Z"
-last_activity: "2026-03-25 -- Phase 5 Plan 03 executed: Genomics + Radiogenomics feature tests (27 tests), full suite 101 tests green"
+status: in-progress
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-25T19:55:56.000Z"
+last_activity: "2026-03-25 -- Phase 6 Plan 01 executed: AuthService (18 tests) + PatientService (7 tests) unit tests, 25 new tests green"
 progress:
   total_phases: 10
   completed_phases: 5
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
   percent: 90
 ---
 
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 5 - Backend Feature Tests
+**Current focus:** Phase 6 - Backend Unit Tests
 
 ## Current Position
 
-Phase: 5 of 10 (Backend Feature Tests) -- COMPLETE
-Plan: 3 of 3 in current phase (Phase 5 complete)
-Status: Phase 5 complete, ready for Phase 6
-Last activity: 2026-03-25 -- Phase 5 Plan 03 executed: Genomics + Radiogenomics feature tests (27 tests), full suite 101 tests green
+Phase: 6 of 10 (Backend Unit Tests)
+Plan: 1 of 2 in current phase
+Status: Plan 06-01 complete, 06-02 remaining
+Last activity: 2026-03-25 -- Phase 6 Plan 01 executed: AuthService (18 tests) + PatientService (7 tests) unit tests, 25 new tests green
 
 Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 3.4min
-- Total execution time: 0.52 hours
+- Total plans completed: 10
+- Average duration: 3.2min
+- Total execution time: 0.55 hours
 
 **By Phase:**
 
@@ -48,9 +48,10 @@ Progress: [█████████░] 90%
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
 | 05-backend-feature-tests | 3 | 8min | 2.7min |
+| 06-backend-unit-tests | 1 | 2min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (3min), 04-02 (2min), 05-01 (3min), 05-02 (3min), 05-03 (2min)
+- Last 5 plans: 04-02 (2min), 05-01 (3min), 05-02 (3min), 05-03 (2min), 06-01 (2min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [05-02]: Use >=400 assertion for route model binding 404s on non-existent sessions
 - [05-03]: PCOV/Xdebug not available; coverage measurement deferred to CI setup
 - [05-03]: ClinVar endpoints tested against actual response shapes (no success field on clinvarStatus, raw paginator on clinvarSearch)
+- [06-01]: DB-backed unit tests with RefreshDatabase instead of Mockery alias mocks for service-layer tests
+- [06-01]: Http::fake for Resend API calls in register tests rather than mocking sendTempPasswordEmail
+- [06-01]: 50 iterations for generateTempPassword ambiguous char exclusion verification
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T19:15:35Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-25T19:55:56Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None

@@ -38,8 +38,8 @@
 - [x] **BTEST-05**: Feature tests for GenomicsController (stats, interactions, variants, uploads, criteria)
 - [x] **BTEST-06**: Feature tests for DashboardController (index with patient counts)
 - [x] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
-- [ ] **BTEST-08**: Unit tests for AuthService (login, register, password change logic)
-- [ ] **BTEST-09**: Unit tests for PatientService (domain count aggregation, patient retrieval)
+- [x] **BTEST-08**: Unit tests for AuthService (login, register, password change logic)
+- [x] **BTEST-09**: Unit tests for PatientService (domain count aggregation, patient retrieval)
 - [ ] **BTEST-10**: Unit tests for CaseService (create, update, archive, team management)
 - [ ] **BTEST-11**: Unit tests for RadiogenomicsService (variant classification, panel generation)
 - [ ] **BTEST-12**: Unit tests for OncoKbService (connectivity check, response parsing)
@@ -131,8 +131,8 @@
 | BTEST-05 | Phase 5 | Complete |
 | BTEST-06 | Phase 5 | Complete |
 | BTEST-07 | Phase 5 | Complete |
-| BTEST-08 | Phase 6 | Pending |
-| BTEST-09 | Phase 6 | Pending |
+| BTEST-08 | Phase 6 | Complete |
+| BTEST-09 | Phase 6 | Complete |
 | BTEST-10 | Phase 6 | Pending |
 | BTEST-11 | Phase 6 | Pending |
 | BTEST-12 | Phase 6 | Pending |
