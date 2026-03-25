@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-25T19:55:56.000Z"
-last_activity: "2026-03-25 -- Phase 6 Plan 01 executed: AuthService (18 tests) + PatientService (7 tests) unit tests, 25 new tests green"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-25T20:01:59.000Z"
+last_activity: "2026-03-25 -- Phase 6 Plan 02 executed: CaseService (13 tests), RadiogenomicsService (8 tests), OncoKbService (5 tests), 26 new tests green"
 progress:
   total_phases: 10
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 
 ## Current Position
 
-Phase: 6 of 10 (Backend Unit Tests)
-Plan: 1 of 2 in current phase
-Status: Plan 06-01 complete, 06-02 remaining
-Last activity: 2026-03-25 -- Phase 6 Plan 01 executed: AuthService (18 tests) + PatientService (7 tests) unit tests, 25 new tests green
+Phase: 6 of 10 (Backend Unit Tests) -- COMPLETE
+Plan: 2 of 2 in current phase (phase complete)
+Status: Phase 6 complete, ready for Phase 7
+Last activity: 2026-03-25 -- Phase 6 Plan 02 executed: CaseService (13 tests), RadiogenomicsService (8 tests), OncoKbService (5 tests), 26 new tests green
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -48,10 +48,10 @@ Progress: [█████████░] 90%
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
 | 05-backend-feature-tests | 3 | 8min | 2.7min |
-| 06-backend-unit-tests | 1 | 2min | 2min |
+| 06-backend-unit-tests | 2 | 4min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (2min), 05-01 (3min), 05-02 (3min), 05-03 (2min), 06-01 (2min)
+- Last 5 plans: 05-01 (3min), 05-02 (3min), 05-03 (2min), 06-01 (2min), 06-02 (2min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -90,6 +90,9 @@ Recent decisions affecting current work:
 - [06-01]: DB-backed unit tests with RefreshDatabase instead of Mockery alias mocks for service-layer tests
 - [06-01]: Http::fake for Resend API calls in register tests rather than mocking sendTempPasswordEmail
 - [06-01]: 50 iterations for generateTempPassword ambiguous char exclusion verification
+- [06-02]: case_type required in createCase test data (NOT NULL constraint on app.cases table)
+- [06-02]: Test RadiogenomicsService correlations via GeneDrugInteraction factory seeding
+- [06-02]: Config override before OncoKbService instantiation since constructor reads token at init
 
 ### Pending Todos
 
@@ -103,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T19:55:56Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-25T20:01:59Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

@@ -40,9 +40,9 @@
 - [x] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
 - [x] **BTEST-08**: Unit tests for AuthService (login, register, password change logic)
 - [x] **BTEST-09**: Unit tests for PatientService (domain count aggregation, patient retrieval)
-- [ ] **BTEST-10**: Unit tests for CaseService (create, update, archive, team management)
-- [ ] **BTEST-11**: Unit tests for RadiogenomicsService (variant classification, panel generation)
-- [ ] **BTEST-12**: Unit tests for OncoKbService (connectivity check, response parsing)
+- [x] **BTEST-10**: Unit tests for CaseService (create, update, archive, team management)
+- [x] **BTEST-11**: Unit tests for RadiogenomicsService (variant classification, panel generation)
+- [x] **BTEST-12**: Unit tests for OncoKbService (connectivity check, response parsing)
 - [x] **BTEST-13**: Backend test coverage reaches 80%+
 
 ### Frontend Tests
@@ -133,9 +133,9 @@
 | BTEST-07 | Phase 5 | Complete |
 | BTEST-08 | Phase 6 | Complete |
 | BTEST-09 | Phase 6 | Complete |
-| BTEST-10 | Phase 6 | Pending |
-| BTEST-11 | Phase 6 | Pending |
-| BTEST-12 | Phase 6 | Pending |
+| BTEST-10 | Phase 6 | Complete |
+| BTEST-11 | Phase 6 | Complete |
+| BTEST-12 | Phase 6 | Complete |
 | BTEST-13 | Phase 5 | Complete |
 | FTEST-01 | Phase 7 | Pending |
 | FTEST-02 | Phase 7 | Pending |
