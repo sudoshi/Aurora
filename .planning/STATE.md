@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-25T19:10:00Z"
-last_activity: "2026-03-25 -- Phase 5 Plan 02 executed: CaseController + SessionController feature tests (38 tests), SessionFactory, app DB connection alias"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-25T19:15:35Z"
+last_activity: "2026-03-25 -- Phase 5 Plan 03 executed: Genomics + Radiogenomics feature tests (27 tests), full suite 101 tests green"
 progress:
   total_phases: 10
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 80
+  completed_phases: 5
+  total_plans: 9
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State
@@ -25,19 +25,19 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 
 ## Current Position
 
-Phase: 5 of 10 (Backend Feature Tests) -- IN PROGRESS
-Plan: 2 of 3 in current phase (Plan 02 complete)
-Status: Executing Phase 5
-Last activity: 2026-03-25 -- Phase 5 Plan 02 executed: CaseController + SessionController feature tests (38 tests), SessionFactory, app DB connection alias
+Phase: 5 of 10 (Backend Feature Tests) -- COMPLETE
+Plan: 3 of 3 in current phase (Phase 5 complete)
+Status: Phase 5 complete, ready for Phase 6
+Last activity: 2026-03-25 -- Phase 5 Plan 03 executed: Genomics + Radiogenomics feature tests (27 tests), full suite 101 tests green
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 3.9min
-- Total execution time: 0.45 hours
+- Total plans completed: 9
+- Average duration: 3.4min
+- Total execution time: 0.52 hours
 
 **By Phase:**
 
@@ -47,10 +47,10 @@ Progress: [████████░░] 80%
 | 02-verify-genomics-ai | 1 | 3min | 3min |
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
-| 05-backend-feature-tests | 2 | 6min | 3min |
+| 05-backend-feature-tests | 3 | 8min | 2.7min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (5min), 04-01 (3min), 04-02 (2min), 05-01 (3min), 05-02 (3min)
+- Last 5 plans: 04-01 (3min), 04-02 (2min), 05-01 (3min), 05-02 (3min), 05-03 (2min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -84,6 +84,8 @@ Recent decisions affecting current work:
 - [05-01]: Index pagination tests use data.data path since ApiResponse::success wraps paginator differently than ApiResponse::paginated
 - [05-02]: Add 'app' database connection alias (search_path: app,public) to resolve exists:app.users validation -- mirrors clinical alias from 01-01
 - [05-02]: Use >=400 assertion for route model binding 404s on non-existent sessions
+- [05-03]: PCOV/Xdebug not available; coverage measurement deferred to CI setup
+- [05-03]: ClinVar endpoints tested against actual response shapes (no success field on clinvarStatus, raw paginator on clinvarSearch)
 
 ### Pending Todos
 
@@ -97,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T19:10:00Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-25T19:15:35Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None

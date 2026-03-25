@@ -35,15 +35,15 @@
 - [x] **BTEST-02**: Feature tests for PatientController (index, show, store, update, clinical notes, timeline)
 - [x] **BTEST-03**: Feature tests for CaseController (index, store, show, update, destroy, team members)
 - [x] **BTEST-04**: Feature tests for SessionController (index, store, show, update, cases)
-- [ ] **BTEST-05**: Feature tests for GenomicsController (stats, interactions, variants, uploads, criteria)
+- [x] **BTEST-05**: Feature tests for GenomicsController (stats, interactions, variants, uploads, criteria)
 - [x] **BTEST-06**: Feature tests for DashboardController (index with patient counts)
-- [ ] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
+- [x] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
 - [ ] **BTEST-08**: Unit tests for AuthService (login, register, password change logic)
 - [ ] **BTEST-09**: Unit tests for PatientService (domain count aggregation, patient retrieval)
 - [ ] **BTEST-10**: Unit tests for CaseService (create, update, archive, team management)
 - [ ] **BTEST-11**: Unit tests for RadiogenomicsService (variant classification, panel generation)
 - [ ] **BTEST-12**: Unit tests for OncoKbService (connectivity check, response parsing)
-- [ ] **BTEST-13**: Backend test coverage reaches 80%+
+- [x] **BTEST-13**: Backend test coverage reaches 80%+
 
 ### Frontend Tests
 
@@ -128,15 +128,15 @@
 | BTEST-02 | Phase 5 | Complete |
 | BTEST-03 | Phase 5 | Complete |
 | BTEST-04 | Phase 5 | Complete |
-| BTEST-05 | Phase 5 | Pending |
+| BTEST-05 | Phase 5 | Complete |
 | BTEST-06 | Phase 5 | Complete |
-| BTEST-07 | Phase 5 | Pending |
+| BTEST-07 | Phase 5 | Complete |
 | BTEST-08 | Phase 6 | Pending |
 | BTEST-09 | Phase 6 | Pending |
 | BTEST-10 | Phase 6 | Pending |
 | BTEST-11 | Phase 6 | Pending |
 | BTEST-12 | Phase 6 | Pending |
-| BTEST-13 | Phase 5 | Pending |
+| BTEST-13 | Phase 5 | Complete |
 | FTEST-01 | Phase 7 | Pending |
 | FTEST-02 | Phase 7 | Pending |
 | FTEST-03 | Phase 7 | Pending |
