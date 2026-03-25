@@ -106,10 +106,12 @@ function VisitCard({ visitGroup, patientId }: { visitGroup: VisitGroup; patientI
 
   return (
     <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)] overflow-hidden">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setExpanded((p) => !p)}
-        className="w-full flex items-start gap-3 p-4 hover:bg-[var(--surface-overlay)] transition-colors text-left"
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded((p) => !p); } }}
+        className="w-full flex items-start gap-3 p-4 hover:bg-[var(--surface-overlay)] transition-colors text-left cursor-pointer"
       >
         <div className="flex items-center justify-center w-8 h-8 rounded-md shrink-0" style={{ backgroundColor: "#9D75F818" }}>
           <Hospital size={15} className="text-[var(--domain-visit)]" />
@@ -158,7 +160,7 @@ function VisitCard({ visitGroup, patientId }: { visitGroup: VisitGroup; patientI
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </span>
         )}
-      </button>
+      </div>
 
       {expanded && events.length > 0 && (
         <div className="px-4 pb-3 border-t border-[var(--border-default)]">
