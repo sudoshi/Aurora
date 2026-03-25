@@ -333,7 +333,7 @@ class GeneDrugInteractionSeeder extends Seeder
             ['gene' => 'PCSK9', 'drug' => 'Evolocumab', 'drug_class' => 'PCSK9 inhibitor', 'relationship' => 'sensitive', 'evidence_level' => '1A', 'mechanism' => 'PCSK9 inhibition increases LDL receptor recycling', 'indication' => 'FDA-approved for familial hypercholesterolemia', 'source' => 'fda'],
             ['gene' => 'PCSK9', 'drug' => 'Alirocumab', 'drug_class' => 'PCSK9 inhibitor', 'relationship' => 'sensitive', 'evidence_level' => '1A', 'mechanism' => 'PCSK9 inhibition', 'indication' => 'FDA-approved for familial hypercholesterolemia', 'source' => 'fda'],
             ['gene' => 'LDLR', 'drug' => 'Evolocumab', 'drug_class' => 'PCSK9 inhibitor', 'relationship' => 'sensitive', 'evidence_level' => '1A', 'mechanism' => 'PCSK9 inhibition preserves residual LDLR function', 'indication' => 'FDA-approved for heterozygous FH with LDLR mutations', 'source' => 'fda'],
-            ['gene' => 'LDLR', 'drug' => 'Atorvastatin', 'drug_class' => 'Statin', 'relationship' => 'partial_response', 'evidence_level' => '1A', 'mechanism' => 'Partial LDL reduction; depends on residual LDLR', 'indication' => 'First-line for FH but response varies with mutation', 'source' => 'nccn'],
+            ['gene' => 'LDLR', 'drug' => 'Atorvastatin', 'drug_class' => 'Statin', 'relationship' => 'dose_adjustment', 'evidence_level' => '1A', 'mechanism' => 'Partial LDL reduction; depends on residual LDLR', 'indication' => 'First-line for FH but response varies with mutation', 'source' => 'nccn'],
             ['gene' => 'BTNL2', 'drug' => 'Infliximab', 'drug_class' => 'Anti-TNFα', 'relationship' => 'sensitive', 'evidence_level' => '3', 'mechanism' => 'Anti-TNFα for refractory sarcoidosis', 'indication' => 'Off-label for cardiac and neurosarcoidosis', 'source' => 'manual'],
             ['gene' => 'BTNL2', 'drug' => 'Methotrexate', 'drug_class' => 'Antimetabolite', 'relationship' => 'sensitive', 'evidence_level' => '2B', 'mechanism' => 'Immunosuppression for sarcoidosis', 'indication' => 'Second-line for sarcoidosis', 'source' => 'manual'],
         ];
@@ -556,7 +556,10 @@ class OncoKbService
                     continue;
                 }
 
-                // Update last sync timestamp for all interactions of this gene
+                // TODO: Parse OncoKB response and upsert new interactions.
+                // For v1, we verify connectivity and update the sync timestamp.
+                // Full parsing (creating/updating GeneDrugInteraction records from
+                // OncoKB treatment annotations) is a follow-up task.
                 GeneDrugInteraction::where('gene', $gene)
                     ->update(['oncokb_last_synced_at' => now()]);
 
@@ -634,14 +637,14 @@ class RefreshEvidenceCommand extends Command
         $oncoResult = $oncokb->syncInteractions();
         $this->info("OncoKB: {$oncoResult['synced']} genes synced, {$oncoResult['errors']} errors");
 
-        // 3. Re-annotate patient variants
+        // 3. Re-annotate patient variants with updated ClinVar data
         $this->info('Re-annotating patient variants with updated ClinVar data...');
-        // This uses the existing annotation service
-        // Only re-annotate variants that lack ClinVar data
-        $unannotated = \App\Models\Clinical\GenomicVariant::whereNull('clinical_significance')
-            ->orWhere('clinical_significance', 'VUS')
-            ->count();
-        $this->info("Found {$unannotated} variants to check for updated ClinVar annotations");
+        try {
+            $annotationResult = $annotator->annotateAll();
+            $this->info("ClinVar annotation: {$annotationResult['annotated']} updated, {$annotationResult['skipped']} skipped");
+        } catch (\Exception $e) {
+            $this->error("ClinVar annotation failed: {$e->getMessage()}");
+        }
 
         $this->info('Evidence refresh complete.');
         return Command::SUCCESS;
@@ -1013,12 +1016,16 @@ import type {
 } from "../types";
 
 // Gene-drug interactions
-export const getInteractions = (params: { gene?: string; evidence_level?: string; relationship?: string } = {}) =>
-  apiClient.get("/genomics/interactions", { params }).then((r) => unwrap<GeneDrugInteraction[]>(r));
+export async function getInteractions(params: { gene?: string; evidence_level?: string; relationship?: string } = {}): Promise<GeneDrugInteraction[]> {
+  const { data } = await apiClient.get("/genomics/interactions", { params });
+  return data.data ?? data;
+}
 
 // Radiogenomics panel (absorbed from features/radiogenomics)
-export const getRadiogenomicsPanel = (patientId: number) =>
-  apiClient.get(`/radiogenomics/patients/${patientId}`).then((r) => unwrap<RadiogenomicsPanel>(r));
+export async function getRadiogenomicsPanel(patientId: number): Promise<RadiogenomicsPanel> {
+  const { data } = await apiClient.get(`/radiogenomics/patients/${patientId}`);
+  return data.data ?? data;
+}
 
 // AI genomic briefing
 const AI_BASE = import.meta.env.VITE_AI_URL || "http://localhost:8100/api";
@@ -1043,7 +1050,9 @@ export const interpretVariant = async (gene: string, variant: string, cancerType
 };
 ```
 
-Note: The `apiClient` and `unwrap` should already be imported at the top of this file. Check the existing imports.
+Note: The `apiClient` is already imported at the top of this file. The existing pattern uses `const { data } = await apiClient.get(...)` — follow this pattern, not `unwrap`.
+
+**Important field name note:** The backend DB column is `gene` (verified). The frontend `GenomicVariant` type uses `gene_symbol` because the API response may serialize differently. When assembling `GenomicBriefingRequest`, map `variant.gene_symbol` to `gene`. In the `RadiogenomicsService`, `$variant->gene` is correct.
 
 - [ ] **Step 3: Add hooks**
 
@@ -1071,7 +1080,6 @@ export function useRadiogenomicsPanel(patientId: number | null) {
 }
 
 export function useGenomicBriefing() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: GenomicBriefingRequest) => generateGenomicBriefing(data),
   });
