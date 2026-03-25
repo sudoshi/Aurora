@@ -15,6 +15,67 @@ def client():
 
 
 @pytest.fixture
+def actionable_briefing_payload():
+    """Genomic briefing payload with one actionable BRAF V600E variant."""
+    return {
+        "patient_id": 1,
+        "variants": [
+            {
+                "gene": "BRAF",
+                "variant": "V600E",
+                "classification": "pathogenic",
+                "evidence_level": "1A",
+                "therapies": ["vemurafenib"],
+            }
+        ],
+        "drug_exposures": [
+            {
+                "drug_name": "vemurafenib",
+                "start_date": "2025-01-01",
+            }
+        ],
+        "interactions": [
+            {
+                "gene": "BRAF",
+                "drug": "vemurafenib",
+                "relationship": "sensitivity",
+                "evidence_level": "1A",
+                "mechanism": "V600E inhibition",
+            }
+        ],
+        "total_variant_count": 5,
+    }
+
+
+@pytest.fixture
+def vus_only_payload():
+    """Genomic briefing payload with only VUS variants (no actionable)."""
+    return {
+        "patient_id": 1,
+        "variants": [
+            {
+                "gene": "TP53",
+                "variant": "R175H",
+                "classification": "vus",
+            }
+        ],
+        "drug_exposures": [],
+        "interactions": [],
+        "total_variant_count": 1,
+    }
+
+
+@pytest.fixture
+def mock_ollama_health():
+    """Mock the check_ollama_health function where it is used by the health router."""
+    with patch(
+        "app.routers.health.check_ollama_health",
+        new_callable=AsyncMock,
+    ) as mocked:
+        yield mocked
+
+
+@pytest.fixture
 def mock_ollama():
     """Mock Ollama (httpx.AsyncClient.post) with a canned response."""
     mock_response = MagicMock()
