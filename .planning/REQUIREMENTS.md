@@ -14,9 +14,9 @@
 - [x] **BUG-05**: Verify `/api/dashboard` returns patient counts without error
 - [x] **BUG-06**: Verify `/api/patients` CRUD endpoints respond correctly
 - [x] **BUG-07**: Verify `/api/cases` CRUD endpoints respond correctly (the validation fix target)
-- [ ] **BUG-08**: Verify `/api/genomics/interactions` returns seeded gene-drug data
-- [ ] **BUG-09**: Verify `/api/genomics/stats` returns variant statistics
-- [ ] **BUG-10**: Verify AI service `/decision-support/genomic-briefing` endpoint responds
+- [x] **BUG-08**: Verify `/api/genomics/interactions` returns seeded gene-drug data
+- [x] **BUG-09**: Verify `/api/genomics/stats` returns variant statistics
+- [x] **BUG-10**: Verify AI service `/decision-support/genomic-briefing` endpoint responds
 
 ### Test Infrastructure
 
@@ -113,9 +113,9 @@
 | BUG-05 | Phase 1 | Complete |
 | BUG-06 | Phase 1 | Complete |
 | BUG-07 | Phase 1 | Complete |
-| BUG-08 | Phase 2 | Pending |
-| BUG-09 | Phase 2 | Pending |
-| BUG-10 | Phase 2 | Pending |
+| BUG-08 | Phase 2 | Complete |
+| BUG-09 | Phase 2 | Complete |
+| BUG-10 | Phase 2 | Complete |
 | INFRA-01 | Phase 3 | Pending |
 | INFRA-02 | Phase 3 | Pending |
 | INFRA-03 | Phase 4 | Pending |
