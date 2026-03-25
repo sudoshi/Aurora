@@ -236,3 +236,107 @@ describe('GET /api/patients/{patient}/stats', function () {
         $response->assertStatus(401);
     });
 });
+
+describe('GET /api/patients', function () {
+    it('returns paginated patient list', function () {
+        ClinicalPatient::factory()->count(3)->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/patients');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        // Index uses ApiResponse::success() with paginator, items are at data.data
+        expect(count($response->json('data.data')))->toBeGreaterThanOrEqual(3);
+    });
+
+    it('respects per_page parameter', function () {
+        ClinicalPatient::factory()->count(5)->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/patients?per_page=2');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        // Index uses ApiResponse::success() with paginator, so per_page is at data.per_page
+        expect($response->json('data.per_page'))->toBe(2);
+        expect($response->json('data.data'))->toHaveCount(2);
+    });
+
+    it('requires authentication', function () {
+        $this->getJson('/api/patients')->assertStatus(401);
+    });
+});
+
+describe('GET /api/patients/{patient}/notes', function () {
+    it('returns paginated notes for patient', function () {
+        $patient = ClinicalPatient::factory()->create();
+
+        // Insert a clinical note directly
+        \Illuminate\Support\Facades\DB::table('clinical.clinical_notes')->insert([
+            'patient_id' => $patient->id,
+            'note_type' => 'progress',
+            'content' => 'Patient is recovering well.',
+            'authored_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/patients/{$patient->id}/notes");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        expect(count($response->json('data')))->toBeGreaterThanOrEqual(1);
+    });
+
+    it('returns 404 for non-existent patient', function () {
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/patients/99999/notes');
+
+        $response->assertStatus(404);
+    });
+
+    it('requires authentication', function () {
+        $this->getJson('/api/patients/1/notes')->assertStatus(401);
+    });
+});
+
+describe('PUT /api/patients/{id} (not implemented)', function () {
+    // BTEST-02 requires update endpoint tests. PUT /api/patients/{id} has no route
+    // defined in routes/api.php and no update() method in PatientController.
+    // This test documents the gap.
+    // Note: The catch-all exception handler in bootstrap/app.php converts
+    // MethodNotAllowedHttpException to 500 for JSON requests.
+    it('returns error because update endpoint is not implemented', function () {
+        $patient = ClinicalPatient::factory()->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/patients/{$patient->id}", [
+                'first_name' => 'Updated',
+            ]);
+
+        $response->assertJsonPath('success', false);
+        expect($response->status())->toBeGreaterThanOrEqual(400);
+    });
+});
+
+describe('GET /api/patients/{id}/timeline (not implemented)', function () {
+    // BTEST-02 requires timeline endpoint tests. GET /api/patients/{id}/timeline
+    // has no route defined in routes/api.php and no timeline() method in PatientController.
+    // This test documents the gap.
+    // Note: The catch-all exception handler in bootstrap/app.php converts
+    // NotFoundHttpException to 500 for JSON requests.
+    it('returns error because timeline endpoint is not implemented', function () {
+        $patient = ClinicalPatient::factory()->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/patients/{$patient->id}/timeline");
+
+        $response->assertJsonPath('success', false);
+        expect($response->status())->toBeGreaterThanOrEqual(400);
+    });
+});
