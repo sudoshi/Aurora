@@ -1,8 +1,12 @@
 <?php
 
 use App\Models\Clinical\GeneDrugInteraction;
+use App\Models\Clinical\GenomicCriteria;
+use App\Models\Clinical\GenomicUpload;
 use App\Models\Clinical\GenomicVariant;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\SuperuserSeeder']);
@@ -133,78 +137,200 @@ describe('GET /api/genomics/variants/{id}', function () {
     });
 });
 
-// ── Upload stubs ──────────────────────────────────────────────────────────
+// ── Genomics uploads ─────────────────────────────────────────────────────
 
-describe('Genomics upload stubs', function () {
-    it('listUploads returns empty array', function () {
+describe('Genomics uploads', function () {
+    it('storeUpload stores file on disk and creates DB record', function () {
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->create('sample.vcf', 1024);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => $file,
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+                'sample_id' => 'SAMPLE-001',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.file_format', 'vcf')
+            ->assertJsonPath('data.genome_build', 'GRCh38')
+            ->assertJsonPath('data.sample_id', 'SAMPLE-001')
+            ->assertJsonPath('data.status', 'uploaded');
+
+        $this->assertDatabaseHas('clinical.genomic_uploads', [
+            'file_format' => 'vcf',
+            'sample_id' => 'SAMPLE-001',
+            'uploaded_by' => $this->user->id,
+        ]);
+
+        Storage::disk('local')->assertExists($response->json('data.stored_path'));
+    });
+
+    it('storeUpload validates required fields', function () {
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', []);
+
+        $response->assertStatus(422);
+    });
+
+    it('listUploads returns persisted uploads with pagination', function () {
+        GenomicUpload::factory()->count(3)->create();
+
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/genomics/uploads');
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data', []);
+            ->assertJsonStructure(['success', 'message', 'data', 'meta']);
+
+        expect(count($response->json('data')))->toBe(3);
     });
 
-    it('showUpload returns stub data', function () {
+    it('listUploads filters by status', function () {
+        GenomicUpload::factory()->count(2)->create(['status' => 'uploaded']);
+        GenomicUpload::factory()->count(1)->create(['status' => 'completed']);
+
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/genomics/uploads/1');
+            ->getJson('/api/genomics/uploads?status=uploaded');
+
+        $response->assertStatus(200);
+        expect(count($response->json('data')))->toBe(2);
+    });
+
+    it('showUpload returns the specific upload record', function () {
+        $upload = GenomicUpload::factory()->create(['file_format' => 'vcf']);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/genomics/uploads/{$upload->id}");
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.id', 1);
+            ->assertJsonPath('data.id', $upload->id)
+            ->assertJsonPath('data.file_format', 'vcf');
     });
 
-    it('destroyUpload returns success', function () {
+    it('showUpload returns 404 for non-existent', function () {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/genomics/uploads/1');
+            ->getJson('/api/genomics/uploads/99999');
+
+        $response->assertStatus(404);
+    });
+
+    it('destroyUpload removes record and file', function () {
+        Storage::fake('local');
+
+        $path = 'genomic-uploads/test-file.vcf';
+        Storage::disk('local')->put($path, 'fake content');
+        $upload = GenomicUpload::factory()->create(['stored_path' => $path]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/genomics/uploads/{$upload->id}");
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true);
+
+        $this->assertDatabaseMissing('clinical.genomic_uploads', ['id' => $upload->id]);
+        Storage::disk('local')->assertMissing($path);
+    });
+
+    it('destroyUpload returns 404 for non-existent', function () {
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->deleteJson('/api/genomics/uploads/99999');
+
+        $response->assertStatus(404);
     });
 });
 
-// ── Criteria stubs ────────────────────────────────────────────────────────
+// ── Genomics criteria ─────────────────────────────────────────────────────
 
-describe('Genomics criteria stubs', function () {
-    it('listCriteria returns empty array', function () {
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/genomics/criteria');
-
-        $response->assertStatus(200)
-            ->assertJsonPath('success', true)
-            ->assertJsonPath('data', []);
-    });
-
-    it('storeCriterion returns stub', function () {
+describe('Genomics criteria', function () {
+    it('storeCriterion creates a DB record', function () {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/genomics/criteria', [
                 'name' => 'Test Criterion',
                 'criteria_type' => 'variant',
                 'criteria_definition' => ['gene' => 'BRAF'],
+                'description' => 'A test criterion',
             ]);
 
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.name', 'Test Criterion');
+            ->assertJsonPath('data.name', 'Test Criterion')
+            ->assertJsonPath('data.criteria_type', 'variant');
+
+        $this->assertDatabaseHas('clinical.genomic_criteria', [
+            'name' => 'Test Criterion',
+            'criteria_type' => 'variant',
+            'created_by' => $this->user->id,
+        ]);
     });
 
-    it('updateCriterion returns stub', function () {
+    it('storeCriterion validates required fields', function () {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/genomics/criteria/1', [
+            ->postJson('/api/genomics/criteria', []);
+
+        $response->assertStatus(422);
+    });
+
+    it('listCriteria returns persisted criteria', function () {
+        GenomicCriteria::factory()->count(3)->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/genomics/criteria');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        expect(count($response->json('data')))->toBe(3);
+    });
+
+    it('updateCriterion updates existing record', function () {
+        $criterion = GenomicCriteria::factory()->create(['name' => 'Original']);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/genomics/criteria/{$criterion->id}", [
                 'name' => 'Updated Criterion',
             ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.name', 'Updated Criterion');
+
+        $this->assertDatabaseHas('clinical.genomic_criteria', [
+            'id' => $criterion->id,
+            'name' => 'Updated Criterion',
+        ]);
     });
 
-    it('destroyCriterion returns success', function () {
+    it('updateCriterion returns 404 for non-existent', function () {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/genomics/criteria/1');
+            ->putJson('/api/genomics/criteria/99999', [
+                'name' => 'Nope',
+            ]);
+
+        $response->assertStatus(404);
+    });
+
+    it('destroyCriterion deletes record', function () {
+        $criterion = GenomicCriteria::factory()->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/genomics/criteria/{$criterion->id}");
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true);
+
+        $this->assertDatabaseMissing('clinical.genomic_criteria', ['id' => $criterion->id]);
+    });
+
+    it('destroyCriterion returns 404 for non-existent', function () {
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->deleteJson('/api/genomics/criteria/99999');
+
+        $response->assertStatus(404);
     });
 });
 

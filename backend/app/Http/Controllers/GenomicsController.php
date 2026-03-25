@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Clinical\ClinVarSyncLog;
 use App\Models\Clinical\ClinVarVariant;
+use App\Models\Clinical\GenomicCriteria;
+use App\Models\Clinical\GenomicUpload;
 use App\Models\Clinical\GenomicVariant;
 use App\Services\Genomics\ClinVarAnnotationService;
 use App\Services\Genomics\ClinVarSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class GenomicsController extends Controller
 {
@@ -30,13 +33,13 @@ class GenomicsController extends Controller
 
         return ApiResponse::success([
             'total_variants' => $total,
-            'uploads_count' => 0,
+            'uploads_count' => GenomicUpload::count(),
             'pathogenic_count' => $pathogenic,
             'vus_count' => $vus,
         ], 'Genomics stats retrieved');
     }
 
-    // ── Uploads (stubs) ─────────────────────────────────────────────────
+    // ── Uploads ───────────────────────────────────────────────────────────
 
     /**
      * GET /api/genomics/uploads
@@ -49,17 +52,16 @@ class GenomicsController extends Controller
             'page' => 'sometimes|integer|min:1',
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Uploads retrieved',
-            'data' => [],
-            'meta' => [
-                'total' => 0,
-                'page' => (int) $request->input('page', 1),
-                'per_page' => (int) $request->input('per_page', 25),
-                'last_page' => 1,
-            ],
-        ]);
+        $query = GenomicUpload::query();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $perPage = (int) $request->input('per_page', 25);
+        $paginator = $query->orderBy('id', 'desc')->paginate($perPage);
+
+        return ApiResponse::paginated($paginator, 'Uploads retrieved');
     }
 
     /**
@@ -74,21 +76,21 @@ class GenomicsController extends Controller
             'sample_id' => 'sometimes|string',
         ]);
 
-        $stub = [
-            'id' => 1,
-            'original_filename' => $request->file('file')->getClientOriginalName(),
+        $file = $request->file('file');
+        $storedPath = $file->store('genomic-uploads', 'local');
+
+        $upload = GenomicUpload::create([
+            'original_filename' => $file->getClientOriginalName(),
+            'stored_path' => $storedPath,
             'file_format' => $request->input('file_format'),
             'genome_build' => $request->input('genome_build', 'GRCh38'),
             'sample_id' => $request->input('sample_id'),
             'status' => 'uploaded',
-            'total_variants' => 0,
-            'mapped_variants' => 0,
-            'unmapped_variants' => 0,
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String(),
-        ];
+            'file_size' => $file->getSize(),
+            'uploaded_by' => auth()->id(),
+        ]);
 
-        return ApiResponse::success($stub, 'Upload created', 201);
+        return ApiResponse::success($upload, 'Upload created', 201);
     }
 
     /**
@@ -96,21 +98,13 @@ class GenomicsController extends Controller
      */
     public function showUpload(int $id): JsonResponse
     {
-        $stub = [
-            'id' => $id,
-            'original_filename' => 'stub.vcf',
-            'file_format' => 'vcf',
-            'genome_build' => 'GRCh38',
-            'sample_id' => null,
-            'status' => 'uploaded',
-            'total_variants' => 0,
-            'mapped_variants' => 0,
-            'unmapped_variants' => 0,
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String(),
-        ];
+        $upload = GenomicUpload::find($id);
 
-        return ApiResponse::success($stub, 'Upload retrieved');
+        if (! $upload) {
+            return ApiResponse::error('Upload not found', 404);
+        }
+
+        return ApiResponse::success($upload, 'Upload retrieved');
     }
 
     /**
@@ -118,6 +112,15 @@ class GenomicsController extends Controller
      */
     public function destroyUpload(int $id): JsonResponse
     {
+        $upload = GenomicUpload::find($id);
+
+        if (! $upload) {
+            return ApiResponse::error('Upload not found', 404);
+        }
+
+        Storage::disk('local')->delete($upload->stored_path);
+        $upload->delete();
+
         return ApiResponse::success(null, 'Upload deleted');
     }
 
@@ -228,14 +231,14 @@ class GenomicsController extends Controller
         return ApiResponse::success($variant, 'Variant retrieved');
     }
 
-    // ── Cohort Criteria (stubs) ─────────────────────────────────────────
+    // ── Cohort Criteria ─────────────────────────────────────────────────
 
     /**
      * GET /api/genomics/criteria
      */
     public function listCriteria(Request $request): JsonResponse
     {
-        return ApiResponse::success([], 'Criteria retrieved');
+        return ApiResponse::success(GenomicCriteria::all(), 'Criteria retrieved');
     }
 
     /**
@@ -243,7 +246,7 @@ class GenomicsController extends Controller
      */
     public function storeCriterion(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'criteria_type' => 'required|string',
             'criteria_definition' => 'required|array',
@@ -251,18 +254,11 @@ class GenomicsController extends Controller
             'is_shared' => 'sometimes|boolean',
         ]);
 
-        $stub = [
-            'id' => 1,
-            'name' => $request->input('name'),
-            'criteria_type' => $request->input('criteria_type'),
-            'criteria_definition' => $request->input('criteria_definition'),
-            'description' => $request->input('description'),
-            'is_shared' => $request->boolean('is_shared', false),
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String(),
-        ];
+        $criterion = GenomicCriteria::create(array_merge($validated, [
+            'created_by' => auth()->id(),
+        ]));
 
-        return ApiResponse::success($stub, 'Criterion created', 201);
+        return ApiResponse::success($criterion, 'Criterion created', 201);
     }
 
     /**
@@ -270,7 +266,13 @@ class GenomicsController extends Controller
      */
     public function updateCriterion(Request $request, int $id): JsonResponse
     {
-        $request->validate([
+        $criterion = GenomicCriteria::find($id);
+
+        if (! $criterion) {
+            return ApiResponse::error('Criterion not found', 404);
+        }
+
+        $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'criteria_type' => 'sometimes|string',
             'criteria_definition' => 'sometimes|array',
@@ -278,18 +280,9 @@ class GenomicsController extends Controller
             'is_shared' => 'sometimes|boolean',
         ]);
 
-        $stub = [
-            'id' => $id,
-            'name' => $request->input('name', 'Updated criterion'),
-            'criteria_type' => $request->input('criteria_type', 'variant'),
-            'criteria_definition' => $request->input('criteria_definition', []),
-            'description' => $request->input('description'),
-            'is_shared' => $request->boolean('is_shared', false),
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String(),
-        ];
+        $criterion->update($validated);
 
-        return ApiResponse::success($stub, 'Criterion updated');
+        return ApiResponse::success($criterion, 'Criterion updated');
     }
 
     /**
@@ -297,6 +290,14 @@ class GenomicsController extends Controller
      */
     public function destroyCriterion(int $id): JsonResponse
     {
+        $criterion = GenomicCriteria::find($id);
+
+        if (! $criterion) {
+            return ApiResponse::error('Criterion not found', 404);
+        }
+
+        $criterion->delete();
+
         return ApiResponse::success(null, 'Criterion deleted');
     }
 
