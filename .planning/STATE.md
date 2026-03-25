@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 9 - Feature Completion
+**Current focus:** Phase 10 - E2E Tests (Complete)
 
 ## Current Position
 
-Phase: 9 of 10 (Feature Completion)
-Plan: 2 of 2 in current phase (Complete)
-Status: In progress
-Last activity: 2026-03-25 -- Phase 9 Plan 02 executed: GenomicUpload and GenomicCriteria persistence replacing stubs, 28 tests passing
+Phase: 10 of 10 (E2E Tests)
+Plan: 1 of 1 in current phase (Complete)
+Status: Complete
+Last activity: 2026-03-25 -- Phase 10 Plan 01 executed: E2E login and patient profile tests rewritten with storageState auth, 6 tests passing
 
 Progress: [██████████] 100%
 
@@ -63,6 +63,7 @@ Progress: [██████████] 100%
 | Phase 08-ai-service-tests P01 | 3min | 2 tasks | 6 files |
 | Phase 09 P01 | 2min | 1 tasks | 2 files |
 | Phase 09-feature-completion P02 | 5min | 2 tasks | 8 files |
+| Phase 10-e2e-tests P01 | 15min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,8 @@ Recent decisions affecting current work:
 - [Phase 09]: variant_pattern='*' for gene-level OncoKB treatments; drug names normalized lowercase+trimmed; unknown levels skipped gracefully
 - [09-02]: find() + explicit ApiResponse::error 404 instead of findOrFail() (exception handler converts ModelNotFoundException to 500)
 - [09-02]: Storage::disk('local') for genomic file uploads with stored_path tracked in DB column
+- [10-01]: Playwright storageState auth setup to share login across tests, avoiding throttle:5,1 rate limit exhaustion
+- [10-01]: Three Playwright projects (setup, auth-tests, chromium) to separate auth-testing from authenticated-tests
 
 ### Pending Todos
 
@@ -124,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T21:28:30Z
-Stopped at: Completed 09-02-PLAN.md
+Last session: 2026-03-25T21:57:00Z
+Stopped at: Completed 10-01-PLAN.md
 Resume file: None

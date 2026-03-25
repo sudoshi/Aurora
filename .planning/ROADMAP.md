@@ -173,8 +173,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — E2E tests for login and patient profile flows
-- [ ] 10-02-PLAN.md — E2E tests for genomics tab and case management flows
+- [ ] 10-01-PLAN.md ï¿½ E2E tests for login and patient profile flows
+- [ ] 10-02-PLAN.md ï¿½ E2E tests for genomics tab and case management flows
 
 ## Progress
 
@@ -193,4 +193,4 @@ Note: Phases 3 and 4 can run in parallel (both depend only on Phase 1). Phases 5
 | 7. Frontend Tests | 3/4 | Complete    | 2026-03-25 |
 | 8. AI Service Tests | 0/1 | Complete    | 2026-03-25 |
 | 9. Feature Completion | 2/2 | Complete    | 2026-03-25 |
-| 10. E2E Tests | 0/2 | Not started | - |
+| 10. E2E Tests | 1/2 | In Progress|  |
