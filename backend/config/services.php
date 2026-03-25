@@ -40,4 +40,8 @@ return [
         'base_url' => env('AI_SERVICE_URL', 'http://localhost:8100'),
     ],
 
+    'oncokb' => [
+        'token' => env('ONCOKB_API_TOKEN'),
+    ],
+
 ];
