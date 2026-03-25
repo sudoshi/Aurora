@@ -50,11 +50,11 @@
 - [x] **FTEST-01**: Store tests for authStore (login, logout, token management)
 - [x] **FTEST-02**: Store tests for profileStore (profile loading, updates)
 - [x] **FTEST-03**: Hook tests for useGenomics hooks (useInteractions, useBriefing, useVariants, useRadiogenomics)
-- [ ] **FTEST-04**: Component tests for GenomicBriefing (renders briefing, handles loading/error)
-- [ ] **FTEST-05**: Component tests for ActionableVariantsPanel (renders variants, VUS accordion)
-- [ ] **FTEST-06**: Component tests for GenomicVariantTable (filtering, sorting, search, expansion)
-- [ ] **FTEST-07**: Component tests for TreatmentTimeline (renders drug exposures proportionally)
-- [ ] **FTEST-08**: Component tests for EvidenceBadge (renders correct badge for evidence level)
+- [x] **FTEST-04**: Component tests for GenomicBriefing (renders briefing, handles loading/error)
+- [x] **FTEST-05**: Component tests for ActionableVariantsPanel (renders variants, VUS accordion)
+- [x] **FTEST-06**: Component tests for GenomicVariantTable (filtering, sorting, search, expansion)
+- [x] **FTEST-07**: Component tests for TreatmentTimeline (renders drug exposures proportionally)
+- [x] **FTEST-08**: Component tests for EvidenceBadge (renders correct badge for evidence level)
 - [ ] **FTEST-09**: Component tests for LoginForm and RegisterPage (form submission, validation)
 - [ ] **FTEST-10**: Frontend test coverage reaches 80%+
 
@@ -140,11 +140,11 @@
 | FTEST-01 | Phase 7 | Complete |
 | FTEST-02 | Phase 7 | Complete |
 | FTEST-03 | Phase 7 | Complete |
-| FTEST-04 | Phase 7 | Pending |
-| FTEST-05 | Phase 7 | Pending |
-| FTEST-06 | Phase 7 | Pending |
-| FTEST-07 | Phase 7 | Pending |
-| FTEST-08 | Phase 7 | Pending |
+| FTEST-04 | Phase 7 | Complete |
+| FTEST-05 | Phase 7 | Complete |
+| FTEST-06 | Phase 7 | Complete |
+| FTEST-07 | Phase 7 | Complete |
+| FTEST-08 | Phase 7 | Complete |
 | FTEST-09 | Phase 7 | Pending |
 | FTEST-10 | Phase 7 | Pending |
 | ATEST-01 | Phase 8 | Pending |
