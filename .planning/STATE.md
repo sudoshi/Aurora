@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-25T19:04:00Z"
-last_activity: "2026-03-25 -- Phase 5 Plan 01 executed: fixed DB_HOST blocker, added Patient index/notes/gap tests and Dashboard tests"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-25T19:10:00Z"
+last_activity: "2026-03-25 -- Phase 5 Plan 02 executed: CaseController + SessionController feature tests (38 tests), SessionFactory, app DB connection alias"
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 8
-  completed_plans: 7
-  percent: 75
+  completed_plans: 8
+  percent: 80
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 5 of 10 (Backend Feature Tests) -- IN PROGRESS
-Plan: 1 of 3 in current phase (Plan 01 complete)
+Plan: 2 of 3 in current phase (Plan 02 complete)
 Status: Executing Phase 5
-Last activity: 2026-03-25 -- Phase 5 Plan 01 executed: fixed DB_HOST blocker, added Patient index/notes/gap tests and Dashboard tests
+Last activity: 2026-03-25 -- Phase 5 Plan 02 executed: CaseController + SessionController feature tests (38 tests), SessionFactory, app DB connection alias
 
-Progress: [████████--] 75%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -47,10 +47,10 @@ Progress: [████████--] 75%
 | 02-verify-genomics-ai | 1 | 3min | 3min |
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
 | 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
-| 05-backend-feature-tests | 1 | 3min | 3min |
+| 05-backend-feature-tests | 2 | 6min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3min), 03-01 (5min), 04-01 (3min), 04-02 (2min), 05-01 (3min)
+- Last 5 plans: 03-01 (5min), 04-01 (3min), 04-02 (2min), 05-01 (3min), 05-02 (3min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
 - [04-02]: npm install needed in e2e/ as node_modules not committed
 - [05-01]: Assert >=400 for unimplemented endpoints because catch-all exception handler converts all exceptions to 500
 - [05-01]: Index pagination tests use data.data path since ApiResponse::success wraps paginator differently than ApiResponse::paginated
+- [05-02]: Add 'app' database connection alias (search_path: app,public) to resolve exists:app.users validation -- mirrors clinical alias from 01-01
+- [05-02]: Use >=400 assertion for route model binding 404s on non-existent sessions
 
 ### Pending Todos
 
@@ -95,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T19:04:00Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-25T19:10:00Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

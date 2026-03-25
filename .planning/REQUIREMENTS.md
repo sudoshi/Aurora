@@ -33,8 +33,8 @@
 
 - [x] **BTEST-01**: Feature tests for AuthController (login, register, change-password, logout)
 - [x] **BTEST-02**: Feature tests for PatientController (index, show, store, update, clinical notes, timeline)
-- [ ] **BTEST-03**: Feature tests for CaseController (index, store, show, update, destroy, team members)
-- [ ] **BTEST-04**: Feature tests for SessionController (index, store, show, update, cases)
+- [x] **BTEST-03**: Feature tests for CaseController (index, store, show, update, destroy, team members)
+- [x] **BTEST-04**: Feature tests for SessionController (index, store, show, update, cases)
 - [ ] **BTEST-05**: Feature tests for GenomicsController (stats, interactions, variants, uploads, criteria)
 - [x] **BTEST-06**: Feature tests for DashboardController (index with patient counts)
 - [ ] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
@@ -126,8 +126,8 @@
 | INFRA-08 | Phase 4 | Complete |
 | BTEST-01 | Phase 5 | Complete |
 | BTEST-02 | Phase 5 | Complete |
-| BTEST-03 | Phase 5 | Pending |
-| BTEST-04 | Phase 5 | Pending |
+| BTEST-03 | Phase 5 | Complete |
+| BTEST-04 | Phase 5 | Complete |
 | BTEST-05 | Phase 5 | Pending |
 | BTEST-06 | Phase 5 | Complete |
 | BTEST-07 | Phase 5 | Pending |
