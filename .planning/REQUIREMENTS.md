@@ -106,19 +106,64 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 through BUG-10 | Phase 1 | Pending |
-| INFRA-01 through INFRA-08 | Phase 2 | Pending |
-| BTEST-01 through BTEST-13 | Phase 3-4 | Pending |
-| FTEST-01 through FTEST-10 | Phase 5-6 | Pending |
-| ATEST-01 through ATEST-04 | Phase 7 | Pending |
-| E2E-01 through E2E-04 | Phase 8 | Pending |
-| FEAT-01 through FEAT-03 | Phase 9-10 | Pending |
+| BUG-01 | Phase 1 | Pending |
+| BUG-02 | Phase 1 | Pending |
+| BUG-03 | Phase 1 | Pending |
+| BUG-04 | Phase 1 | Pending |
+| BUG-05 | Phase 1 | Pending |
+| BUG-06 | Phase 1 | Pending |
+| BUG-07 | Phase 1 | Pending |
+| BUG-08 | Phase 2 | Pending |
+| BUG-09 | Phase 2 | Pending |
+| BUG-10 | Phase 2 | Pending |
+| INFRA-01 | Phase 3 | Pending |
+| INFRA-02 | Phase 3 | Pending |
+| INFRA-03 | Phase 4 | Pending |
+| INFRA-04 | Phase 4 | Pending |
+| INFRA-05 | Phase 4 | Pending |
+| INFRA-06 | Phase 4 | Pending |
+| INFRA-07 | Phase 4 | Pending |
+| INFRA-08 | Phase 4 | Pending |
+| BTEST-01 | Phase 5 | Pending |
+| BTEST-02 | Phase 5 | Pending |
+| BTEST-03 | Phase 5 | Pending |
+| BTEST-04 | Phase 5 | Pending |
+| BTEST-05 | Phase 5 | Pending |
+| BTEST-06 | Phase 5 | Pending |
+| BTEST-07 | Phase 5 | Pending |
+| BTEST-08 | Phase 6 | Pending |
+| BTEST-09 | Phase 6 | Pending |
+| BTEST-10 | Phase 6 | Pending |
+| BTEST-11 | Phase 6 | Pending |
+| BTEST-12 | Phase 6 | Pending |
+| BTEST-13 | Phase 5 | Pending |
+| FTEST-01 | Phase 7 | Pending |
+| FTEST-02 | Phase 7 | Pending |
+| FTEST-03 | Phase 7 | Pending |
+| FTEST-04 | Phase 7 | Pending |
+| FTEST-05 | Phase 7 | Pending |
+| FTEST-06 | Phase 7 | Pending |
+| FTEST-07 | Phase 7 | Pending |
+| FTEST-08 | Phase 7 | Pending |
+| FTEST-09 | Phase 7 | Pending |
+| FTEST-10 | Phase 7 | Pending |
+| ATEST-01 | Phase 8 | Pending |
+| ATEST-02 | Phase 8 | Pending |
+| ATEST-03 | Phase 8 | Pending |
+| ATEST-04 | Phase 8 | Pending |
+| FEAT-01 | Phase 9 | Pending |
+| FEAT-02 | Phase 9 | Pending |
+| FEAT-03 | Phase 9 | Pending |
+| E2E-01 | Phase 10 | Pending |
+| E2E-02 | Phase 10 | Pending |
+| E2E-03 | Phase 10 | Pending |
+| E2E-04 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 50 total
-- Mapped to phases: 50
+- v1 requirements: 52 total
+- Mapped to phases: 52
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-25*
-*Last updated: 2026-03-25 after initial definition*
+*Last updated: 2026-03-25 after roadmap creation*
