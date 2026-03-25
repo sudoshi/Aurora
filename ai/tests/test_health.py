@@ -1,10 +1,7 @@
-from fastapi.testclient import TestClient
-from app.main import app
-
-client = TestClient(app)
+"""Health endpoint tests for Aurora AI service."""
 
 
-def test_health_endpoint():
+def test_health_endpoint(client):
     response = client.get("/api/ai/health")
     assert response.status_code == 200
     data = response.json()
