@@ -48,7 +48,7 @@ Plans:
   1. `GET /api/genomics/interactions` returns the 42 seeded gene-drug interaction records
   2. `GET /api/genomics/stats` returns variant statistics in expected format
   3. `POST /decision-support/genomic-briefing` on the AI service returns a narrative briefing
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 02-01: Verify genomics and AI service endpoints
