@@ -169,6 +169,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/clinvar/status', [GenomicsController::class, 'clinvarStatus']);
         Route::get('/clinvar/search', [GenomicsController::class, 'clinvarSearch']);
         Route::post('/clinvar/sync', [GenomicsController::class, 'clinvarSync']);
+        Route::get('/interactions', [GenomicsController::class, 'interactions']);
     });
 
     // ── Radiogenomics ─────────────────────────────────────────────────────

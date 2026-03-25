@@ -387,4 +387,33 @@ class GenomicsController extends Controller
 
         return response()->json(['data' => $result]);
     }
+
+    /**
+     * GET /api/genomics/interactions
+     * Query gene-drug interactions from the evidence database.
+     */
+    public function interactions(Request $request): JsonResponse
+    {
+        $query = \App\Models\Clinical\GeneDrugInteraction::query();
+
+        if ($gene = $request->input('gene')) {
+            $query->where('gene', strtoupper($gene));
+        }
+        if ($evidenceLevel = $request->input('evidence_level')) {
+            $query->where('evidence_level', $evidenceLevel);
+        }
+        if ($relationship = $request->input('relationship')) {
+            $query->where('relationship', $relationship);
+        }
+        if ($source = $request->input('source')) {
+            $query->where('source', $source);
+        }
+
+        $interactions = $query->orderBy('gene')->orderBy('evidence_level')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $interactions,
+        ]);
+    }
 }
