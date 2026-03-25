@@ -92,30 +92,21 @@ class RadiogenomicsService
 
     private function buildCorrelations(Collection $variants, array $drugExposures): array
     {
-        // Known gene-drug relationships (hardcoded reference database)
-        $knownInteractions = [
-            'BRAF' => [['drug' => 'Vemurafenib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Dabrafenib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'KRAS' => [['drug' => 'Cetuximab', 'relationship' => 'resistant', 'evidence' => 'Level 1A'], ['drug' => 'Panitumumab', 'relationship' => 'resistant', 'evidence' => 'Level 1A'], ['drug' => 'Sotorasib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'EGFR' => [['drug' => 'Erlotinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Osimertinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Gefitinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'ALK' => [['drug' => 'Crizotinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Alectinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'HER2' => [['drug' => 'Trastuzumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Pertuzumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'BRCA1' => [['drug' => 'Olaparib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Rucaparib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'BRCA2' => [['drug' => 'Olaparib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Rucaparib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'TP53' => [['drug' => 'Cisplatin', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
-            'PIK3CA' => [['drug' => 'Alpelisib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'NTRK1' => [['drug' => 'Larotrectinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Entrectinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            // Non-oncology pharmacogenomics
-            'TTR' => [['drug' => 'Tafamidis', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Diflunisal', 'relationship' => 'sensitive', 'evidence' => 'Level 2B'], ['drug' => 'Patisiran', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'TSC2' => [['drug' => 'Everolimus', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Sirolimus', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'VHL' => [['drug' => 'Belzutifan', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Sunitinib', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Bevacizumab', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
-            'ENG' => [['drug' => 'Bevacizumab', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Thalidomide', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
-            'UBA1' => [['drug' => 'Azacitidine', 'relationship' => 'sensitive', 'evidence' => 'Level 2B'], ['drug' => 'Ruxolitinib', 'relationship' => 'sensitive', 'evidence' => 'Level 3']],
-            'DNMT3A' => [['drug' => 'Azacitidine', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Decitabine', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
-            'PCSK9' => [['drug' => 'Evolocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Alirocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A']],
-            'LDLR' => [['drug' => 'Evolocumab', 'relationship' => 'sensitive', 'evidence' => 'Level 1A'], ['drug' => 'Atorvastatin', 'relationship' => 'partial_response', 'evidence' => 'Level 1A']],
-            'BTNL2' => [['drug' => 'Infliximab', 'relationship' => 'sensitive', 'evidence' => 'Level 3'], ['drug' => 'Methotrexate', 'relationship' => 'sensitive', 'evidence' => 'Level 2B']],
-            'MAP2K1' => [['drug' => 'Trametinib', 'relationship' => 'sensitive', 'evidence' => 'Level 2A'], ['drug' => 'Cobimetinib', 'relationship' => 'sensitive', 'evidence' => 'Level 2A']],
-        ];
+        // Query gene-drug interactions from the evidence database
+        $geneList = $variants->pluck('gene')->map(fn($g) => strtoupper($g))->unique()->values()->all();
+        $dbInteractions = \App\Models\Clinical\GeneDrugInteraction::whereIn('gene', $geneList)->get();
+
+        $knownInteractions = [];
+        foreach ($dbInteractions as $row) {
+            $knownInteractions[strtoupper($row->gene)][] = [
+                'drug' => $row->drug,
+                'relationship' => $row->relationship,
+                'evidence' => $row->evidence_level,
+                'mechanism' => $row->mechanism,
+                'source' => $row->source,
+                'last_verified_at' => $row->last_verified_at?->toIso8601String(),
+            ];
+        }
 
         $correlations = [];
         foreach ($variants as $variant) {
