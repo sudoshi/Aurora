@@ -162,11 +162,14 @@ describe("useGenomicBriefing", () => {
             gene: "BRCA1",
             variant: "c.5266dupC",
             classification: "Pathogenic",
-            clinical_significance: "Pathogenic",
+            evidence_level: "1A",
+            therapies: ["Olaparib"],
           },
         ],
-        cancer_type: "Breast",
-      } as Parameters<typeof result.current.mutate>[0]);
+        drug_exposures: [],
+        interactions: [],
+        total_variant_count: 1,
+      });
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
