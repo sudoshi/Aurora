@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `POST /api/change-password` under auth returns 200 and issues new token
   4. `GET /api/dashboard` returns patient domain counts without error
   5. `GET /api/patients` returns patient list; `POST /api/patients` creates a patient; case CRUD works without the `exists:clinical` 500 error
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 01-01: Fix database connection alias and verify core endpoints
