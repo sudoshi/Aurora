@@ -142,7 +142,7 @@ Plans:
   2. Genomic briefing endpoint test verifies narrative generation with mocked Ollama responses
   3. Service-level tests validate prompt construction and narrative extraction logic
   4. AI service test coverage is at or above 80%
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 08-01: AI service endpoint and service tests with mocked Ollama
