@@ -76,7 +76,7 @@ Plans:
   3. React test utilities (QueryClient wrapper, Router wrapper, Zustand reset) are available for component tests
   4. `pytest --cov` runs with asyncio_mode=auto and generates coverage output
   5. Playwright config points to correct dev server URL and a skeleton test launches the browser
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [ ] 04-01: Configure Vitest, MSW handlers, and React test utilities
