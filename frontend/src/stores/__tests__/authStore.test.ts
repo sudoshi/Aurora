@@ -1,27 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { useAuthStore } from "@/stores/authStore";
-import type { User } from "@/stores/authStore";
+import { createMockUser } from "@/test/factories";
 import { resetStores } from "@/test/utils";
-
-const mockUser: User = {
-  id: 1,
-  name: "Test User",
-  email: "test@example.com",
-  phone: null,
-  avatar: null,
-  phone_number: null,
-  job_title: "Physician",
-  department: "Cardiology",
-  organization: "Test Hospital",
-  bio: null,
-  must_change_password: false,
-  is_active: true,
-  last_login_at: "2026-03-25T10:00:00Z",
-  roles: ["physician"],
-  permissions: ["view-patients", "edit-patients"],
-  created_at: "2026-01-01T00:00:00Z",
-  updated_at: "2026-03-25T10:00:00Z",
-};
 
 afterEach(() => {
   resetStores();
@@ -37,6 +17,7 @@ describe("authStore", () => {
   });
 
   it("sets authenticated state via setAuth", () => {
+    const mockUser = createMockUser();
     const { result } = renderHook(() => useAuthStore());
 
     act(() => {
@@ -49,6 +30,7 @@ describe("authStore", () => {
   });
 
   it("resets state back to initial on logout", () => {
+    const mockUser = createMockUser();
     const { result } = renderHook(() => useAuthStore());
 
     act(() => {
@@ -63,5 +45,88 @@ describe("authStore", () => {
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.token).toBeNull();
     expect(result.current.user).toBeNull();
+  });
+
+  it("updateUser merges partial data into current user", () => {
+    const mockUser = createMockUser();
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.setAuth("token-123", mockUser);
+    });
+
+    act(() => {
+      result.current.updateUser({ name: "Updated Name" });
+    });
+
+    expect(result.current.user?.name).toBe("Updated Name");
+    expect(result.current.user?.email).toBe("test@example.com");
+  });
+
+  it("updateUser does nothing when no user is set", () => {
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.updateUser({ name: "Ghost" });
+    });
+
+    expect(result.current.user).toBeNull();
+  });
+
+  it("hasRole returns true for matching role and false for non-matching", () => {
+    const mockUser = createMockUser({ roles: ["physician"] });
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.setAuth("token-123", mockUser);
+    });
+
+    expect(result.current.hasRole("physician")).toBe(true);
+    expect(result.current.hasRole("admin")).toBe(false);
+  });
+
+  it("hasPermission returns true for matching permission and false for non-matching", () => {
+    const mockUser = createMockUser({ permissions: ["view-patients"] });
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.setAuth("token-123", mockUser);
+    });
+
+    expect(result.current.hasPermission("view-patients")).toBe(true);
+    expect(result.current.hasPermission("delete-patients")).toBe(false);
+  });
+
+  it("isAdmin returns true for admin or super-admin roles", () => {
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.setAuth("t1", createMockUser({ roles: ["admin"] }));
+    });
+    expect(result.current.isAdmin()).toBe(true);
+
+    act(() => {
+      result.current.setAuth("t2", createMockUser({ roles: ["super-admin"] }));
+    });
+    expect(result.current.isAdmin()).toBe(true);
+
+    act(() => {
+      result.current.setAuth("t3", createMockUser({ roles: ["physician"] }));
+    });
+    expect(result.current.isAdmin()).toBe(false);
+  });
+
+  it("isSuperAdmin returns true only for super-admin role", () => {
+    const { result } = renderHook(() => useAuthStore());
+
+    act(() => {
+      result.current.setAuth("t1", createMockUser({ roles: ["super-admin"] }));
+    });
+    expect(result.current.isSuperAdmin()).toBe(true);
+
+    act(() => {
+      result.current.setAuth("t2", createMockUser({ roles: ["admin"] }));
+    });
+    expect(result.current.isSuperAdmin()).toBe(false);
   });
 });
