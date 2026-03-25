@@ -60,10 +60,10 @@
 
 ### AI Service Tests
 
-- [ ] **ATEST-01**: Endpoint tests for health check
-- [ ] **ATEST-02**: Endpoint tests for POST /decision-support/genomic-briefing
-- [ ] **ATEST-03**: Service tests for genomic_briefing.py (narrative generation with mocked Ollama)
-- [ ] **ATEST-04**: AI service test coverage reaches 80%+
+- [x] **ATEST-01**: Endpoint tests for health check
+- [x] **ATEST-02**: Endpoint tests for POST /decision-support/genomic-briefing
+- [x] **ATEST-03**: Service tests for genomic_briefing.py (narrative generation with mocked Ollama)
+- [x] **ATEST-04**: AI service test coverage reaches 80%+
 
 ### E2E Tests
 
@@ -147,10 +147,10 @@
 | FTEST-08 | Phase 7 | Complete |
 | FTEST-09 | Phase 7 | Complete |
 | FTEST-10 | Phase 7 | Complete |
-| ATEST-01 | Phase 8 | Pending |
-| ATEST-02 | Phase 8 | Pending |
-| ATEST-03 | Phase 8 | Pending |
-| ATEST-04 | Phase 8 | Pending |
+| ATEST-01 | Phase 8 | Complete |
+| ATEST-02 | Phase 8 | Complete |
+| ATEST-03 | Phase 8 | Complete |
+| ATEST-04 | Phase 8 | Complete |
 | FEAT-01 | Phase 9 | Pending |
 | FEAT-02 | Phase 9 | Pending |
 | FEAT-03 | Phase 9 | Pending |
