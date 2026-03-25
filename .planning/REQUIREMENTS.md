@@ -55,8 +55,8 @@
 - [x] **FTEST-06**: Component tests for GenomicVariantTable (filtering, sorting, search, expansion)
 - [x] **FTEST-07**: Component tests for TreatmentTimeline (renders drug exposures proportionally)
 - [x] **FTEST-08**: Component tests for EvidenceBadge (renders correct badge for evidence level)
-- [ ] **FTEST-09**: Component tests for LoginForm and RegisterPage (form submission, validation)
-- [ ] **FTEST-10**: Frontend test coverage reaches 80%+
+- [x] **FTEST-09**: Component tests for LoginForm and RegisterPage (form submission, validation)
+- [x] **FTEST-10**: Frontend test coverage reaches 80%+
 
 ### AI Service Tests
 
@@ -145,8 +145,8 @@
 | FTEST-06 | Phase 7 | Complete |
 | FTEST-07 | Phase 7 | Complete |
 | FTEST-08 | Phase 7 | Complete |
-| FTEST-09 | Phase 7 | Pending |
-| FTEST-10 | Phase 7 | Pending |
+| FTEST-09 | Phase 7 | Complete |
+| FTEST-10 | Phase 7 | Complete |
 | ATEST-01 | Phase 8 | Pending |
 | ATEST-02 | Phase 8 | Pending |
 | ATEST-03 | Phase 8 | Pending |
