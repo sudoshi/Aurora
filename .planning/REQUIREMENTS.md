@@ -1,0 +1,124 @@
+# Requirements: Aurora Stabilization & Verification
+
+**Defined:** 2026-03-25
+**Core Value:** Every existing feature works end-to-end with automated tests proving it
+
+## v1 Requirements
+
+### Bug Fixes
+
+- [ ] **BUG-01**: Add `clinical` database connection alias to `config/database.php` so `exists:clinical.patients,id` validation resolves
+- [ ] **BUG-02**: Verify `/api/login` returns 200 with valid credentials after DB fix
+- [ ] **BUG-03**: Verify `/api/register` returns success response for new email
+- [ ] **BUG-04**: Verify `/api/change-password` works under auth
+- [ ] **BUG-05**: Verify `/api/dashboard` returns patient counts without error
+- [ ] **BUG-06**: Verify `/api/patients` CRUD endpoints respond correctly
+- [ ] **BUG-07**: Verify `/api/cases` CRUD endpoints respond correctly (the validation fix target)
+- [ ] **BUG-08**: Verify `/api/genomics/interactions` returns seeded gene-drug data
+- [ ] **BUG-09**: Verify `/api/genomics/stats` returns variant statistics
+- [ ] **BUG-10**: Verify AI service `/decision-support/genomic-briefing` endpoint responds
+
+### Test Infrastructure
+
+- [ ] **INFRA-01**: Configure Pest with multi-schema PostgreSQL support (DatabaseTruncation or custom)
+- [ ] **INFRA-02**: Create Laravel model factories for User, Patient, ClinicalCase, GeneDrugInteraction, GenomicVariant
+- [ ] **INFRA-03**: Configure Vitest with coverage in `vite.config.ts` (test block, jsdom/happy-dom)
+- [ ] **INFRA-04**: Set up MSW 2.x handlers mirroring real API responses
+- [ ] **INFRA-05**: Create React test utilities (provider wrappers for QueryClient, Router, Zustand)
+- [ ] **INFRA-06**: Configure pytest with coverage and `asyncio_mode = auto`
+- [ ] **INFRA-07**: Create FastAPI test client fixtures with mocked Ollama
+- [ ] **INFRA-08**: Update Playwright configuration for current app state
+
+### Backend Tests
+
+- [ ] **BTEST-01**: Feature tests for AuthController (login, register, change-password, logout)
+- [ ] **BTEST-02**: Feature tests for PatientController (index, show, store, update, clinical notes, timeline)
+- [ ] **BTEST-03**: Feature tests for CaseController (index, store, show, update, destroy, team members)
+- [ ] **BTEST-04**: Feature tests for SessionController (index, store, show, update, cases)
+- [ ] **BTEST-05**: Feature tests for GenomicsController (stats, interactions, variants, uploads, criteria)
+- [ ] **BTEST-06**: Feature tests for DashboardController (index with patient counts)
+- [ ] **BTEST-07**: Feature tests for RadiogenomicsController (panels, gene-drug interactions)
+- [ ] **BTEST-08**: Unit tests for AuthService (login, register, password change logic)
+- [ ] **BTEST-09**: Unit tests for PatientService (domain count aggregation, patient retrieval)
+- [ ] **BTEST-10**: Unit tests for CaseService (create, update, archive, team management)
+- [ ] **BTEST-11**: Unit tests for RadiogenomicsService (variant classification, panel generation)
+- [ ] **BTEST-12**: Unit tests for OncoKbService (connectivity check, response parsing)
+- [ ] **BTEST-13**: Backend test coverage reaches 80%+
+
+### Frontend Tests
+
+- [ ] **FTEST-01**: Store tests for authStore (login, logout, token management)
+- [ ] **FTEST-02**: Store tests for profileStore (profile loading, updates)
+- [ ] **FTEST-03**: Hook tests for useGenomics hooks (useInteractions, useBriefing, useVariants, useRadiogenomics)
+- [ ] **FTEST-04**: Component tests for GenomicBriefing (renders briefing, handles loading/error)
+- [ ] **FTEST-05**: Component tests for ActionableVariantsPanel (renders variants, VUS accordion)
+- [ ] **FTEST-06**: Component tests for GenomicVariantTable (filtering, sorting, search, expansion)
+- [ ] **FTEST-07**: Component tests for TreatmentTimeline (renders drug exposures proportionally)
+- [ ] **FTEST-08**: Component tests for EvidenceBadge (renders correct badge for evidence level)
+- [ ] **FTEST-09**: Component tests for LoginForm and RegisterPage (form submission, validation)
+- [ ] **FTEST-10**: Frontend test coverage reaches 80%+
+
+### AI Service Tests
+
+- [ ] **ATEST-01**: Endpoint tests for health check
+- [ ] **ATEST-02**: Endpoint tests for POST /decision-support/genomic-briefing
+- [ ] **ATEST-03**: Service tests for genomic_briefing.py (narrative generation with mocked Ollama)
+- [ ] **ATEST-04**: AI service test coverage reaches 80%+
+
+### E2E Tests
+
+- [ ] **E2E-01**: Login flow — admin logs in, sees dashboard
+- [ ] **E2E-02**: Patient profile — navigate to patient, view tabs
+- [ ] **E2E-03**: Genomics tab — view briefing, variants, interactions, timeline
+- [ ] **E2E-04**: Case management — create case, add team member, view case
+
+### Feature Completion
+
+- [ ] **FEAT-01**: OncoKB response parsing in OncoKbService (parse treatment annotations, map evidence levels, upsert GeneDrugInteraction records)
+- [ ] **FEAT-02**: GenomicsController upload endpoints (listUploads, storeUpload, showUpload with file handling)
+- [ ] **FEAT-03**: GenomicsController criteria endpoints (listCriteria, storeCriterion, updateCriterion, destroyCriterion with persistence)
+
+## v2 Requirements
+
+### CI/CD Integration
+
+- **CI-01**: Coverage threshold enforcement in GitHub Actions
+- **CI-02**: Codecov integration with codecov.yml config
+- **CI-03**: Test result reporting in PR checks
+
+### Performance Testing
+
+- **PERF-01**: Load testing for genomics endpoints
+- **PERF-02**: Response time benchmarks for critical paths
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| New feature development | Stabilization milestone only |
+| Federation layer | Off by default, future milestone |
+| WebSocket/real-time testing | Not in current scope |
+| Mobile optimization | Web-first |
+| HIPAA compliance audit | Separate compliance milestone |
+| Docker PCOV installation | Coverage runs locally, CI deferred to v2 |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| BUG-01 through BUG-10 | Phase 1 | Pending |
+| INFRA-01 through INFRA-08 | Phase 2 | Pending |
+| BTEST-01 through BTEST-13 | Phase 3-4 | Pending |
+| FTEST-01 through FTEST-10 | Phase 5-6 | Pending |
+| ATEST-01 through ATEST-04 | Phase 7 | Pending |
+| E2E-01 through E2E-04 | Phase 8 | Pending |
+| FEAT-01 through FEAT-03 | Phase 9-10 | Pending |
+
+**Coverage:**
+- v1 requirements: 50 total
+- Mapped to phases: 50
+- Unmapped: 0
+
+---
+*Requirements defined: 2026-03-25*
+*Last updated: 2026-03-25 after initial definition*
