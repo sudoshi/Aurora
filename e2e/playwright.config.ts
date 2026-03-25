@@ -1,10 +1,13 @@
 import { defineConfig } from "@playwright/test";
+import path from "path";
+
+const authFile = path.join(__dirname, ".auth", "admin.json");
 
 export default defineConfig({
   testDir: "./tests",
-  fullyParallel: true,
+  fullyParallel: false,
   retries: 1,
-  workers: 2,
+  workers: 1,
   timeout: 30_000,
   expect: {
     timeout: 10_000,
@@ -17,8 +20,23 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chromium",
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: "auth-tests",
+      testMatch: /auth\.spec\.ts/,
       use: { browserName: "chromium" },
+      dependencies: ["setup"],
+    },
+    {
+      name: "chromium",
+      testIgnore: /auth\.(spec|setup)\.ts/,
+      use: {
+        browserName: "chromium",
+        storageState: authFile,
+      },
+      dependencies: ["setup"],
     },
   ],
   reporter: [["html", { open: "never" }], ["list"]],

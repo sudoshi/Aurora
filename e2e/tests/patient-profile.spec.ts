@@ -1,95 +1,69 @@
 import { test, expect } from "@playwright/test";
-import { loginAsAdmin, navigateTo } from "./helpers";
 
 test.describe("Patient profile navigation", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAsAdmin(page);
+  test("patient list page loads with table", async ({ page }) => {
+    await page.goto("/profiles");
+
+    // Heading visible
+    await expect(
+      page.getByRole("heading", { name: /patient profiles/i })
+    ).toBeVisible();
+
+    // At least one table row exists
+    const rows = page.locator("table tbody tr");
+    await expect(rows.first()).toBeVisible({ timeout: 10_000 });
+    expect(await rows.count()).toBeGreaterThan(0);
   });
 
-  test("navigate to Patient Profiles page", async ({ page }) => {
-    await navigateTo(page, "Patient");
+  test("navigate to patient profile and view tabs", async ({ page }) => {
+    await page.goto("/profiles");
 
+    // Wait for table to load
+    await expect(page.locator("table tbody tr").first()).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Click first patient row
+    await page.locator("table tbody tr").first().click();
+
+    // Patient detail page loads (heading "Patient Profile")
     await expect(
-      page
-        .getByRole("heading", { name: /patient/i })
-        .or(page.getByText(/patient profile|patients/i).first())
+      page.getByRole("heading", { name: /patient profile/i })
+    ).toBeVisible({ timeout: 10_000 });
+
+    // View mode buttons are visible
+    await expect(
+      page.getByRole("button", { name: /timeline/i })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /labs/i })
     ).toBeVisible();
   });
 
-  test("search for a patient", async ({ page }) => {
-    await navigateTo(page, "Patient");
+  test("can switch between view modes", async ({ page }) => {
+    await page.goto("/profiles");
 
-    const searchInput = page
-      .getByPlaceholder(/search|find|filter/i)
-      .or(page.getByLabel(/search|find/i));
+    // Wait for table and click first patient
+    await expect(page.locator("table tbody tr").first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.locator("table tbody tr").first().click();
 
-    if (await searchInput.first().isVisible()) {
-      await searchInput.first().fill("test");
-      // Wait for search results or empty state
-      await page.waitForTimeout(1000);
-    }
-  });
+    // Wait for profile to load
+    await expect(
+      page.getByRole("heading", { name: /patient profile/i })
+    ).toBeVisible({ timeout: 10_000 });
 
-  test("verify demographics card on patient detail", async ({ page }) => {
-    await navigateTo(page, "Patient");
+    // Click Timeline button and assert content appears
+    await page.getByRole("button", { name: /timeline/i }).click();
+    await expect(
+      page.locator("main").getByText(/timeline|visit|event|date/i).first()
+    ).toBeVisible({ timeout: 10_000 });
 
-    // Try to open a patient profile
-    const patientLink = page.locator(
-      "[data-testid='patient-item'] a, .patient-item a, table tbody tr a, [data-testid='patient-card']"
-    );
-
-    if (await patientLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await patientLink.first().click();
-
-      // Verify demographics section
-      await expect(
-        page.getByText(/demographics|age|gender|dob|date of birth|mrn/i)
-      ).toBeVisible({ timeout: 10_000 });
-    }
-  });
-
-  test("switch view modes on patient profile", async ({ page }) => {
-    await navigateTo(page, "Patient");
-
-    const patientLink = page.locator(
-      "[data-testid='patient-item'] a, .patient-item a, table tbody tr a, [data-testid='patient-card']"
-    );
-
-    if (await patientLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await patientLink.first().click();
-
-      // Check for view mode toggles (timeline, list, labs, visits)
-      const viewModes = ["timeline", "list", "labs", "visits"];
-      for (const mode of viewModes) {
-        const modeBtn = page
-          .getByRole("tab", { name: new RegExp(mode, "i") })
-          .or(page.getByRole("button", { name: new RegExp(mode, "i") }));
-
-        if (await modeBtn.first().isVisible({ timeout: 2000 }).catch(() => false)) {
-          await modeBtn.first().click();
-          // Brief wait for view to switch
-          await page.waitForTimeout(500);
-        }
-      }
-    }
-  });
-
-  test("verify timeline renders on patient detail", async ({ page }) => {
-    await navigateTo(page, "Patient");
-
-    const patientLink = page.locator(
-      "[data-testid='patient-item'] a, .patient-item a, table tbody tr a, [data-testid='patient-card']"
-    );
-
-    if (await patientLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await patientLink.first().click();
-
-      // Look for timeline elements
-      await expect(
-        page
-          .getByText(/timeline/i)
-          .or(page.locator("[data-testid='timeline'], .timeline"))
-      ).toBeVisible({ timeout: 10_000 });
-    }
+    // Click Labs button and assert content appears
+    await page.getByRole("button", { name: /labs/i }).click();
+    await expect(
+      page.locator("main").getByText(/labs|results|test|value/i).first()
+    ).toBeVisible({ timeout: 10_000 });
   });
 });
