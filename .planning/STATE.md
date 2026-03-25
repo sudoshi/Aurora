@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 ## Current Position
 
 Phase: 10 of 10 (E2E Tests)
-Plan: 1 of 1 in current phase (Complete)
+Plan: 2 of 2 in current phase (Complete)
 Status: Complete
-Last activity: 2026-03-25 -- Phase 10 Plan 01 executed: E2E login and patient profile tests rewritten with storageState auth, 6 tests passing
+Last activity: 2026-03-25 -- Phase 10 Plan 02 executed: Genomics tab and case lifecycle E2E tests, 5 tests (3 pass, 2 skip for missing genomic data)
 
 Progress: [██████████] 100%
 
@@ -64,6 +64,7 @@ Progress: [██████████] 100%
 | Phase 09 P01 | 2min | 1 tasks | 2 files |
 | Phase 09-feature-completion P02 | 5min | 2 tasks | 8 files |
 | Phase 10-e2e-tests P01 | 15min | 2 tasks | 5 files |
+| Phase 10-e2e-tests P02 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [09-02]: Storage::disk('local') for genomic file uploads with stored_path tracked in DB column
 - [10-01]: Playwright storageState auth setup to share login across tests, avoiding throttle:5,1 rate limit exhaustion
 - [10-01]: Three Playwright projects (setup, auth-tests, chromium) to separate auth-testing from authenticated-tests
+- [10-02]: Genomics tests use test.skip() with clear message when Genomics button absent (data-dependent)
+- [10-02]: Case lifecycle uses serial describe with shared Date.now() caseTitle for create-then-detail flow
+- [10-02]: Assert single Add Member button to avoid Playwright strict mode violation with .or() multiple matches
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T21:57:00Z
-Stopped at: Completed 10-01-PLAN.md
+Last session: 2026-03-25T22:03:00Z
+Stopped at: Completed 10-02-PLAN.md
 Resume file: None

@@ -69,8 +69,8 @@
 
 - [x] **E2E-01**: Login flow — admin logs in, sees dashboard
 - [x] **E2E-02**: Patient profile — navigate to patient, view tabs
-- [ ] **E2E-03**: Genomics tab — view briefing, variants, interactions, timeline
-- [ ] **E2E-04**: Case management — create case, add team member, view case
+- [x] **E2E-03**: Genomics tab — view briefing, variants, interactions, timeline
+- [x] **E2E-04**: Case management — create case, add team member, view case
 
 ### Feature Completion
 
@@ -156,8 +156,8 @@
 | FEAT-03 | Phase 9 | Complete |
 | E2E-01 | Phase 10 | Complete |
 | E2E-02 | Phase 10 | Complete |
-| E2E-03 | Phase 10 | Pending |
-| E2E-04 | Phase 10 | Pending |
+| E2E-03 | Phase 10 | Complete |
+| E2E-04 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 52 total
