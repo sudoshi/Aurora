@@ -356,7 +356,7 @@ export default function MeasurementPanel({ studyId, personId }: MeasurementPanel
                     </td>
                     <td className="px-4 py-3 text-[#E8ECF4] text-xs font-medium">{m.measurement_name}</td>
                     <td className="px-4 py-3 text-[#B4BAC8] text-xs font-mono">
-                      {m.value_as_number.toFixed(2)} {m.unit}
+                      {m.value_as_number != null ? m.value_as_number.toFixed(2) : "--"} {m.unit}
                     </td>
                     <td className="px-4 py-3 text-[#7A8298] text-xs">
                       {[m.body_site, m.laterality].filter(Boolean).join(" · ") || "--"}
