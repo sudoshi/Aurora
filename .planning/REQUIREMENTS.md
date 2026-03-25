@@ -49,7 +49,7 @@
 
 - [x] **FTEST-01**: Store tests for authStore (login, logout, token management)
 - [x] **FTEST-02**: Store tests for profileStore (profile loading, updates)
-- [ ] **FTEST-03**: Hook tests for useGenomics hooks (useInteractions, useBriefing, useVariants, useRadiogenomics)
+- [x] **FTEST-03**: Hook tests for useGenomics hooks (useInteractions, useBriefing, useVariants, useRadiogenomics)
 - [ ] **FTEST-04**: Component tests for GenomicBriefing (renders briefing, handles loading/error)
 - [ ] **FTEST-05**: Component tests for ActionableVariantsPanel (renders variants, VUS accordion)
 - [ ] **FTEST-06**: Component tests for GenomicVariantTable (filtering, sorting, search, expansion)
@@ -139,7 +139,7 @@
 | BTEST-13 | Phase 5 | Complete |
 | FTEST-01 | Phase 7 | Complete |
 | FTEST-02 | Phase 7 | Complete |
-| FTEST-03 | Phase 7 | Pending |
+| FTEST-03 | Phase 7 | Complete |
 | FTEST-04 | Phase 7 | Pending |
 | FTEST-05 | Phase 7 | Pending |
 | FTEST-06 | Phase 7 | Pending |
