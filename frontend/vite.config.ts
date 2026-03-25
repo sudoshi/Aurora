@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    allowedHosts: ['aurora.acumenus.net'],
   },
   base: process.env.NODE_ENV === 'production' ? '/build/' : '/',
   build: {
