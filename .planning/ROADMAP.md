@@ -92,12 +92,12 @@ Plans:
   3. CaseController tests cover CRUD, archive, and team member management
   4. SessionController, GenomicsController, DashboardController, and RadiogenomicsController each have passing feature tests
   5. Backend test coverage is at or above 80%
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Feature tests for AuthController and DashboardController
-- [ ] 05-02: Feature tests for PatientController and CaseController
-- [ ] 05-03: Feature tests for SessionController, GenomicsController, and RadiogenomicsController
+- [ ] 05-01-PLAN.md — Fix .env.testing, verify AuthController tests, add PatientController and DashboardController tests
+- [ ] 05-02-PLAN.md — Feature tests for CaseController and SessionController
+- [ ] 05-03-PLAN.md — Feature tests for GenomicsController and RadiogenomicsController, coverage gate
 
 ### Phase 6: Backend Unit Tests
 **Goal**: All service classes have unit tests validating business logic independently of HTTP layer
