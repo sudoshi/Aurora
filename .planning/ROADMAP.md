@@ -125,13 +125,13 @@ Plans:
   3. Genomics component tests (GenomicBriefing, ActionableVariantsPanel, GenomicVariantTable, TreatmentTimeline, EvidenceBadge) render correctly with mock data
   4. LoginForm and RegisterPage tests validate form submission and validation behavior
   5. Frontend test coverage is at or above 80%
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 07-01: Store tests for authStore and profileStore
-- [ ] 07-02: Hook tests for useGenomics hooks
-- [ ] 07-03: Component tests for genomics components
-- [ ] 07-04: Component tests for auth components (LoginForm, RegisterPage)
+- [ ] 07-01-PLAN.md — Store tests for authStore and profileStore with shared mock factories
+- [ ] 07-02-PLAN.md — Hook tests for useGenomics hooks with MSW
+- [ ] 07-03-PLAN.md — Component tests for genomics components (EvidenceBadge, ActionableVariantsPanel, TreatmentTimeline, GenomicBriefing, GenomicVariantTable)
+- [ ] 07-04-PLAN.md — Auth page tests (LoginPage, RegisterPage) and coverage gate
 
 ### Phase 8: AI Service Tests
 **Goal**: FastAPI health and genomic briefing endpoints have comprehensive tests with mocked Ollama
