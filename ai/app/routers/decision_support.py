@@ -7,6 +7,8 @@ from fastapi import APIRouter
 from app.models.decision_support import (
     DrugInteractionRequest,
     DrugInteractionResponse,
+    GenomicBriefingRequest,
+    GenomicBriefingResponse,
     GuidelineCheckRequest,
     GuidelineCheckResponse,
     PrognosticScoreRequest,
@@ -19,6 +21,7 @@ from app.models.decision_support import (
     VariantInterpretResponse,
 )
 from app.services.drug_interaction_checker import check_interactions
+from app.services.genomic_briefing import generate_briefing
 from app.services.guideline_checker import check_concordance
 from app.services.prognostic_scorer import calculate_scores
 from app.services.rare_disease_matcher import match_phenotype
@@ -137,4 +140,18 @@ async def rare_disease_endpoint(
         return RareDiseaseMatchResponse(
             matches=[],
             error=f"Rare disease matcher service unavailable: {type(exc).__name__}",
+        )
+
+
+@router.post("/genomic-briefing", response_model=GenomicBriefingResponse)
+async def genomic_briefing_endpoint(
+    request: GenomicBriefingRequest,
+) -> GenomicBriefingResponse:
+    """Generate a clinical genomic briefing narrative for a patient."""
+    try:
+        return await generate_briefing(request)
+    except Exception as exc:
+        logger.error("Genomic briefing failed: %s", exc)
+        return GenomicBriefingResponse(
+            error=f"Genomic briefing service unavailable: {type(exc).__name__}",
         )

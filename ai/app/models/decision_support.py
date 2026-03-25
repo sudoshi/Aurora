@@ -147,3 +147,44 @@ class RareDiseaseMatch(BaseModel):
 class RareDiseaseMatchResponse(BaseModel):
     matches: list[RareDiseaseMatch]
     error: str | None = None
+
+
+# --- Genomic Briefing ---
+
+
+class VariantSummary(BaseModel):
+    gene: str
+    variant: str
+    classification: str
+    evidence_level: str | None = None
+    therapies: list[str] = Field(default_factory=list)
+
+
+class DrugExposureSummary(BaseModel):
+    drug_name: str
+    start_date: str | None = None
+    end_date: str | None = None
+
+
+class InteractionSummary(BaseModel):
+    gene: str
+    drug: str
+    relationship: str
+    evidence_level: str
+    mechanism: str | None = None
+
+
+class GenomicBriefingRequest(BaseModel):
+    patient_id: int
+    variants: list[VariantSummary] = Field(default_factory=list)
+    drug_exposures: list[DrugExposureSummary] = Field(default_factory=list)
+    interactions: list[InteractionSummary] = Field(default_factory=list)
+    total_variant_count: int = 0
+
+
+class GenomicBriefingResponse(BaseModel):
+    briefing: str = ""
+    generated_at: str = ""
+    variant_count: int = 0
+    actionable_count: int = 0
+    error: str | None = None
