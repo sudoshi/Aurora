@@ -1,0 +1,21 @@
+=== TCGA-KIRC ===
+  Series: 2654 total, 0 already done, 2654 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/TCGA-KIRC
+  Parallel: 6
+
+=== Starting phase 2 downloads ===
+=== TCGA-KIRC ===
+  Series: 2654 total, 2654 already done, 0 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/TCGA-KIRC
+  Parallel: 6
+
+  All series already downloaded. Skipping.
+
+=== TCGA-LUAD ===
+  Series: 624 total, 0 already done, 624 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/TCGA-LUAD
+  Parallel: 6
+
+  Results: 624 downloaded, 0 skipped, 0 failed
+
+Done.

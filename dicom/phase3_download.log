@@ -1,0 +1,17 @@
+=== TCGA-BRCA ===
+  Series: 1877 total, 0 already done, 1877 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/TCGA-BRCA
+  Parallel: 6
+
+  Results: 1877 downloaded, 0 skipped, 0 failed
+
+=== CPTAC-CCRCC ===
+  Series: 727 total, 0 already done, 727 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/CPTAC-CCRCC
+  Parallel: 6
+
+=== CPTAC-CCRCC ===
+  Series: 727 total, 726 already done, 1 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/CPTAC-CCRCC
+  Parallel: 6
+
