@@ -22,9 +22,9 @@
 
 - [x] **INFRA-01**: Configure Pest with multi-schema PostgreSQL support (DatabaseTruncation or custom)
 - [x] **INFRA-02**: Create Laravel model factories for User, Patient, ClinicalCase, GeneDrugInteraction, GenomicVariant
-- [ ] **INFRA-03**: Configure Vitest with coverage in `vite.config.ts` (test block, jsdom/happy-dom)
-- [ ] **INFRA-04**: Set up MSW 2.x handlers mirroring real API responses
-- [ ] **INFRA-05**: Create React test utilities (provider wrappers for QueryClient, Router, Zustand)
+- [x] **INFRA-03**: Configure Vitest with coverage in `vite.config.ts` (test block, jsdom/happy-dom)
+- [x] **INFRA-04**: Set up MSW 2.x handlers mirroring real API responses
+- [x] **INFRA-05**: Create React test utilities (provider wrappers for QueryClient, Router, Zustand)
 - [ ] **INFRA-06**: Configure pytest with coverage and `asyncio_mode = auto`
 - [ ] **INFRA-07**: Create FastAPI test client fixtures with mocked Ollama
 - [ ] **INFRA-08**: Update Playwright configuration for current app state
@@ -118,9 +118,9 @@
 | BUG-10 | Phase 2 | Complete |
 | INFRA-01 | Phase 3 | Complete |
 | INFRA-02 | Phase 3 | Complete |
-| INFRA-03 | Phase 4 | Pending |
-| INFRA-04 | Phase 4 | Pending |
-| INFRA-05 | Phase 4 | Pending |
+| INFRA-03 | Phase 4 | Complete |
+| INFRA-04 | Phase 4 | Complete |
+| INFRA-05 | Phase 4 | Complete |
 | INFRA-06 | Phase 4 | Pending |
 | INFRA-07 | Phase 4 | Pending |
 | INFRA-08 | Phase 4 | Pending |

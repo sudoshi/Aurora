@@ -9,9 +9,9 @@ last_activity: "2026-03-25 -- Phase 3 Plan 01 executed: Pest test infrastructure
 progress:
   total_phases: 10
   completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 30
+  total_plans: 4
+  completed_plans: 4
+  percent: 40
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 3 - Backend Test Infrastructure
+**Current focus:** Phase 4 - Frontend & AI Test Infrastructure
 
 ## Current Position
 
-Phase: 3 of 10 (Backend Test Infrastructure)
-Plan: 1 of 1 in current phase (COMPLETE)
-Status: Phase 3 complete
-Last activity: 2026-03-25 -- Phase 3 Plan 01 executed: Pest test infrastructure with DatabaseTruncation, clinical factories, smoke tests
+Phase: 4 of 10 (Frontend & AI Test Infrastructure)
+Plan: 1 of 2 in current phase (COMPLETE)
+Status: Executing phase 4
+Last activity: 2026-03-25 -- Phase 4 Plan 01 executed: Vitest with V8 coverage, MSW 2.x mock server, React test utilities
 
-Progress: [███-------] 30%
+Progress: [████------] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 5.3min
-- Total execution time: 0.27 hours
+- Total plans completed: 4
+- Average duration: 4.8min
+- Total execution time: 0.32 hours
 
 **By Phase:**
 
@@ -46,9 +46,10 @@ Progress: [███-------] 30%
 | 01-fix-critical-blocker | 1 | 8min | 8min |
 | 02-verify-genomics-ai | 1 | 3min | 3min |
 | 03-backend-test-infrastructure | 1 | 5min | 5min |
+| 04-frontend-ai-test-infrastructure | 1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8min), 02-01 (3min), 03-01 (5min)
+- Last 5 plans: 01-01 (8min), 02-01 (3min), 03-01 (5min), 04-01 (3min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [03-01]: Unqualified table names in $exceptTables (DatabaseTruncation matches without schema prefix)
 - [03-01]: ClinicalCaseFactory uses ClinicalPatient instead of legacy Patient model
 - [03-01]: Clinical factories use explicit newFactory() to resolve sub-namespace discovery
+- [04-01]: onUnhandledRequest: 'warn' (not 'error') to prevent false test failures
+- [04-01]: V8 coverage provider over istanbul for native speed
+- [04-01]: resetStores() covers all 4 Zustand stores for test isolation
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T17:55:32Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-25T18:18:03Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
