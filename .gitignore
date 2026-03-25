@@ -1,12 +1,17 @@
 # Dependencies
 /backend/vendor/
 /frontend/node_modules/
+/e2e/node_modules/
 /ai/venv/
 /ai/__pycache__/
 
 # Environment
+.env
 /backend/.env
 /ai/.env
+
+# Coverage
+ai/.coverage
 
 # Build artifacts
 /frontend/dist/

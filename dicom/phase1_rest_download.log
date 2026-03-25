@@ -15,3 +15,20 @@
   Target: /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions
   Parallel: 6
 
+  Results: 1791 downloaded, 0 skipped, 0 failed
+
+=== NSCLC-Radiomics ===
+  Series: 1265 total, 0 already done, 1265 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics
+  Parallel: 6
+
+  Results: 1265 downloaded, 0 skipped, 0 failed
+
+=== HCC-TACE-Seg ===
+  Series: 677 total, 672 already done, 5 remaining
+  Target: /media/smudoshi/DATA/TCIA-downloads/HCC-TACE-Seg
+  Parallel: 6
+
+  Results: 5 downloaded, 672 skipped, 0 failed
+
+Done.

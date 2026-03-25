@@ -26,3 +26,140 @@ Done.
   Parallel: 8
   Target:   http://localhost:8042
 
+  Results: 132852 uploaded, 0
+0 already existed, 0
+0 failed
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 150: [[: 0
+0: syntax error in expression (error token is "0")
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 155: [[: 0
+0: syntax error in expression (error token is "0")
+
+=== Final Orthanc Statistics ===
+  Patients:  837
+  Studies:   979
+  Series:    5004
+  Instances: 499888
+  Disk:      249395 MB
+
+Done.
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+  Files:    374151
+  Parallel: 8
+  Target:   http://localhost:8042
+
+  Results: 374151 uploaded, 0
+0 already existed, 0
+0 failed
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 150: [[: 0
+0: syntax error in expression (error token is "0")
+/home/smudoshi/Github/Aurora/dicom/import_to_orthanc.sh: line 155: [[: 0
+0: syntax error in expression (error token is "0")
+
+=== Final Orthanc Statistics ===
+  Patients:  1215
+  Studies:   1576
+  Series:    6795
+  Instances: 874039
+  Disk:      361067 MB
+
+Done.
+=== Importing NSCLC-Radiomics ===
+  Scanning for .dcm files...
+  Files:    52073
+  Parallel: 8
+  Target:   http://localhost:8042
+
+  Results: 52027 uploaded, 0
+0 already existed, 46 failed
+  Failed files (first 10):
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-090.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-087.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-088.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-091.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-094.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-092.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-089.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-093.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-095.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/NSCLC-Radiomics/1.3.6.1.4.1.32722.99.99.243805646416779040948047547624490541420/1-098.dcm
+
+=== Final Orthanc Statistics ===
+  Patients:  1637
+  Studies:   1998
+  Series:    8059
+  Instances: 926066
+  Disk:      395206 MB
+
+Done.
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+  Files:    374151
+  Parallel: 8
+  Target:   http://localhost:8042
+
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+=== Starting PSMA import ===
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+  Files:    374151
+  Parallel: 8
+  Target:   http://localhost:8042
+
+  Results: 15713 uploaded, 0
+0 already existed, 358438 failed
+  Failed files (first 10):
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-086.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-087.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-093.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-088.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-094.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-095.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-096.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-097.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-098.dcm
+    FAIL 000 /media/smudoshi/DATA/TCIA-downloads/PSMA-PET-CT-Lesions/1.3.6.1.4.1.14519.5.2.1.4760633210657582648228048019268920818/1-099.dcm
+=== Syncing to Aurora ===
+=== Orthanc → Aurora Sync ===
+  Orthanc: http://localhost:8042
+  Database: :5432/aurora
+
+ERROR: Cannot connect to Orthanc: <urlopen error [Errno 111] Connection refused>
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+  Files:    374151
+  Parallel: 4
+  Target:   http://localhost:8042
+
+=== Importing PSMA-PET-CT-Lesions ===
+  Scanning for .dcm files...
+Orthanc: 188966 instances, 80471 MB
+
+Scanning PSMA-PET-CT-Lesions for .dcm files...
+  Found 374151 files in 666.6s
+
+Uploading with 24 threads...
+  [1/374151] OK=1 SKIP=0 FAIL=0 (1/min, ETA 359633 min)
+  [2/374151] OK=2 SKIP=0 FAIL=0 (1/min, ETA 314048 min)
+  [133/374151] OK=133 SKIP=0 FAIL=0 (61/min, ETA 6172 min)
+  [198/374151] OK=198 SKIP=0 FAIL=0 (73/min, ETA 5134 min)
+  [251/374151] OK=251 SKIP=0 FAIL=0 (65/min, ETA 5793 min)
+  [252/374151] OK=252 SKIP=0 FAIL=0 (57/min, ETA 6545 min)
+  [253/374151] OK=252 SKIP=0 FAIL=1 (50/min, ETA 7453 min)
+  [275/374151] OK=252 SKIP=0 FAIL=23 (47/min, ETA 8010 min)
+  [277/374151] OK=253 SKIP=0 FAIL=24 (43/min, ETA 8656 min)
+  [279/374151] OK=254 SKIP=0 FAIL=25 (40/min, ETA 9443 min)
+  [305/374151] OK=262 SKIP=0 FAIL=43 (40/min, ETA 9260 min)
+  [356/374151] OK=313 SKIP=0 FAIL=43 (44/min, ETA 8495 min)
+  [427/374151] OK=384 SKIP=0 FAIL=43 (50/min, ETA 7519 min)
+  [492/374151] OK=449 SKIP=0 FAIL=43 (54/min, ETA 6911 min)
+  [552/374151] OK=509 SKIP=0 FAIL=43 (57/min, ETA 6503 min)
+  [592/374151] OK=549 SKIP=0 FAIL=43 (58/min, ETA 6387 min)
+  [640/374151] OK=597 SKIP=0 FAIL=43 (60/min, ETA 6216 min)
+  [675/374151] OK=632 SKIP=0 FAIL=43 (61/min, ETA 6172 min)
+  [749/374151] OK=706 SKIP=0 FAIL=43 (64/min, ETA 5811 min)
+  [802/374151] OK=759 SKIP=0 FAIL=43 (66/min, ETA 5678 min)
+  [835/374151] OK=792 SKIP=0 FAIL=43 (66/min, ETA 5683 min)
+  [861/374151] OK=818 SKIP=0 FAIL=43 (65/min, ETA 5757 min)
+  [864/374151] OK=821 SKIP=0 FAIL=43 (62/min, ETA 6012 min)
