@@ -2,13 +2,21 @@
 
 namespace App\Models\Clinical;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ClinicalPatient extends Model
 {
+    use HasFactory;
+
     protected $table = 'patients';
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Clinical\ClinicalPatientFactory::new();
+    }
 
     protected $guarded = [];
 

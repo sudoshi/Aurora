@@ -2,11 +2,19 @@
 
 namespace App\Models\Clinical;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class GeneDrugInteraction extends Model
 {
+    use HasFactory;
+
     protected $connection = 'pgsql';
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Clinical\GeneDrugInteractionFactory::new();
+    }
     protected $table = 'clinical.gene_drug_interactions';
 
     protected $fillable = [
