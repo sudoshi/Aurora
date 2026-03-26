@@ -28,6 +28,7 @@ use App\Http\Controllers\Commons\ReactionController;
 use App\Http\Controllers\Commons\ReviewRequestController;
 use App\Http\Controllers\Commons\WikiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\GenomicsController;
 use App\Http\Controllers\ImagingController;
@@ -176,6 +177,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('radiogenomics')->group(function () {
         Route::get('/patients/{patientId}', [RadiogenomicsController::class, 'patientPanel']);
         Route::get('/variant-drug-interactions', [RadiogenomicsController::class, 'variantDrugInteractions']);
+    });
+
+    // ── Fingerprint (Similarity Engine) ──────────────────────────────────
+    Route::prefix('fingerprint')->group(function () {
+        // View-level access (any authenticated clinician)
+        Route::get('/weights', [FingerprintController::class, 'listWeights']);
+        Route::get('/weights/active', [FingerprintController::class, 'activeWeights']);
+        Route::get('/stats', [FingerprintController::class, 'stats']);
+        Route::get('/patients/{id}', [FingerprintController::class, 'showFingerprint']);
+        Route::get('/patients/{id}/outcome', [FingerprintController::class, 'showOutcome']);
+
+        // Search access
+        Route::post('/search', [FingerprintController::class, 'search'])->middleware('permission:fingerprint.search');
+
+        // Encode access (attending physician or admin)
+        Route::post('/patients/{id}/encode', [FingerprintController::class, 'encode'])->middleware('permission:fingerprint.encode');
+        Route::post('/encode-batch', [FingerprintController::class, 'encodeBatch'])->middleware('permission:fingerprint.admin');
+
+        // Assessment access (attending physician, specialist, or admin)
+        Route::put('/patients/{id}/outcome/assess', [FingerprintController::class, 'assessOutcome'])->middleware('permission:fingerprint.assess');
     });
 
     // ── Case Templates ────────────────────────────────────────────────────
