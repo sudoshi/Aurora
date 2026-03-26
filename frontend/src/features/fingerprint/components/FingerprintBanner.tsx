@@ -1,4 +1,4 @@
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, Dna, Box, Hospital } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePatientFingerprint, useEncodePatient } from "../hooks/useFingerprint";
 
@@ -7,16 +7,23 @@ interface FingerprintBannerProps {
   className?: string;
 }
 
+const DIMENSION_ICONS: Record<string, { icon: typeof Dna; color: string }> = {
+  genomic: { icon: Dna, color: "#A78BFA" },
+  volumetric: { icon: Box, color: "#60A5FA" },
+  clinical: { icon: Hospital, color: "#34D399" },
+};
+
 interface DimensionIndicatorProps {
-  emoji: string;
+  dimension: "genomic" | "volumetric" | "clinical";
   label: string;
   available: boolean;
   confidence: number | null;
   encodedAt: string | null;
 }
 
-function DimensionIndicator({ emoji, label, available, confidence, encodedAt }: DimensionIndicatorProps) {
+function DimensionIndicator({ dimension, label, available, confidence, encodedAt }: DimensionIndicatorProps) {
   const freshness = encodedAt ? getFreshness(encodedAt) : null;
+  const { icon: Icon, color } = DIMENSION_ICONS[dimension];
 
   return (
     <div
@@ -27,7 +34,7 @@ function DimensionIndicator({ emoji, label, available, confidence, encodedAt }: 
           : "bg-[#0A0A18]/50 border-[#1C1C48]/50 opacity-50",
       )}
     >
-      <span className="text-base">{emoji}</span>
+      <Icon size={16} style={{ color: available ? color : "#4A5068" }} />
       <div className="min-w-0">
         <div className="text-xs font-medium text-[#E8ECF4]">{label}</div>
         {available ? (
@@ -122,21 +129,21 @@ export function FingerprintBanner({ patientId, className }: FingerprintBannerPro
 
       <div className="grid grid-cols-3 gap-2">
         <DimensionIndicator
-          emoji="\u{1F9EC}"
+          dimension="genomic"
           label="Genomic"
           available={fingerprint?.dimensions.genomic ?? false}
           confidence={fingerprint?.confidence.genomic ?? null}
           encodedAt={fingerprint?.encoded_at.genomic ?? null}
         />
         <DimensionIndicator
-          emoji="\u{1F4D0}"
+          dimension="volumetric"
           label="Volumetric"
           available={fingerprint?.dimensions.volumetric ?? false}
           confidence={fingerprint?.confidence.volumetric ?? null}
           encodedAt={fingerprint?.encoded_at.volumetric ?? null}
         />
         <DimensionIndicator
-          emoji="\u{1F3E5}"
+          dimension="clinical"
           label="Clinical"
           available={fingerprint?.dimensions.clinical ?? false}
           confidence={fingerprint?.confidence.clinical ?? null}
