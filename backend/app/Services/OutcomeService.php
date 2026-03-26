@@ -11,7 +11,7 @@ class OutcomeService
 
     public function __construct()
     {
-        $this->aiBaseUrl = rtrim(config('services.ai.url', 'http://localhost:8000'), '/');
+        $this->aiBaseUrl = rtrim(config('services.ai.base_url', 'http://localhost:8100'), '/');
     }
 
     /**

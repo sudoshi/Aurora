@@ -1,5 +1,6 @@
 services:
   nginx:
+    container_name: aurora-nginx
     image: nginx:1.27-alpine
     ports: ["${NGINX_PORT:-8085}:80"]
     volumes:
@@ -15,6 +16,7 @@ services:
     restart: unless-stopped
 
   php:
+    container_name: aurora-php
     build:
       context: .
       dockerfile: docker/php/Dockerfile
@@ -34,6 +36,7 @@ services:
     restart: unless-stopped
 
   node:
+    container_name: aurora-node
     image: node:22-alpine
     working_dir: /app
     command: sh -c "[ -d node_modules/.package-lock.json ] && npm run dev || npm install && npm run dev"
@@ -47,6 +50,7 @@ services:
     restart: unless-stopped
 
   redis:
+    container_name: aurora-redis
     image: redis:7-alpine
     ports: ["${REDIS_PORT:-6385}:6379"]
     healthcheck:
@@ -58,6 +62,7 @@ services:
     restart: unless-stopped
 
   mailhog:
+    container_name: aurora-mailhog
     image: mailhog/mailhog
     ports: ["${MAILHOG_UI_PORT:-8030}:8025", "${MAILHOG_SMTP_PORT:-1030}:1025"]
     networks: [aurora]

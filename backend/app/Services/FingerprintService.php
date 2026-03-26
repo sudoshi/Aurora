@@ -15,7 +15,7 @@ class FingerprintService
 
     public function __construct()
     {
-        $this->aiBaseUrl = rtrim(config('services.ai.url', 'http://localhost:8000'), '/');
+        $this->aiBaseUrl = rtrim(config('services.ai.base_url', 'http://localhost:8100'), '/');
     }
 
     /**
@@ -103,17 +103,17 @@ class FingerprintService
         $weightSum = 0.0;
 
         if ($fingerprint->genomic_available && $gw > 0) {
-            $selectParts[] = "(1 - (pf.genomic_vector <=> qf.genomic_vector)) * {$gw} AS genomic_sim";
+            $selectParts[] = "COALESCE((1 - (pf.genomic_vector <=> qf.genomic_vector)) * {$gw}, 0) AS genomic_sim";
             $weightSum += $gw;
         }
 
         if ($fingerprint->volumetric_available && $vw > 0) {
-            $selectParts[] = "(1 - (pf.volumetric_vector <=> qf.volumetric_vector)) * {$vw} AS volumetric_sim";
+            $selectParts[] = "COALESCE((1 - (pf.volumetric_vector <=> qf.volumetric_vector)) * {$vw}, 0) AS volumetric_sim";
             $weightSum += $vw;
         }
 
         if ($fingerprint->clinical_available && $cw > 0) {
-            $selectParts[] = "(1 - (pf.clinical_vector <=> qf.clinical_vector)) * {$cw} AS clinical_sim";
+            $selectParts[] = "COALESCE((1 - (pf.clinical_vector <=> qf.clinical_vector)) * {$cw}, 0) AS clinical_sim";
             $weightSum += $cw;
         }
 

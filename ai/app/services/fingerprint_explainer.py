@@ -89,8 +89,14 @@ Explanation:"""
 
     try:
         result = await generate_concept_mapping(prompt, context="patient similarity explanation")
-        explanation = result.get("mapping", result.get("result", str(result)))
-        return explanation.strip()
+        # generate_concept_mapping returns dict with 'reasoning' as the narrative text
+        explanation = result.get("reasoning", result.get("mapping", result.get("result", str(result))))
+        # Clean up: take just the first 2 sentences if too long
+        sentences = explanation.strip().split(". ")
+        clean = ". ".join(sentences[:2])
+        if not clean.endswith("."):
+            clean += "."
+        return clean
     except Exception:
         # Fallback: deterministic text-based explanation
         shared_genes = {v["gene"] for v in query["variants"]} & {v["gene"] for v in similar["variants"]}
