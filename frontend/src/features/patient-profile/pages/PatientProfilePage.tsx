@@ -28,7 +28,7 @@ import { PatientBriefing } from "../components/PatientBriefing";
 import { PatientLabPanel } from "../components/PatientLabPanel";
 import { PatientVisitView } from "../components/PatientVisitView";
 import { PatientNotesTab } from "../components/PatientNotesTab";
-import { PatientsLikeThis } from "../components/PatientsLikeThis";
+import { SimilarPatientsTab } from "@/features/fingerprint/components/SimilarPatientsTab";
 import PatientImagingTab from "../components/PatientImagingTab";
 import PatientGenomicsTab from "../components/PatientGenomicsTab";
 import { useProfileStore } from "@/stores/profileStore";
@@ -266,7 +266,7 @@ export default function PatientProfilePage() {
           )}
 
           {viewMode === "similar" && parsedPersonId && (
-            <PatientsLikeThis patientId={parsedPersonId} />
+            <SimilarPatientsTab patientId={parsedPersonId} />
           )}
 
           {viewMode === "list" && (
