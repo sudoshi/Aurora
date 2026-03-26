@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ClinicalDemoSeeder::class,
             SampleCaseSeeder::class,
             FusionWeightConfigSeeder::class,
+            GoldenCohortSeeder::class,
         ]);
     }
 }

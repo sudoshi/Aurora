@@ -1,0 +1,562 @@
+[
+  {
+    "mrn": "GC-BRCA-01",
+    "demographics": {
+      "first_name": "Aisha",
+      "last_name": "Patel",
+      "date_of_birth": "1975-05-20",
+      "sex": "F",
+      "race": "Asian",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "HER2-positive breast cancer", "concept_code": "427685000", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-01-10", "body_site": "Left breast", "laterality": "left"},
+      {"concept_name": "Liver metastases", "concept_code": "94222008", "vocabulary": "SNOMED", "domain": "oncology", "status": "resolved", "severity": "moderate"},
+      {"concept_name": "Gastroesophageal reflux", "concept_code": "235595009", "vocabulary": "SNOMED", "domain": "gastroenterology", "status": "active", "severity": "mild"}
+    ],
+    "medications": [
+      {"drug_name": "Trastuzumab deruxtecan", "dose_value": 5.4, "dose_unit": "mg/kg", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-03-15", "end_date": null},
+      {"drug_name": "Ondansetron", "dose_value": 8, "dose_unit": "mg", "route": "PO", "frequency": "PRN", "status": "active", "start_date": "2025-03-15", "end_date": null},
+      {"drug_name": "Omeprazole", "dose_value": 20, "dose_unit": "mg", "route": "PO", "frequency": "daily", "status": "active", "start_date": "2023-06-01", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Trastuzumab deruxtecan", "era_start": "2025-03-15", "era_end": "2026-01-20", "gap_days": 0},
+      {"drug_name": "Ondansetron", "era_start": "2025-03-15", "era_end": null, "gap_days": 0},
+      {"drug_name": "Omeprazole", "era_start": "2023-06-01", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "ERBB2", "variant": null, "variant_type": "CNV", "chromosome": "17", "position": 37844393, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "high_amplification", "actionability": "Tier I"},
+      {"gene": "PIK3CA", "variant": "H1047R", "variant_type": "SNV", "chromosome": "3", "position": 178952085, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.32, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "TP53", "variant": "Y220C", "variant_type": "SNV", "chromosome": "17", "position": 7578190, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.25, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDH1", "variant": "A617T", "variant_type": "SNV", "chromosome": "16", "position": 68842399, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.08, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "GATA3", "variant": "P409fs", "variant_type": "indel", "chromosome": "10", "position": 8111425, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.18, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MYC", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 128748315, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "VUS", "zygosity": "amplification", "actionability": "Tier IV"},
+      {"gene": "CCND1", "variant": null, "variant_type": "CNV", "chromosome": "11", "position": 69455855, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "amplification", "actionability": "Tier IV"},
+      {"gene": "PTEN", "variant": "K267E", "variant_type": "SNV", "chromosome": "10", "position": 89717672, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.05, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MAP3K1", "variant": "E908*", "variant_type": "SNV", "chromosome": "5", "position": 56177641, "ref_allele": "G", "alt_allele": "T", "allele_frequency": 0.10, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "FGFR1", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 38268656, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "VUS", "zygosity": "low_amplification", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-BRCA-01.1",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-02-10", "description": "Baseline CT chest abdomen pelvis"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 35.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-10"},
+          {"measurement_type": "RECIST", "value_numeric": 22.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S1", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 18500.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S2", "algorithm": "manual", "label": "liver_metastasis", "volume_mm3": 6200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-01.2",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-06-15", "description": "First restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"},
+          {"measurement_type": "RECIST", "value_numeric": 8.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S3", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 4200.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S4", "algorithm": "AI_v2", "label": "liver_metastasis", "volume_mm3": 1100.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-01.3",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-10-20", "description": "Second restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 0.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-20"},
+          {"measurement_type": "RECIST", "value_numeric": 0.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S5", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 0.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S6", "algorithm": "AI_v2", "label": "liver_metastasis", "volume_mm3": 0.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-01.4",
+        "study": {"modality": "MRI", "body_part": "breast", "study_date": "2026-01-10", "description": "Breast MRI confirming CR"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 0.0, "unit": "mm", "target_lesion": true, "measured_at": "2026-01-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-01.S7", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 0.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 15-3", "value_numeric": 65.0, "unit": "U/mL", "measured_at": "2025-02-10", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 28.0, "unit": "U/mL", "measured_at": "2025-06-15", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 12.0, "unit": "U/mL", "measured_at": "2025-10-20", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "ALT", "value_numeric": 55, "unit": "U/L", "measured_at": "2025-02-10", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "ALT", "value_numeric": 32, "unit": "U/L", "measured_at": "2025-06-15", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "ALT", "value_numeric": 22, "unit": "U/L", "measured_at": "2025-10-20", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "WBC", "value_numeric": 5.8, "unit": "10^3/uL", "measured_at": "2025-03-15", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 4.2, "unit": "10^3/uL", "measured_at": "2025-06-15", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 12.5, "unit": "g/dL", "measured_at": "2025-03-15", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 11.8, "unit": "g/dL", "measured_at": "2025-10-20", "reference_range_low": 12.0, "reference_range_high": 16.0}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-02-10", "discharge_date": "2025-02-10", "department": "Breast Surgery", "attending_provider": "Dr. Jennifer Lopez-Kim"},
+      {"visit_type": "outpatient", "admission_date": "2025-03-15", "discharge_date": "2025-03-15", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-06-15", "discharge_date": "2025-06-15", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-10-20", "discharge_date": "2025-10-20", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2026-01-10", "discharge_date": "2026-01-10", "department": "Radiology", "attending_provider": "Dr. Rebecca Cohen"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 1.0,
+      "treatment_tolerance_score": 0.88,
+      "lab_trajectory_score": 0.85,
+      "disease_stability_score": 0.95,
+      "care_intensity_score": 0.82,
+      "composite_score": 0.92,
+      "clinician_rating": "excellent",
+      "clinician_factors": "Complete response to T-DXd in HER2+ metastatic breast cancer with PIK3CA co-mutation. Liver metastasis resolved. Mild nausea managed with ondansetron. No interstitial lung disease.",
+      "decision_tags": ["HER2-positive", "T-DXd", "complete-response", "PIK3CA", "liver-metastasis-resolved"],
+      "hindsight_note": "T-DXd was the optimal choice for HER2+ with PIK3CA. PIK3CA may have predicted T-DXd benefit over trastuzumab+pertuzumab. Dramatic CR validates ADC approach."
+    }
+  },
+  {
+    "mrn": "GC-BRCA-02",
+    "demographics": {
+      "first_name": "Catherine",
+      "last_name": "O'Brien",
+      "date_of_birth": "1968-09-14",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Triple-negative breast cancer", "concept_code": "706970001", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-01-25", "body_site": "Right breast", "laterality": "right"},
+      {"concept_name": "BRCA1 germline mutation carrier", "concept_code": "412734009", "vocabulary": "SNOMED", "domain": "genetics", "status": "active", "severity": null},
+      {"concept_name": "Ovarian cancer history", "concept_code": "363443007", "vocabulary": "SNOMED", "domain": "oncology", "status": "resolved", "severity": "severe"}
+    ],
+    "medications": [
+      {"drug_name": "Olaparib", "dose_value": 300, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2025-04-01", "end_date": null},
+      {"drug_name": "Calcium carbonate", "dose_value": 600, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2023-01-15", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Olaparib", "era_start": "2025-04-01", "era_end": null, "gap_days": 0},
+      {"drug_name": "Calcium carbonate", "era_start": "2023-01-15", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "BRCA1", "variant": "5382insC", "variant_type": "indel", "chromosome": "17", "position": 41197694, "ref_allele": "A", "alt_allele": "AC", "allele_frequency": 0.50, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "TP53", "variant": "R175H", "variant_type": "SNV", "chromosome": "17", "position": 7578406, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.40, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "RB1", "variant": null, "variant_type": "CNV", "chromosome": "13", "position": 48877800, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier IV"},
+      {"gene": "PTEN", "variant": "R130G", "variant_type": "SNV", "chromosome": "10", "position": 89692904, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.15, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "MYC", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 128748315, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "amplification", "actionability": "Tier IV"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "NF1", "variant": "R1534*", "variant_type": "SNV", "chromosome": "17", "position": 29558200, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PIK3CA", "variant": "E545K", "variant_type": "SNV", "chromosome": "3", "position": 178936091, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PALB2", "variant": "L939W", "variant_type": "SNV", "chromosome": "16", "position": 23641310, "ref_allele": "T", "alt_allele": "G", "allele_frequency": 0.03, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "R3008C", "variant_type": "SNV", "chromosome": "11", "position": 108236087, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.05, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "NOTCH1", "variant": "P2514fs", "variant_type": "indel", "chromosome": "9", "position": 139399364, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-BRCA-02.1",
+        "study": {"modality": "MRI", "body_part": "breast", "study_date": "2025-02-20", "description": "Baseline breast MRI"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 42.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S1", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 25000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S2", "algorithm": "manual", "label": "axillary_node", "volume_mm3": 3500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-02.2",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-03-05", "description": "Staging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 42.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-05"},
+          {"measurement_type": "RECIST", "value_numeric": 18.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-05"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S3", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 25000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S4", "algorithm": "manual", "label": "axillary_node", "volume_mm3": 3500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-02.3",
+        "study": {"modality": "MRI", "body_part": "breast", "study_date": "2025-07-15", "description": "Restaging breast MRI"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-07-15"},
+          {"measurement_type": "RECIST", "value_numeric": 10.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-07-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S5", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 10200.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-02.S6", "algorithm": "AI_v2", "label": "axillary_node", "volume_mm3": 800.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 15-3", "value_numeric": 48.0, "unit": "U/mL", "measured_at": "2025-02-20", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 25.0, "unit": "U/mL", "measured_at": "2025-07-15", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "Hemoglobin", "value_numeric": 11.5, "unit": "g/dL", "measured_at": "2025-04-01", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 10.8, "unit": "g/dL", "measured_at": "2025-07-15", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "WBC", "value_numeric": 5.5, "unit": "10^3/uL", "measured_at": "2025-04-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 3.8, "unit": "10^3/uL", "measured_at": "2025-07-15", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Platelet count", "value_numeric": 185, "unit": "10^3/uL", "measured_at": "2025-04-01", "reference_range_low": 150, "reference_range_high": 400},
+      {"measurement_name": "Platelet count", "value_numeric": 142, "unit": "10^3/uL", "measured_at": "2025-07-15", "reference_range_low": 150, "reference_range_high": 400},
+      {"measurement_name": "Creatinine", "value_numeric": 0.80, "unit": "mg/dL", "measured_at": "2025-04-01", "reference_range_low": 0.6, "reference_range_high": 1.2},
+      {"measurement_name": "ALT", "value_numeric": 28, "unit": "U/L", "measured_at": "2025-04-01", "reference_range_low": 7, "reference_range_high": 56}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-02-20", "discharge_date": "2025-02-20", "department": "Breast Surgery", "attending_provider": "Dr. Jennifer Lopez-Kim"},
+      {"visit_type": "outpatient", "admission_date": "2025-03-05", "discharge_date": "2025-03-05", "department": "Genetics", "attending_provider": "Dr. Sarah Mitchell"},
+      {"visit_type": "outpatient", "admission_date": "2025-04-01", "discharge_date": "2025-04-01", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-07-15", "discharge_date": "2025-07-15", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.78,
+      "treatment_tolerance_score": 0.72,
+      "lab_trajectory_score": 0.68,
+      "disease_stability_score": 0.80,
+      "care_intensity_score": 0.75,
+      "composite_score": 0.75,
+      "clinician_rating": "good",
+      "clinician_factors": "Partial response to olaparib in BRCA1 germline mutant TNBC. 40% tumor reduction. Mild anemia and thrombocytopenia (expected PARP inhibitor toxicities). Prior ovarian cancer history supports germline BRCA1 pathogenicity.",
+      "decision_tags": ["BRCA1-germline", "PARP-inhibitor", "partial-response", "TNBC"],
+      "hindsight_note": "Olaparib was the right call for BRCA1 germline TNBC. Response validates synthetic lethality approach. Monitor for myelodysplastic syndrome long-term."
+    }
+  },
+  {
+    "mrn": "GC-BRCA-03",
+    "demographics": {
+      "first_name": "Dorothy",
+      "last_name": "Henderson",
+      "date_of_birth": "1960-03-08",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "ER-positive HER2-negative breast cancer", "concept_code": "413567003", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2024-10-15", "body_site": "Left breast", "laterality": "left"},
+      {"concept_name": "Bone metastases", "concept_code": "94222008", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "moderate", "body_site": "Thoracic spine"},
+      {"concept_name": "Osteoarthritis", "concept_code": "396275006", "vocabulary": "SNOMED", "domain": "musculoskeletal", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Fulvestrant", "dose_value": 500, "dose_unit": "mg", "route": "IM", "frequency": "q4w", "status": "active", "start_date": "2025-02-01", "end_date": null},
+      {"drug_name": "Palbociclib", "dose_value": 125, "dose_unit": "mg", "route": "PO", "frequency": "daily 3w on 1w off", "status": "active", "start_date": "2025-02-01", "end_date": null},
+      {"drug_name": "Letrozole", "dose_value": 2.5, "dose_unit": "mg", "route": "PO", "frequency": "daily", "status": "completed", "start_date": "2024-11-15", "end_date": "2025-01-28"},
+      {"drug_name": "Denosumab", "dose_value": 120, "dose_unit": "mg", "route": "SC", "frequency": "q4w", "status": "active", "start_date": "2025-02-01", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Letrozole", "era_start": "2024-11-15", "era_end": "2025-01-28", "gap_days": 0},
+      {"drug_name": "Fulvestrant", "era_start": "2025-02-01", "era_end": null, "gap_days": 0},
+      {"drug_name": "Palbociclib", "era_start": "2025-02-01", "era_end": null, "gap_days": 7}
+    ],
+    "genomic_variants": [
+      {"gene": "ESR1", "variant": "Y537S", "variant_type": "SNV", "chromosome": "6", "position": 152419922, "ref_allele": "A", "alt_allele": "C", "allele_frequency": 0.28, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "PIK3CA", "variant": "E542K", "variant_type": "SNV", "chromosome": "3", "position": 178936082, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.18, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "TP53", "variant": "V157F", "variant_type": "SNV", "chromosome": "17", "position": 7578442, "ref_allele": "G", "alt_allele": "T", "allele_frequency": 0.12, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CCND1", "variant": null, "variant_type": "CNV", "chromosome": "11", "position": 69455855, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "amplification", "actionability": "Tier III"},
+      {"gene": "FGFR1", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 38268656, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "VUS", "zygosity": "amplification", "actionability": "Tier III"},
+      {"gene": "GATA3", "variant": "D336fs", "variant_type": "indel", "chromosome": "10", "position": 8111200, "ref_allele": "GA", "alt_allele": "G", "allele_frequency": 0.22, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MAP3K1", "variant": "L773fs", "variant_type": "indel", "chromosome": "5", "position": 56177200, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.15, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "CDH1", "variant": "V328I", "variant_type": "SNV", "chromosome": "16", "position": 68841500, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.06, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "RB1", "variant": "K412E", "variant_type": "SNV", "chromosome": "13", "position": 48877600, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-BRCA-03.1",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2024-11-10", "description": "Baseline staging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 32.0, "unit": "mm", "target_lesion": true, "measured_at": "2024-11-10"},
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": false, "measured_at": "2024-11-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-03.S1", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 15200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-03.2",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-05-10", "description": "First restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 28.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-05-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-03.S2", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 11500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-03.3",
+        "study": {"modality": "MRI", "body_part": "spine", "study_date": "2025-05-15", "description": "Spine MRI for bone metastasis monitoring"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 18.0, "unit": "mm", "target_lesion": false, "measured_at": "2025-05-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-03.S3", "algorithm": "manual", "label": "T8_vertebral_metastasis", "volume_mm3": 3500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-03.4",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-09-15", "description": "Second restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 26.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-09-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-03.S4", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 9800.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 15-3", "value_numeric": 42.0, "unit": "U/mL", "measured_at": "2024-11-10", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 38.0, "unit": "U/mL", "measured_at": "2025-05-10", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 35.0, "unit": "U/mL", "measured_at": "2025-09-15", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "WBC", "value_numeric": 6.2, "unit": "10^3/uL", "measured_at": "2025-02-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 2.8, "unit": "10^3/uL", "measured_at": "2025-05-10", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Neutrophils", "value_numeric": 1.2, "unit": "10^3/uL", "measured_at": "2025-05-10", "reference_range_low": 1.5, "reference_range_high": 8.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 12.2, "unit": "g/dL", "measured_at": "2025-02-01", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "ALT", "value_numeric": 22, "unit": "U/L", "measured_at": "2025-02-01", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Alkaline phosphatase", "value_numeric": 125, "unit": "U/L", "measured_at": "2025-05-10", "reference_range_low": 44, "reference_range_high": 147},
+      {"measurement_name": "Estradiol", "value_numeric": 8.0, "unit": "pg/mL", "measured_at": "2025-02-01", "reference_range_low": 0, "reference_range_high": 30}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2024-11-10", "discharge_date": "2024-11-10", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-02-01", "discharge_date": "2025-02-01", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-05-10", "discharge_date": "2025-05-10", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-09-15", "discharge_date": "2025-09-15", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.50,
+      "treatment_tolerance_score": 0.55,
+      "lab_trajectory_score": 0.45,
+      "disease_stability_score": 0.55,
+      "care_intensity_score": 0.50,
+      "composite_score": 0.51,
+      "clinician_rating": "mixed",
+      "clinician_factors": "Stable disease on fulvestrant+palbociclib after letrozole failure. ESR1 Y537S mutation confers AI resistance. Modest tumor shrinkage but not meeting PR criteria. Neutropenia requiring dose delays. Bone metastasis stable on denosumab.",
+      "decision_tags": ["ESR1-mutation", "CDK4-6-inhibitor", "stable-disease", "AI-resistance", "bone-metastasis"],
+      "hindsight_note": "ESR1 mutation detected too late - should have done cfDNA earlier. Fulvestrant+CDK4/6 is appropriate for ESR1-mutant disease but PIK3CA co-mutation may warrant addition of alpelisib."
+    }
+  },
+  {
+    "mrn": "GC-BRCA-04",
+    "demographics": {
+      "first_name": "Fatima",
+      "last_name": "Al-Rahman",
+      "date_of_birth": "1978-11-30",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Triple-negative breast cancer", "concept_code": "706970001", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-02-12", "body_site": "Left breast", "laterality": "left"},
+      {"concept_name": "Axillary lymph node metastases", "concept_code": "94391008", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Pembrolizumab", "dose_value": 200, "dose_unit": "mg", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-04-10", "end_date": null},
+      {"drug_name": "Carboplatin", "dose_value": 400, "dose_unit": "mg", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-04-10", "end_date": null},
+      {"drug_name": "Paclitaxel", "dose_value": 175, "dose_unit": "mg/m2", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-04-10", "end_date": null},
+      {"drug_name": "Dexamethasone", "dose_value": 8, "dose_unit": "mg", "route": "IV", "frequency": "pre-chemo", "status": "active", "start_date": "2025-04-10", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Pembrolizumab", "era_start": "2025-04-10", "era_end": null, "gap_days": 0},
+      {"drug_name": "Carboplatin", "era_start": "2025-04-10", "era_end": null, "gap_days": 0},
+      {"drug_name": "Paclitaxel", "era_start": "2025-04-10", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "TP53", "variant": "R248Q", "variant_type": "SNV", "chromosome": "17", "position": 7577539, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.45, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "BRCA2", "variant": "K3326*", "variant_type": "SNV", "chromosome": "13", "position": 32972626, "ref_allele": "T", "alt_allele": "A", "allele_frequency": 0.35, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "PTEN", "variant": null, "variant_type": "CNV", "chromosome": "10", "position": 89692770, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "RB1", "variant": "Q702*", "variant_type": "SNV", "chromosome": "13", "position": 48878100, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.20, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MYC", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 128748315, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "high_amplification", "actionability": "Tier IV"},
+      {"gene": "PIK3CA", "variant": "H1047L", "variant_type": "SNV", "chromosome": "3", "position": 178952084, "ref_allele": "A", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "NF1", "variant": "K1444fs", "variant_type": "indel", "chromosome": "17", "position": 29556988, "ref_allele": "GA", "alt_allele": "G", "allele_frequency": 0.10, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ARID1A", "variant": "R1989*", "variant_type": "SNV", "chromosome": "1", "position": 27101000, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "NOTCH2", "variant": "R2022W", "variant_type": "SNV", "chromosome": "1", "position": 120458000, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "KMT2C", "variant": "Q3422*", "variant_type": "SNV", "chromosome": "7", "position": 151860300, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.05, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "E1978*", "variant_type": "SNV", "chromosome": "11", "position": 108164000, "ref_allele": "G", "alt_allele": "T", "allele_frequency": 0.03, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-BRCA-04.1",
+        "study": {"modality": "MRI", "body_part": "breast", "study_date": "2025-03-10", "description": "Baseline breast MRI"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 48.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-10"},
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S1", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 38000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S2", "algorithm": "manual", "label": "axillary_node_mass", "volume_mm3": 8500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-04.2",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-03-15", "description": "Staging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 48.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-15"},
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S3", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 38000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S4", "algorithm": "manual", "label": "axillary_node_mass", "volume_mm3": 8500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-04.3",
+        "study": {"modality": "MRI", "body_part": "breast", "study_date": "2025-08-01", "description": "Mid-treatment breast MRI"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 28.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-01"},
+          {"measurement_type": "RECIST", "value_numeric": 12.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-01"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S5", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 14500.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-04.S6", "algorithm": "AI_v2", "label": "axillary_node_mass", "volume_mm3": 2200.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 15-3", "value_numeric": 55.0, "unit": "U/mL", "measured_at": "2025-03-10", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 30.0, "unit": "U/mL", "measured_at": "2025-08-01", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "WBC", "value_numeric": 6.8, "unit": "10^3/uL", "measured_at": "2025-04-10", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 3.5, "unit": "10^3/uL", "measured_at": "2025-06-15", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 4.8, "unit": "10^3/uL", "measured_at": "2025-08-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 13.0, "unit": "g/dL", "measured_at": "2025-04-10", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 10.5, "unit": "g/dL", "measured_at": "2025-06-15", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "ALT", "value_numeric": 30, "unit": "U/L", "measured_at": "2025-04-10", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Creatinine", "value_numeric": 0.75, "unit": "mg/dL", "measured_at": "2025-04-10", "reference_range_low": 0.6, "reference_range_high": 1.2},
+      {"measurement_name": "Platelet count", "value_numeric": 195, "unit": "10^3/uL", "measured_at": "2025-04-10", "reference_range_low": 150, "reference_range_high": 400}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-03-10", "discharge_date": "2025-03-10", "department": "Breast Surgery", "attending_provider": "Dr. Jennifer Lopez-Kim"},
+      {"visit_type": "outpatient", "admission_date": "2025-04-10", "discharge_date": "2025-04-10", "department": "Infusion Center", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "emergency", "admission_date": "2025-06-15", "discharge_date": "2025-06-16", "department": "Emergency", "attending_provider": "Dr. Lisa Wong"},
+      {"visit_type": "outpatient", "admission_date": "2025-08-01", "discharge_date": "2025-08-01", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.78,
+      "treatment_tolerance_score": 0.62,
+      "lab_trajectory_score": 0.65,
+      "disease_stability_score": 0.80,
+      "care_intensity_score": 0.68,
+      "composite_score": 0.71,
+      "clinician_rating": "good",
+      "clinician_factors": "Partial response to pembrolizumab+chemo in TNBC with TP53+BRCA2. 42% tumor reduction. Chemo toxicity with febrile neutropenia ED visit requiring dose reduction. BRCA2 somatic mutation may also respond to PARP inhibitor maintenance.",
+      "decision_tags": ["TNBC", "immunotherapy-chemo", "partial-response", "BRCA2-somatic", "febrile-neutropenia"],
+      "hindsight_note": "Pembrolizumab+chemo producing good PR in TNBC. Consider olaparib maintenance after completing chemo given BRCA2 mutation. ED visit for neutropenia was manageable."
+    }
+  },
+  {
+    "mrn": "GC-BRCA-05",
+    "demographics": {
+      "first_name": "Sandra",
+      "last_name": "Kowalski",
+      "date_of_birth": "1962-07-19",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "HER2-positive breast cancer", "concept_code": "427685000", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2024-12-05", "body_site": "Right breast", "laterality": "right"},
+      {"concept_name": "Brain metastases", "concept_code": "94225005", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe"},
+      {"concept_name": "Seizure disorder", "concept_code": "84757009", "vocabulary": "SNOMED", "domain": "neurology", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Trastuzumab", "dose_value": 6, "dose_unit": "mg/kg", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-02-01", "end_date": null},
+      {"drug_name": "Pertuzumab", "dose_value": 420, "dose_unit": "mg", "route": "IV", "frequency": "q3w", "status": "completed", "start_date": "2025-02-01", "end_date": "2025-06-15"},
+      {"drug_name": "Levetiracetam", "dose_value": 500, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2025-03-20", "end_date": null},
+      {"drug_name": "Dexamethasone", "dose_value": 4, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2025-03-20", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Trastuzumab", "era_start": "2025-02-01", "era_end": null, "gap_days": 0},
+      {"drug_name": "Pertuzumab", "era_start": "2025-02-01", "era_end": "2025-06-15", "gap_days": 0},
+      {"drug_name": "Levetiracetam", "era_start": "2025-03-20", "era_end": null, "gap_days": 0},
+      {"drug_name": "Dexamethasone", "era_start": "2025-03-20", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "ERBB2", "variant": null, "variant_type": "CNV", "chromosome": "17", "position": 37844393, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "high_amplification", "actionability": "Tier I"},
+      {"gene": "TP53", "variant": "G245S", "variant_type": "SNV", "chromosome": "17", "position": 7578212, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.38, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDH1", "variant": "R748*", "variant_type": "SNV", "chromosome": "16", "position": 68863550, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.18, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "GATA3", "variant": "P409fs", "variant_type": "indel", "chromosome": "10", "position": 8111425, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.15, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MYC", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 128748315, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "high_amplification", "actionability": "Tier IV"},
+      {"gene": "CCND1", "variant": null, "variant_type": "CNV", "chromosome": "11", "position": 69455855, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "VUS", "zygosity": "amplification", "actionability": "Tier IV"},
+      {"gene": "RB1", "variant": null, "variant_type": "CNV", "chromosome": "13", "position": 48877800, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous_deletion", "actionability": "Tier IV"},
+      {"gene": "PTEN", "variant": "R233*", "variant_type": "SNV", "chromosome": "10", "position": 89711875, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.12, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "NF1", "variant": "R816*", "variant_type": "SNV", "chromosome": "17", "position": 29559400, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-BRCA-05.1",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-01-10", "description": "Baseline staging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 40.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-01-10"},
+          {"measurement_type": "RECIST", "value_numeric": 20.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-01-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S1", "algorithm": "manual", "label": "breast_primary", "volume_mm3": 28000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S2", "algorithm": "manual", "label": "axillary_node", "volume_mm3": 4500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-05.2",
+        "study": {"modality": "MRI", "body_part": "brain", "study_date": "2025-03-15", "description": "Brain MRI showing metastases"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 18.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-15"},
+          {"measurement_type": "RECIST", "value_numeric": 12.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S3", "algorithm": "manual", "label": "brain_metastasis_frontal", "volume_mm3": 3200.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S4", "algorithm": "manual", "label": "brain_metastasis_parietal", "volume_mm3": 1200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-05.3",
+        "study": {"modality": "CT", "body_part": "chest_abdomen", "study_date": "2025-06-15", "description": "Restaging CT showing PD"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 50.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"},
+          {"measurement_type": "RECIST", "value_numeric": 28.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S5", "algorithm": "AI_v2", "label": "breast_primary", "volume_mm3": 42000.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S6", "algorithm": "AI_v2", "label": "axillary_node", "volume_mm3": 8200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-BRCA-05.4",
+        "study": {"modality": "MRI", "body_part": "brain", "study_date": "2025-06-20", "description": "Brain MRI showing progression"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-20"},
+          {"measurement_type": "RECIST", "value_numeric": 18.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S7", "algorithm": "AI_v2", "label": "brain_metastasis_frontal", "volume_mm3": 6800.0},
+          {"segmentation_uid": "1.2.840.GC-BRCA-05.S8", "algorithm": "AI_v2", "label": "brain_metastasis_parietal", "volume_mm3": 3500.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 15-3", "value_numeric": 72.0, "unit": "U/mL", "measured_at": "2025-01-10", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 85.0, "unit": "U/mL", "measured_at": "2025-06-15", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "CA 15-3", "value_numeric": 110.0, "unit": "U/mL", "measured_at": "2025-09-20", "reference_range_low": 0, "reference_range_high": 30},
+      {"measurement_name": "LDH", "value_numeric": 340, "unit": "U/L", "measured_at": "2025-01-10", "reference_range_low": 120, "reference_range_high": 246},
+      {"measurement_name": "LDH", "value_numeric": 410, "unit": "U/L", "measured_at": "2025-06-15", "reference_range_low": 120, "reference_range_high": 246},
+      {"measurement_name": "WBC", "value_numeric": 7.5, "unit": "10^3/uL", "measured_at": "2025-02-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 11.0, "unit": "g/dL", "measured_at": "2025-02-01", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 9.8, "unit": "g/dL", "measured_at": "2025-06-15", "reference_range_low": 12.0, "reference_range_high": 16.0},
+      {"measurement_name": "Albumin", "value_numeric": 3.2, "unit": "g/dL", "measured_at": "2025-01-10", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "Albumin", "value_numeric": 2.9, "unit": "g/dL", "measured_at": "2025-06-15", "reference_range_low": 3.5, "reference_range_high": 5.0}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-01-10", "discharge_date": "2025-01-10", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "outpatient", "admission_date": "2025-02-01", "discharge_date": "2025-02-01", "department": "Infusion Center", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "emergency", "admission_date": "2025-03-15", "discharge_date": "2025-03-18", "department": "Neurology", "attending_provider": "Dr. Richard Park"},
+      {"visit_type": "outpatient", "admission_date": "2025-06-15", "discharge_date": "2025-06-15", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"},
+      {"visit_type": "inpatient", "admission_date": "2025-09-20", "discharge_date": "2025-09-28", "department": "Oncology", "attending_provider": "Dr. Rebecca Cohen"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.10,
+      "treatment_tolerance_score": 0.35,
+      "lab_trajectory_score": 0.25,
+      "disease_stability_score": 0.08,
+      "care_intensity_score": 0.20,
+      "composite_score": 0.20,
+      "clinician_rating": "poor",
+      "clinician_factors": "Progressive disease on trastuzumab+pertuzumab. Brain metastases developed during treatment with seizures. No actionable mutations beyond HER2 amplification. Should switch to T-DXd or tucatinib-based regimen for CNS penetration.",
+      "decision_tags": ["HER2-positive", "brain-metastases", "progressive-disease", "trastuzumab-failure", "CNS-disease"],
+      "hindsight_note": "Trastuzumab+pertuzumab alone was insufficient. Should have initiated T-DXd earlier given liver+CNS involvement. No PIK3CA or other actionable co-mutations to exploit. Tucatinib for CNS penetration was the missing piece."
+    }
+  }
+]

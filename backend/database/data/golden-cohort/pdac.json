@@ -1,0 +1,547 @@
+[
+  {
+    "mrn": "GC-PDAC-01",
+    "demographics": {
+      "first_name": "Richard",
+      "last_name": "Yamamoto",
+      "date_of_birth": "1963-10-05",
+      "sex": "M",
+      "race": "Asian",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Pancreatic ductal adenocarcinoma", "concept_code": "254626006", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-01-15", "body_site": "Pancreatic body"},
+      {"concept_name": "Type 2 diabetes mellitus", "concept_code": "44054006", "vocabulary": "SNOMED", "domain": "endocrine", "status": "active", "severity": "moderate"},
+      {"concept_name": "Liver metastases", "concept_code": "94222008", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Fluorouracil", "dose_value": 2400, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-03-01", "end_date": null},
+      {"drug_name": "Leucovorin", "dose_value": 400, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-03-01", "end_date": null},
+      {"drug_name": "Irinotecan", "dose_value": 180, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-03-01", "end_date": null},
+      {"drug_name": "Oxaliplatin", "dose_value": 85, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-03-01", "end_date": null},
+      {"drug_name": "Olaparib", "dose_value": 300, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2025-09-01", "end_date": null},
+      {"drug_name": "Insulin glargine", "dose_value": 20, "dose_unit": "units", "route": "SC", "frequency": "daily", "status": "active", "start_date": "2025-02-01", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "FOLFIRINOX", "era_start": "2025-03-01", "era_end": "2025-08-28", "gap_days": 0},
+      {"drug_name": "Olaparib", "era_start": "2025-09-01", "era_end": null, "gap_days": 0},
+      {"drug_name": "Insulin glargine", "era_start": "2025-02-01", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "KRAS", "variant": "G12D", "variant_type": "SNV", "chromosome": "12", "position": 25398281, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.42, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "BRCA2", "variant": "6174delT", "variant_type": "indel", "chromosome": "13", "position": 32914438, "ref_allele": "CT", "alt_allele": "C", "allele_frequency": 0.48, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier I"},
+      {"gene": "TP53", "variant": "R175H", "variant_type": "SNV", "chromosome": "17", "position": 7578406, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.35, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "SMAD4", "variant": "R361C", "variant_type": "SNV", "chromosome": "18", "position": 48591945, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ARID1A", "variant": "Q1334*", "variant_type": "SNV", "chromosome": "1", "position": 27099350, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.12, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "V2424G", "variant_type": "SNV", "chromosome": "11", "position": 108175462, "ref_allele": "T", "alt_allele": "G", "allele_frequency": 0.06, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PALB2", "variant": "Y1183*", "variant_type": "SNV", "chromosome": "16", "position": 23641800, "ref_allele": "C", "alt_allele": "A", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "KMT2D", "variant": "R5154W", "variant_type": "SNV", "chromosome": "12", "position": 49420200, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.05, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "TGFBR2", "variant": "E526Q", "variant_type": "SNV", "chromosome": "3", "position": 30713128, "ref_allele": "G", "alt_allele": "C", "allele_frequency": 0.03, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PIK3CA", "variant": "E545K", "variant_type": "SNV", "chromosome": "3", "position": 178936091, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.02, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-PDAC-01.1",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-02-10", "description": "Baseline CT abdomen pelvis with contrast"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 42.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-10"},
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-10"},
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S1", "algorithm": "manual", "label": "pancreatic_mass", "volume_mm3": 32000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S2", "algorithm": "manual", "label": "liver_metastasis_1", "volume_mm3": 8500.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S3", "algorithm": "manual", "label": "liver_metastasis_2", "volume_mm3": 1800.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-01.2",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-06-05", "description": "First restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 28.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-05"},
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-05"},
+          {"measurement_type": "RECIST", "value_numeric": 8.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-05"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S4", "algorithm": "AI_v2", "label": "pancreatic_mass", "volume_mm3": 15200.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S5", "algorithm": "AI_v2", "label": "liver_metastasis_1", "volume_mm3": 2800.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S6", "algorithm": "AI_v2", "label": "liver_metastasis_2", "volume_mm3": 500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-01.3",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-10-15", "description": "Second restaging CT on olaparib maintenance"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 22.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-15"},
+          {"measurement_type": "RECIST", "value_numeric": 10.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S7", "algorithm": "AI_v2", "label": "pancreatic_mass", "volume_mm3": 9500.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-01.S8", "algorithm": "AI_v2", "label": "liver_metastasis_1", "volume_mm3": 1200.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 19-9", "value_numeric": 850.0, "unit": "U/mL", "measured_at": "2025-02-10", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 320.0, "unit": "U/mL", "measured_at": "2025-06-05", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 125.0, "unit": "U/mL", "measured_at": "2025-10-15", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "Bilirubin", "value_numeric": 1.8, "unit": "mg/dL", "measured_at": "2025-02-10", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "Bilirubin", "value_numeric": 0.9, "unit": "mg/dL", "measured_at": "2025-06-05", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "ALT", "value_numeric": 65, "unit": "U/L", "measured_at": "2025-02-10", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "ALT", "value_numeric": 38, "unit": "U/L", "measured_at": "2025-06-05", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Hemoglobin", "value_numeric": 11.5, "unit": "g/dL", "measured_at": "2025-03-01", "reference_range_low": 13.5, "reference_range_high": 17.5},
+      {"measurement_name": "HbA1c", "value_numeric": 8.2, "unit": "%", "measured_at": "2025-02-10", "reference_range_low": 4.0, "reference_range_high": 5.6},
+      {"measurement_name": "Albumin", "value_numeric": 3.4, "unit": "g/dL", "measured_at": "2025-02-10", "reference_range_low": 3.5, "reference_range_high": 5.0}
+    ],
+    "visits": [
+      {"visit_type": "inpatient", "admission_date": "2025-02-10", "discharge_date": "2025-02-14", "department": "GI Surgery", "attending_provider": "Dr. Mark Thompson"},
+      {"visit_type": "outpatient", "admission_date": "2025-03-01", "discharge_date": "2025-03-01", "department": "Infusion Center", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-06-05", "discharge_date": "2025-06-05", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-09-01", "discharge_date": "2025-09-01", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-10-15", "discharge_date": "2025-10-15", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.75,
+      "treatment_tolerance_score": 0.68,
+      "lab_trajectory_score": 0.72,
+      "disease_stability_score": 0.78,
+      "care_intensity_score": 0.70,
+      "composite_score": 0.73,
+      "clinician_rating": "good",
+      "clinician_factors": "Partial response to FOLFIRINOX followed by olaparib maintenance. BRCA2 mutation enables PARP inhibitor strategy. 47% reduction in pancreatic mass at best response. CA 19-9 declining. Best outcome achievable for metastatic PDAC.",
+      "decision_tags": ["KRAS-G12D", "BRCA2", "FOLFIRINOX", "PARP-maintenance", "partial-response"],
+      "hindsight_note": "FOLFIRINOX+olaparib maintenance was the optimal strategy for BRCA2-mutant PDAC. This is the best outcome type for metastatic PDAC. BRCA2 is the actionable co-mutation."
+    }
+  },
+  {
+    "mrn": "GC-PDAC-02",
+    "demographics": {
+      "first_name": "Patricia",
+      "last_name": "Murphy",
+      "date_of_birth": "1957-04-18",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Pancreatic ductal adenocarcinoma", "concept_code": "254626006", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-02-20", "body_site": "Pancreatic head"},
+      {"concept_name": "Biliary obstruction", "concept_code": "31898008", "vocabulary": "SNOMED", "domain": "gastroenterology", "status": "resolved", "severity": "moderate"},
+      {"concept_name": "Hypertension", "concept_code": "38341003", "vocabulary": "SNOMED", "domain": "cardiovascular", "status": "active", "severity": "mild"}
+    ],
+    "medications": [
+      {"drug_name": "Fluorouracil", "dose_value": 2400, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-04-15", "end_date": null},
+      {"drug_name": "Leucovorin", "dose_value": 400, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-04-15", "end_date": null},
+      {"drug_name": "Irinotecan", "dose_value": 180, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-04-15", "end_date": null},
+      {"drug_name": "Oxaliplatin", "dose_value": 85, "dose_unit": "mg/m2", "route": "IV", "frequency": "q2w", "status": "active", "start_date": "2025-04-15", "end_date": null},
+      {"drug_name": "Lisinopril", "dose_value": 10, "dose_unit": "mg", "route": "PO", "frequency": "daily", "status": "active", "start_date": "2020-06-01", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "FOLFIRINOX", "era_start": "2025-04-15", "era_end": null, "gap_days": 0},
+      {"drug_name": "Lisinopril", "era_start": "2020-06-01", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "KRAS", "variant": "G12D", "variant_type": "SNV", "chromosome": "12", "position": 25398281, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.48, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "TP53", "variant": "R248W", "variant_type": "SNV", "chromosome": "17", "position": 7577538, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.38, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "SMAD4", "variant": "D351H", "variant_type": "SNV", "chromosome": "18", "position": 48591916, "ref_allele": "G", "alt_allele": "C", "allele_frequency": 0.22, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ARID1A", "variant": "R1989*", "variant_type": "SNV", "chromosome": "1", "position": 27101000, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.10, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "KMT2D", "variant": "Q3630*", "variant_type": "SNV", "chromosome": "12", "position": 49420800, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "TGFBR2", "variant": "R528C", "variant_type": "SNV", "chromosome": "3", "position": 30713134, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "RNF43", "variant": "G659fs", "variant_type": "indel", "chromosome": "17", "position": 56494868, "ref_allele": "GC", "alt_allele": "G", "allele_frequency": 0.05, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "R2832C", "variant_type": "SNV", "chromosome": "11", "position": 108226000, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-PDAC-02.1",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-03-15", "description": "Baseline CT abdomen pelvis"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 38.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-03-15"},
+          {"measurement_type": "RECIST", "value_numeric": 18.0, "unit": "mm", "target_lesion": false, "measured_at": "2025-03-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-02.S1", "algorithm": "manual", "label": "pancreatic_head_mass", "volume_mm3": 28000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-02.S2", "algorithm": "manual", "label": "peripancreatic_node", "volume_mm3": 3200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-02.2",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-07-20", "description": "First restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 35.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-07-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-02.S3", "algorithm": "AI_v2", "label": "pancreatic_head_mass", "volume_mm3": 24500.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-02.S4", "algorithm": "AI_v2", "label": "peripancreatic_node", "volume_mm3": 2800.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-02.3",
+        "study": {"modality": "MRI", "body_part": "abdomen", "study_date": "2025-07-25", "description": "MRI abdomen for surgical planning assessment"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 34.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-07-25"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-02.S5", "algorithm": "AI_v2", "label": "pancreatic_head_mass", "volume_mm3": 23200.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 19-9", "value_numeric": 1250.0, "unit": "U/mL", "measured_at": "2025-03-15", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 680.0, "unit": "U/mL", "measured_at": "2025-07-20", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "Bilirubin", "value_numeric": 8.5, "unit": "mg/dL", "measured_at": "2025-03-15", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "Bilirubin", "value_numeric": 1.0, "unit": "mg/dL", "measured_at": "2025-07-20", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "ALT", "value_numeric": 120, "unit": "U/L", "measured_at": "2025-03-15", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "ALT", "value_numeric": 35, "unit": "U/L", "measured_at": "2025-07-20", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Albumin", "value_numeric": 3.2, "unit": "g/dL", "measured_at": "2025-03-15", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "WBC", "value_numeric": 7.2, "unit": "10^3/uL", "measured_at": "2025-04-15", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "WBC", "value_numeric": 3.5, "unit": "10^3/uL", "measured_at": "2025-06-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 10.8, "unit": "g/dL", "measured_at": "2025-04-15", "reference_range_low": 12.0, "reference_range_high": 16.0}
+    ],
+    "visits": [
+      {"visit_type": "inpatient", "admission_date": "2025-03-15", "discharge_date": "2025-03-20", "department": "GI Surgery", "attending_provider": "Dr. Mark Thompson"},
+      {"visit_type": "outpatient", "admission_date": "2025-04-15", "discharge_date": "2025-04-15", "department": "Infusion Center", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-07-20", "discharge_date": "2025-07-20", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-07-25", "discharge_date": "2025-07-25", "department": "Radiology", "attending_provider": "Dr. Catherine Wei"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.50,
+      "treatment_tolerance_score": 0.55,
+      "lab_trajectory_score": 0.58,
+      "disease_stability_score": 0.55,
+      "care_intensity_score": 0.52,
+      "composite_score": 0.54,
+      "clinician_rating": "mixed",
+      "clinician_factors": "Stable disease on FOLFIRINOX. Biliary stent placed successfully. CA 19-9 declining but tumor size only modestly reduced. No BRCA2 or other PARP-eligible mutation limits maintenance options. Standard PDAC molecular profile (KRAS+TP53+CDKN2A+SMAD4).",
+      "decision_tags": ["KRAS-G12D", "CDKN2A", "FOLFIRINOX", "stable-disease", "biliary-stent"],
+      "hindsight_note": "FOLFIRINOX is the standard for fit patients with PDAC. Without BRCA2, no PARP maintenance option. May consider surgery if disease continues to respond."
+    }
+  },
+  {
+    "mrn": "GC-PDAC-03",
+    "demographics": {
+      "first_name": "George",
+      "last_name": "Baker",
+      "date_of_birth": "1952-08-22",
+      "sex": "M",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Pancreatic ductal adenocarcinoma", "concept_code": "254626006", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-03-05", "body_site": "Pancreatic tail"},
+      {"concept_name": "Peritoneal metastases", "concept_code": "94391008", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "moderate"},
+      {"concept_name": "COPD", "concept_code": "13645005", "vocabulary": "SNOMED", "domain": "pulmonary", "status": "active", "severity": "moderate"},
+      {"concept_name": "Type 2 diabetes mellitus", "concept_code": "44054006", "vocabulary": "SNOMED", "domain": "endocrine", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Gemcitabine", "dose_value": 1000, "dose_unit": "mg/m2", "route": "IV", "frequency": "weekly x3 then 1w off", "status": "active", "start_date": "2025-05-01", "end_date": null},
+      {"drug_name": "Nab-paclitaxel", "dose_value": 125, "dose_unit": "mg/m2", "route": "IV", "frequency": "weekly x3 then 1w off", "status": "active", "start_date": "2025-05-01", "end_date": null},
+      {"drug_name": "Tiotropium", "dose_value": 18, "dose_unit": "mcg", "route": "INH", "frequency": "daily", "status": "active", "start_date": "2021-05-01", "end_date": null},
+      {"drug_name": "Metformin", "dose_value": 500, "dose_unit": "mg", "route": "PO", "frequency": "BID", "status": "active", "start_date": "2017-01-15", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Gemcitabine", "era_start": "2025-05-01", "era_end": null, "gap_days": 7},
+      {"drug_name": "Nab-paclitaxel", "era_start": "2025-05-01", "era_end": null, "gap_days": 7},
+      {"drug_name": "Tiotropium", "era_start": "2021-05-01", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "KRAS", "variant": "G12V", "variant_type": "SNV", "chromosome": "12", "position": 25398282, "ref_allele": "C", "alt_allele": "A", "allele_frequency": 0.45, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "TP53", "variant": "R273C", "variant_type": "SNV", "chromosome": "17", "position": 7577121, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.38, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "SMAD4", "variant": "R100T", "variant_type": "SNV", "chromosome": "18", "position": 48584488, "ref_allele": "G", "alt_allele": "C", "allele_frequency": 0.28, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ARID1A", "variant": "T1615fs", "variant_type": "indel", "chromosome": "1", "position": 27100300, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.12, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "KMT2D", "variant": "R5500*", "variant_type": "SNV", "chromosome": "12", "position": 49421100, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "TGFBR2", "variant": "R537*", "variant_type": "SNV", "chromosome": "3", "position": 30713160, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "RNF43", "variant": "R117fs", "variant_type": "indel", "chromosome": "17", "position": 56449826, "ref_allele": "GC", "alt_allele": "G", "allele_frequency": 0.05, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "GNAS", "variant": "R201H", "variant_type": "SNV", "chromosome": "20", "position": 57484420, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.04, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "E1978K", "variant_type": "SNV", "chromosome": "11", "position": 108164002, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.03, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-PDAC-03.1",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-04-05", "description": "Baseline CT abdomen pelvis"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 50.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-04-05"},
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": false, "measured_at": "2025-04-05"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-03.S1", "algorithm": "manual", "label": "pancreatic_tail_mass", "volume_mm3": 45000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-03.S2", "algorithm": "manual", "label": "peritoneal_deposit", "volume_mm3": 1800.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-03.2",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-08-10", "description": "First restaging CT"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 48.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-10"},
+          {"measurement_type": "RECIST", "value_numeric": 15.0, "unit": "mm", "target_lesion": false, "measured_at": "2025-08-10"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-03.S3", "algorithm": "AI_v2", "label": "pancreatic_tail_mass", "volume_mm3": 42000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-03.S4", "algorithm": "AI_v2", "label": "peritoneal_deposit", "volume_mm3": 2200.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-03.3",
+        "study": {"modality": "CT", "body_part": "chest", "study_date": "2025-08-12", "description": "Chest CT for pulmonary staging"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 0.0, "unit": "mm", "target_lesion": false, "measured_at": "2025-08-12"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-03.S5", "algorithm": "AI_v2", "label": "lung_surveillance", "volume_mm3": 0.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 19-9", "value_numeric": 2100.0, "unit": "U/mL", "measured_at": "2025-04-05", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 1850.0, "unit": "U/mL", "measured_at": "2025-08-10", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "ALT", "value_numeric": 42, "unit": "U/L", "measured_at": "2025-04-05", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Albumin", "value_numeric": 3.0, "unit": "g/dL", "measured_at": "2025-04-05", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "Albumin", "value_numeric": 2.8, "unit": "g/dL", "measured_at": "2025-08-10", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 10.2, "unit": "g/dL", "measured_at": "2025-05-01", "reference_range_low": 13.5, "reference_range_high": 17.5},
+      {"measurement_name": "WBC", "value_numeric": 5.8, "unit": "10^3/uL", "measured_at": "2025-05-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "Creatinine", "value_numeric": 1.0, "unit": "mg/dL", "measured_at": "2025-05-01", "reference_range_low": 0.7, "reference_range_high": 1.3},
+      {"measurement_name": "HbA1c", "value_numeric": 7.8, "unit": "%", "measured_at": "2025-04-05", "reference_range_low": 4.0, "reference_range_high": 5.6},
+      {"measurement_name": "Bilirubin", "value_numeric": 0.8, "unit": "mg/dL", "measured_at": "2025-04-05", "reference_range_low": 0.1, "reference_range_high": 1.2}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-04-05", "discharge_date": "2025-04-05", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-05-01", "discharge_date": "2025-05-01", "department": "Infusion Center", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-08-10", "discharge_date": "2025-08-10", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "emergency", "admission_date": "2025-09-05", "discharge_date": "2025-09-07", "department": "Emergency", "attending_provider": "Dr. Michael Torres"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.15,
+      "treatment_tolerance_score": 0.30,
+      "lab_trajectory_score": 0.20,
+      "disease_stability_score": 0.18,
+      "care_intensity_score": 0.25,
+      "composite_score": 0.22,
+      "clinician_rating": "poor",
+      "clinician_factors": "Minimal response to gem+nab-paclitaxel. Chosen over FOLFIRINOX due to COPD limiting fitness. Peritoneal deposits growing. KRAS G12V + TP53 + CDKN2A + SMAD4 = full house of PDAC driver mutations with no actionable targets. ED visit for pain crisis. Declining performance status.",
+      "decision_tags": ["KRAS-G12V", "gem-nab-paclitaxel", "progressive-disease", "peritoneal-metastasis", "comorbidity-limited"],
+      "hindsight_note": "Gem+nab-paclitaxel was appropriate given COPD but ineffective. No actionable targets beyond KRAS (no G12C inhibitor for G12V yet). Full driver mutation profile predicts poor outcome."
+    }
+  },
+  {
+    "mrn": "GC-PDAC-04",
+    "demographics": {
+      "first_name": "Samuel",
+      "last_name": "Rivera",
+      "date_of_birth": "1969-01-12",
+      "sex": "M",
+      "race": "White",
+      "ethnicity": "Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Pancreatic ductal adenocarcinoma", "concept_code": "254626006", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-02-01", "body_site": "Pancreatic body"},
+      {"concept_name": "MSI-H / dMMR tumor", "concept_code": "720856001", "vocabulary": "SNOMED", "domain": "genetics", "status": "active", "severity": null},
+      {"concept_name": "Lynch syndrome", "concept_code": "716317008", "vocabulary": "SNOMED", "domain": "genetics", "status": "active", "severity": null}
+    ],
+    "medications": [
+      {"drug_name": "Pembrolizumab", "dose_value": 200, "dose_unit": "mg", "route": "IV", "frequency": "q3w", "status": "active", "start_date": "2025-04-01", "end_date": null},
+      {"drug_name": "Gemcitabine", "dose_value": 1000, "dose_unit": "mg/m2", "route": "IV", "frequency": "weekly x3 then 1w off", "status": "completed", "start_date": "2025-03-01", "end_date": "2025-03-28"}
+    ],
+    "drug_eras": [
+      {"drug_name": "Gemcitabine", "era_start": "2025-03-01", "era_end": "2025-03-28", "gap_days": 7},
+      {"drug_name": "Pembrolizumab", "era_start": "2025-04-01", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "MLH1", "variant": null, "variant_type": "CNV", "chromosome": "3", "position": 37034841, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier I"},
+      {"gene": "KRAS", "variant": "G12D", "variant_type": "SNV", "chromosome": "12", "position": 25398281, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.15, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "TP53", "variant": "R196*", "variant_type": "SNV", "chromosome": "17", "position": 7578271, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.12, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "ARID1A", "variant": "Q1445fs", "variant_type": "indel", "chromosome": "1", "position": 27099700, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.18, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PTEN", "variant": "R130*", "variant_type": "SNV", "chromosome": "10", "position": 89692905, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.10, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "RNF43", "variant": "G659fs", "variant_type": "indel", "chromosome": "17", "position": 56494868, "ref_allele": "GC", "alt_allele": "G", "allele_frequency": 0.15, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "TGFBR2", "variant": "A452fs", "variant_type": "indel", "chromosome": "3", "position": 30691871, "ref_allele": "GA", "alt_allele": "G", "allele_frequency": 0.20, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "PIK3CA", "variant": "H1047R", "variant_type": "SNV", "chromosome": "3", "position": 178952085, "ref_allele": "A", "alt_allele": "G", "allele_frequency": 0.08, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "B2M", "variant": "L15fs", "variant_type": "indel", "chromosome": "15", "position": 45003790, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "JAK1", "variant": "S703I", "variant_type": "SNV", "chromosome": "1", "position": 65325832, "ref_allele": "G", "alt_allele": "T", "allele_frequency": 0.04, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "MSH6", "variant": "F1088fs", "variant_type": "indel", "chromosome": "2", "position": 48030639, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.22, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "KMT2D", "variant": "E3300*", "variant_type": "SNV", "chromosome": "12", "position": 49419800, "ref_allele": "G", "alt_allele": "T", "allele_frequency": 0.05, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ATM", "variant": "K2756fs", "variant_type": "indel", "chromosome": "11", "position": 108216500, "ref_allele": "GA", "alt_allele": "G", "allele_frequency": 0.03, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-PDAC-04.1",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-02-20", "description": "Baseline CT abdomen pelvis"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 45.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-20"},
+          {"measurement_type": "RECIST", "value_numeric": 20.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S1", "algorithm": "manual", "label": "pancreatic_mass", "volume_mm3": 38000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S2", "algorithm": "manual", "label": "peripancreatic_node", "volume_mm3": 4500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-04.2",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-06-15", "description": "First restaging CT on pembrolizumab"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 30.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"},
+          {"measurement_type": "RECIST", "value_numeric": 12.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-06-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S3", "algorithm": "AI_v2", "label": "pancreatic_mass", "volume_mm3": 18500.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S4", "algorithm": "AI_v2", "label": "peripancreatic_node", "volume_mm3": 1500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-04.3",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-10-20", "description": "Second restaging CT confirming durable PR"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 25.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-20"},
+          {"measurement_type": "RECIST", "value_numeric": 8.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-10-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S5", "algorithm": "AI_v2", "label": "pancreatic_mass", "volume_mm3": 12000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-04.S6", "algorithm": "AI_v2", "label": "peripancreatic_node", "volume_mm3": 600.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 19-9", "value_numeric": 580.0, "unit": "U/mL", "measured_at": "2025-02-20", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 180.0, "unit": "U/mL", "measured_at": "2025-06-15", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 65.0, "unit": "U/mL", "measured_at": "2025-10-20", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "Hemoglobin", "value_numeric": 12.5, "unit": "g/dL", "measured_at": "2025-04-01", "reference_range_low": 13.5, "reference_range_high": 17.5},
+      {"measurement_name": "Hemoglobin", "value_numeric": 13.0, "unit": "g/dL", "measured_at": "2025-10-20", "reference_range_low": 13.5, "reference_range_high": 17.5},
+      {"measurement_name": "WBC", "value_numeric": 6.5, "unit": "10^3/uL", "measured_at": "2025-04-01", "reference_range_low": 4.5, "reference_range_high": 11.0},
+      {"measurement_name": "TSH", "value_numeric": 2.5, "unit": "mIU/L", "measured_at": "2025-04-01", "reference_range_low": 0.4, "reference_range_high": 4.0},
+      {"measurement_name": "TSH", "value_numeric": 6.8, "unit": "mIU/L", "measured_at": "2025-10-20", "reference_range_low": 0.4, "reference_range_high": 4.0},
+      {"measurement_name": "ALT", "value_numeric": 35, "unit": "U/L", "measured_at": "2025-04-01", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Albumin", "value_numeric": 3.8, "unit": "g/dL", "measured_at": "2025-04-01", "reference_range_low": 3.5, "reference_range_high": 5.0}
+    ],
+    "visits": [
+      {"visit_type": "outpatient", "admission_date": "2025-02-20", "discharge_date": "2025-02-20", "department": "GI Surgery", "attending_provider": "Dr. Mark Thompson"},
+      {"visit_type": "outpatient", "admission_date": "2025-04-01", "discharge_date": "2025-04-01", "department": "Infusion Center", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-06-15", "discharge_date": "2025-06-15", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-10-20", "discharge_date": "2025-10-20", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.92,
+      "treatment_tolerance_score": 0.90,
+      "lab_trajectory_score": 0.85,
+      "disease_stability_score": 0.90,
+      "care_intensity_score": 0.88,
+      "composite_score": 0.90,
+      "clinician_rating": "excellent",
+      "clinician_factors": "Exceptional response to pembrolizumab in rare MSI-H PDAC (1-2% of cases). MLH1 loss + Lynch syndrome. 44% tumor reduction durable at 8 months, approaching near-CR. IO thyroiditis only side effect (expected, manageable). This is a landmark case demonstrating tissue-agnostic IO efficacy.",
+      "decision_tags": ["MSI-H", "MLH1-loss", "Lynch-syndrome", "immunotherapy", "near-complete-response", "rare-biomarker", "tissue-agnostic"],
+      "hindsight_note": "MSI-H status was the key biomarker. Pembrolizumab is tissue-agnostic for MSI-H tumors. KRAS G12D is less dominant when MSI-H drives tumor biology. This case bridges to other MSI-H tumors across cancer types. Best PDAC outcome in the cohort."
+    }
+  },
+  {
+    "mrn": "GC-PDAC-05",
+    "demographics": {
+      "first_name": "Helen",
+      "last_name": "Johansson",
+      "date_of_birth": "1954-12-28",
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Non-Hispanic"
+    },
+    "conditions": [
+      {"concept_name": "Pancreatic ductal adenocarcinoma", "concept_code": "254626006", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe", "onset_date": "2025-01-08", "body_site": "Pancreatic head"},
+      {"concept_name": "Liver metastases", "concept_code": "94222008", "vocabulary": "SNOMED", "domain": "oncology", "status": "active", "severity": "severe"},
+      {"concept_name": "Cachexia", "concept_code": "238108007", "vocabulary": "SNOMED", "domain": "nutrition", "status": "active", "severity": "severe"},
+      {"concept_name": "Deep vein thrombosis", "concept_code": "128053003", "vocabulary": "SNOMED", "domain": "hematology", "status": "active", "severity": "moderate"}
+    ],
+    "medications": [
+      {"drug_name": "Gemcitabine", "dose_value": 1000, "dose_unit": "mg/m2", "route": "IV", "frequency": "weekly x3 then 1w off", "status": "active", "start_date": "2025-03-15", "end_date": null},
+      {"drug_name": "Enoxaparin", "dose_value": 1, "dose_unit": "mg/kg", "route": "SC", "frequency": "BID", "status": "active", "start_date": "2025-02-20", "end_date": null},
+      {"drug_name": "Pancreatic enzyme replacement", "dose_value": 36000, "dose_unit": "units", "route": "PO", "frequency": "with meals", "status": "active", "start_date": "2025-02-01", "end_date": null}
+    ],
+    "drug_eras": [
+      {"drug_name": "Gemcitabine", "era_start": "2025-03-15", "era_end": null, "gap_days": 7},
+      {"drug_name": "Enoxaparin", "era_start": "2025-02-20", "era_end": null, "gap_days": 0}
+    ],
+    "genomic_variants": [
+      {"gene": "KRAS", "variant": "G12D", "variant_type": "SNV", "chromosome": "12", "position": 25398281, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.52, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier II"},
+      {"gene": "SMAD4", "variant": null, "variant_type": "CNV", "chromosome": "18", "position": 48575120, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier IV"},
+      {"gene": "TP53", "variant": "R282W", "variant_type": "SNV", "chromosome": "17", "position": 7577094, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.45, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier III"},
+      {"gene": "CDKN2A", "variant": null, "variant_type": "CNV", "chromosome": "9", "position": 21967751, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "pathogenic", "zygosity": "homozygous_deletion", "actionability": "Tier III"},
+      {"gene": "MYC", "variant": null, "variant_type": "CNV", "chromosome": "8", "position": 128748315, "ref_allele": null, "alt_allele": null, "allele_frequency": null, "clinical_significance": "likely_pathogenic", "zygosity": "high_amplification", "actionability": "Tier IV"},
+      {"gene": "ARID1A", "variant": "Q1075*", "variant_type": "SNV", "chromosome": "1", "position": 27098500, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.15, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "KMT2D", "variant": "S3700fs", "variant_type": "indel", "chromosome": "12", "position": 49421000, "ref_allele": "TC", "alt_allele": "T", "allele_frequency": 0.08, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "TGFBR2", "variant": "K277*", "variant_type": "SNV", "chromosome": "3", "position": 30691860, "ref_allele": "A", "alt_allele": "T", "allele_frequency": 0.06, "clinical_significance": "likely_pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "RNF43", "variant": "R145*", "variant_type": "SNV", "chromosome": "17", "position": 56449900, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.04, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "GNAS", "variant": "R201C", "variant_type": "SNV", "chromosome": "20", "position": 57484421, "ref_allele": "C", "alt_allele": "T", "allele_frequency": 0.05, "clinical_significance": "pathogenic", "zygosity": "heterozygous", "actionability": "Tier IV"},
+      {"gene": "ACVR1B", "variant": "R206H", "variant_type": "SNV", "chromosome": "12", "position": 52379250, "ref_allele": "G", "alt_allele": "A", "allele_frequency": 0.03, "clinical_significance": "VUS", "zygosity": "heterozygous", "actionability": "Tier IV"}
+    ],
+    "imaging_studies": [
+      {
+        "study_uid": "1.2.840.GC-PDAC-05.1",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-02-05", "description": "Baseline CT abdomen pelvis"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 55.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-05"},
+          {"measurement_type": "RECIST", "value_numeric": 35.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-05"},
+          {"measurement_type": "RECIST", "value_numeric": 20.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-02-05"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S1", "algorithm": "manual", "label": "pancreatic_head_mass", "volume_mm3": 52000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S2", "algorithm": "manual", "label": "liver_metastasis_1", "volume_mm3": 18000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S3", "algorithm": "manual", "label": "liver_metastasis_2", "volume_mm3": 4500.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-05.2",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-05-20", "description": "First restaging CT showing PD"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 65.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-05-20"},
+          {"measurement_type": "RECIST", "value_numeric": 48.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-05-20"},
+          {"measurement_type": "RECIST", "value_numeric": 30.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-05-20"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S4", "algorithm": "AI_v2", "label": "pancreatic_head_mass", "volume_mm3": 78000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S5", "algorithm": "AI_v2", "label": "liver_metastasis_1", "volume_mm3": 35000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S6", "algorithm": "AI_v2", "label": "liver_metastasis_2", "volume_mm3": 12000.0}
+        ]
+      },
+      {
+        "study_uid": "1.2.840.GC-PDAC-05.3",
+        "study": {"modality": "CT", "body_part": "abdomen_pelvis", "study_date": "2025-08-15", "description": "Second restaging CT showing continued PD"},
+        "measurements": [
+          {"measurement_type": "RECIST", "value_numeric": 80.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-15"},
+          {"measurement_type": "RECIST", "value_numeric": 60.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-15"},
+          {"measurement_type": "RECIST", "value_numeric": 42.0, "unit": "mm", "target_lesion": true, "measured_at": "2025-08-15"}
+        ],
+        "segmentations": [
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S7", "algorithm": "AI_v2", "label": "pancreatic_head_mass", "volume_mm3": 115000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S8", "algorithm": "AI_v2", "label": "liver_metastasis_1", "volume_mm3": 58000.0},
+          {"segmentation_uid": "1.2.840.GC-PDAC-05.S9", "algorithm": "AI_v2", "label": "liver_metastasis_2", "volume_mm3": 28000.0}
+        ]
+      }
+    ],
+    "measurements": [
+      {"measurement_name": "CA 19-9", "value_numeric": 3200.0, "unit": "U/mL", "measured_at": "2025-02-05", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 5800.0, "unit": "U/mL", "measured_at": "2025-05-20", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "CA 19-9", "value_numeric": 12000.0, "unit": "U/mL", "measured_at": "2025-08-15", "reference_range_low": 0, "reference_range_high": 37},
+      {"measurement_name": "Bilirubin", "value_numeric": 5.2, "unit": "mg/dL", "measured_at": "2025-02-05", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "Bilirubin", "value_numeric": 3.8, "unit": "mg/dL", "measured_at": "2025-05-20", "reference_range_low": 0.1, "reference_range_high": 1.2},
+      {"measurement_name": "ALT", "value_numeric": 150, "unit": "U/L", "measured_at": "2025-02-05", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "ALT", "value_numeric": 180, "unit": "U/L", "measured_at": "2025-08-15", "reference_range_low": 7, "reference_range_high": 56},
+      {"measurement_name": "Albumin", "value_numeric": 2.8, "unit": "g/dL", "measured_at": "2025-02-05", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "Albumin", "value_numeric": 2.2, "unit": "g/dL", "measured_at": "2025-08-15", "reference_range_low": 3.5, "reference_range_high": 5.0},
+      {"measurement_name": "Hemoglobin", "value_numeric": 9.5, "unit": "g/dL", "measured_at": "2025-03-15", "reference_range_low": 12.0, "reference_range_high": 16.0}
+    ],
+    "visits": [
+      {"visit_type": "inpatient", "admission_date": "2025-02-05", "discharge_date": "2025-02-12", "department": "GI Surgery", "attending_provider": "Dr. Mark Thompson"},
+      {"visit_type": "outpatient", "admission_date": "2025-03-15", "discharge_date": "2025-03-15", "department": "Infusion Center", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "outpatient", "admission_date": "2025-05-20", "discharge_date": "2025-05-20", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "inpatient", "admission_date": "2025-07-01", "discharge_date": "2025-07-08", "department": "Oncology", "attending_provider": "Dr. Catherine Wei"},
+      {"visit_type": "inpatient", "admission_date": "2025-08-15", "discharge_date": "2025-08-25", "department": "Palliative Care", "attending_provider": "Dr. Catherine Wei"}
+    ],
+    "outcome_trajectory": {
+      "tumor_response_score": 0.05,
+      "treatment_tolerance_score": 0.20,
+      "lab_trajectory_score": 0.10,
+      "disease_stability_score": 0.05,
+      "care_intensity_score": 0.15,
+      "composite_score": 0.11,
+      "clinician_rating": "poor",
+      "clinician_factors": "Progressive disease on gemcitabine monotherapy. Full house of PDAC driver mutations (KRAS+TP53+CDKN2A+SMAD4) with no actionable targets. SMAD4 homozygous loss associated with liver-tropic metastasis. Cachexia and DVT indicate poor prognosis. Transitioning to palliative care.",
+      "decision_tags": ["KRAS-G12D", "SMAD4-loss", "gemcitabine-monotherapy", "progressive-disease", "cachexia", "palliative"],
+      "hindsight_note": "Gemcitabine monotherapy was chosen for poor PS but was ineffective. No actionable targets. SMAD4 homozygous deletion predicted liver-dominant metastatic pattern. This is the typical poor PDAC trajectory."
+    }
+  }
+]
