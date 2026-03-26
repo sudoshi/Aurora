@@ -1,1 +1,0 @@
-import{j as t,g as d}from"./index-DJ6Jp8DL.js";function c({className:a,variant:s="default",icon:e,children:n,...r}){return t.jsxs("span",{className:d("badge",`badge-${s}`,a),...r,children:[e,n]})}export{c as B};
