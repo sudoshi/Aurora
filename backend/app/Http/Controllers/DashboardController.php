@@ -33,7 +33,7 @@ class DashboardController extends Controller
                 ->join('app.users', 'app.cases.created_by', '=', 'app.users.id')
                 ->whereNull('app.cases.deleted_at')
                 ->orderBy('app.cases.created_at', 'desc')
-                ->limit(10)
+                ->limit(20)
                 ->select([
                     'app.cases.id',
                     'app.cases.title',

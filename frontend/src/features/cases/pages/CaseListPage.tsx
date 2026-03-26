@@ -37,7 +37,7 @@ const URGENCY_OPTIONS: { value: CaseUrgency | ""; label: string }[] = [
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function CaseListPage() {
-  const [filters, setFilters] = useState<CaseFilters>({ page: 1, per_page: 12 });
+  const [filters, setFilters] = useState<CaseFilters>({ page: 1, per_page: 24 });
   const [statusFilter, setStatusFilter] = useState<CaseStatus | "all">("all");
   const [specialtyFilter, setSpecialtyFilter] = useState<CaseSpecialty | "">("");
   const [urgencyFilter, setUrgencyFilter] = useState<CaseUrgency | "">("");

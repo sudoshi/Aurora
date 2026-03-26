@@ -126,10 +126,10 @@ export default function DashboardPage() {
                 <Loader2 size={24} className="animate-spin text-[#7A8298]" />
               </div>
             ) : (stats?.recent_cases ?? []).length > 0 ? (
-              <div className="overflow-hidden rounded-lg border border-[#1C1C48]">
+              <div className="overflow-hidden rounded-lg border border-[#1C1C48] max-h-[480px] overflow-y-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-[#16163A]">
+                    <tr className="bg-[#16163A] sticky top-0 z-10">
                       {["Case", "Specialty", "Status", "Urgency", "Created"].map((h) => (
                         <th
                           key={h}
