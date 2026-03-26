@@ -10,6 +10,7 @@ from .routers.copilot import router as copilot_router
 from .routers.decision_support import router as decision_support_router
 from .routers.embeddings import router as embeddings_router
 from .routers.health import router as health_router
+from .routers.fingerprint import router as fingerprint_router
 from .routers.imaging import router as imaging_router
 from .routers.similarity import router as similarity_router
 
@@ -45,3 +46,4 @@ app.include_router(decision_support_router, prefix="/api/ai")
 app.include_router(similarity_router, prefix="/api/ai")
 app.include_router(copilot_router, prefix="/api/ai")
 app.include_router(imaging_router, prefix="/api/ai")
+app.include_router(fingerprint_router, prefix="/api/ai")
