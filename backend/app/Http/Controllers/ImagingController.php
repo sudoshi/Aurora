@@ -17,7 +17,9 @@ class ImagingController extends Controller
 
     private function formatStudy(ImagingStudy $study): array
     {
-        $isIndexed = $study->dicom_endpoint === 'orthanc';
+        $isIndexed = $study->dicom_endpoint === 'orthanc'
+            || $study->source_type === 'orthanc'
+            || str_contains((string) $study->dicom_endpoint, 'dicom-web');
 
         return [
             'id' => $study->id,

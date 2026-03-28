@@ -32,7 +32,7 @@ import base64
 
 ORTHANC_URL = os.environ.get("ORTHANC_URL", "http://localhost:8042")
 ORTHANC_USER = os.environ.get("ORTHANC_USER", "parthenon")
-ORTHANC_PASS = os.environ.get("ORTHANC_PASS", "orthanc_secret")
+ORTHANC_PASS = os.environ.get("ORTHANC_PASS", "GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih")
 
 DB_HOST = os.environ.get("DB_HOST", "")  # empty = unix socket (peer auth)
 DB_PORT = os.environ.get("DB_PORT", "5432")
