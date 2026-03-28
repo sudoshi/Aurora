@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft, Layers, Brain, Loader2, ScanLine, Monitor, Ruler } from "lucide-react";
 import { useImagingStudy, useIndexSeries, useExtractNlp, useImagingFeatures } from "../hooks/useImaging";
@@ -18,6 +18,9 @@ export default function ImagingStudyPage() {
   const { id } = useParams<{ id: string }>();
   const studyId = parseInt(id ?? "0");
   const [activeTab, setActiveTab] = useState<StudyTab>("viewer");
+
+  const location = useLocation();
+  const cameFromPatient = location.state?.fromPatient as number | undefined;
 
   const { data: study, isLoading } = useImagingStudy(studyId);
   const { data: features } = useImagingFeatures({ study_id: studyId, per_page: 50 });
@@ -56,13 +59,25 @@ export default function ImagingStudyPage() {
   return (
     <div className="space-y-6">
       {/* Back nav */}
-      <Link
-        to="/imaging"
-        className="inline-flex items-center gap-1.5 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors"
-      >
-        <ArrowLeft size={14} />
-        Back to Imaging
-      </Link>
+      <div className="flex items-center gap-4">
+        {(cameFromPatient ?? study.person_id) ? (
+          <Link
+            to={`/profiles/${cameFromPatient ?? study.person_id}`}
+            className="inline-flex items-center gap-1.5 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Back to Patient
+          </Link>
+        ) : (
+          <Link
+            to="/imaging"
+            className="inline-flex items-center gap-1.5 text-sm text-[#7A8298] hover:text-[#E8ECF4] transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Back to Imaging
+          </Link>
+        )}
+      </div>
 
       {/* Header */}
       <div className="flex items-start justify-between">

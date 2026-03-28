@@ -119,7 +119,7 @@ export default function PatientImagingTab({ studies, patientId }: PatientImaging
             <div
               key={study.id}
               className="flex items-center gap-4 px-4 py-3 hover:bg-[var(--primary-bg)] cursor-pointer transition-colors"
-              onClick={() => navigate(`/imaging/studies/${study.id}`)}
+              onClick={() => navigate(`/imaging/studies/${study.id}`, { state: { fromPatient: patientId } })}
             >
               {/* Modality badge */}
               <div
