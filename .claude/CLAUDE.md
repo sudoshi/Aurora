@@ -1,5 +1,9 @@
 # Aurora -- Project Context for Claude Code
 
+## Sudo Usage (CRITICAL)
+
+This system uses `sudo-rs` which does NOT support `-A` (askpass). Interactive sudo prompts block tool execution. When you need elevated privileges (e.g., `systemctl reload php8.4-fpm`), ask the user to run the command manually rather than attempting sudo directly.
+
 ## What This Project Is
 
 Aurora is a secure, real-time collaboration platform for multidisciplinary clinical teams to coordinate patient care. It provides synchronous collaboration (video conferencing, whiteboarding), asynchronous communication (threaded discussions, file sharing), clinical decision support, and team management with role-based access control.
