@@ -93,7 +93,7 @@ class RadiogenomicsService
     private function buildCorrelations(Collection $variants, array $drugExposures): array
     {
         // Query gene-drug interactions from the evidence database
-        $geneList = $variants->pluck('gene')->map(fn($g) => strtoupper($g))->unique()->values()->all();
+        $geneList = $variants->pluck('gene')->map(fn ($g) => strtoupper($g))->unique()->values()->all();
         $dbInteractions = \App\Models\Clinical\GeneDrugInteraction::whereIn('gene', $geneList)->get();
 
         $knownInteractions = [];

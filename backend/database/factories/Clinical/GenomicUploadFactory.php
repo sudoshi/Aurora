@@ -19,8 +19,8 @@ class GenomicUploadFactory extends Factory
         $statuses = ['uploaded', 'processing', 'completed', 'failed'];
 
         return [
-            'original_filename' => fake()->word() . '.' . fake()->randomElement($formats),
-            'stored_path' => 'genomic-uploads/' . fake()->uuid() . '.' . fake()->randomElement($formats),
+            'original_filename' => fake()->word().'.'.fake()->randomElement($formats),
+            'stored_path' => 'genomic-uploads/'.fake()->uuid().'.'.fake()->randomElement($formats),
             'file_format' => fake()->randomElement($formats),
             'genome_build' => fake()->randomElement($builds),
             'sample_id' => fake()->optional()->bothify('SAMPLE-####'),

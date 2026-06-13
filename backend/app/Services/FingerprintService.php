@@ -181,6 +181,7 @@ class FingerprintService
     {
         if (! empty($customWeights)) {
             $sum = array_sum($customWeights);
+
             return $sum > 0 ? array_map(fn ($w) => $w / $sum, $customWeights) : $customWeights;
         }
 
@@ -191,9 +192,15 @@ class FingerprintService
             : ['genomic' => 0.34, 'volumetric' => 0.33, 'clinical' => 0.33];
 
         // Zero out weights for missing dimensions and renormalize
-        if (! $fingerprint->genomic_available) $weights['genomic'] = 0;
-        if (! $fingerprint->volumetric_available) $weights['volumetric'] = 0;
-        if (! $fingerprint->clinical_available) $weights['clinical'] = 0;
+        if (! $fingerprint->genomic_available) {
+            $weights['genomic'] = 0;
+        }
+        if (! $fingerprint->volumetric_available) {
+            $weights['volumetric'] = 0;
+        }
+        if (! $fingerprint->clinical_available) {
+            $weights['clinical'] = 0;
+        }
 
         $sum = array_sum($weights);
         if ($sum > 0) {
@@ -211,6 +218,7 @@ class FingerprintService
         $variants = $patient->genomicVariants;
         if ($variants->isEmpty()) {
             $fingerprint->genomic_available = false;
+
             return;
         }
 
@@ -252,6 +260,7 @@ class FingerprintService
         $studies = $patient->imagingStudies;
         if ($studies->isEmpty()) {
             $fingerprint->volumetric_available = false;
+
             return;
         }
 
@@ -302,6 +311,7 @@ class FingerprintService
 
         if (! $hasData) {
             $fingerprint->clinical_available = false;
+
             return;
         }
 

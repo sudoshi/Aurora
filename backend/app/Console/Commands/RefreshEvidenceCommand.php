@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 class RefreshEvidenceCommand extends Command
 {
     protected $signature = 'genomics:refresh-evidence {--force : Skip cadence checks}';
+
     protected $description = 'Refresh all genomics evidence sources (ClinVar + OncoKB)';
 
     public function handle(
@@ -60,6 +61,7 @@ class RefreshEvidenceCommand extends Command
         }
 
         $this->info('Evidence refresh complete.');
+
         return Command::SUCCESS;
     }
 }

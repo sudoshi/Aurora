@@ -15,6 +15,7 @@ class GeneDrugInteraction extends Model
     {
         return \Database\Factories\Clinical\GeneDrugInteractionFactory::new();
     }
+
     protected $table = 'clinical.gene_drug_interactions';
 
     protected $fillable = [
@@ -40,7 +41,7 @@ class GeneDrugInteraction extends Model
         if ($hgvsP) {
             $query->where(function ($q) use ($hgvsP) {
                 $q->where('variant_pattern', '*')
-                  ->orWhereRaw('LOWER(?) LIKE \'%\' || LOWER(variant_pattern) || \'%\'', [$hgvsP]);
+                    ->orWhereRaw('LOWER(?) LIKE \'%\' || LOWER(variant_pattern) || \'%\'', [$hgvsP]);
             });
         } else {
             $query->where('variant_pattern', '*');

@@ -139,7 +139,7 @@ class FingerprintController extends Controller
             ];
         }
 
-        return ApiResponse::success($results, count($results) . ' patients encoded');
+        return ApiResponse::success($results, count($results).' patients encoded');
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
@@ -73,7 +74,7 @@ class PatientTaskController extends Controller
         $task = PatientTask::findOrFail($task);
 
         // Authorization: only creator or admin can delete
-        if ($task->created_by !== $request->user()->id && !$request->user()->hasRole('admin')) {
+        if ($task->created_by !== $request->user()->id && ! $request->user()->hasRole('admin')) {
             return ApiResponse::error('Unauthorized', 403);
         }
 

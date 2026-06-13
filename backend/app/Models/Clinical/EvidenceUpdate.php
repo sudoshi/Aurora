@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class EvidenceUpdate extends Model
 {
     public $timestamps = false;
+
     protected $connection = 'pgsql';
+
     protected $table = 'clinical.evidence_updates';
 
     protected $fillable = [

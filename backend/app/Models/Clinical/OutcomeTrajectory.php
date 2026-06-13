@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OutcomeTrajectory extends Model
 {
     protected $connection = 'pgsql';
+
     protected $table = 'outcome_trajectories';
+
     protected $guarded = [];
 
     protected function casts(): array

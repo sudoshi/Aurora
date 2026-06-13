@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\ClinicalCase;
 use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\GeneDrugInteraction;
 use App\Models\Clinical\GenomicVariant;
+use App\Models\ClinicalCase;
+use App\Models\User;
 
 describe('Model Factories', function () {
     it('creates a valid User', function () {

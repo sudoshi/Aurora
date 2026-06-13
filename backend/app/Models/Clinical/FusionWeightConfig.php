@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class FusionWeightConfig extends Model
 {
     protected $connection = 'pgsql';
+
     protected $table = 'fusion_weight_configs';
+
     protected $guarded = [];
 
     protected function casts(): array

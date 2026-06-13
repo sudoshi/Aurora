@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use App\Rules\ValidRecordRef;
@@ -15,7 +16,7 @@ class StorePatientFlagRequest extends FormRequest
     {
         return [
             'domain' => 'required|string|in:condition,medication,procedure,measurement,observation,genomic,imaging,general',
-            'record_ref' => ['required', 'string', new ValidRecordRef()],
+            'record_ref' => ['required', 'string', new ValidRecordRef],
             'severity' => 'sometimes|string|in:critical,attention,informational',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',

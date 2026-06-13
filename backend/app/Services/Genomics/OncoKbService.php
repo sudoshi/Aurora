@@ -9,18 +9,19 @@ use Illuminate\Support\Facades\Log;
 class OncoKbService
 {
     private string $baseUrl = 'https://www.oncokb.org/api/v1';
+
     private ?string $token;
 
     /**
      * Map OncoKB evidence levels to internal format.
      */
     private const LEVEL_MAP = [
-        'LEVEL_1'  => '1',
+        'LEVEL_1' => '1',
         'LEVEL_2A' => '2A',
         'LEVEL_2B' => '2B',
         'LEVEL_3A' => '3A',
         'LEVEL_3B' => '3B',
-        'LEVEL_4'  => '4',
+        'LEVEL_4' => '4',
         'LEVEL_R1' => 'R1',
         'LEVEL_R2' => 'R2',
     ];
@@ -44,8 +45,9 @@ class OncoKbService
      */
     public function syncInteractions(): array
     {
-        if (!$this->token) {
+        if (! $this->token) {
             Log::warning('OncoKB API token not configured — skipping sync');
+
             return ['synced' => 0, 'errors' => 0, 'upserted' => 0, 'skipped' => 'no_token'];
         }
 
@@ -63,13 +65,14 @@ class OncoKbService
                 if ($response->failed()) {
                     Log::warning("OncoKB sync failed for gene {$gene}: HTTP {$response->status()}");
                     $errors++;
+
                     continue;
                 }
 
                 $responseData = $response->json();
                 $treatments = $responseData['treatments'] ?? [];
 
-                if (!empty($treatments)) {
+                if (! empty($treatments)) {
                     $result = $this->parseAndUpsertTreatments($gene, $treatments);
                     $totalUpserted += $result['upserted'];
                 }
@@ -90,8 +93,8 @@ class OncoKbService
     /**
      * Parse OncoKB treatment annotations and upsert GeneDrugInteraction records.
      *
-     * @param string $gene     The gene symbol (e.g. 'BRAF')
-     * @param array  $treatments  Array of treatment objects from OncoKB API
+     * @param  string  $gene  The gene symbol (e.g. 'BRAF')
+     * @param  array  $treatments  Array of treatment objects from OncoKB API
      * @return array{upserted: int, skipped: int}
      */
     public function parseAndUpsertTreatments(string $gene, array $treatments): array
@@ -106,11 +109,12 @@ class OncoKbService
             if ($mappedLevel === null) {
                 Log::info("OncoKB: skipping treatment for {$gene} with unknown level '{$oncoKbLevel}'");
                 $skipped++;
+
                 continue;
             }
 
             $drugNames = array_map(
-                fn(array $drug) => strtolower(trim($drug['drugName'] ?? '')),
+                fn (array $drug) => strtolower(trim($drug['drugName'] ?? '')),
                 $treatment['drugs'] ?? []
             );
             $drugName = implode(' + ', $drugNames);
@@ -121,18 +125,18 @@ class OncoKbService
 
             GeneDrugInteraction::updateOrCreate(
                 [
-                    'gene'            => $gene,
+                    'gene' => $gene,
                     'variant_pattern' => '*',
-                    'drug'            => $drugName,
+                    'drug' => $drugName,
                 ],
                 [
-                    'evidence_level'        => $mappedLevel,
-                    'relationship'          => $this->mapRelationship($mappedLevel),
-                    'indication'            => $indication,
-                    'source'                => 'oncokb',
-                    'source_url'            => "{$this->baseUrl}/genes/{$gene}/variants",
+                    'evidence_level' => $mappedLevel,
+                    'relationship' => $this->mapRelationship($mappedLevel),
+                    'indication' => $indication,
+                    'source' => 'oncokb',
+                    'source_url' => "{$this->baseUrl}/genes/{$gene}/variants",
                     'oncokb_last_synced_at' => now(),
-                    'last_verified_at'      => now(),
+                    'last_verified_at' => now(),
                 ]
             );
 

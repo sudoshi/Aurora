@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PatientFingerprint extends Model
 {
     protected $connection = 'pgsql';
+
     protected $table = 'patient_fingerprints';
+
     protected $guarded = [];
 
     protected function casts(): array

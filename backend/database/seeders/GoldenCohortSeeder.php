@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\Condition;
-use App\Models\Clinical\ConditionEra;
 use App\Models\Clinical\DrugEra;
 use App\Models\Clinical\GenomicVariant;
 use App\Models\Clinical\ImagingMeasurement;
@@ -13,7 +12,6 @@ use App\Models\Clinical\ImagingStudy;
 use App\Models\Clinical\Measurement;
 use App\Models\Clinical\Medication;
 use App\Models\Clinical\OutcomeTrajectory;
-use App\Models\Clinical\Procedure;
 use App\Models\Clinical\Visit;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +29,7 @@ class GoldenCohortSeeder extends Seeder
             }
         }
 
-        $this->command->info('Golden cohort seeded: ' . ClinicalPatient::where('source_type', 'golden_cohort')->count() . ' patients.');
+        $this->command->info('Golden cohort seeded: '.ClinicalPatient::where('source_type', 'golden_cohort')->count().' patients.');
     }
 
     private function seedPatient(array $data): void

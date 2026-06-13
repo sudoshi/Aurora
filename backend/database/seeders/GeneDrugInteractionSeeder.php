@@ -72,6 +72,6 @@ class GeneDrugInteractionSeeder extends Seeder
             );
         }
 
-        $this->command->info('Seeded ' . count($interactions) . ' gene-drug interactions.');
+        $this->command->info('Seeded '.count($interactions).' gene-drug interactions.');
     }
 }

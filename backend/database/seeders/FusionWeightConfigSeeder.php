@@ -64,6 +64,6 @@ class FusionWeightConfigSeeder extends Seeder
             );
         }
 
-        $this->command->info('Seeded ' . count($presets) . ' fusion weight presets.');
+        $this->command->info('Seeded '.count($presets).' fusion weight presets.');
     }
 }

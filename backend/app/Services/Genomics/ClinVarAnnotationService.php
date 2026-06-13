@@ -18,7 +18,7 @@ class ClinVarAnnotationService
      */
     public function annotateByPatient(int $patientId): array
     {
-        $annotated = DB::update("
+        $annotated = DB::update('
             UPDATE clinical.genomic_variants gv
             SET
                 clinical_significance = cv.clinical_significance,
@@ -32,7 +32,7 @@ class ClinVarAnnotationService
               AND gv.ref_allele = cv.reference_allele
               AND gv.alt_allele = cv.alternate_allele
               AND gv.clinical_significance IS NULL
-        ", [$patientId]);
+        ', [$patientId]);
 
         $total = GenomicVariant::where('patient_id', $patientId)->count();
 
@@ -46,7 +46,7 @@ class ClinVarAnnotationService
      */
     public function annotateAll(): array
     {
-        $annotated = DB::update("
+        $annotated = DB::update('
             UPDATE clinical.genomic_variants gv
             SET
                 clinical_significance = cv.clinical_significance,
@@ -59,7 +59,7 @@ class ClinVarAnnotationService
               AND gv.ref_allele = cv.reference_allele
               AND gv.alt_allele = cv.alternate_allele
               AND gv.clinical_significance IS NULL
-        ");
+        ');
 
         $total = GenomicVariant::count();
 

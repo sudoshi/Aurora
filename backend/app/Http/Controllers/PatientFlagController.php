@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
@@ -72,7 +73,7 @@ class PatientFlagController extends Controller
         $flag = PatientFlag::findOrFail($flag);
 
         // Authorization: only creator or admin can delete
-        if ($flag->flagged_by !== $request->user()->id && !$request->user()->hasRole('admin')) {
+        if ($flag->flagged_by !== $request->user()->id && ! $request->user()->hasRole('admin')) {
             return ApiResponse::error('Unauthorized', 403);
         }
 

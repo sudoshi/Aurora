@@ -9,8 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class SimilaritySearch extends Model
 {
     protected $connection = 'pgsql';
+
     protected $table = 'similarity_searches';
+
     public $timestamps = false;
+
     protected $guarded = [];
 
     protected function casts(): array
