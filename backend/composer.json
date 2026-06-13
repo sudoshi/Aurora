@@ -67,6 +67,11 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "CVE-2026-48019": "Laravel CRLF injection in the default `email` validation rule. No fix is released for the 11.x line (patched only in 12.60+/13.10+); proper remediation is the tracked Laravel 12 upgrade. Aurora does not expose the affected DNS-check email path to attacker-controlled input. Re-evaluate and remove this entry when upgrading the framework."
+            }
         }
     },
     "minimum-stability": "stable",
