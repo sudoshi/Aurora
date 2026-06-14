@@ -45,3 +45,15 @@ describe('Model Factories', function () {
         expect($variant->patient)->toBeInstanceOf(ClinicalPatient::class);
     });
 });
+
+it('creates a DiagnosticOdyssey via factory', function () {
+    $odyssey = \App\Models\DiagnosticOdyssey::factory()->create();
+    expect($odyssey->id)->toBeInt();
+    expect($odyssey->status)->toBe('referral');
+});
+
+it('creates a PhenotypeFeature via factory', function () {
+    $feature = \App\Models\PhenotypeFeature::factory()->create();
+    expect($feature->id)->toBeInt();
+    expect($feature->hpo_id)->toStartWith('HP:');
+});
