@@ -89,6 +89,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/flags/{flag}', [PatientFlagController::class, 'update']);
     Route::delete('/flags/{flag}', [PatientFlagController::class, 'destroy']);
 
+    // ── Rare Disease — Diagnostic Odyssey ──────────────────────────────
+    Route::get('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'index']);
+    Route::post('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'store']);
+    Route::get('/odysseys/{odyssey}', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'show']);
+    Route::post('/odysseys/{odyssey}/transition', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'transition']);
+
     // Patient Tasks
     Route::get('/patients/{patient}/tasks', [PatientTaskController::class, 'index']);
     Route::post('/patients/{patient}/tasks', [PatientTaskController::class, 'store']);
