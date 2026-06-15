@@ -21,6 +21,7 @@
   --accent-lighter:   #C4B5FD;   /* for text on darkest surfaces where AA is tight */
   --accent-dark:      #6D28D9;
   --accent-muted:     #7C4FD0;   /* subdued variant for backgrounds */
+  --teal:             var(--success);   /* #2DD4BF — used by rare-disease links/accents */
   --accent-pale:      rgba(157, 117, 248, 0.15);
   --accent-bg:        rgba(157, 117, 248, 0.10);
   --accent-glow:      rgba(157, 117, 248, 0.30);
