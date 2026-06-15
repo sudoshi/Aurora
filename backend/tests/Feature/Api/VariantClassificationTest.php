@@ -69,3 +69,15 @@ it('requires an override reason when final differs from computed (422)', functio
 it('requires authentication', function () {
     $this->postJson("/api/genomic-variants/{$this->variant->id}/classifications", [])->assertStatus(401);
 });
+
+it('applies a gene-specific BA1 threshold from a seeded spec', function () {
+    app(\Database\Seeders\AcmgGeneSpecificationSeeder::class)->run();
+    $myh7 = GenomicVariant::factory()->create(['gene_symbol' => 'MYH7']);
+
+    // AF 0.002 is benign-common under MYH7's stricter BA1 (0.001) but not under the 0.05 baseline.
+    $response = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/genomic-variants/{$myh7->id}/classifications", ['population_af' => 0.002]);
+
+    $response->assertStatus(201);
+    expect(collect($response->json('data.criteria'))->pluck('code'))->toContain('BA1');
+});
