@@ -50,7 +50,11 @@ describe('GET /api/genomics/stats', function () {
 
 describe('GET /api/genomics/interactions', function () {
     it('returns gene-drug interactions', function () {
-        GeneDrugInteraction::factory()->count(3)->create();
+        // Distinct gene/drug pairs — factory()->count(3) can collide on the
+        // (gene, variant_pattern, drug) unique index when randomElement repeats.
+        GeneDrugInteraction::factory()->create(['gene' => 'BRAF', 'drug' => 'Vemurafenib']);
+        GeneDrugInteraction::factory()->create(['gene' => 'EGFR', 'drug' => 'Erlotinib']);
+        GeneDrugInteraction::factory()->create(['gene' => 'KRAS', 'drug' => 'Sotorasib']);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/genomics/interactions');
