@@ -1479,10 +1479,7 @@ git commit -m "feat(rare-disease): add Phenopacket export endpoint"
 Run: `docker compose exec -T php php artisan test`
 Expected: PASS — all prior tests plus the ~24 new tests from this plan.
 
-- [ ] **Step 2: Run static analysis** (the strategy posture demands type safety)
-
-Run: `docker compose exec -T php sh -c "cd /var/www/html && vendor/bin/phpstan analyse --memory-limit=512M"`
-Expected: No new errors introduced by these files. (If the project baseline has pre-existing errors, confirm the new files add none.)
+- [ ] **Step 2: Static analysis** — PHPStan is NOT currently installed in this repo (`vendor/bin/phpstan` absent, no `phpstan.neon`). Skip this step. If PHPStan is added later, run `vendor/bin/phpstan analyse --memory-limit=512M` and confirm these files add zero new errors. The active static gate for this repo is Pint (Step 3).
 
 - [ ] **Step 3: Final Pint check**
 
