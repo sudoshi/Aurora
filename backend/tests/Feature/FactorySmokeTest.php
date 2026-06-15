@@ -69,3 +69,14 @@ it('creates a ClassificationCriterion via factory', function () {
     expect($crit->id)->toBeInt();
     expect($crit->code)->toBeString();
 });
+
+it('creates a VariantCanonicalId via factory', function () {
+    $v = \App\Models\Clinical\VariantCanonicalId::factory()->create();
+    expect($v->id)->toBeInt();
+});
+
+it('creates a KbChangeAlert via factory', function () {
+    $a = \App\Models\Clinical\KbChangeAlert::factory()->create();
+    expect($a->id)->toBeInt();
+    expect($a->severity)->toBeString();
+});
