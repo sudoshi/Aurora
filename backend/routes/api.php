@@ -106,6 +106,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'store']);
     Route::delete('/phenotypes/{phenotype}', [\App\Http\Controllers\PhenotypeFeatureController::class, 'destroy']);
 
+    // Rare Disease — HPO terminology proxy
+    Route::get('/hpo/search', [\App\Http\Controllers\HpoTermController::class, 'search'])
+        ->middleware('throttle:60,1');
+
     // Patient Tasks
     Route::get('/patients/{patient}/tasks', [PatientTaskController::class, 'index']);
     Route::post('/patients/{patient}/tasks', [PatientTaskController::class, 'store']);
