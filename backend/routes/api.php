@@ -202,6 +202,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/variant-drug-interactions', [RadiogenomicsController::class, 'variantDrugInteractions']);
     });
 
+    // ── Variant reanalysis (KB-change alerts) ───────────────────────────
+    Route::post('/genomic-variants/{variant}/canonicalize', [\App\Http\Controllers\VariantReanalysisController::class, 'canonicalize']);
+    Route::get('/patients/{patient}/kb-alerts', [\App\Http\Controllers\VariantReanalysisController::class, 'patientAlerts']);
+    Route::get('/kb-alerts', [\App\Http\Controllers\VariantReanalysisController::class, 'worklist']);
+    Route::post('/kb-alerts/{alert}/acknowledge', [\App\Http\Controllers\VariantReanalysisController::class, 'acknowledge']);
+
     // ── ACMG variant classification ─────────────────────────────────────
     Route::get('/acmg/criteria', [\App\Http\Controllers\VariantClassificationController::class, 'catalog']);
     Route::post('/genomic-variants/{variant}/classifications', [\App\Http\Controllers\VariantClassificationController::class, 'store']);
