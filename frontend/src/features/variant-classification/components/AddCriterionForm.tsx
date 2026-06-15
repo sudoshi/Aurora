@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useAcmgCatalog, useAddCriterion } from "../hooks/useClassification";
-import type { AcmgStrength } from "../types";
+import type { AcmgStrength, VariantClassification } from "../types";
 
 const STRENGTHS: AcmgStrength[] = ["very_strong", "strong", "moderate", "supporting"];
 
-export function AddCriterionForm({ classificationId }: { classificationId: number }) {
+interface AddCriterionFormProps {
+  classificationId: number;
+  onUpdated?: (classification: VariantClassification) => void;
+}
+
+export function AddCriterionForm({ classificationId, onUpdated }: AddCriterionFormProps) {
   const { data: catalog } = useAcmgCatalog();
   const add = useAddCriterion(classificationId);
   const [code, setCode] = useState("");
@@ -17,7 +22,7 @@ export function AddCriterionForm({ classificationId }: { classificationId: numbe
     if (!code) return;
     add.mutate(
       { code, applied_strength: strength, rationale: rationale || undefined },
-      { onSuccess: () => { setCode(""); setRationale(""); } },
+      { onSuccess: (c) => { setCode(""); setRationale(""); onUpdated?.(c); } },
     );
   }
 

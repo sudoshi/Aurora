@@ -47,7 +47,7 @@ export function VariantClassificationPanel({ genomicVariantId }: { genomicVarian
 
       {!confirmed && (
         <>
-          <AddCriterionForm classificationId={classification.id} />
+          <AddCriterionForm classificationId={classification.id} onUpdated={setClassification} />
           <div className="flex justify-end">
             <button type="button" onClick={() => setConfirmOpen(true)}
               className="rounded-md border border-[var(--primary)] px-3 py-1 text-sm text-[var(--primary)] hover:bg-[var(--surface-elevated)]">
@@ -61,6 +61,7 @@ export function VariantClassificationPanel({ genomicVariantId }: { genomicVarian
         classification={classification}
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
+        onUpdated={setClassification}
       />
     </div>
   );

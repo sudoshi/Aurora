@@ -5,8 +5,13 @@ import { CLASSIFICATION_LABEL, type AcmgClassification, type VariantClassificati
 const OPTIONS: AcmgClassification[] = ["pathogenic", "likely_pathogenic", "vus", "likely_benign", "benign"];
 
 export function ConfirmClassificationDialog({
-  classification, open, onClose,
-}: { classification: VariantClassification; open: boolean; onClose: () => void }) {
+  classification, open, onClose, onUpdated,
+}: {
+  classification: VariantClassification;
+  open: boolean;
+  onClose: () => void;
+  onUpdated?: (classification: VariantClassification) => void;
+}) {
   const confirm = useConfirmClassification(classification.id);
   const [final, setFinal] = useState<AcmgClassification>(classification.computed_classification);
   const [reason, setReason] = useState("");
@@ -20,7 +25,7 @@ export function ConfirmClassificationDialog({
     if (differs && reason.trim() === "") { setError("An override reason is required when changing the computed call."); return; }
     confirm.mutate(
       { final_classification: final, override_reason: differs ? reason : undefined },
-      { onSuccess: onClose, onError: () => setError("Confirmation failed") },
+      { onSuccess: (c) => { onUpdated?.(c); onClose(); }, onError: () => setError("Confirmation failed") },
     );
   }
 
