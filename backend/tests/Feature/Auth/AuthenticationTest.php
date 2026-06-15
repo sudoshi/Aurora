@@ -5,7 +5,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
-    $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\SuperuserSeeder']);
+    // Run the seeder synchronously. A PendingCommand from $this->artisan(...)
+    // in beforeEach is not guaranteed to execute before the test body here,
+    // which left the superuser unseeded; call the seeder directly instead.
+    app(\Database\Seeders\SuperuserSeeder::class)->run();
 });
 
 describe('POST /api/auth/login', function () {

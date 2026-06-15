@@ -13,6 +13,7 @@ import {
   UsersRound,
   ScrollText,
   ShieldCheck,
+  KeyRound,
   Bell,
   type LucideIcon,
 } from "lucide-react";
@@ -67,6 +68,7 @@ export const navGroups: NavGroup[] = [
       { path: "/admin/users", label: "Users", icon: UsersRound },
       { path: "/admin/user-audit", label: "Audit Log", icon: ScrollText },
       { path: "/admin/roles", label: "Roles & Permissions", icon: ShieldCheck, superAdminOnly: true },
+      { path: "/admin/auth-providers", label: "Authentication Providers", icon: KeyRound, superAdminOnly: true },
       { path: "/admin/ai-providers", label: "AI Providers", icon: Cpu },
       { path: "/admin/notifications", label: "Notifications", icon: Bell },
     ],

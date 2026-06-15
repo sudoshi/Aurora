@@ -3,11 +3,13 @@
 use App\Http\Controllers\AbbyController;
 use App\Http\Controllers\Admin\AiProviderController;
 use App\Http\Controllers\Admin\AppSettingsController;
+use App\Http\Controllers\Admin\AuthProviderController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Admin\UserAuditController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AiProxyController;
+use App\Http\Controllers\Auth\OidcController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaseAnnotationController;
 use App\Http\Controllers\CaseController;
@@ -57,6 +59,10 @@ Route::get('/health', fn () => response()->json([
 // Auth (public — tightly throttled)
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::get('/auth/providers', [OidcController::class, 'providers']);
+Route::get('/auth/oidc/redirect', [OidcController::class, 'redirect'])->middleware('throttle:20,1');
+Route::get('/auth/oidc/callback', [OidcController::class, 'callback'])->middleware('throttle:20,1');
+Route::post('/auth/oidc/exchange', [OidcController::class, 'exchange'])->middleware('throttle:20,1');
 
 // Auth (protected)
 Route::middleware('auth:sanctum')->group(function () {
@@ -354,6 +360,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/roles/{role}', [RoleController::class, 'show']);
             Route::put('/roles/{role}', [RoleController::class, 'update']);
             Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+        });
+
+        // Auth provider configuration (super-admin only)
+        Route::middleware('role:super-admin')->prefix('auth-providers')->group(function () {
+            Route::get('/', [AuthProviderController::class, 'index']);
+            Route::get('/{providerType}', [AuthProviderController::class, 'show']);
+            Route::put('/{providerType}', [AuthProviderController::class, 'update']);
+            Route::post('/{providerType}/enable', [AuthProviderController::class, 'enable']);
+            Route::post('/{providerType}/disable', [AuthProviderController::class, 'disable']);
+            Route::post('/{providerType}/test', [AuthProviderController::class, 'test']);
         });
 
         // AI provider configuration (super-admin only)

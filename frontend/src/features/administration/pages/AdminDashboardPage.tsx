@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   Activity, Bot, KeyRound, ShieldCheck, Users, ArrowRight,
+  type LucideIcon,
 } from "lucide-react";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { Panel } from "@/components/ui/Panel";
@@ -9,7 +10,18 @@ import { useRoles } from "../hooks/useAdminRoles";
 import { useAiProviders, useSystemHealth } from "../hooks/useAiProviders";
 import { useAuthStore } from "@/stores/authStore";
 
-const NAV_CARDS = [
+interface NavCard {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
+  color: string;
+  bg: string;
+  adminOnly?: boolean;
+  superAdminOnly?: boolean;
+}
+
+const NAV_CARDS: NavCard[] = [
   {
     title: "User Management",
     description: "Create, edit, and deactivate user accounts. Assign roles to control access.",
@@ -17,7 +29,6 @@ const NAV_CARDS = [
     href: "/admin/users",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    adminOnly: false,
   },
   {
     title: "Roles & Permissions",
@@ -35,7 +46,7 @@ const NAV_CARDS = [
     href: "/admin/auth-providers",
     color: "text-amber-500",
     bg: "bg-amber-500/10",
-    adminOnly: true,
+    superAdminOnly: true,
   },
   {
     title: "AI Provider Configuration",
@@ -53,12 +64,11 @@ const NAV_CARDS = [
     href: "/admin/system-health",
     color: "text-emerald-500",
     bg: "bg-emerald-500/10",
-    adminOnly: false,
   },
 ];
 
 export default function AdminDashboardPage() {
-  const { isAdmin } = useAuthStore();
+  const { isAdmin, isSuperAdmin } = useAuthStore();
   const { data: usersPage } = useUsers({ per_page: 1 });
   const { data: roles } = useRoles();
   const { data: aiProviders } = useAiProviders();
@@ -72,6 +82,12 @@ export default function AdminDashboardPage() {
       : health
         ? "Warning"
         : "--";
+
+  const visibleCards = NAV_CARDS.filter((card) => {
+    if (card.superAdminOnly) return isSuperAdmin();
+    if (card.adminOnly) return isAdmin();
+    return true;
+  });
 
   return (
     <div className="space-y-8">
@@ -113,7 +129,7 @@ export default function AdminDashboardPage() {
 
       {/* Navigation cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {NAV_CARDS.filter((c) => !c.adminOnly || isAdmin()).map((card) => (
+        {visibleCards.map((card) => (
           <Link key={card.href} to={card.href} className="block">
             <Panel className="group h-full cursor-pointer transition-colors hover:border-[#2DD4BF]/50">
               <div className="flex h-full flex-col justify-between">

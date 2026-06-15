@@ -1,6 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { KeyRound } from "lucide-react";
 import { authApi } from "@/features/auth/api/authApi";
+import type { AuthProviderDiscovery } from "@/features/auth/api/authApi";
 import { useAuthStore } from "@/stores/authStore";
 import { AxiosError } from "axios";
 import AuthLayout from "@/features/auth/components/AuthLayout";
@@ -13,6 +15,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [providers, setProviders] = useState<AuthProviderDiscovery | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    authApi.getProviders()
+      .then(({ data }) => {
+        if (active) {
+          setProviders(data);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setProviders(null);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,7 +44,11 @@ export default function LoginPage() {
 
     try {
       const { data } = await authApi.login(email, password);
-      setAuth(data.access_token, data.user);
+      const token = data.token ?? data.access_token;
+      if (!token) {
+        throw new Error("Missing authentication token.");
+      }
+      setAuth(token, data.user);
       navigate("/");
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -33,6 +60,12 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSsoLogin = () => {
+    if (providers?.oidc_redirect_path) {
+      window.location.assign(providers.oidc_redirect_path);
     }
   };
 
@@ -78,6 +111,18 @@ export default function LoginPage() {
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
+
+      {providers?.oidc_enabled && (
+        <>
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
+          <button type="button" className="auth-sso-button" onClick={handleSsoLogin}>
+            <KeyRound size={17} aria-hidden="true" />
+            <span>{providers.oidc_label || "Sign in with Authentik"}</span>
+          </button>
+        </>
+      )}
 
       <p className="auth-footer">
         Don&apos;t have an account?{" "}

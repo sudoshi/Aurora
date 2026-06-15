@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Auth\AuthDriverRegistry;
+use App\Auth\Drivers\AuthDriverException;
 use App\Http\Helpers\ApiResponse;
+use App\Models\UserAuditLog;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,7 +52,7 @@ class AuthController extends Controller
     /**
      * Login user and create token.
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request, AuthDriverRegistry $registry): JsonResponse
     {
         try {
             $credentials = $request->validate([
@@ -61,7 +64,39 @@ class AuthController extends Controller
                 'password.required' => 'Password is required',
             ]);
 
-            $result = $this->authService->login($credentials);
+            try {
+                $authResult = $registry->driver('local')->authenticate($credentials);
+            } catch (AuthDriverException $e) {
+                if ($e->getCode() === AuthDriverException::CODE_ACCOUNT_DISABLED) {
+                    return ApiResponse::error(
+                        'Your account has been deactivated. Please contact support.',
+                        403
+                    );
+                }
+
+                return ApiResponse::error(
+                    'The provided credentials do not match our records.',
+                    401
+                );
+            }
+
+            $user = $authResult->user;
+            $token = $user->createToken('auth-token')->plainTextToken;
+            $user->updateQuietly(['last_login_at' => now()]);
+
+            UserAuditLog::create([
+                'user_id' => $user->id,
+                'action' => 'login',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'occurred_at' => now(),
+            ]);
+
+            $result = [
+                'token' => $token,
+                'access_token' => $token,
+                'user' => $this->authService->formatUser($user),
+            ];
 
             return response()->json($result);
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -44,4 +44,17 @@ return [
         'token' => env('ONCOKB_API_TOKEN'),
     ],
 
+    'oidc' => [
+        'enabled' => filter_var(env('OIDC_ENABLED', false), FILTER_VALIDATE_BOOL),
+        'discovery_url' => env('OIDC_DISCOVERY_URL', 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration'),
+        'client_id' => env('OIDC_CLIENT_ID', ''),
+        'client_secret' => env('OIDC_CLIENT_SECRET', ''),
+        'redirect_uri' => env('OIDC_REDIRECT_URI', 'https://aurora.acumenus.net/api/auth/oidc/callback'),
+        'scopes' => ['openid', 'profile', 'email', 'groups'],
+        'allowed_groups' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('OIDC_ALLOWED_GROUPS', 'Aurora Admins'))
+        ))),
+    ],
+
 ];

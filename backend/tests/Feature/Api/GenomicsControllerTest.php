@@ -9,7 +9,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\SuperuserSeeder']);
+    app(\Database\Seeders\SuperuserSeeder::class)->run();
     $this->user = User::where('email', 'admin@acumenus.net')->first();
 });
 

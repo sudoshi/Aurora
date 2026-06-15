@@ -13,6 +13,7 @@ class SuperuserSeeder extends Seeder
      * The roles to seed for Aurora V2.
      */
     private const ROLES = [
+        'super-admin',
         'admin',
         'department_head',
         'attending',

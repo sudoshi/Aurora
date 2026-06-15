@@ -65,6 +65,18 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                $status = $e->getStatusCode();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $status === 404 ? 'Resource not found.' : ($e->getMessage() ?: 'Request failed.'),
+                    'errors' => null,
+                ], $status, $e->getHeaders());
+            }
+        });
+
         $exceptions->renderable(function (\Throwable $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 $message = app()->environment('production')

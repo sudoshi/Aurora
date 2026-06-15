@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SuperuserSeeder::class,
+            AuthProviderSeeder::class,
             SpecialtyTemplateSeeder::class,
             GeneDrugInteractionSeeder::class,
             ClinicalDemoSeeder::class,

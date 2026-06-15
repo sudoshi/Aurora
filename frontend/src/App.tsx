@@ -5,8 +5,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/lib/query-client";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import LoginPage from "@/features/auth/pages/LoginPage";
+import OidcCallbackPage from "@/features/auth/pages/OidcCallbackPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import PrivateRoute from "@/components/ui/PrivateRoute";
+import RequireSuperAdmin from "@/components/ui/RequireSuperAdmin";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 
 // Lazy-loaded feature pages
@@ -44,6 +46,7 @@ const AdminDashboardPage = lazy(() => import("@/features/administration/pages/Ad
 const UsersPage = lazy(() => import("@/features/administration/pages/UsersPage"));
 const UserAuditPage = lazy(() => import("@/features/administration/pages/UserAuditPage"));
 const RolesPage = lazy(() => import("@/features/administration/pages/RolesPage"));
+const AuthProvidersPage = lazy(() => import("@/features/administration/pages/AuthProvidersPage"));
 const AiProvidersPage = lazy(() => import("@/features/administration/pages/AiProvidersPage"));
 const SystemHealthPage = lazy(() => import("@/features/administration/pages/SystemHealthPage"));
 
@@ -77,6 +80,7 @@ export default function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth/callback" element={<OidcCallbackPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
               {/* Protected routes */}
@@ -131,6 +135,14 @@ export default function App() {
                 <Route path="admin/users" element={<UsersPage />} />
                 <Route path="admin/user-audit" element={<UserAuditPage />} />
                 <Route path="admin/roles" element={<RolesPage />} />
+                <Route
+                  path="admin/auth-providers"
+                  element={
+                    <RequireSuperAdmin>
+                      <AuthProvidersPage />
+                    </RequireSuperAdmin>
+                  }
+                />
                 <Route path="admin/ai-providers" element={<AiProvidersPage />} />
                 <Route path="admin/system-health" element={<SystemHealthPage />} />
 
