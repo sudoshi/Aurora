@@ -20,7 +20,7 @@ $gdvFixtureCsv = implode("\n", [
 beforeEach(function () use ($gdvFixtureCsv) {
     Cache::flush();
     config(['services.clingen_gdv.csv_url' => 'https://clingen.test/gdv.csv']);
-    $this->service    = new ClinGenGdvService;
+    $this->service = new ClinGenGdvService;
     $this->fixtureCsv = $gdvFixtureCsv;
 });
 
