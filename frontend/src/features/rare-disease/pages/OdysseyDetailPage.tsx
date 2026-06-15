@@ -6,6 +6,7 @@ import { PhenopacketExportButton } from "../components/PhenopacketExportButton";
 import { PhenopacketImportDialog } from "../components/PhenopacketImportDialog";
 import { useOdyssey, useTransitionOdyssey } from "../hooks/useRareDisease";
 import { odysseyPatientName } from "../types";
+import { ReanalysisAlertsPanel } from "@/features/reanalysis/components/ReanalysisAlertsPanel";
 
 export default function OdysseyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +54,11 @@ export default function OdysseyDetailPage() {
       </div>
 
       <PhenotypeCapturePanel odysseyId={odysseyId} />
+
+      <section className="rounded-lg border border-[var(--surface-elevated)] bg-[var(--surface-raised)] p-4">
+        <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)]">Reanalysis alerts</h3>
+        <ReanalysisAlertsPanel patientId={odyssey.patient_id} />
+      </section>
 
       {odyssey.transitions && odyssey.transitions.length > 0 && (
         <section className="rounded-lg border border-[var(--surface-elevated)] bg-[var(--surface-raised)] p-4">
