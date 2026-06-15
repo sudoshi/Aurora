@@ -1,11 +1,12 @@
 <?php
 
-uses()->group('mockery-alias');
-
 use App\Models\Event;
+use App\Models\Patient;
+use App\Models\User;
 use App\Services\EventService;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new EventService;
@@ -13,156 +14,133 @@ beforeEach(function () {
 
 describe('EventService::list', function () {
     it('returns paginated results', function () {
-        $paginator = Mockery::mock(LengthAwarePaginator::class);
-
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
-        $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
-
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
+        Event::factory()->count(3)->create();
 
         $result = $this->service->list();
 
-        expect($result)->toBe($paginator);
+        expect($result->total())->toBe(3)
+            ->and($result->perPage())->toBe(15);
     });
 
-    it('applies search filter', function () {
-        $paginator = Mockery::mock(LengthAwarePaginator::class);
+    it('applies search filter across searchable fields', function () {
+        Event::factory()->create(['title' => 'Tumor Board Meeting']);
+        Event::factory()->create(['title' => 'Staff Huddle']);
 
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('where')->once()->andReturnSelf();
-        $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
-        $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
+        $result = $this->service->list(['search' => 'Tumor']);
 
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
-
-        $result = $this->service->list(['search' => 'cardiac']);
-
-        expect($result)->toBe($paginator);
+        expect($result->total())->toBe(1)
+            ->and($result->items()[0]->title)->toBe('Tumor Board Meeting');
     });
 
     it('applies date range filters', function () {
-        $paginator = Mockery::mock(LengthAwarePaginator::class);
-
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('where')->with('time', '>=', '2026-01-01')->once()->andReturnSelf();
-        $query->shouldReceive('where')->with('time', '<=', '2026-12-31')->once()->andReturnSelf();
-        $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
-        $query->shouldReceive('paginate')->with(15)->andReturn($paginator);
-
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
+        Event::factory()->create(['time' => '2025-12-31 09:00:00']);
+        Event::factory()->create(['time' => '2026-06-01 09:00:00']);
+        Event::factory()->create(['time' => '2027-01-01 09:00:00']);
 
         $result = $this->service->list([
             'start_date' => '2026-01-01',
             'end_date' => '2026-12-31',
         ]);
 
-        expect($result)->toBe($paginator);
+        expect($result->total())->toBe(1)
+            ->and($result->items()[0]->time->format('Y-m-d'))->toBe('2026-06-01');
     });
 
     it('respects per_page filter capped at 100', function () {
-        $paginator = Mockery::mock(LengthAwarePaginator::class);
-
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('orderBy')->with('time', 'desc')->andReturnSelf();
-        $query->shouldReceive('paginate')->with(100)->andReturn($paginator);
-
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
+        Event::factory()->count(105)->create();
 
         $result = $this->service->list(['per_page' => 500]);
 
-        expect($result)->toBe($paginator);
+        expect($result->perPage())->toBe(100)
+            ->and(count($result->items()))->toBe(100);
     });
 });
 
 describe('EventService::create', function () {
-    it('creates an event and loads relationships', function () {
-        $eventMock = Mockery::mock(Event::class);
-        $eventMock->shouldReceive('load')
-            ->with(['teamMembers', 'patients'])
-            ->once()
-            ->andReturnSelf();
-
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('create')
-            ->with(['title' => 'Tumor Board', 'time' => '2026-04-01 09:00:00'])
-            ->once()
-            ->andReturn($eventMock);
+    it('creates an event and syncs optional relationships', function () {
+        $user = User::factory()->create();
+        $patient = Patient::factory()->create();
 
         $result = $this->service->create([
             'title' => 'Tumor Board',
             'time' => '2026-04-01 09:00:00',
+            'duration' => 60,
+            'location' => 'Conference Room A',
+            'category' => 'clinical',
+            'team_members' => [
+                ['user_id' => $user->id, 'role' => 'presenter'],
+            ],
+            'patient_ids' => [$patient->id],
         ]);
 
-        expect($result)->toBe($eventMock);
+        expect($result->title)->toBe('Tumor Board')
+            ->and($result->relationLoaded('teamMembers'))->toBeTrue()
+            ->and($result->teamMembers)->toHaveCount(1)
+            ->and($result->teamMembers->first()->pivot->role)->toBe('presenter')
+            ->and($result->relationLoaded('patients'))->toBeTrue()
+            ->and($result->patients)->toHaveCount(1);
+
+        $this->assertDatabaseHas('dev.events', ['title' => 'Tumor Board']);
+        $this->assertDatabaseHas('dev.event_team_members', [
+            'event_id' => $result->id,
+            'user_id' => $user->id,
+            'role' => 'presenter',
+        ]);
+        $this->assertDatabaseHas('dev.event_patients', [
+            'event_id' => $result->id,
+            'patient_id' => $patient->id,
+        ]);
     });
 });
 
 describe('EventService::update', function () {
-    it('updates an event and reloads relationships', function () {
-        $event = Mockery::mock(Event::class);
-        $event->shouldReceive('update')
-            ->with(['title' => 'Updated Title'])
-            ->once();
-        $event->shouldReceive('load')
-            ->with(['teamMembers', 'patients'])
-            ->once()
-            ->andReturnSelf();
+    it('updates an event and resyncs relationships', function () {
+        $event = Event::factory()->create(['title' => 'Original Title']);
+        $user = User::factory()->create();
+        $patient = Patient::factory()->create();
 
-        $result = $this->service->update($event, ['title' => 'Updated Title']);
+        $result = $this->service->update($event, [
+            'title' => 'Updated Title',
+            'team_members' => [
+                ['user_id' => $user->id, 'role' => 'reviewer'],
+            ],
+            'patient_ids' => [$patient->id],
+        ]);
 
-        expect($result)->toBe($event);
+        expect($result->title)->toBe('Updated Title')
+            ->and($result->teamMembers)->toHaveCount(1)
+            ->and($result->teamMembers->first()->pivot->role)->toBe('reviewer')
+            ->and($result->patients)->toHaveCount(1);
     });
 });
 
 describe('EventService::delete', function () {
     it('deletes an event', function () {
-        $event = Mockery::mock(Event::class);
-        $event->shouldReceive('delete')->once();
+        $event = Event::factory()->create();
 
         $this->service->delete($event);
 
-        // If we get here without exception, the test passes
-        expect(true)->toBeTrue();
+        $this->assertDatabaseMissing('dev.events', ['id' => $event->id]);
     });
 });
 
 describe('EventService::getUpcoming', function () {
     it('returns upcoming events ordered by time ascending', function () {
-        $collection = Mockery::mock(Collection::class);
-
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('where')->with('time', '>=', Mockery::any())->andReturnSelf();
-        $query->shouldReceive('orderBy')->with('time', 'asc')->andReturnSelf();
-        $query->shouldReceive('limit')->with(5)->andReturnSelf();
-        $query->shouldReceive('get')->andReturn($collection);
-
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
+        Event::factory()->create(['title' => 'Past', 'time' => now()->subDay()]);
+        Event::factory()->create(['title' => 'Second', 'time' => now()->addDays(2)]);
+        Event::factory()->create(['title' => 'First', 'time' => now()->addDay()]);
 
         $result = $this->service->getUpcoming();
 
-        expect($result)->toBe($collection);
+        expect($result)->toHaveCount(2)
+            ->and($result->pluck('title')->all())->toBe(['First', 'Second']);
     });
 
     it('accepts a custom limit', function () {
-        $collection = Mockery::mock(Collection::class);
+        Event::factory()->count(3)->create(['time' => now()->addDay()]);
 
-        $query = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
-        $query->shouldReceive('where')->andReturnSelf();
-        $query->shouldReceive('orderBy')->andReturnSelf();
-        $query->shouldReceive('limit')->with(10)->andReturnSelf();
-        $query->shouldReceive('get')->andReturn($collection);
+        $result = $this->service->getUpcoming(2);
 
-        $mock = Mockery::mock('alias:'.Event::class);
-        $mock->shouldReceive('with')->with(['teamMembers', 'patients'])->andReturn($query);
-
-        $result = $this->service->getUpcoming(10);
-
-        expect($result)->toBe($collection);
+        expect($result)->toHaveCount(2);
     });
 });

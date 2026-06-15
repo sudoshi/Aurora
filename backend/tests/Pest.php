@@ -38,3 +38,16 @@ pest()->extend(Tests\TestCase::class)
 | make reusable "helper" functions that you can use across tests.
 |
 */
+
+function fakeIsolatedLocalDisk(string $name): string
+{
+    $root = storage_path('framework/testing/disks/'.$name.'-'.str_replace('.', '', uniqid('', true)));
+
+    Illuminate\Support\Facades\Storage::set('local', Illuminate\Support\Facades\Storage::build([
+        'driver' => 'local',
+        'root' => $root,
+        'throw' => true,
+    ]));
+
+    return $root;
+}

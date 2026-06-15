@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Event;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 
 class EventService
 {
@@ -58,7 +59,7 @@ class EventService
      */
     public function create(array $data): Event
     {
-        $event = Event::create($data);
+        $event = Event::create(Arr::except($data, ['team_members', 'patient_ids']));
 
         if (isset($data['team_members'])) {
             foreach ($data['team_members'] as $teamMember) {
@@ -83,7 +84,7 @@ class EventService
      */
     public function update(Event $event, array $data): Event
     {
-        $event->update($data);
+        $event->update(Arr::except($data, ['team_members', 'patient_ids']));
 
         if (isset($data['team_members'])) {
             $teamMemberIds = [];

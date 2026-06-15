@@ -2,6 +2,17 @@
 
 use Illuminate\Support\Str;
 
+$mysqlOptions = [];
+$mysqlSslCa = env('MYSQL_ATTR_SSL_CA');
+
+if (extension_loaded('pdo_mysql') && $mysqlSslCa) {
+    $mysqlSslCaAttribute = class_exists(\Pdo\Mysql::class)
+        ? \Pdo\Mysql::ATTR_SSL_CA
+        : constant('PDO::MYSQL_ATTR_SSL_CA');
+
+    $mysqlOptions[$mysqlSslCaAttribute] = $mysqlSslCa;
+}
+
 return [
 
     /*
@@ -57,9 +68,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => $mysqlOptions,
         ],
 
         'mariadb' => [
@@ -77,9 +86,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => $mysqlOptions,
         ],
 
         'pgsql' => [
@@ -93,7 +100,10 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'app,clinical,public',
+            // 'dev' is placed after 'clinical' so unqualified table names (e.g.
+            // ClinicalPatient's 'patients') still resolve to clinical.*; dev holds
+            // the legacy events/simple-patient tables (see create_dev_tables).
+            'search_path' => 'app,clinical,dev,public',
             'sslmode' => 'prefer',
         ],
 

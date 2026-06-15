@@ -51,8 +51,12 @@ class CaseDiscussionService
      */
     public function uploadAttachments(int $caseId, array $files, User $user): array
     {
-        // Verify the case exists
-        ClinicalCase::findOrFail($caseId);
+        $case = ClinicalCase::findOrFail($caseId);
+        $discussion = CaseDiscussion::create([
+            'case_id' => $case->id,
+            'user_id' => $user->id,
+            'content' => 'Uploaded attachments',
+        ]);
 
         $attachments = [];
 
@@ -60,11 +64,11 @@ class CaseDiscussionService
             $path = $file->store('attachments');
 
             $attachment = new DiscussionAttachment;
+            $attachment->discussion_id = $discussion->id;
             $attachment->filename = $file->getClientOriginalName();
             $attachment->filepath = $path;
             $attachment->mime_type = $file->getMimeType();
             $attachment->size = $file->getSize();
-            $attachment->uploaded_by = $user->id;
             $attachment->save();
 
             $attachments[] = $attachment;

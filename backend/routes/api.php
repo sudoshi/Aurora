@@ -31,6 +31,7 @@ use App\Http\Controllers\Commons\ReviewRequestController;
 use App\Http\Controllers\Commons\WikiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DecisionController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\GenomicsController;
 use App\Http\Controllers\ImagingController;
@@ -218,6 +219,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Case Templates ────────────────────────────────────────────────────
     Route::get('/case-templates', [CaseTemplateController::class, 'index']);
     Route::get('/case-templates/{slug}', [CaseTemplateController::class, 'show']);
+
+    // ── Events ────────────────────────────────────────────────────────────
+    Route::get('events/upcoming', [EventController::class, 'upcoming']);
+    Route::apiResource('events', EventController::class);
 
     // ── Cases ─────────────────────────────────────────────────────────────
     Route::apiResource('cases', CaseController::class);

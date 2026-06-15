@@ -1,115 +1,106 @@
 <?php
 
-uses()->group('mockery-alias');
-
 use App\Models\CaseDiscussion;
+use App\Models\Clinical\ClinicalPatient;
 use App\Models\ClinicalCase;
-use App\Models\DiscussionAttachment;
 use App\Models\User;
 use App\Services\CaseDiscussionService;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+uses(RefreshDatabase::class);
+
 beforeEach(function () {
     $this->service = new CaseDiscussionService;
+    $this->user = User::factory()->create();
+    $this->patient = ClinicalPatient::factory()->create();
+    $this->case = ClinicalCase::factory()->create([
+        'patient_id' => $this->patient->id,
+        'created_by' => $this->user->id,
+    ]);
 });
 
 describe('CaseDiscussionService::listForCase', function () {
-    it('returns discussions for a given case', function () {
-        $discussions = Mockery::mock(Collection::class);
+    it('returns discussions for a given case with relationships loaded', function () {
+        CaseDiscussion::create([
+            'case_id' => $this->case->id,
+            'user_id' => $this->user->id,
+            'content' => 'Patient shows improvement after treatment cycle 3.',
+        ]);
 
-        $discussionsQuery = Mockery::mock(\Illuminate\Database\Eloquent\Relations\HasMany::class);
-        $discussionsQuery->shouldReceive('with')
-            ->with(['user', 'attachments'])
-            ->andReturnSelf();
-        $discussionsQuery->shouldReceive('get')
-            ->andReturn($discussions);
+        $otherCase = ClinicalCase::factory()->create();
+        CaseDiscussion::create([
+            'case_id' => $otherCase->id,
+            'user_id' => $this->user->id,
+            'content' => 'Discussion for another case.',
+        ]);
 
-        $case = Mockery::mock(ClinicalCase::class);
-        $case->shouldReceive('discussions')->andReturn($discussionsQuery);
+        $result = $this->service->listForCase($this->case->id);
 
-        $mock = Mockery::mock('alias:'.ClinicalCase::class);
-        $mock->shouldReceive('findOrFail')->with(1)->andReturn($case);
-
-        $result = $this->service->listForCase(1);
-
-        expect($result)->toBe($discussions);
+        expect($result)->toHaveCount(1)
+            ->and($result->first()->content)->toBe('Patient shows improvement after treatment cycle 3.')
+            ->and($result->first()->relationLoaded('user'))->toBeTrue()
+            ->and($result->first()->relationLoaded('attachments'))->toBeTrue();
     });
 });
 
 describe('CaseDiscussionService::create', function () {
     it('creates a discussion for a case', function () {
-        $case = Mockery::mock(ClinicalCase::class);
-        $case->id = 1;
-
-        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
-        $caseMock->shouldReceive('findOrFail')->with(1)->andReturn($case);
-
-        $user = Mockery::mock(User::class);
-        $user->id = 42;
-
-        $discussion = Mockery::mock(CaseDiscussion::class)->makePartial();
-        $discussion->shouldReceive('save')->once();
-        $discussion->shouldReceive('load')
-            ->with(['user', 'attachments'])
-            ->once()
-            ->andReturnSelf();
-
-        // Override the new CaseDiscussion() call via alias
-        $discussionAlias = Mockery::mock('alias:'.CaseDiscussion::class);
-        // Since the service uses `new CaseDiscussion()`, we test the
-        // integration path where it sets properties and saves.
-
-        $data = [
+        $result = $this->service->create($this->case->id, [
             'message' => 'Patient shows improvement after treatment cycle 3.',
-        ];
+        ], $this->user);
 
-        // We verify the service calls ClinicalCase::findOrFail
-        // Detailed property-setting is integration-level
-        expect(fn () => $this->service->create(1, $data, $user))
-            ->not->toThrow(\Exception::class);
+        expect($result->content)->toBe('Patient shows improvement after treatment cycle 3.')
+            ->and($result->case_id)->toBe($this->case->id)
+            ->and($result->user_id)->toBe($this->user->id)
+            ->and($result->relationLoaded('user'))->toBeTrue()
+            ->and($result->relationLoaded('attachments'))->toBeTrue();
+
+        $this->assertDatabaseHas('app.case_discussions', [
+            'id' => $result->id,
+            'content' => 'Patient shows improvement after treatment cycle 3.',
+        ]);
     });
 
     it('sets parent_id when provided', function () {
-        $case = Mockery::mock(ClinicalCase::class);
-        $case->id = 1;
+        $parent = CaseDiscussion::create([
+            'case_id' => $this->case->id,
+            'user_id' => $this->user->id,
+            'content' => 'Parent thread',
+        ]);
 
-        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
-        $caseMock->shouldReceive('findOrFail')->with(1)->andReturn($case);
-
-        $user = Mockery::mock(User::class);
-        $user->id = 42;
-
-        $data = [
+        $result = $this->service->create($this->case->id, [
             'message' => 'Reply to thread',
-            'parent_id' => 5,
-        ];
+            'parent_id' => $parent->id,
+        ], $this->user);
 
-        // This tests the code path where parent_id is set
-        expect(fn () => $this->service->create(1, $data, $user))
-            ->not->toThrow(\Exception::class);
+        expect($result->parent_id)->toBe($parent->id);
     });
 });
 
 describe('CaseDiscussionService::uploadAttachments', function () {
-    it('stores files and returns attachment records', function () {
-        Storage::fake('local');
-
-        $caseMock = Mockery::mock('alias:'.ClinicalCase::class);
-        $caseMock->shouldReceive('findOrFail')->with(1)->andReturn(
-            Mockery::mock(ClinicalCase::class)
-        );
-
-        $user = Mockery::mock(User::class);
-        $user->id = 42;
+    it('stores files and returns attachment records linked to a discussion', function () {
+        fakeIsolatedLocalDisk('case-discussion-attachments');
 
         $file = UploadedFile::fake()->create('report.pdf', 1024, 'application/pdf');
-        $files = [$file];
 
-        // The service creates DiscussionAttachment instances via `new`
-        // and calls save(). We verify no exceptions are thrown.
-        expect(fn () => $this->service->uploadAttachments(1, $files, $user))
-            ->not->toThrow(\Exception::class);
+        $result = $this->service->uploadAttachments($this->case->id, [$file], $this->user);
+
+        expect($result)->toHaveCount(1)
+            ->and($result[0]->discussion_id)->not->toBeNull()
+            ->and($result[0]->filename)->toBe('report.pdf');
+
+        Storage::disk('local')->assertExists($result[0]->filepath);
+        $this->assertDatabaseHas('app.case_discussions', [
+            'id' => $result[0]->discussion_id,
+            'case_id' => $this->case->id,
+            'user_id' => $this->user->id,
+            'content' => 'Uploaded attachments',
+        ]);
+        $this->assertDatabaseHas('app.discussion_attachments', [
+            'discussion_id' => $result[0]->discussion_id,
+            'filename' => 'report.pdf',
+        ]);
     });
 });

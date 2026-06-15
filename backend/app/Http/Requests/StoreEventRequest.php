@@ -29,7 +29,7 @@ class StoreEventRequest extends FormRequest
             'location' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'team_members' => 'nullable|array',
-            'team_members.*.user_id' => 'required|exists:dev.users,id',
+            'team_members.*.user_id' => 'required|exists:app.users,id',
             'team_members.*.role' => 'nullable|string',
             'patient_ids' => 'nullable|array',
             'patient_ids.*' => 'required|exists:dev.patients,id',

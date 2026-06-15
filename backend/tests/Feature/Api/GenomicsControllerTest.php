@@ -141,7 +141,7 @@ describe('GET /api/genomics/variants/{id}', function () {
 
 describe('Genomics uploads', function () {
     it('storeUpload stores file on disk and creates DB record', function () {
-        Storage::fake('local');
+        fakeIsolatedLocalDisk('genomic-upload-store');
 
         $file = UploadedFile::fake()->create('sample.vcf', 1024);
 
@@ -220,7 +220,7 @@ describe('Genomics uploads', function () {
     });
 
     it('destroyUpload removes record and file', function () {
-        Storage::fake('local');
+        fakeIsolatedLocalDisk('genomic-upload-destroy');
 
         $path = 'genomic-uploads/test-file.vcf';
         Storage::disk('local')->put($path, 'fake content');

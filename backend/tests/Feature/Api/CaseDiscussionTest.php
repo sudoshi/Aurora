@@ -1,10 +1,9 @@
 <?php
 
+use App\Models\Clinical\ClinicalPatient;
 use App\Models\ClinicalCase;
-use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->user = User::factory()->create([
@@ -12,7 +11,7 @@ beforeEach(function () {
         'must_change_password' => false,
     ]);
 
-    $this->patient = Patient::factory()->create();
+    $this->patient = ClinicalPatient::factory()->create();
 
     $this->clinicalCase = ClinicalCase::factory()->create([
         'patient_id' => $this->patient->id,
@@ -47,14 +46,14 @@ describe('POST /api/cases/{id}/discussions', function () {
     it('creates a discussion for a case', function () {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson("/api/cases/{$this->clinicalCase->id}/discussions", [
-                'message' => 'Patient responding well to treatment protocol.',
+                'content' => 'Patient responding well to treatment protocol.',
             ]);
 
         $response->assertStatus(201)
             ->assertJsonPath('success', true);
     });
 
-    it('returns 422 for missing message', function () {
+    it('returns 422 for missing content', function () {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson("/api/cases/{$this->clinicalCase->id}/discussions", []);
 
@@ -63,22 +62,21 @@ describe('POST /api/cases/{id}/discussions', function () {
 
     it('requires authentication', function () {
         $response = $this->postJson("/api/cases/{$this->clinicalCase->id}/discussions", [
-            'message' => 'Unauthorized discussion.',
+            'content' => 'Unauthorized discussion.',
         ]);
 
         $response->assertStatus(401);
     });
 });
 
-describe('POST /api/cases/{id}/attachments', function () {
-    it('uploads files for a case', function () {
-        Storage::fake('local');
+describe('POST /api/cases/{id}/documents', function () {
+    it('uploads a document for a case', function () {
+        fakeIsolatedLocalDisk('case-documents');
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/cases/{$this->clinicalCase->id}/attachments", [
-                'files' => [
-                    UploadedFile::fake()->create('lab-results.pdf', 512, 'application/pdf'),
-                ],
+            ->post("/api/cases/{$this->clinicalCase->id}/documents", [
+                'file' => UploadedFile::fake()->create('lab-results.pdf', 512, 'application/pdf'),
+                'document_type' => 'clinical_note',
             ]);
 
         $response->assertStatus(201)
@@ -87,16 +85,14 @@ describe('POST /api/cases/{id}/attachments', function () {
 
     it('returns 422 for missing files', function () {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/cases/{$this->clinicalCase->id}/attachments", []);
+            ->postJson("/api/cases/{$this->clinicalCase->id}/documents", []);
 
         $response->assertStatus(422);
     });
 
     it('requires authentication', function () {
-        $response = $this->postJson("/api/cases/{$this->clinicalCase->id}/attachments", [
-            'files' => [
-                UploadedFile::fake()->create('scan.dcm', 1024),
-            ],
+        $response = $this->postJson("/api/cases/{$this->clinicalCase->id}/documents", [
+            'document_type' => 'radiology',
         ]);
 
         $response->assertStatus(401);
