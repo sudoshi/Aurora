@@ -162,7 +162,6 @@ jobs:
       - name: Vitest
         working-directory: frontend
         run: npm test -- --run --reporter=verbose
-        continue-on-error: true  # Enforce once test coverage >40%
 
       - name: Build
         working-directory: frontend
@@ -212,7 +211,6 @@ jobs:
       - name: Ruff (format check)
         working-directory: ai
         run: ruff format app/ --check
-        continue-on-error: true
 
       - name: mypy (type check)
         working-directory: ai
