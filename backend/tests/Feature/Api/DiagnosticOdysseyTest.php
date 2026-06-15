@@ -79,3 +79,19 @@ describe('POST /api/odysseys/{odyssey}/transition', function () {
             ->assertStatus(422);
     });
 });
+
+describe('GET /api/odysseys/{odyssey}/phenopacket', function () {
+    it('exports a phenopacket with the patient as subject', function () {
+        $odyssey = DiagnosticOdyssey::factory()->create([
+            'patient_id' => $this->patient->id,
+            'created_by' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/odysseys/{$odyssey->id}/phenopacket");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.subject.id', (string) $this->patient->id)
+            ->assertJsonPath('data.metaData.phenopacketSchemaVersion', '2.0');
+    });
+});

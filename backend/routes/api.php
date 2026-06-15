@@ -94,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'store']);
     Route::get('/odysseys/{odyssey}', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'show']);
     Route::post('/odysseys/{odyssey}/transition', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'transition']);
+    Route::get('/odysseys/{odyssey}/phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'phenopacket']);
     Route::get('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'index']);
     Route::post('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'store']);
     Route::delete('/phenotypes/{phenotype}', [\App\Http\Controllers\PhenotypeFeatureController::class, 'destroy']);

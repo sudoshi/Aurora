@@ -10,6 +10,7 @@ use App\Models\DiagnosticOdyssey;
 use App\Services\RareDisease\InvalidOdysseyTransitionException;
 use App\Services\RareDisease\OdysseyService;
 use App\Services\RareDisease\OdysseyStateMachine;
+use App\Services\RareDisease\PhenopacketExporter;
 use Illuminate\Http\JsonResponse;
 
 class DiagnosticOdysseyController extends Controller
@@ -17,6 +18,7 @@ class DiagnosticOdysseyController extends Controller
     public function __construct(
         private OdysseyService $service,
         private OdysseyStateMachine $machine,
+        private PhenopacketExporter $exporter,
     ) {}
 
     public function index(int $patient): JsonResponse
@@ -70,5 +72,12 @@ class DiagnosticOdysseyController extends Controller
         }
 
         return ApiResponse::success($updated);
+    }
+
+    public function phenopacket(int $odyssey): JsonResponse
+    {
+        $model = DiagnosticOdyssey::with('phenotypeFeatures')->findOrFail($odyssey);
+
+        return ApiResponse::success($this->exporter->export($model));
     }
 }
