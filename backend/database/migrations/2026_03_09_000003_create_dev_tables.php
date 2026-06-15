@@ -48,7 +48,6 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->foreign('event_id')->references('id')->on('dev.events')->cascadeOnDelete();
-                $table->foreign('user_id')->references('id')->on('app.users')->cascadeOnDelete();
                 $table->unique(['event_id', 'user_id']);
             });
         }

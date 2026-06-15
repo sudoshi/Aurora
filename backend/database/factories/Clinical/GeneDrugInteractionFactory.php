@@ -12,17 +12,19 @@ class GeneDrugInteractionFactory extends Factory
 {
     protected $model = GeneDrugInteraction::class;
 
+    private static int $sequence = 0;
+
     public function definition(): array
     {
         $genes = ['BRAF', 'EGFR', 'KRAS', 'TP53', 'ALK', 'ROS1', 'BRCA1', 'BRCA2', 'PIK3CA', 'HER2'];
-        $drugs = ['Vemurafenib', 'Dabrafenib', 'Erlotinib', 'Osimertinib', 'Sotorasib', 'Olaparib', 'Crizotinib'];
         $evidenceLevels = ['1', '2A', '2B', '3A', '3B', '4', 'R1', 'R2'];
         $relationships = ['sensitive', 'resistant', 'diagnostic', 'prognostic'];
+        $sequence = ++self::$sequence;
 
         return [
             'gene' => fake()->randomElement($genes),
             'variant_pattern' => '*',
-            'drug' => fake()->randomElement($drugs),
+            'drug' => sprintf('FactoryDrug-%06d', $sequence),
             'drug_class' => fake()->optional()->randomElement(['kinase_inhibitor', 'PARP_inhibitor', 'checkpoint_inhibitor']),
             'relationship' => fake()->randomElement($relationships),
             'evidence_level' => fake()->randomElement($evidenceLevels),
