@@ -44,6 +44,12 @@ return [
         'token' => env('ONCOKB_API_TOKEN'),
     ],
 
+    'clingen_ar' => [
+        'base' => env('CLINGEN_AR_BASE', 'https://reg.clinicalgenome.org'),
+        'login' => env('CLINGEN_AR_LOGIN'),
+        'password' => env('CLINGEN_AR_PASSWORD'),
+    ],
+
     'oidc' => [
         'enabled' => filter_var(env('OIDC_ENABLED', false), FILTER_VALIDATE_BOOL),
         'discovery_url' => env('OIDC_DISCOVERY_URL', 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration'),
