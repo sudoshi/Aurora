@@ -4,7 +4,6 @@ use App\Models\Clinical\ClinVarVariant;
 use App\Models\Clinical\GenomicVariant;
 use App\Models\Clinical\KbChangeAlert;
 use App\Models\Clinical\VariantCanonicalId;
-use App\Models\User;
 
 beforeEach(function () {
     KbChangeAlert::where('clinvar_variation_id', '55555')->delete();
