@@ -99,6 +99,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Rare Disease — Diagnostic Odyssey ──────────────────────────────
     Route::get('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'index']);
     Route::post('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'store']);
+    Route::get('/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'worklist']);
+    Route::post('/odysseys/{odyssey}/import-phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'importPhenopacket']);
     Route::get('/odysseys/{odyssey}', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'show']);
     Route::post('/odysseys/{odyssey}/transition', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'transition']);
     Route::get('/odysseys/{odyssey}/phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'phenopacket']);
