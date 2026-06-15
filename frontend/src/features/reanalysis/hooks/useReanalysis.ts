@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { acknowledgeKbAlert, getPatientKbAlerts } from "../api/reanalysisApi";
-import type { KbAlertStatus } from "../types";
+import type { KbAlertStatus, KbChangeAlert } from "../types";
 
 const KEY = "reanalysis";
 
@@ -17,6 +17,19 @@ export function useAcknowledgeKbAlert(patientId: number) {
   return useMutation({
     mutationFn: (payload: { alertId: number; status: "acknowledged" | "dismissed"; resolution_note?: string }) =>
       acknowledgeKbAlert(payload.alertId, { status: payload.status, resolution_note: payload.resolution_note }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [KEY, "patient", patientId] }),
+    onSuccess: (updated, payload) => {
+      // Update all matching cache entries that hold this alert; avoid a stale
+      // refetch overwriting the new status from the server response.
+      qc.setQueriesData<KbChangeAlert[]>(
+        { queryKey: [KEY, "patient", patientId] },
+        (old) =>
+          (old ?? []).map((a) =>
+            a.id === payload.alertId ? { ...a, status: updated.status ?? payload.status } : a,
+          ),
+      );
+    },
+    onError: () => {
+      void qc.invalidateQueries({ queryKey: [KEY, "patient", patientId] });
+    },
   });
 }
