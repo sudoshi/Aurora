@@ -14,7 +14,11 @@ from app.models.fingerprint import (
     OutcomeComputeResponse,
     VolumetricEncodeRequest,
 )
-from app.services.fingerprint_encoder import encode_clinical, encode_genomic, encode_volumetric
+from app.services.fingerprint_encoder import (
+    encode_clinical,
+    encode_genomic,
+    encode_volumetric,
+)
 from app.services.fingerprint_explainer import explain_similarity
 from app.services.outcome_computer import compute_outcome
 
@@ -56,7 +60,9 @@ async def encode_genomic_endpoint(request: GenomicEncodeRequest) -> EncodeRespon
 
 
 @router.post("/encode/volumetric", response_model=EncodeResponse)
-async def encode_volumetric_endpoint(request: VolumetricEncodeRequest) -> EncodeResponse:
+async def encode_volumetric_endpoint(
+    request: VolumetricEncodeRequest,
+) -> EncodeResponse:
     """Encode a patient's imaging/volumetric data into a 256-dim vector."""
     try:
         vector_str, confidence = await encode_volumetric(
@@ -108,7 +114,9 @@ async def encode_clinical_endpoint(request: ClinicalEncodeRequest) -> EncodeResp
 
 
 @router.post("/outcome/compute", response_model=OutcomeComputeResponse)
-async def compute_outcome_endpoint(request: OutcomeComputeRequest) -> OutcomeComputeResponse:
+async def compute_outcome_endpoint(
+    request: OutcomeComputeRequest,
+) -> OutcomeComputeResponse:
     """Compute trajectory sub-scores for a patient."""
     try:
         # compute_outcome is synchronous (uses `with get_session()`, not async)

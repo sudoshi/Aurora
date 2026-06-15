@@ -8,6 +8,7 @@ No LLM calls are made inside this module; it only prepares the prompt.
 The caller is responsible for sending the prompt to the LLM and injecting
 the returned summary back into the message list.
 """
+
 from __future__ import annotations
 
 import math
@@ -55,7 +56,9 @@ class ConversationSummarizer:
         context_window: int = 8192,
     ) -> None:
         if not (0.0 < threshold_ratio < 1.0):
-            raise ValueError(f"threshold_ratio must be in (0, 1), got {threshold_ratio}")
+            raise ValueError(
+                f"threshold_ratio must be in (0, 1), got {threshold_ratio}"
+            )
         if context_window < 100:
             raise ValueError(f"context_window must be >= 100, got {context_window}")
         self.threshold_ratio = threshold_ratio

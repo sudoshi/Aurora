@@ -71,9 +71,7 @@ Respond in JSON with this exact structure:
                     drug_b=str(item.get("drug_b", "")),
                     severity=severity,
                     mechanism=str(item.get("mechanism", "")),
-                    clinical_significance=str(
-                        item.get("clinical_significance", "")
-                    ),
+                    clinical_significance=str(item.get("clinical_significance", "")),
                     recommendation=str(item.get("recommendation", "")),
                 )
             )

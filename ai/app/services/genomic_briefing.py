@@ -24,7 +24,8 @@ SYSTEM_PROMPT = (
 async def generate_briefing(request: GenomicBriefingRequest) -> GenomicBriefingResponse:
     """Generate a narrative genomic briefing from structured data."""
     actionable = [
-        v for v in request.variants
+        v
+        for v in request.variants
         if v.classification in ("pathogenic", "likely_pathogenic")
     ]
 

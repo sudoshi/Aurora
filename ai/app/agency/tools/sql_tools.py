@@ -11,6 +11,7 @@ validate_sql_safety(sql)
 execute_sql(api_client, params, auth_token)
     Validates the query then delegates to the API.
 """
+
 from __future__ import annotations
 
 import logging
@@ -80,13 +81,18 @@ def validate_sql_safety(sql: str) -> bool:
 
     # The query must begin with SELECT or WITH (CTEs are allowed)
     if not re.match(r"^\s*(SELECT|WITH)\b", cleaned, re.IGNORECASE):
-        logger.warning("SQL safety check failed — query does not start with SELECT or WITH")
+        logger.warning(
+            "SQL safety check failed — query does not start with SELECT or WITH"
+        )
         return False
 
     # Reject if any dangerous pattern is present in the cleaned query.
     for pattern in DANGEROUS_PATTERNS:
         if pattern.search(cleaned):
-            logger.warning("SQL safety check failed — dangerous pattern detected: %s", pattern.pattern)
+            logger.warning(
+                "SQL safety check failed — dangerous pattern detected: %s",
+                pattern.pattern,
+            )
             return False
 
     return True

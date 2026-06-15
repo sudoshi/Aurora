@@ -4,6 +4,7 @@ Before assembling context for a cloud LLM (Claude), every ContextPiece must pass
 through this filter. Pieces that contain individual-level CDM data are blocked;
 aggregate, vocabulary, and institutional pieces are permitted.
 """
+
 from __future__ import annotations
 
 import re
@@ -92,6 +93,7 @@ INDIVIDUAL_DATA_PATTERNS: list[re.Pattern[str]] = [
 # Tier-based safety rules (imported lazily to avoid circular imports)
 # ---------------------------------------------------------------------------
 
+
 def _always_safe_tier(tier_value: str) -> bool:
     """Return True for tiers that are always safe to send to cloud models."""
     # These tiers are structurally safe (no patient data by design)
@@ -105,6 +107,7 @@ def _always_safe_tier(tier_value: str) -> bool:
 # ---------------------------------------------------------------------------
 # Main class
 # ---------------------------------------------------------------------------
+
 
 class CloudSafetyFilter:
     """Filters ContextPieces to remove individual-level data before cloud routing."""

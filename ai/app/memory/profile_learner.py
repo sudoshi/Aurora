@@ -3,6 +3,7 @@
 Uses keyword extraction and regex patterns only (no LLM calls).
 All operations follow immutable patterns — inputs are never mutated.
 """
+
 from __future__ import annotations
 
 import re
@@ -14,45 +15,128 @@ from typing import Any
 # ---------------------------------------------------------------------------
 DOMAIN_KEYWORDS: dict[str, list[str]] = {
     "diabetes": [
-        "diabetes", "diabetic", "insulin", "glucose", "hba1c", "glycemic",
-        "type 1", "type 2", "t1d", "t2d", "hyperglycemia", "hypoglycemia",
+        "diabetes",
+        "diabetic",
+        "insulin",
+        "glucose",
+        "hba1c",
+        "glycemic",
+        "type 1",
+        "type 2",
+        "t1d",
+        "t2d",
+        "hyperglycemia",
+        "hypoglycemia",
     ],
     "cardiovascular": [
-        "cardiovascular", "cardiac", "heart", "coronary", "stroke", "atrial",
-        "hypertension", "blood pressure", "myocardial", "infarction", "atherosclerosis",
+        "cardiovascular",
+        "cardiac",
+        "heart",
+        "coronary",
+        "stroke",
+        "atrial",
+        "hypertension",
+        "blood pressure",
+        "myocardial",
+        "infarction",
+        "atherosclerosis",
     ],
     "oncology": [
-        "cancer", "tumor", "tumour", "oncology", "malignancy", "chemotherapy",
-        "radiation", "metastasis", "carcinoma", "leukemia", "lymphoma",
+        "cancer",
+        "tumor",
+        "tumour",
+        "oncology",
+        "malignancy",
+        "chemotherapy",
+        "radiation",
+        "metastasis",
+        "carcinoma",
+        "leukemia",
+        "lymphoma",
     ],
     "respiratory": [
-        "asthma", "copd", "respiratory", "pulmonary", "lung", "emphysema",
-        "bronchitis", "spirometry", "inhaler", "oxygen",
+        "asthma",
+        "copd",
+        "respiratory",
+        "pulmonary",
+        "lung",
+        "emphysema",
+        "bronchitis",
+        "spirometry",
+        "inhaler",
+        "oxygen",
     ],
     "mental_health": [
-        "depression", "anxiety", "mental health", "psychiatric", "schizophrenia",
-        "bipolar", "adhd", "ptsd", "suicide", "psychosis",
+        "depression",
+        "anxiety",
+        "mental health",
+        "psychiatric",
+        "schizophrenia",
+        "bipolar",
+        "adhd",
+        "ptsd",
+        "suicide",
+        "psychosis",
     ],
     "epidemiology": [
-        "incidence", "prevalence", "cohort", "exposure", "outcome", "hazard ratio",
-        "odds ratio", "relative risk", "confidence interval", "p-value",
-        "epidemiology", "epidemiological",
+        "incidence",
+        "prevalence",
+        "cohort",
+        "exposure",
+        "outcome",
+        "hazard ratio",
+        "odds ratio",
+        "relative risk",
+        "confidence interval",
+        "p-value",
+        "epidemiology",
+        "epidemiological",
     ],
     "pharmacology": [
-        "drug", "medication", "prescription", "adverse event", "side effect",
-        "pharmacology", "dosage", "clinical trial", "efficacy", "pharmacokinetics",
+        "drug",
+        "medication",
+        "prescription",
+        "adverse event",
+        "side effect",
+        "pharmacology",
+        "dosage",
+        "clinical trial",
+        "efficacy",
+        "pharmacokinetics",
     ],
     "genomics": [
-        "genomics", "variant", "snp", "genome", "allele", "gwas", "mutation",
-        "genetic", "chromosome", "sequencing", "vcf",
+        "genomics",
+        "variant",
+        "snp",
+        "genome",
+        "allele",
+        "gwas",
+        "mutation",
+        "genetic",
+        "chromosome",
+        "sequencing",
+        "vcf",
     ],
     "geriatrics": [
-        "elderly", "geriatric", "aging", "older adult", "senescence",
-        "dementia", "alzheimer", "frailty", "nursing home",
+        "elderly",
+        "geriatric",
+        "aging",
+        "older adult",
+        "senescence",
+        "dementia",
+        "alzheimer",
+        "frailty",
+        "nursing home",
     ],
     "pediatrics": [
-        "pediatric", "child", "infant", "neonatal", "adolescent", "newborn",
-        "congenital", "birth defect",
+        "pediatric",
+        "child",
+        "infant",
+        "neonatal",
+        "adolescent",
+        "newborn",
+        "congenital",
+        "birth defect",
     ],
 }
 
@@ -61,14 +145,24 @@ DOMAIN_KEYWORDS: dict[str, list[str]] = {
 # ---------------------------------------------------------------------------
 TERSE_INDICATORS: list[re.Pattern] = [
     re.compile(r"just (give|show|tell|provide) me", re.IGNORECASE),
-    re.compile(r"don'?t (need|want) (the )?(explanation|context|details|justification)", re.IGNORECASE),
-    re.compile(r"skip (the )?(explanation|context|details|intro|preamble)", re.IGNORECASE),
-    re.compile(r"(short|brief|concise|terse|quick)\s+(answer|response|version|summary)", re.IGNORECASE),
+    re.compile(
+        r"don'?t (need|want) (the )?(explanation|context|details|justification)",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"skip (the )?(explanation|context|details|intro|preamble)", re.IGNORECASE
+    ),
+    re.compile(
+        r"(short|brief|concise|terse|quick)\s+(answer|response|version|summary)",
+        re.IGNORECASE,
+    ),
     re.compile(r"(only|just) (the )?(sql|code|query|answer|result)", re.IGNORECASE),
 ]
 
 VERBOSE_INDICATORS: list[re.Pattern] = [
-    re.compile(r"(explain|walk me through|describe|elaborate|tell me more)", re.IGNORECASE),
+    re.compile(
+        r"(explain|walk me through|describe|elaborate|tell me more)", re.IGNORECASE
+    ),
     re.compile(r"(why|how does|what is the reason)", re.IGNORECASE),
     re.compile(r"(step[- ]by[- ]step|in detail|thoroughly)", re.IGNORECASE),
 ]
@@ -88,15 +182,32 @@ CORRECTION_PATTERNS: list[re.Pattern] = [
 # Expertise calibration signals
 # ---------------------------------------------------------------------------
 EXPERT_KEYWORDS: list[str] = [
-    "phenotype", "omop", "cdm", "cohort definition", "concept set",
-    "icd-10", "icd-9", "snomed", "rxnorm", "loinc",
-    "hazard ratio", "propensity score", "incidence rate", "kaplan-meier",
-    "negative binomial", "poisson regression",
+    "phenotype",
+    "omop",
+    "cdm",
+    "cohort definition",
+    "concept set",
+    "icd-10",
+    "icd-9",
+    "snomed",
+    "rxnorm",
+    "loinc",
+    "hazard ratio",
+    "propensity score",
+    "incidence rate",
+    "kaplan-meier",
+    "negative binomial",
+    "poisson regression",
 ]
 
 BEGINNER_KEYWORDS: list[str] = [
-    "what is a cohort", "what is omop", "what does", "can you explain",
-    "i'm new to", "i don't understand", "i'm not sure what",
+    "what is a cohort",
+    "what is omop",
+    "what does",
+    "can you explain",
+    "i'm new to",
+    "i don't understand",
+    "i'm not sure what",
     "what is the difference between",
 ]
 
@@ -145,7 +256,9 @@ class UserProfile:
             research_interests=list(data.get("research_interests", [])),
             expertise_domains=dict(data.get("expertise_domains", {})),
             interaction_preferences=dict(data.get("interaction_preferences", {})),
-            frequently_used={k: list(v) for k, v in data.get("frequently_used", {}).items()},
+            frequently_used={
+                k: list(v) for k, v in data.get("frequently_used", {}).items()
+            },
             interaction_count=int(data.get("interaction_count", 0)),
         )
 
@@ -153,9 +266,13 @@ class UserProfile:
         """Return a short human-readable summary for use in LLM prompts."""
         parts: list[str] = []
         if self.research_interests:
-            parts.append(f"Research interests: {', '.join(self.research_interests[:5])}")
+            parts.append(
+                f"Research interests: {', '.join(self.research_interests[:5])}"
+            )
         if self.expertise_domains:
-            top = sorted(self.expertise_domains.items(), key=lambda x: x[1], reverse=True)[:3]
+            top = sorted(
+                self.expertise_domains.items(), key=lambda x: x[1], reverse=True
+            )[:3]
             parts.append(f"Expertise: {', '.join(f'{d}({s:.1f})' for d, s in top)}")
         verbosity = self.interaction_preferences.get("verbosity")
         if verbosity:
@@ -194,10 +311,11 @@ class ProfileLearner:
             research_interests=list(new_profile.research_interests),
             expertise_domains=dict(new_profile.expertise_domains),
             interaction_preferences=dict(new_profile.interaction_preferences),
-            frequently_used={k: list(v) for k, v in new_profile.frequently_used.items()},
-            interaction_count=new_profile.interaction_count + len(
-                [m for m in messages if m.get("role") == "user"]
-            ),
+            frequently_used={
+                k: list(v) for k, v in new_profile.frequently_used.items()
+            },
+            interaction_count=new_profile.interaction_count
+            + len([m for m in messages if m.get("role") == "user"]),
         )
 
         # Extract only user messages for analysis
@@ -216,7 +334,9 @@ class ProfileLearner:
     # Private helpers — each returns a new UserProfile copy
     # ------------------------------------------------------------------
 
-    def _learn_interests(self, profile: UserProfile, combined_lower: str) -> UserProfile:
+    def _learn_interests(
+        self, profile: UserProfile, combined_lower: str
+    ) -> UserProfile:
         """Add domain interests detected in the lowercased text."""
         new_interests = list(profile.research_interests)
         for domain, keywords in DOMAIN_KEYWORDS.items():
@@ -275,7 +395,9 @@ class ProfileLearner:
             interaction_count=profile.interaction_count,
         )
 
-    def _learn_frequently_used(self, profile: UserProfile, combined_text: str) -> UserProfile:
+    def _learn_frequently_used(
+        self, profile: UserProfile, combined_text: str
+    ) -> UserProfile:
         """Extract entity mentions (concept sets, datasets) from original-case text."""
         new_frequently_used = {k: list(v) for k, v in profile.frequently_used.items()}
 
@@ -305,7 +427,9 @@ class ProfileLearner:
             interaction_count=profile.interaction_count,
         )
 
-    def _calibrate_expertise(self, profile: UserProfile, combined_lower: str) -> UserProfile:
+    def _calibrate_expertise(
+        self, profile: UserProfile, combined_lower: str
+    ) -> UserProfile:
         """Infer expertise level only after enough interactions have accumulated."""
         if profile.interaction_count < self.min_interactions_for_calibration:
             return profile

@@ -5,11 +5,11 @@ use App\Models\Clinical\ClinicalPatient;
 use App\Models\ClinicalCase;
 use App\Models\User;
 use App\Services\CaseDiscussionService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 beforeEach(function () {
     $this->service = new CaseDiscussionService;

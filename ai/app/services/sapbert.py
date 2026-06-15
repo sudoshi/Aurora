@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 try:
     import torch
     from transformers import AutoModel, AutoTokenizer  # type: ignore[import-untyped]
+
     _HAS_TORCH = True
 except ImportError:
     _HAS_TORCH = False
@@ -28,7 +29,9 @@ class SapBERTService:
     def __init__(self) -> None:
         self._model: Any = None
         self._tokenizer: Any = None
-        self._device: str = "cuda" if (_HAS_TORCH and torch.cuda.is_available()) else "cpu"
+        self._device: str = (
+            "cuda" if (_HAS_TORCH and torch.cuda.is_available()) else "cpu"
+        )
 
     def _load_model(self) -> None:
         """Load model and tokenizer on first use."""
@@ -81,7 +84,9 @@ class SapBERTService:
         # Mean pooling: average token embeddings weighted by attention mask
         attention_mask = tokenized["attention_mask"]
         token_embeddings = output.last_hidden_state
-        mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        mask_expanded = (
+            attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        )
         sum_embeddings = torch.sum(token_embeddings * mask_expanded, dim=1)
         sum_mask = torch.clamp(mask_expanded.sum(dim=1), min=1e-9)
         embeddings = sum_embeddings / sum_mask
@@ -114,6 +119,7 @@ def get_sapbert_service() -> SapBERTService:
     """Get or create the SapBERT service, reinitializing after fork."""
     global _sapbert_service, _sapbert_pid
     import os
+
     pid = os.getpid()
     if _sapbert_service is None or _sapbert_pid != pid:
         _sapbert_service = SapBERTService()

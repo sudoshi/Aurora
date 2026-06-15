@@ -1,4 +1,5 @@
 """Claude API client wrapper with cost estimation and audit logging."""
+
 from __future__ import annotations
 
 import hashlib
@@ -10,6 +11,7 @@ from typing import Optional
 try:
     import anthropic
     from anthropic.types import MessageParam, TextBlock
+
     _ANTHROPIC_AVAILABLE = True
 except ImportError:
     anthropic = None  # type: ignore[assignment]
@@ -37,6 +39,7 @@ PRICING: dict[str, dict[str, float]] = {
 # Response dataclass
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class ClaudeResponse:
     """Immutable response returned by :meth:`ClaudeClient.chat`."""
@@ -54,6 +57,7 @@ class ClaudeResponse:
 # Client
 # ---------------------------------------------------------------------------
 
+
 class ClaudeClient:
     """Thin wrapper around the Anthropic messages API."""
 
@@ -66,7 +70,9 @@ class ClaudeClient:
         timeout: Optional[int] = None,
     ) -> None:
         if not _ANTHROPIC_AVAILABLE:
-            raise RuntimeError("anthropic package is not installed; Claude routing is disabled")
+            raise RuntimeError(
+                "anthropic package is not installed; Claude routing is disabled"
+            )
         if not api_key:
             raise ValueError("API key must not be empty")
 

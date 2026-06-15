@@ -11,6 +11,7 @@ router = APIRouter()
 
 # ── Request/Response models ──────────────────────────────────────────────────
 
+
 class EmbeddingRequest(BaseModel):
     text: str
 
@@ -51,6 +52,7 @@ class ConceptSearchResponse(BaseModel):
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
 
+
 @router.post("/encode", response_model=EmbeddingResponse)
 async def encode_text(request: EmbeddingRequest) -> EmbeddingResponse:
     """Encode a single text into a 768-dim SapBERT embedding."""
@@ -82,7 +84,9 @@ async def encode_batch(request: BatchEmbeddingRequest) -> BatchEmbeddingResponse
             count=len(embeddings),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Batch encoding failed: {e}") from e
+        raise HTTPException(
+            status_code=500, detail=f"Batch encoding failed: {e}"
+        ) from e
 
 
 @router.post("/search", response_model=ConceptSearchResponse)

@@ -28,7 +28,9 @@ router = APIRouter(tags=["copilot"])
 # ── Ollama helper ────────────────────────────────────────────────────────────
 
 
-async def _generate(system_prompt: str, user_message: str, temperature: float = 0.2) -> str:
+async def _generate(
+    system_prompt: str, user_message: str, temperature: float = 0.2
+) -> str:
     """Call Ollama for text generation with retry logic."""
     messages = [
         {"role": "system", "content": system_prompt},
@@ -70,14 +72,10 @@ async def _generate(system_prompt: str, user_message: str, temperature: float = 
                     "Ollama returned 500 on attempt %d, retrying...", attempt + 1
                 )
                 continue
-            raise HTTPException(
-                status_code=503, detail=f"LLM service error: {e}"
-            )
+            raise HTTPException(status_code=503, detail=f"LLM service error: {e}")
         except Exception as e:
             logger.error("Ollama call failed: %s", e)
-            raise HTTPException(
-                status_code=503, detail=f"LLM service unavailable: {e}"
-            )
+            raise HTTPException(status_code=503, detail=f"LLM service unavailable: {e}")
 
     raise HTTPException(
         status_code=503, detail="LLM service unavailable: all retries exhausted"
@@ -104,7 +102,11 @@ def _fetch_patient_summary_data(patient_id: int) -> dict[str, Any]:
             raise ValueError(f"Patient {patient_id} not found")
 
         conditions = [
-            {"name": r.condition_name, "onset": str(r.onset_date) if r.onset_date else None, "status": r.status}
+            {
+                "name": r.condition_name,
+                "onset": str(r.onset_date) if r.onset_date else None,
+                "status": r.status,
+            }
             for r in session.execute(
                 text("""
                     SELECT condition_name, onset_date, status
@@ -130,7 +132,10 @@ def _fetch_patient_summary_data(patient_id: int) -> dict[str, Any]:
         ]
 
         procedures = [
-            {"name": r.procedure_name, "date": str(r.procedure_date) if r.procedure_date else None}
+            {
+                "name": r.procedure_name,
+                "date": str(r.procedure_date) if r.procedure_date else None,
+            }
             for r in session.execute(
                 text("""
                     SELECT procedure_name, procedure_date
@@ -143,8 +148,12 @@ def _fetch_patient_summary_data(patient_id: int) -> dict[str, Any]:
         ]
 
         recent_labs = [
-            {"name": r.measurement_name, "value": r.value_numeric, "unit": r.unit,
-             "date": str(r.measurement_date) if r.measurement_date else None}
+            {
+                "name": r.measurement_name,
+                "value": r.value_numeric,
+                "unit": r.unit,
+                "date": str(r.measurement_date) if r.measurement_date else None,
+            }
             for r in session.execute(
                 text("""
                     SELECT measurement_name, value_numeric, unit, measurement_date
@@ -158,7 +167,11 @@ def _fetch_patient_summary_data(patient_id: int) -> dict[str, Any]:
         ]
 
         observations = [
-            {"name": r.observation_name, "value": r.value_as_string, "category": r.category}
+            {
+                "name": r.observation_name,
+                "value": r.value_as_string,
+                "category": r.category,
+            }
             for r in session.execute(
                 text("""
                     SELECT observation_name, value_as_string, category
@@ -171,7 +184,11 @@ def _fetch_patient_summary_data(patient_id: int) -> dict[str, Any]:
         ]
 
         recent_notes = [
-            {"type": r.note_type, "text": r.note_text[:500], "date": str(r.note_date) if r.note_date else None}
+            {
+                "type": r.note_type,
+                "text": r.note_text[:500],
+                "date": str(r.note_date) if r.note_date else None,
+            }
             for r in session.execute(
                 text("""
                     SELECT note_type, note_text, note_date
@@ -226,7 +243,11 @@ def _fetch_session_data(session_id: int) -> dict[str, Any]:
             raise ValueError(f"Session/visit {session_id} not found")
 
         notes = [
-            {"type": r.note_type, "text": r.note_text, "date": str(r.note_date) if r.note_date else None}
+            {
+                "type": r.note_type,
+                "text": r.note_text,
+                "date": str(r.note_date) if r.note_date else None,
+            }
             for r in db_session.execute(
                 text("""
                     SELECT note_type, note_text, note_date
@@ -269,9 +290,7 @@ def _fetch_case_data(case_id: int) -> dict[str, Any]:
 
 
 class SummarizeRequest(BaseModel):
-    patient_id: int | None = Field(
-        default=None, description="Patient to summarize"
-    )
+    patient_id: int | None = Field(default=None, description="Patient to summarize")
     case_id: int | None = Field(
         default=None, description="Case/patient ID to summarize"
     )

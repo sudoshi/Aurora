@@ -15,6 +15,7 @@ from app.db import search_nearest
 @dataclass
 class ClinicalEntity:
     """Extracted clinical entity."""
+
     text: str
     start: int
     end: int
@@ -29,6 +30,7 @@ class ClinicalEntity:
 @dataclass
 class NlpResult:
     """Result of clinical NLP extraction."""
+
     text: str
     entities: list[ClinicalEntity] = field(default_factory=list)
 
@@ -105,7 +107,7 @@ class ClinicalNlpService:
     def _is_negated(self, text: str, start: int) -> bool:
         """Check if entity at position is negated."""
         # Look at the 50 characters before the entity
-        prefix = text[max(0, start - 50):start]
+        prefix = text[max(0, start - 50) : start]
         for pattern in self._negation_patterns:
             if pattern.search(prefix):
                 return True
@@ -145,21 +147,25 @@ class ClinicalNlpService:
                     negated = self._is_negated(text, start)
                     context = self._get_context(text, start, end)
 
-                    entities.append(ClinicalEntity(
-                        text=entity_text,
-                        start=start,
-                        end=end,
-                        label=label,
-                        negated=negated,
-                        context=context,
-                    ))
+                    entities.append(
+                        ClinicalEntity(
+                            text=entity_text,
+                            start=start,
+                            end=end,
+                            label=label,
+                            negated=negated,
+                            context=context,
+                        )
+                    )
 
         # Sort by position
         entities.sort(key=lambda e: e.start)
 
         return NlpResult(text=text, entities=entities)
 
-    async def extract_and_link(self, text: str, link_concepts: bool = True) -> NlpResult:
+    async def extract_and_link(
+        self, text: str, link_concepts: bool = True
+    ) -> NlpResult:
         """Extract entities and optionally link to concepts via SapBERT."""
         result = self.extract_entities(text)
 

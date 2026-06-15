@@ -8,6 +8,7 @@ Stage 2: Complexity scoring for messages that pass through stage 1 without a
 
 Default: err toward cloud when uncertain (small cloud tiebreaker).
 """
+
 from __future__ import annotations
 
 import re
@@ -18,12 +19,14 @@ from dataclasses import dataclass
 # Output type
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class RoutingDecision:
     """Immutable routing decision returned by :class:`RuleRouter`."""
-    model: str        # "claude" or "local"
-    stage: int        # 1 or 2 (which stage made the decision)
-    reason: str       # human-readable explanation
+
+    model: str  # "claude" or "local"
+    stage: int  # 1 or 2 (which stage made the decision)
+    reason: str  # human-readable explanation
     confidence: float  # 0.0-1.0
 
 
@@ -71,11 +74,22 @@ _SIMPLE_LOOKUP_MAX_CHARS = 80  # treat as local only if message is short
 
 # Terms that increase cloud score
 _COMPLEXITY_INDICATORS: list[re.Pattern[str]] = [
-    re.compile(r"\b(?:interpret|analyze|analyse|critique|best\s+practice|methodology|bias)\b", re.IGNORECASE),
-    re.compile(r"\b(?:immortal\s+time|confound|causal|propensity|sensitivity\s+analysis)\b", re.IGNORECASE),
-    re.compile(r"\b(?:survival\s+curve|hazard\s+ratio|kaplan.meier|cox\s+regression)\b", re.IGNORECASE),
+    re.compile(
+        r"\b(?:interpret|analyze|analyse|critique|best\s+practice|methodology|bias)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:immortal\s+time|confound|causal|propensity|sensitivity\s+analysis)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(?:survival\s+curve|hazard\s+ratio|kaplan.meier|cox\s+regression)\b",
+        re.IGNORECASE,
+    ),
     re.compile(r"\b(?:SQL|query|optimize|index|explain\s+plan)\b", re.IGNORECASE),
-    re.compile(r"\b(?:explain|compare|contrast|evaluate|assess|recommend)\b", re.IGNORECASE),
+    re.compile(
+        r"\b(?:explain|compare|contrast|evaluate|assess|recommend)\b", re.IGNORECASE
+    ),
 ]
 
 # Terms that increase local score
@@ -94,6 +108,7 @@ _CLOUD_TIEBREAKER = 0.05  # err toward cloud when uncertain
 # ---------------------------------------------------------------------------
 # Router class
 # ---------------------------------------------------------------------------
+
 
 class RuleRouter:
     """Two-stage rule-based router: decides between 'claude' (cloud) and 'local'."""
@@ -148,7 +163,10 @@ class RuleRouter:
             )
 
         # Short simple lookup -> local immediately
-        if _LOCAL_SIMPLE_LOOKUP.match(stripped) and len(stripped) <= _SIMPLE_LOOKUP_MAX_CHARS:
+        if (
+            _LOCAL_SIMPLE_LOOKUP.match(stripped)
+            and len(stripped) <= _SIMPLE_LOOKUP_MAX_CHARS
+        ):
             return RoutingDecision(
                 model="local",
                 stage=1,
@@ -170,7 +188,9 @@ class RuleRouter:
                 local_score += _LOCAL_SCORE_PER_SIMPLICITY
 
         if cloud_score >= local_score:
-            confidence = min(1.0, cloud_score / (cloud_score + local_score + 0.001) + 0.3)
+            confidence = min(
+                1.0, cloud_score / (cloud_score + local_score + 0.001) + 0.3
+            )
             return RoutingDecision(
                 model="claude",
                 stage=2,
@@ -178,7 +198,9 @@ class RuleRouter:
                 confidence=round(confidence, 3),
             )
         else:
-            confidence = min(1.0, local_score / (cloud_score + local_score + 0.001) + 0.2)
+            confidence = min(
+                1.0, local_score / (cloud_score + local_score + 0.001) + 0.2
+            )
             return RoutingDecision(
                 model="local",
                 stage=2,

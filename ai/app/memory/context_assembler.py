@@ -1,4 +1,5 @@
 """Context assembly pipeline — ranked, budget-aware prompt construction for LLM calls."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -24,13 +25,21 @@ TIER_DISPLAY_NAMES = {
 }
 
 TIER_ORDER = [
-    ContextTier.WORKING, ContextTier.PAGE, ContextTier.LIVE,
-    ContextTier.EPISODIC, ContextTier.SEMANTIC, ContextTier.INSTITUTIONAL,
+    ContextTier.WORKING,
+    ContextTier.PAGE,
+    ContextTier.LIVE,
+    ContextTier.EPISODIC,
+    ContextTier.SEMANTIC,
+    ContextTier.INSTITUTIONAL,
 ]
 
 MEDGEMMA_TIER_BUDGETS = {
-    ContextTier.WORKING: 1500, ContextTier.PAGE: 500, ContextTier.LIVE: 800,
-    ContextTier.EPISODIC: 400, ContextTier.SEMANTIC: 600, ContextTier.INSTITUTIONAL: 200,
+    ContextTier.WORKING: 1500,
+    ContextTier.PAGE: 500,
+    ContextTier.LIVE: 800,
+    ContextTier.EPISODIC: 400,
+    ContextTier.SEMANTIC: 600,
+    ContextTier.INSTITUTIONAL: 200,
 }
 
 CLAUDE_TIER_BUDGETS = {
@@ -58,7 +67,11 @@ class ContextPiece:
 class ContextAssembler:
     """Assembles context from multiple tiers into a budget-aware prompt."""
 
-    def __init__(self, total_budget: int = 4000, tier_budgets: dict[ContextTier, int] | None = None) -> None:
+    def __init__(
+        self,
+        total_budget: int = 4000,
+        tier_budgets: dict[ContextTier, int] | None = None,
+    ) -> None:
         self.total_budget = total_budget
         self.tier_budgets = tier_budgets or {}
 
@@ -73,7 +86,9 @@ class ContextAssembler:
             return cls.for_medgemma()
         if model_name == "claude":
             return cls(total_budget=28000, tier_budgets=CLAUDE_TIER_BUDGETS)
-        raise ValueError(f"Unknown model profile: {model_name}. Available: medgemma, claude")
+        raise ValueError(
+            f"Unknown model profile: {model_name}. Available: medgemma, claude"
+        )
 
     def assemble(self, pieces: list[ContextPiece]) -> list[ContextPiece]:
         if not pieces:
@@ -89,7 +104,10 @@ class ContextAssembler:
         for piece in regular_pieces:
             tier_limit = self.tier_budgets.get(piece.tier)
             current_tier_usage = tier_usage.get(piece.tier, 0)
-            if tier_limit is not None and (current_tier_usage + piece.tokens) > tier_limit:
+            if (
+                tier_limit is not None
+                and (current_tier_usage + piece.tokens) > tier_limit
+            ):
                 continue
             if (used_tokens + piece.tokens) > remaining_budget:
                 continue

@@ -130,8 +130,10 @@ def _fetch_patient_clinical_sets(patient_id: int) -> dict[str, Any]:
 
             today = datetime.now().date()
             dob = demo.date_of_birth
-            age = today.year - dob.year - (
-                (today.month, today.day) < (dob.month, dob.day)
+            age = (
+                today.year
+                - dob.year
+                - ((today.month, today.day) < (dob.month, dob.day))
             )
 
     return {
@@ -225,14 +227,14 @@ def _compute_weighted_score(
     return 0.5 * embedding_score + 0.5 * domain_weighted
 
 
-def _identify_differences(
-    data_a: dict[str, Any], data_b: dict[str, Any]
-) -> list[str]:
+def _identify_differences(data_a: dict[str, Any], data_b: dict[str, Any]) -> list[str]:
     """Identify key clinical differences between two patients."""
     differences: list[str] = []
 
     # Conditions unique to patient B
-    unique_conditions = data_b.get("conditions", set()) - data_a.get("conditions", set())
+    unique_conditions = data_b.get("conditions", set()) - data_a.get(
+        "conditions", set()
+    )
     if unique_conditions:
         conditions_list = sorted(unique_conditions)[:3]
         differences.append(f"Additional conditions: {', '.join(conditions_list)}")
@@ -305,22 +307,16 @@ def _build_filter_clauses(filters: dict[str, Any]) -> tuple[str, dict[str, Any]]
             min_age, max_age = None, None
 
         if min_age is not None:
-            clauses.append(
-                "EXTRACT(YEAR FROM AGE(p.date_of_birth)) >= :min_age"
-            )
+            clauses.append("EXTRACT(YEAR FROM AGE(p.date_of_birth)) >= :min_age")
             params["min_age"] = min_age
         if max_age is not None:
-            clauses.append(
-                "EXTRACT(YEAR FROM AGE(p.date_of_birth)) <= :max_age"
-            )
+            clauses.append("EXTRACT(YEAR FROM AGE(p.date_of_birth)) <= :max_age")
             params["max_age"] = max_age
 
     # Condition filter — patient must have at least one of these conditions
     condition_filter = filters.get("conditions")
     if condition_filter and isinstance(condition_filter, list):
-        placeholders = ", ".join(
-            f":cond_{i}" for i in range(len(condition_filter))
-        )
+        placeholders = ", ".join(f":cond_{i}" for i in range(len(condition_filter)))
         clauses.append(f"""
             EXISTS (
                 SELECT 1 FROM clinical.conditions c
@@ -334,9 +330,7 @@ def _build_filter_clauses(filters: dict[str, Any]) -> tuple[str, dict[str, Any]]
     # Genomic filter — patient must have at least one of these variants
     genomic_filter = filters.get("genomics")
     if genomic_filter and isinstance(genomic_filter, list):
-        placeholders = ", ".join(
-            f":gen_{i}" for i in range(len(genomic_filter))
-        )
+        placeholders = ", ".join(f":gen_{i}" for i in range(len(genomic_filter)))
         clauses.append(f"""
             EXISTS (
                 SELECT 1 FROM clinical.observations o
@@ -432,15 +426,12 @@ def search_similar(
 
     if row is None:
         raise ValueError(
-            f"Patient {patient_id} has no embedding. "
-            "Run /similarity/embed first."
+            f"Patient {patient_id} has no embedding. Run /similarity/embed first."
         )
 
     # Parse the embedding from the text representation
     embedding_text = row[0]  # "[0.1,0.2,...]"
-    embedding = [
-        float(x) for x in embedding_text.strip("[]").split(",")
-    ]
+    embedding = [float(x) for x in embedding_text.strip("[]").split(",")]
 
     # Fetch more candidates than needed for re-ranking headroom
     candidate_k = min(top_k * 3, 100)
@@ -501,13 +492,19 @@ def search_similar(
 def get_embedding_stats() -> dict[str, Any]:
     """Return statistics about embedding coverage."""
     with get_session() as session:
-        total_patients = session.execute(
-            text("SELECT COUNT(*) FROM clinical.patients")
-        ).scalar() or 0
+        total_patients = (
+            session.execute(text("SELECT COUNT(*) FROM clinical.patients")).scalar()
+            or 0
+        )
 
-        embedded_patients = session.execute(
-            text("SELECT COUNT(DISTINCT patient_id) FROM clinical.patient_embeddings")
-        ).scalar() or 0
+        embedded_patients = (
+            session.execute(
+                text(
+                    "SELECT COUNT(DISTINCT patient_id) FROM clinical.patient_embeddings"
+                )
+            ).scalar()
+            or 0
+        )
 
         model_counts = session.execute(
             text("""

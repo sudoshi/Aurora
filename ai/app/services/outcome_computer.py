@@ -40,7 +40,9 @@ def compute_outcome(patient_id: int) -> dict[str, float | None]:
         total_weight = sum(OUTCOME_WEIGHTS[k] for k in available)
         if total_weight > 0:
             scores["composite"] = round(
-                sum(v * OUTCOME_WEIGHTS[k] / total_weight for k, v in available.items()),
+                sum(
+                    v * OUTCOME_WEIGHTS[k] / total_weight for k, v in available.items()
+                ),
                 4,
             )
         else:

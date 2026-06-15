@@ -195,10 +195,10 @@ async def search_similar(request: SearchRequest) -> SearchResponse:
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
-        logger.error("Similarity search failed for patient %d: %s", request.patient_id, e)
-        raise HTTPException(
-            status_code=500, detail="Similarity search failed"
-        ) from e
+        logger.error(
+            "Similarity search failed for patient %d: %s", request.patient_id, e
+        )
+        raise HTTPException(status_code=500, detail="Similarity search failed") from e
 
     result_models = [
         SimilarPatientResult(
@@ -229,16 +229,12 @@ async def batch_embed(request: BatchEmbedRequest) -> BatchEmbedResponse:
     """
     try:
         if request.patient_ids:
-            counts = await embedding_service.embed_patients_by_ids(
-                request.patient_ids
-            )
+            counts = await embedding_service.embed_patients_by_ids(request.patient_ids)
         else:
             counts = await embedding_service.embed_all_patients()
     except Exception as e:
         logger.error("Batch embedding failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail="Batch embedding failed"
-        ) from e
+        raise HTTPException(status_code=500, detail="Batch embedding failed") from e
 
     return BatchEmbedResponse(
         total=counts["total"],

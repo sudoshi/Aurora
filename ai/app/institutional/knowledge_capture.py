@@ -4,6 +4,7 @@ Records clinical case patterns, analysis configurations, user corrections, and d
 quality findings into the institutional knowledge base. Artifacts are stored
 with vector embeddings to enable semantic similarity search.
 """
+
 from __future__ import annotations
 
 import json
@@ -324,7 +325,9 @@ class KnowledgeCapture:
             Each item is a ``dict`` with artifact columns, ordered by similarity.
         """
         if self._embedder is None:
-            logger.warning("search_similar called without an embedder — returning empty list")
+            logger.warning(
+                "search_similar called without an embedder — returning empty list"
+            )
             return []
 
         embedding = self._embed(query)
@@ -413,7 +416,11 @@ class KnowledgeCapture:
         int
             The ``id`` of the newly inserted row.
         """
-        embedding = self._embed(artifact.title + " " + artifact.summary) if self._embedder else None
+        embedding = (
+            self._embed(artifact.title + " " + artifact.summary)
+            if self._embedder
+            else None
+        )
         embedding_str: Optional[str] = None
         if embedding is not None:
             embedding_str = "[" + ",".join(str(v) for v in embedding) + "]"

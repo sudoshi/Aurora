@@ -10,6 +10,7 @@ Return value schema:
 * Success (export): ``{"success": True, "entity": <dict>, "message": <str>}``
 * Failure: ``{"success": False, "error": <str>}``
 """
+
 from __future__ import annotations
 
 import logging
@@ -72,9 +73,7 @@ async def execute_compare_cases(
         "success": True,
         "case_a": result_a["data"],
         "case_b": result_b["data"],
-        "message": (
-            f"Compared clinical cases {case_a_id} and {case_b_id}"
-        ),
+        "message": (f"Compared clinical cases {case_a_id} and {case_b_id}"),
     }
 
 
@@ -132,7 +131,5 @@ async def execute_export_results(
     return {
         "success": True,
         "entity": result["data"],
-        "message": (
-            f"Exported {entity_type} {entity_id} as {export_format}"
-        ),
+        "message": (f"Exported {entity_type} {entity_id} as {export_format}"),
     }

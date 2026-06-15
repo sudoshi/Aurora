@@ -115,9 +115,7 @@ class PrognosticScore(BaseModel):
     score_name: str
     value: float
     interpretation: str
-    category: str = Field(
-        ..., pattern=r"^(low_risk|intermediate|high_risk)$"
-    )
+    category: str = Field(..., pattern=r"^(low_risk|intermediate|high_risk)$")
     components: dict[str, float | int | str]
 
 

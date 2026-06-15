@@ -2,11 +2,11 @@
 
 use App\Models\User;
 use App\Services\AuthService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 beforeEach(function () {
     $this->authService = new AuthService;

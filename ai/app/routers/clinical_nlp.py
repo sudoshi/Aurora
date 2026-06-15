@@ -85,6 +85,8 @@ async def extract_batch(request: BatchNlpRequest) -> BatchNlpResponse:
             )
             for e in result.entities
         ]
-        results.append(NlpExtractResponse(entities=entities, entity_count=len(entities)))
+        results.append(
+            NlpExtractResponse(entities=entities, entity_count=len(entities))
+        )
 
     return BatchNlpResponse(results=results)

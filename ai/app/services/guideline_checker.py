@@ -78,9 +78,7 @@ Respond in JSON with this exact structure:
         guideline_referenced=str(
             data.get("guideline_referenced", "Unable to determine")
         ),
-        supporting_evidence=[
-            str(e) for e in data.get("supporting_evidence", [])
-        ],
+        supporting_evidence=[str(e) for e in data.get("supporting_evidence", [])],
         concerns=[str(c) for c in data.get("concerns", [])],
         alternative_recommendations=[
             str(a) for a in data.get("alternative_recommendations", [])

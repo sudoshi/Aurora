@@ -12,9 +12,7 @@ import httpx
 logger = logging.getLogger(__name__)
 
 # Federation relay URL — configurable via environment variable
-FEDERATION_RELAY_URL = os.environ.get(
-    "FEDERATION_RELAY_URL", "http://localhost:8200"
-)
+FEDERATION_RELAY_URL = os.environ.get("FEDERATION_RELAY_URL", "http://localhost:8200")
 
 # Institution ID for this Aurora instance
 INSTITUTION_ID = os.environ.get("AURORA_INSTITUTION_ID", "local")

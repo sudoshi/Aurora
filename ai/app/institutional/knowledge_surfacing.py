@@ -3,6 +3,7 @@
 Wraps KnowledgeCapture to provide a query-time interface for surfacing relevant
 artifacts from the Aurora institutional knowledge base, filtered by semantic distance.
 """
+
 from __future__ import annotations
 
 import logging

@@ -4,6 +4,7 @@ Records every Claude API call to ``app.abby_cloud_usage``, enforces a monthly
 USD budget, and exposes alert / circuit-breaker helpers used by the routing
 pipeline to decide whether cloud calls are permitted.
 """
+
 from __future__ import annotations
 
 import logging
@@ -203,8 +204,13 @@ class CostTracker:
                     {"limit": limit},
                 ).fetchall()
                 return [
-                    {"message": row[0], "routed_model": row[1], "route_reason": row[2],
-                     "rating": row[3], "category": row[4]}
+                    {
+                        "message": row[0],
+                        "routed_model": row[1],
+                        "route_reason": row[2],
+                        "rating": row[3],
+                        "category": row[4],
+                    }
                     for row in rows
                 ]
         except Exception:

@@ -63,10 +63,14 @@ async def encode_genomic(
     n_variants = len(variants)
     genes = {v.get("gene", "") for v in variants}
     actionable = sum(
-        1 for v in variants if v.get("clinical_significance") in ("pathogenic", "likely_pathogenic")
+        1
+        for v in variants
+        if v.get("clinical_significance") in ("pathogenic", "likely_pathogenic")
     )
     vus_count = sum(
-        1 for v in variants if v.get("clinical_significance") in ("VUS", "uncertain significance")
+        1
+        for v in variants
+        if v.get("clinical_significance") in ("VUS", "uncertain significance")
     )
 
     # Variant type distribution
@@ -77,8 +81,8 @@ async def encode_genomic(
 
     structured = np.zeros(64, dtype=np.float32)
     structured[0] = min(n_variants / 50.0, 1.0)  # normalized variant count
-    structured[1] = min(actionable / 10.0, 1.0)   # normalized actionable count
-    structured[2] = min(vus_count / 20.0, 1.0)     # normalized VUS count
+    structured[1] = min(actionable / 10.0, 1.0)  # normalized actionable count
+    structured[2] = min(vus_count / 20.0, 1.0)  # normalized VUS count
     structured[3] = len(genes) / max(n_variants, 1)  # gene diversity
     structured[4] = type_counts.get("SNV", 0) / max(n_variants, 1)
     structured[5] = type_counts.get("indel", 0) / max(n_variants, 1)
@@ -99,8 +103,11 @@ async def encode_genomic(
             parts.append(v["clinical_significance"])
         gene_variant_strs.append(" ".join(parts))
 
-    text = f"Genomic profile: {n_variants} variants, {actionable} actionable. " + "; ".join(
-        gene_variant_strs[:15]  # cap to avoid token limits
+    text = (
+        f"Genomic profile: {n_variants} variants, {actionable} actionable. "
+        + "; ".join(
+            gene_variant_strs[:15]  # cap to avoid token limits
+        )
     )
 
     try:
@@ -110,7 +117,9 @@ async def encode_genomic(
         if len(emb) < 192:
             emb = np.pad(emb, (0, 192 - len(emb)))
     except Exception:
-        logger.warning("Ollama embedding failed for patient %d, using hash fallback", patient_id)
+        logger.warning(
+            "Ollama embedding failed for patient %d, using hash fallback", patient_id
+        )
         emb = _hash_to_vector(text, 192)
 
     # Concatenate: [structured(64) | embedding(192)] = 256
@@ -166,8 +175,8 @@ async def encode_volumetric(
 
     if all_volumes:
         structured[4] = min(np.sum(all_volumes) / 100000.0, 1.0)  # total tumor burden
-        structured[5] = min(np.max(all_volumes) / 50000.0, 1.0)   # largest lesion
-        structured[6] = min(len(all_volumes) / 10.0, 1.0)          # lesion count
+        structured[5] = min(np.max(all_volumes) / 50000.0, 1.0)  # largest lesion
+        structured[6] = min(len(all_volumes) / 10.0, 1.0)  # lesion count
 
     if all_recist:
         structured[7] = min(np.mean(all_recist) / 100.0, 1.0)
@@ -189,12 +198,21 @@ async def encode_volumetric(
         if len(emb) < 192:
             emb = np.pad(emb, (0, 192 - len(emb)))
     except Exception:
-        logger.warning("Ollama embedding failed for patient %d volumetric, using hash fallback", patient_id)
+        logger.warning(
+            "Ollama embedding failed for patient %d volumetric, using hash fallback",
+            patient_id,
+        )
         emb = _hash_to_vector(text, 192)
 
     combined = _normalize(np.concatenate([structured, emb]))
 
-    confidence = min(1.0, 0.2 + (len(studies) / 4.0) * 0.3 + (len(all_volumes) / 5.0) * 0.3 + (total_measurements / 10.0) * 0.2)
+    confidence = min(
+        1.0,
+        0.2
+        + (len(studies) / 4.0) * 0.3
+        + (len(all_volumes) / 5.0) * 0.3
+        + (total_measurements / 10.0) * 0.2,
+    )
 
     return _to_pgvector_string(combined), round(confidence, 4)
 
@@ -232,13 +250,21 @@ async def encode_clinical(
 
     # Visit type distribution
     visit_types = [v.get("visit_type", "") for v in visits]
-    structured[8] = sum(1 for t in visit_types if t == "emergency") / max(len(visits), 1)
-    structured[9] = sum(1 for t in visit_types if t == "inpatient") / max(len(visits), 1)
+    structured[8] = sum(1 for t in visit_types if t == "emergency") / max(
+        len(visits), 1
+    )
+    structured[9] = sum(1 for t in visit_types if t == "inpatient") / max(
+        len(visits), 1
+    )
 
     # Medication status distribution
     med_statuses = [m.get("status", "") for m in medications]
-    structured[10] = sum(1 for s in med_statuses if s == "active") / max(len(medications), 1)
-    structured[11] = sum(1 for s in med_statuses if s == "discontinued") / max(len(medications), 1)
+    structured[10] = sum(1 for s in med_statuses if s == "active") / max(
+        len(medications), 1
+    )
+    structured[11] = sum(1 for s in med_statuses if s == "discontinued") / max(
+        len(medications), 1
+    )
 
     # Text representation
     condition_names = [c.get("concept_name", "") for c in conditions[:10]]
@@ -256,7 +282,10 @@ async def encode_clinical(
         if len(emb) < 192:
             emb = np.pad(emb, (0, 192 - len(emb)))
     except Exception:
-        logger.warning("Ollama embedding failed for patient %d clinical, using hash fallback", patient_id)
+        logger.warning(
+            "Ollama embedding failed for patient %d clinical, using hash fallback",
+            patient_id,
+        )
         emb = _hash_to_vector(text, 192)
 
     combined = _normalize(np.concatenate([structured, emb]))

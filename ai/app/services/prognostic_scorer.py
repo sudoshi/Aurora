@@ -25,16 +25,36 @@ _CCI_WEIGHTS: dict[str, tuple[set[str], int]] = {
     "pvd": ({"peripheral vascular disease", "pvd"}, 1),
     "cva": ({"cerebrovascular disease", "cva", "stroke", "tia"}, 1),
     "dementia": ({"dementia", "alzheimer"}, 1),
-    "copd": ({"chronic pulmonary disease", "copd", "emphysema", "chronic bronchitis"}, 1),
-    "connective_tissue": ({"connective tissue disease", "lupus", "sle", "rheumatoid arthritis"}, 1),
+    "copd": (
+        {"chronic pulmonary disease", "copd", "emphysema", "chronic bronchitis"},
+        1,
+    ),
+    "connective_tissue": (
+        {"connective tissue disease", "lupus", "sle", "rheumatoid arthritis"},
+        1,
+    ),
     "ulcer": ({"peptic ulcer", "ulcer disease"}, 1),
     "mild_liver": ({"mild liver disease", "chronic hepatitis"}, 1),
     "diabetes_uncomplicated": ({"diabetes", "diabetes mellitus"}, 1),
-    "diabetes_complicated": ({"diabetes with complications", "diabetic nephropathy", "diabetic retinopathy"}, 2),
+    "diabetes_complicated": (
+        {"diabetes with complications", "diabetic nephropathy", "diabetic retinopathy"},
+        2,
+    ),
     "hemiplegia": ({"hemiplegia", "paraplegia"}, 2),
-    "renal": ({"moderate to severe renal disease", "chronic kidney disease", "ckd", "dialysis"}, 2),
+    "renal": (
+        {
+            "moderate to severe renal disease",
+            "chronic kidney disease",
+            "ckd",
+            "dialysis",
+        },
+        2,
+    ),
     "malignancy": ({"malignancy", "cancer", "tumor", "lymphoma", "leukemia"}, 2),
-    "moderate_severe_liver": ({"moderate to severe liver disease", "cirrhosis", "liver failure"}, 3),
+    "moderate_severe_liver": (
+        {"moderate to severe liver disease", "cirrhosis", "liver failure"},
+        3,
+    ),
     "metastatic": ({"metastatic solid tumor", "metastatic cancer", "metastatic"}, 6),
     "aids": ({"aids", "hiv/aids"}, 6),
 }
@@ -78,7 +98,9 @@ def calculate_ecog(ecog_value: int) -> PrognosticScore:
     )
 
 
-def calculate_charlson(conditions: list[str], age: int | None = None) -> PrognosticScore:
+def calculate_charlson(
+    conditions: list[str], age: int | None = None
+) -> PrognosticScore:
     """Calculate Charlson Comorbidity Index from condition list.
 
     Args:

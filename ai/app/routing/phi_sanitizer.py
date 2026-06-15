@@ -4,6 +4,7 @@ Designed for Aurora AI (Abby): scans user queries before sending to cloud models
 to ensure Protected Health Information (PHI) is never transmitted without explicit
 consent.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -19,9 +20,11 @@ if TYPE_CHECKING:
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class PHIFinding:
     """A single PHI match found in the input text."""
+
     pattern_type: str
     matched_text: str
     start: int
@@ -31,6 +34,7 @@ class PHIFinding:
 @dataclass
 class SanitizationResult:
     """Result of scanning a text for PHI."""
+
     phi_detected: bool
     redacted_text: str
     redaction_count: int
@@ -127,9 +131,12 @@ PHI_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _has_clinical_context(text: str, match_start: int, match_end: int, window: int = 60) -> bool:
+
+def _has_clinical_context(
+    text: str, match_start: int, match_end: int, window: int = 60
+) -> bool:
     """Return True if the match is surrounded by clinical vocabulary context terms."""
-    context = text[max(0, match_start - window): match_end + window].lower()
+    context = text[max(0, match_start - window) : match_end + window].lower()
     return any(term in context for term in CLINICAL_CONTEXT_TERMS)
 
 
@@ -150,6 +157,7 @@ def _deduplicate_findings(findings: list[PHIFinding]) -> list[PHIFinding]:
 # Main class
 # ---------------------------------------------------------------------------
 
+
 class PHISanitizer:
     """Scans text for PHI using regex patterns and optionally spaCy NER.
 
@@ -167,6 +175,7 @@ class PHISanitizer:
     def _get_nlp(self) -> "spacy.Language":
         if self._nlp is None:
             import spacy  # noqa: PLC0415
+
             self._nlp = spacy.load("en_core_web_sm")
         return self._nlp
 
@@ -189,7 +198,9 @@ class PHISanitizer:
         for pattern_name, pattern in PHI_PATTERNS:
             for m in pattern.finditer(text):
                 # Suppress if surrounded by clinical vocabulary context
-                if pattern_name == "mrn" and _has_clinical_context(text, m.start(), m.end()):
+                if pattern_name == "mrn" and _has_clinical_context(
+                    text, m.start(), m.end()
+                ):
                     continue
                 findings.append(
                     PHIFinding(
@@ -221,7 +232,9 @@ class PHISanitizer:
         redacted = text
         # Sort in reverse order so replacements don't shift later indices
         for finding in sorted(findings, key=lambda f: f.start, reverse=True):
-            redacted = redacted[: finding.start] + "[REDACTED]" + redacted[finding.end :]
+            redacted = (
+                redacted[: finding.start] + "[REDACTED]" + redacted[finding.end :]
+            )
 
         return SanitizationResult(
             phi_detected=len(findings) > 0,

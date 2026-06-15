@@ -6,6 +6,7 @@ Provides:
 - :class:`DAGPlan` — a collection of steps with topological wave computation.
 - :class:`DAGExecutor` — async executor that runs waves concurrently.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -138,9 +139,7 @@ class DAGPlan:
             waves.append(wave)
 
         if processed != len(self.steps):
-            raise ValueError(
-                "cycle detected in DAG — cannot determine execution order"
-            )
+            raise ValueError("cycle detected in DAG — cannot determine execution order")
 
         return waves
 

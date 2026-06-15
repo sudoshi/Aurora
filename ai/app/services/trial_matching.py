@@ -83,9 +83,7 @@ Respond in JSON with this exact structure:
                 TrialSuggestion(
                     trial_type=str(item.get("trial_type", "Unknown")),
                     rationale=str(item.get("rationale", "")),
-                    key_criteria_met=[
-                        str(c) for c in item.get("key_criteria_met", [])
-                    ],
+                    key_criteria_met=[str(c) for c in item.get("key_criteria_met", [])],
                     potential_exclusions=[
                         str(e) for e in item.get("potential_exclusions", [])
                     ],

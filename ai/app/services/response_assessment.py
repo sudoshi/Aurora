@@ -13,11 +13,11 @@ from app.config import settings
 
 
 class ResponseCategory(str, Enum):
-    CR = "CR"   # Complete Response
-    PR = "PR"   # Partial Response
-    SD = "SD"   # Stable Disease
-    PD = "PD"   # Progressive Disease
-    NE = "NE"   # Not Evaluable
+    CR = "CR"  # Complete Response
+    PR = "PR"  # Partial Response
+    SD = "SD"  # Stable Disease
+    PD = "PD"  # Progressive Disease
+    NE = "NE"  # Not Evaluable
 
 
 RESPONSE_ANALYSIS_PROMPT = """You are a radiology AI assistant performing treatment response assessment.
@@ -73,7 +73,9 @@ def _assess_recist(
 
     # Check for CR: all target lesions disappeared
     current_targets = [m for m in current_measurements if m.get("target_lesion", False)]
-    all_disappeared = all(float(m.get("value_numeric", 0)) == 0 for m in current_targets)
+    all_disappeared = all(
+        float(m.get("value_numeric", 0)) == 0 for m in current_targets
+    )
     if all_disappeared and len(current_targets) > 0:
         return ResponseCategory.CR, percent_change
 
@@ -104,7 +106,11 @@ def _assess_lugano(
         return ResponseCategory.NE, None
 
     if baseline_sum == 0:
-        return (ResponseCategory.CR, 0.0) if current_sum == 0 else (ResponseCategory.PD, None)
+        return (
+            (ResponseCategory.CR, 0.0)
+            if current_sum == 0
+            else (ResponseCategory.PD, None)
+        )
 
     percent_change = ((current_sum - baseline_sum) / baseline_sum) * 100.0
 
@@ -134,7 +140,11 @@ def _assess_deauville(
         return ResponseCategory.NE, None
 
     if baseline_sum == 0:
-        return (ResponseCategory.CR, 0.0) if current_sum == 0 else (ResponseCategory.PD, None)
+        return (
+            (ResponseCategory.CR, 0.0)
+            if current_sum == 0
+            else (ResponseCategory.PD, None)
+        )
 
     percent_change = ((current_sum - baseline_sum) / baseline_sum) * 100.0
 
@@ -167,12 +177,18 @@ def _assess_rano(
         return ResponseCategory.NE, None
 
     if baseline_sum == 0:
-        return (ResponseCategory.CR, 0.0) if current_sum == 0 else (ResponseCategory.PD, None)
+        return (
+            (ResponseCategory.CR, 0.0)
+            if current_sum == 0
+            else (ResponseCategory.PD, None)
+        )
 
     percent_change = ((current_sum - baseline_sum) / baseline_sum) * 100.0
 
     current_targets = [m for m in current_measurements if m.get("target_lesion", False)]
-    all_disappeared = all(float(m.get("value_numeric", 0)) == 0 for m in current_targets)
+    all_disappeared = all(
+        float(m.get("value_numeric", 0)) == 0 for m in current_targets
+    )
     if all_disappeared and len(current_targets) > 0:
         return ResponseCategory.CR, percent_change
 
@@ -222,8 +238,12 @@ async def assess_response(
     comparison = {
         "baseline_sum_diameters": baseline_sum,
         "current_sum_diameters": current_sum,
-        "baseline_target_count": len([m for m in baseline_measurements if m.get("target_lesion")]),
-        "current_target_count": len([m for m in current_measurements if m.get("target_lesion")]),
+        "baseline_target_count": len(
+            [m for m in baseline_measurements if m.get("target_lesion")]
+        ),
+        "current_target_count": len(
+            [m for m in current_measurements if m.get("target_lesion")]
+        ),
     }
 
     # Attempt AI-enhanced analysis
@@ -233,7 +253,9 @@ async def assess_response(
             criteria=criteria,
             baseline=json.dumps(baseline_measurements[:10]),
             current=json.dumps(current_measurements[:10]),
-            percent_change=f"{percent_change:.1f}" if percent_change is not None else "N/A",
+            percent_change=f"{percent_change:.1f}"
+            if percent_change is not None
+            else "N/A",
             preliminary_category=category.value,
         )
         async with httpx.AsyncClient(timeout=settings.ollama_timeout) as client:
@@ -261,7 +283,9 @@ async def assess_response(
         "current_study_id": current_study_id,
         "criteria": criteria.upper(),
         "response_category": category.value,
-        "percent_change": round(percent_change, 2) if percent_change is not None else None,
+        "percent_change": round(percent_change, 2)
+        if percent_change is not None
+        else None,
         "measurements_comparison": comparison,
         "ai_analysis": ai_analysis,
     }

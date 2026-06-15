@@ -6,6 +6,7 @@ institutional knowledge about the correct order of operations for standard
 clinical case workflows so users and the LLM do not need to build plans from
 scratch.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -61,62 +62,72 @@ class WorkflowTemplates:
         steps: list[dict[str, Any]] = []
 
         # Step 1 — case lookup
-        steps.append({
-            "step_id": "case_lookup",
-            "tool_name": "case_lookup",
-            "parameters": {"case_id": case_id},
-            "depends_on": [],
-        })
+        steps.append(
+            {
+                "step_id": "case_lookup",
+                "tool_name": "case_lookup",
+                "parameters": {"case_id": case_id},
+                "depends_on": [],
+            }
+        )
 
         # Step 2 — create review session
         session_params: dict[str, Any] = {
             "case_id": case_id,
             "title": session_title,
         }
-        steps.append({
-            "step_id": "session_create",
-            "tool_name": "session_create",
-            "parameters": session_params,
-            "depends_on": ["case_lookup"],
-        })
+        steps.append(
+            {
+                "step_id": "session_create",
+                "tool_name": "session_create",
+                "parameters": session_params,
+                "depends_on": ["case_lookup"],
+            }
+        )
 
         # Step 3 — add team members (if provided)
         if team_member_ids:
             for i, user_id in enumerate(team_member_ids):
-                steps.append({
-                    "step_id": f"team_add_member_{i}",
-                    "tool_name": "team_add_member",
-                    "parameters": {
-                        "team_id": None,  # resolved at runtime from case
-                        "user_id": user_id,
-                    },
-                    "depends_on": ["session_create"],
-                })
+                steps.append(
+                    {
+                        "step_id": f"team_add_member_{i}",
+                        "tool_name": "team_add_member",
+                        "parameters": {
+                            "team_id": None,  # resolved at runtime from case
+                            "user_id": user_id,
+                        },
+                        "depends_on": ["session_create"],
+                    }
+                )
 
         # Step 4 — run patient analysis
-        steps.append({
-            "step_id": "run_patient_analysis",
-            "tool_name": "run_patient_analysis",
-            "parameters": {
-                "patient_id": None,  # resolved at runtime from case
-                "analysis_type": "comprehensive",
-                "name": f"Analysis for case {case_id}",
-            },
-            "depends_on": ["case_lookup"],
-        })
+        steps.append(
+            {
+                "step_id": "run_patient_analysis",
+                "tool_name": "run_patient_analysis",
+                "parameters": {
+                    "patient_id": None,  # resolved at runtime from case
+                    "analysis_type": "comprehensive",
+                    "name": f"Analysis for case {case_id}",
+                },
+                "depends_on": ["case_lookup"],
+            }
+        )
 
         # Step 5 — propose decision
-        steps.append({
-            "step_id": "decision_propose",
-            "tool_name": "decision_propose",
-            "parameters": {
-                "case_id": case_id,
-                "decision_type": decision_type,
-                "summary": None,  # resolved at runtime from analysis
-                "rationale": None,  # resolved at runtime from analysis
-            },
-            "depends_on": ["run_patient_analysis"],
-        })
+        steps.append(
+            {
+                "step_id": "decision_propose",
+                "tool_name": "decision_propose",
+                "parameters": {
+                    "case_id": case_id,
+                    "decision_type": decision_type,
+                    "summary": None,  # resolved at runtime from analysis
+                    "rationale": None,  # resolved at runtime from analysis
+                },
+                "depends_on": ["run_patient_analysis"],
+            }
+        )
 
         return steps
 
@@ -151,68 +162,81 @@ class WorkflowTemplates:
         steps: list[dict[str, Any]] = []
 
         # Step 1 — patient search / verification
-        steps.append({
-            "step_id": "patient_search",
-            "tool_name": "patient_search",
-            "parameters": {
-                "query": str(patient_id),
-                "filters": {"patient_id": patient_id},
-            },
-            "depends_on": [],
-        })
+        steps.append(
+            {
+                "step_id": "patient_search",
+                "tool_name": "patient_search",
+                "parameters": {
+                    "query": str(patient_id),
+                    "filters": {"patient_id": patient_id},
+                },
+                "depends_on": [],
+            }
+        )
 
         # Step 2 — patient analysis
-        steps.append({
-            "step_id": "run_patient_analysis",
-            "tool_name": "run_patient_analysis",
-            "parameters": {
-                "patient_id": patient_id,
-                "analysis_type": "comprehensive",
-                "include_sections": [
-                    "conditions", "medications", "procedures",
-                    "lab_results", "vital_signs",
-                ],
-                "name": f"Full analysis for patient {patient_id}",
-            },
-            "depends_on": ["patient_search"],
-        })
+        steps.append(
+            {
+                "step_id": "run_patient_analysis",
+                "tool_name": "run_patient_analysis",
+                "parameters": {
+                    "patient_id": patient_id,
+                    "analysis_type": "comprehensive",
+                    "include_sections": [
+                        "conditions",
+                        "medications",
+                        "procedures",
+                        "lab_results",
+                        "vital_signs",
+                    ],
+                    "name": f"Full analysis for patient {patient_id}",
+                },
+                "depends_on": ["patient_search"],
+            }
+        )
 
         # Step 3 — risk assessment
-        steps.append({
-            "step_id": "run_risk_assessment",
-            "tool_name": "run_risk_assessment",
-            "parameters": {
-                "patient_id": patient_id,
-                "risk_model": risk_model,
-                "name": f"Risk assessment for patient {patient_id}",
-            },
-            "depends_on": ["run_patient_analysis"],
-        })
+        steps.append(
+            {
+                "step_id": "run_risk_assessment",
+                "tool_name": "run_risk_assessment",
+                "parameters": {
+                    "patient_id": patient_id,
+                    "risk_model": risk_model,
+                    "name": f"Risk assessment for patient {patient_id}",
+                },
+                "depends_on": ["run_patient_analysis"],
+            }
+        )
 
         # Step 4 — export results
-        steps.append({
-            "step_id": "export_results",
-            "tool_name": "export_results",
-            "parameters": {
-                "entity_type": "analyses",
-                "entity_id": None,  # resolved at runtime
-                "format": "json",
-            },
-            "depends_on": ["run_risk_assessment"],
-        })
+        steps.append(
+            {
+                "step_id": "export_results",
+                "tool_name": "export_results",
+                "parameters": {
+                    "entity_type": "analyses",
+                    "entity_id": None,  # resolved at runtime
+                    "format": "json",
+                },
+                "depends_on": ["run_risk_assessment"],
+            }
+        )
 
         # Step 5 — optional clinical note
         if include_case_notes:
-            steps.append({
-                "step_id": "note_create",
-                "tool_name": "note_create",
-                "parameters": {
-                    "patient_id": patient_id,
-                    "note_type": "risk_assessment_summary",
-                    "content": None,  # resolved at runtime from analysis
-                },
-                "depends_on": ["run_risk_assessment"],
-            })
+            steps.append(
+                {
+                    "step_id": "note_create",
+                    "tool_name": "note_create",
+                    "parameters": {
+                        "patient_id": patient_id,
+                        "note_type": "risk_assessment_summary",
+                        "content": None,  # resolved at runtime from analysis
+                    },
+                    "depends_on": ["run_risk_assessment"],
+                }
+            )
 
         return steps
 
@@ -247,43 +271,51 @@ class WorkflowTemplates:
         steps: list[dict[str, Any]] = []
 
         # Step 1 — look up case A
-        steps.append({
-            "step_id": "case_lookup_a",
-            "tool_name": "case_lookup",
-            "parameters": {"case_id": case_a_id},
-            "depends_on": [],
-        })
+        steps.append(
+            {
+                "step_id": "case_lookup_a",
+                "tool_name": "case_lookup",
+                "parameters": {"case_id": case_a_id},
+                "depends_on": [],
+            }
+        )
 
         # Step 2 — look up case B
-        steps.append({
-            "step_id": "case_lookup_b",
-            "tool_name": "case_lookup",
-            "parameters": {"case_id": case_b_id},
-            "depends_on": [],
-        })
+        steps.append(
+            {
+                "step_id": "case_lookup_b",
+                "tool_name": "case_lookup",
+                "parameters": {"case_id": case_b_id},
+                "depends_on": [],
+            }
+        )
 
         # Step 3 — compare cases
-        steps.append({
-            "step_id": "compare_cases",
-            "tool_name": "compare_cases",
-            "parameters": {
-                "case_a_id": case_a_id,
-                "case_b_id": case_b_id,
-            },
-            "depends_on": ["case_lookup_a", "case_lookup_b"],
-        })
+        steps.append(
+            {
+                "step_id": "compare_cases",
+                "tool_name": "compare_cases",
+                "parameters": {
+                    "case_a_id": case_a_id,
+                    "case_b_id": case_b_id,
+                },
+                "depends_on": ["case_lookup_a", "case_lookup_b"],
+            }
+        )
 
         # Step 4 — export comparison
-        steps.append({
-            "step_id": "export_results",
-            "tool_name": "export_results",
-            "parameters": {
-                "entity_type": "case-comparisons",
-                "entity_id": None,  # resolved at runtime
-                "format": export_format,
-            },
-            "depends_on": ["compare_cases"],
-        })
+        steps.append(
+            {
+                "step_id": "export_results",
+                "tool_name": "export_results",
+                "parameters": {
+                    "entity_type": "case-comparisons",
+                    "entity_id": None,  # resolved at runtime
+                    "format": export_format,
+                },
+                "depends_on": ["compare_cases"],
+            }
+        )
 
         return steps
 

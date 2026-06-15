@@ -53,7 +53,11 @@ def _fetch_patient_data(patient_id: int) -> dict[str, Any]:
         if demo_row.date_of_birth:
             today = datetime.now().date()
             dob = demo_row.date_of_birth
-            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            age = (
+                today.year
+                - dob.year
+                - ((today.month, today.day) < (dob.month, dob.day))
+            )
 
         demographics = {
             "patient_id": demo_row.id,
@@ -238,8 +242,9 @@ def build_patient_text(patient_data: dict[str, Any]) -> str:
     if observations:
         genomic = [o for o in observations if o.get("category") == "genomic"]
         imaging = [o for o in observations if o.get("category") == "imaging"]
-        other = [o for o in observations
-                 if o.get("category") not in ("genomic", "imaging")]
+        other = [
+            o for o in observations if o.get("category") not in ("genomic", "imaging")
+        ]
 
         if genomic:
             parts = []
@@ -301,9 +306,7 @@ async def compute_embedding(text: str) -> list[float]:
             embeddings = data.get("embeddings", [])
             if embeddings and len(embeddings) > 0:
                 embedding = embeddings[0]
-                logger.info(
-                    "Generated embedding via Ollama (%d dims)", len(embedding)
-                )
+                logger.info("Generated embedding via Ollama (%d dims)", len(embedding))
                 return embedding
 
             raise ValueError("Ollama returned empty embeddings")

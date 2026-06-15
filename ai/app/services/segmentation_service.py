@@ -82,11 +82,13 @@ async def run_segmentation(
     site_key = body_site.lower().strip()
     structures = []
     for s in BODY_SITE_STRUCTURES.get(site_key, DEFAULT_STRUCTURES):
-        structures.append({
-            "name": s["name"],
-            "volume_cm3": s["volume_cm3"],
-            "confidence": s["confidence"],
-        })
+        structures.append(
+            {
+                "name": s["name"],
+                "volume_cm3": s["volume_cm3"],
+                "confidence": s["confidence"],
+            }
+        )
 
     # Attempt AI analysis via Ollama
     ai_analysis = None

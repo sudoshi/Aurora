@@ -18,7 +18,15 @@ from sqlalchemy.engine import Engine
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_SCHEMAS = {"vocab", "cdm", "omop", "clinical", "eunomia", "public", "achilles_results"}
+ALLOWED_SCHEMAS = {
+    "vocab",
+    "cdm",
+    "omop",
+    "clinical",
+    "eunomia",
+    "public",
+    "achilles_results",
+}
 
 # Ordered list of clinical domain tables to profile
 _DOMAIN_TABLES = [
@@ -32,17 +40,17 @@ _DOMAIN_TABLES = [
 ]
 
 # Thresholds
-_SPARSE_RECORDS_PER_PATIENT = 1.0   # fewer than this triggers a warning
-_MIN_YEARS_COVERAGE = 3             # fewer years triggers a temporal warning
+_SPARSE_RECORDS_PER_PATIENT = 1.0  # fewer than this triggers a warning
+_MIN_YEARS_COVERAGE = 3  # fewer years triggers a temporal warning
 
 
 @dataclass
 class DataGapWarning:
     """A detected data quality gap."""
 
-    gap_type: str      # "empty_patients" | "sparse_domain" | "temporal_gap"
+    gap_type: str  # "empty_patients" | "sparse_domain" | "temporal_gap"
     domain: str
-    severity: str      # "warning" | "critical"
+    severity: str  # "warning" | "critical"
     message: str
 
 
@@ -57,7 +65,9 @@ class DataProfileService:
     ) -> None:
         schema = clinical_schema
         if schema not in ALLOWED_SCHEMAS:
-            raise ValueError(f"Invalid schema name: {schema!r}. Allowed: {ALLOWED_SCHEMAS}")
+            raise ValueError(
+                f"Invalid schema name: {schema!r}. Allowed: {ALLOWED_SCHEMAS}"
+            )
         self.engine = engine
         self.redis_client = redis_client
         self.clinical_schema = schema

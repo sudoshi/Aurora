@@ -5,9 +5,9 @@ use App\Models\User;
 use App\Services\RareDisease\InvalidOdysseyTransitionException;
 use App\Services\RareDisease\OdysseyService;
 use App\Services\RareDisease\OdysseyStateMachine;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 beforeEach(function () {
     $this->service = new OdysseyService(new OdysseyStateMachine);

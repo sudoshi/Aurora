@@ -88,9 +88,7 @@ Respond in JSON with this exact structure:
                     recommended_workup=[
                         str(t) for t in item.get("recommended_workup", [])
                     ],
-                    genetic_testing=[
-                        str(g) for g in item.get("genetic_testing", [])
-                    ],
+                    genetic_testing=[str(g) for g in item.get("genetic_testing", [])],
                 )
             )
         except (ValueError, TypeError) as exc:

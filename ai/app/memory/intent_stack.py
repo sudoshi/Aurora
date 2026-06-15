@@ -1,4 +1,5 @@
 """Intent stack for working memory — tracks active topics across conversation turns."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -27,7 +28,9 @@ class IntentStack:
                 return
         if len(self.entries) >= self.max_depth:
             self.entries.pop(0)
-        self.entries.append(IntentEntry(topic=topic, first_turn=turn, last_active_turn=turn))
+        self.entries.append(
+            IntentEntry(topic=topic, first_turn=turn, last_active_turn=turn)
+        )
 
     def refresh(self, topic: str, turn: int) -> bool:
         for entry in self.entries:
@@ -41,7 +44,11 @@ class IntentStack:
         self.push(topic, turn)
 
     def prune(self, current_turn: int) -> None:
-        self.entries = [e for e in self.entries if (current_turn - e.last_active_turn) <= self.expiry_turns]
+        self.entries = [
+            e
+            for e in self.entries
+            if (current_turn - e.last_active_turn) <= self.expiry_turns
+        ]
 
     def current_topic(self) -> str | None:
         if not self.entries:
@@ -61,11 +68,25 @@ class IntentStack:
         return {
             "max_depth": self.max_depth,
             "expiry_turns": self.expiry_turns,
-            "entries": [{"topic": e.topic, "first_turn": e.first_turn, "last_active_turn": e.last_active_turn} for e in self.entries],
+            "entries": [
+                {
+                    "topic": e.topic,
+                    "first_turn": e.first_turn,
+                    "last_active_turn": e.last_active_turn,
+                }
+                for e in self.entries
+            ],
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> IntentStack:
         stack = cls(max_depth=data["max_depth"], expiry_turns=data["expiry_turns"])
-        stack.entries = [IntentEntry(topic=e["topic"], first_turn=e["first_turn"], last_active_turn=e["last_active_turn"]) for e in data["entries"]]
+        stack.entries = [
+            IntentEntry(
+                topic=e["topic"],
+                first_turn=e["first_turn"],
+                last_active_turn=e["last_active_turn"],
+            )
+            for e in data["entries"]
+        ]
         return stack

@@ -5,6 +5,7 @@ Every tool execution made by the agency module is recorded in
 an optional checkpoint snapshot (used for rollback), and a ``rolled_back``
 flag that is set to ``TRUE`` when an action is undone.
 """
+
 from __future__ import annotations
 
 import json
@@ -167,7 +168,5 @@ class ActionLogger:
                 ).fetchall()
             return [dict(row._mapping) for row in rows]
         except Exception:
-            logger.exception(
-                "Failed to fetch recent actions for user_id=%d", user_id
-            )
+            logger.exception("Failed to fetch recent actions for user_id=%d", user_id)
             return []

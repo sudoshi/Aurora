@@ -4,9 +4,9 @@ use App\Models\Event;
 use App\Models\Patient;
 use App\Models\User;
 use App\Services\EventService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 beforeEach(function () {
     $this->service = new EventService;

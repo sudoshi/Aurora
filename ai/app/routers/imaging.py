@@ -139,10 +139,14 @@ async def _fetch_study_measurements(study_id: int) -> list[dict[str, Any]]:
                 {
                     "measurement_type": row["measurement_type"],
                     "target_lesion": row["target_lesion"],
-                    "value_numeric": float(row["value_numeric"]) if row["value_numeric"] else 0.0,
+                    "value_numeric": float(row["value_numeric"])
+                    if row["value_numeric"]
+                    else 0.0,
                     "unit": row["unit"],
                     "measured_by": row["measured_by"],
-                    "measured_at": row["measured_at"].isoformat() if row["measured_at"] else None,
+                    "measured_at": row["measured_at"].isoformat()
+                    if row["measured_at"]
+                    else None,
                 }
                 for row in rows
             ]
@@ -180,8 +184,12 @@ async def _fetch_patient_trends(
             rows = await conn.fetch(query, *params)
             return [
                 {
-                    "date": (row["measured_at"] or row["study_date"]).isoformat() if (row["measured_at"] or row["study_date"]) else None,
-                    "value": float(row["value_numeric"]) if row["value_numeric"] else 0.0,
+                    "date": (row["measured_at"] or row["study_date"]).isoformat()
+                    if (row["measured_at"] or row["study_date"])
+                    else None,
+                    "value": float(row["value_numeric"])
+                    if row["value_numeric"]
+                    else 0.0,
                     "unit": row["unit"],
                     "study_id": row["study_id"],
                 }
@@ -263,7 +271,9 @@ async def response_assessment(request: ResponseRequest) -> ResponseResult:
         criteria=result["criteria"],
         response_category=result["response_category"],
         percent_change=result["percent_change"],
-        measurements_comparison=MeasurementComparison(**result["measurements_comparison"]),
+        measurements_comparison=MeasurementComparison(
+            **result["measurements_comparison"]
+        ),
         ai_analysis=result.get("ai_analysis"),
     )
 
@@ -271,7 +281,9 @@ async def response_assessment(request: ResponseRequest) -> ResponseResult:
 @router.get("/imaging/trends/{patient_id}", response_model=TrendsResponse)
 async def get_trends(
     patient_id: int,
-    measurement_type: str | None = Query(default=None, description="Filter by measurement type"),
+    measurement_type: str | None = Query(
+        default=None, description="Filter by measurement type"
+    ),
 ) -> TrendsResponse:
     """Get longitudinal measurement trends for a patient.
 
@@ -347,29 +359,35 @@ async def extract_features(request: FeatureRequest) -> FeatureResponse:
             parsed = json.loads(result.get("response", "{}"))
 
             for f in parsed.get("features", []):
-                features.append(ExtractedFeature(
-                    feature_name=f.get("feature_name", "unknown"),
-                    category=f.get("category", "other"),
-                    value=f.get("value", ""),
-                    confidence=float(f.get("confidence", 0.0)),
-                ))
+                features.append(
+                    ExtractedFeature(
+                        feature_name=f.get("feature_name", "unknown"),
+                        category=f.get("category", "other"),
+                        value=f.get("value", ""),
+                        confidence=float(f.get("confidence", 0.0)),
+                    )
+                )
     except Exception:
         # Graceful fallback: generate features from available measurements
         for m in measurements:
-            features.append(ExtractedFeature(
-                feature_name=f"{m['measurement_type']} measurement",
-                category="measurement",
-                value=f"{m['value_numeric']} {m['unit']}",
-                confidence=0.9,
-            ))
+            features.append(
+                ExtractedFeature(
+                    feature_name=f"{m['measurement_type']} measurement",
+                    category="measurement",
+                    value=f"{m['value_numeric']} {m['unit']}",
+                    confidence=0.9,
+                )
+            )
 
         if not features:
-            features.append(ExtractedFeature(
-                feature_name="No measurements available",
-                category="other",
-                value="Study has no recorded measurements for feature extraction",
-                confidence=0.0,
-            ))
+            features.append(
+                ExtractedFeature(
+                    feature_name="No measurements available",
+                    category="other",
+                    value="Study has no recorded measurements for feature extraction",
+                    confidence=0.0,
+                )
+            )
 
     return FeatureResponse(
         study_id=request.study_id,

@@ -9,6 +9,7 @@ Return value schema:
 * Success: ``{"success": True, "analysis_id": <int>, "message": <str>}``
 * Failure: ``{"success": False, "error": <str>}``
 """
+
 from __future__ import annotations
 
 import logging

@@ -9,6 +9,7 @@ The engine manages the lifecycle of an :class:`ActionPlan`:
 A plan expires after a configurable TTL (default 30 minutes) to prevent
 stale approvals.
 """
+
 from __future__ import annotations
 
 import logging
@@ -171,6 +172,7 @@ class PlanEngine:
     ) -> None:
         if tool_registry is None:
             from app.agency.tool_registry import ToolRegistry
+
             tool_registry = ToolRegistry.default()
 
         self._registry = tool_registry
@@ -246,7 +248,12 @@ class PlanEngine:
             auth_token=auth_token,
         )
         self._plans[plan.plan_id] = plan
-        logger.info("Created plan %s for user %d (%d steps)", plan.plan_id, user_id, len(plan_steps))
+        logger.info(
+            "Created plan %s for user %d (%d steps)",
+            plan.plan_id,
+            user_id,
+            len(plan_steps),
+        )
         return plan
 
     def approve_plan(self, plan: ActionPlan) -> None:
@@ -316,9 +323,7 @@ class PlanEngine:
         plan.status = PlanStatus.FAILED if failed else PlanStatus.COMPLETED
         return plan
 
-    async def _execute_step(
-        self, step: PlanStep, plan: ActionPlan
-    ) -> dict[str, Any]:
+    async def _execute_step(self, step: PlanStep, plan: ActionPlan) -> dict[str, Any]:
         """Route a single step to the appropriate tool executor.
 
         Tool executors are imported lazily to avoid circular imports.
@@ -353,7 +358,10 @@ class PlanEngine:
 
         executor = tool_map.get(step.tool_name)
         if executor is None:
-            return {"success": False, "error": f"No executor for tool '{step.tool_name}'"}
+            return {
+                "success": False,
+                "error": f"No executor for tool '{step.tool_name}'",
+            }
 
         # For generic API tools, pass the tool_name as context
         if executor == self._execute_api_tool:

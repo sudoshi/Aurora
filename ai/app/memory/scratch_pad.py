@@ -1,4 +1,5 @@
 """Scratch pad for session-scoped intermediate artifacts (SQL drafts, cohort specs, etc.)."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -38,7 +39,9 @@ class ScratchPad:
         self._artifacts.clear()
 
     def estimated_tokens(self) -> int:
-        total_chars = sum(len(a.key) + len(a.value) + 20 for a in self._artifacts.values())
+        total_chars = sum(
+            len(a.key) + len(a.value) + 20 for a in self._artifacts.values()
+        )
         return total_chars // 4
 
     def get_context_string(self) -> str:
@@ -50,11 +53,18 @@ class ScratchPad:
         return "\n".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"artifacts": {k: {"value": a.value, "version": a.version} for k, a in self._artifacts.items()}}
+        return {
+            "artifacts": {
+                k: {"value": a.value, "version": a.version}
+                for k, a in self._artifacts.items()
+            }
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ScratchPad:
         pad = cls()
         for key, artifact_data in data.get("artifacts", {}).items():
-            pad._artifacts[key] = Artifact(key=key, value=artifact_data["value"], version=artifact_data["version"])
+            pad._artifacts[key] = Artifact(
+                key=key, value=artifact_data["value"], version=artifact_data["version"]
+            )
         return pad

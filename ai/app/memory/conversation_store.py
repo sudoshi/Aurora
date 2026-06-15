@@ -4,6 +4,7 @@ All SQL uses the ``app.`` schema prefix and ``sqlalchemy.text()`` for queries.
 Methods degrade gracefully — exceptions are logged, not re-raised (callers get
 empty results rather than a 500 error).
 """
+
 from __future__ import annotations
 
 import logging
@@ -94,7 +95,8 @@ class ConversationStore:
                 conn.commit()
         except Exception:
             logger.exception(
-                "ConversationStore.store_message failed for conversation_id=%s", conversation_id
+                "ConversationStore.store_message failed for conversation_id=%s",
+                conversation_id,
             )
 
     # ------------------------------------------------------------------
@@ -154,7 +156,9 @@ class ConversationStore:
                 for row in rows
             ]
         except Exception:
-            logger.exception("ConversationStore.search_similar failed for user_id=%s", user_id)
+            logger.exception(
+                "ConversationStore.search_similar failed for user_id=%s", user_id
+            )
             return []
 
     def get_recent(
@@ -202,5 +206,7 @@ class ConversationStore:
                 for row in rows
             ]
         except Exception:
-            logger.exception("ConversationStore.get_recent failed for user_id=%s", user_id)
+            logger.exception(
+                "ConversationStore.get_recent failed for user_id=%s", user_id
+            )
             return []

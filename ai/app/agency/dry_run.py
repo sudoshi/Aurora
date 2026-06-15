@@ -9,6 +9,7 @@ Simulated results always include ``simulated=True`` plus tool-specific fields
 so callers can display a meaningful preview to the user before they approve
 real execution.
 """
+
 from __future__ import annotations
 
 import logging
@@ -97,7 +98,9 @@ class DryRunSimulator:
         self,
         tool_descriptions: dict[str, Any] | None = None,
     ) -> None:
-        self._tools = tool_descriptions if tool_descriptions is not None else TOOL_DESCRIPTIONS
+        self._tools = (
+            tool_descriptions if tool_descriptions is not None else TOOL_DESCRIPTIONS
+        )
 
     # ------------------------------------------------------------------
     # Public interface

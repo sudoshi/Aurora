@@ -5,9 +5,9 @@ use App\Models\Clinical\Condition;
 use App\Models\Clinical\GenomicVariant;
 use App\Models\Clinical\Medication;
 use App\Services\PatientService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 beforeEach(function () {
     $this->patientService = new PatientService;

@@ -4,6 +4,7 @@ Monitors question frequency across distinct users and, when a question crosses
 a configurable threshold, inserts it into the institutional knowledge base as
 a ``faq`` artifact so future users can benefit from the collective wisdom.
 """
+
 from __future__ import annotations
 
 import logging
@@ -42,6 +43,7 @@ class FAQPromoter:
         self._embedder = embedder
         if threshold is None:
             from app.config import settings
+
             threshold = settings.institutional_faq_threshold
         self._threshold = threshold
 
@@ -113,7 +115,9 @@ class FAQPromoter:
             return True
 
         except Exception:
-            logger.exception("FAQ promotion check failed for question=%r", question[:80])
+            logger.exception(
+                "FAQ promotion check failed for question=%r", question[:80]
+            )
             return False
 
     def get_faqs(self, limit: int = 20) -> list[dict[str, Any]]:

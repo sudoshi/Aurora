@@ -47,7 +47,9 @@ async def check_ollama_health() -> str:
         return "unavailable"
 
 
-async def generate_concept_mapping(term: str, context: str | None = None) -> dict[str, Any]:
+async def generate_concept_mapping(
+    term: str, context: str | None = None
+) -> dict[str, Any]:
     """Use Ollama with MedGemma to generate concept mapping suggestions."""
     context_line = f"Context: {context}" if context else ""
     prompt = CONCEPT_MAPPING_PROMPT.format(term=term, context_line=context_line)

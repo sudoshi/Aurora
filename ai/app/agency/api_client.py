@@ -4,6 +4,7 @@ Makes Bearer-token-authenticated requests to the Aurora Laravel API on behalf of
 users.  All paths are rooted under ``/api/`` so callers pass short paths
 such as ``/cases`` rather than the full URL.
 """
+
 from __future__ import annotations
 
 import logging
@@ -92,7 +93,11 @@ class AgencyApiClient:
                     payload = response.json()
                 except Exception:
                     payload = response.text
-                return {"success": True, "status": response.status_code, "data": payload}
+                return {
+                    "success": True,
+                    "status": response.status_code,
+                    "data": payload,
+                }
 
             # Non-2xx — extract error detail when available
             try:
@@ -115,8 +120,14 @@ class AgencyApiClient:
             }
 
         except httpx.TimeoutException:
-            logger.error("Agency API timeout: %s %s (timeout=%.1fs)", method, url, timeout)
-            return {"success": False, "status": 0, "error": f"Request timed out after {timeout}s"}
+            logger.error(
+                "Agency API timeout: %s %s (timeout=%.1fs)", method, url, timeout
+            )
+            return {
+                "success": False,
+                "status": 0,
+                "error": f"Request timed out after {timeout}s",
+            }
 
         except Exception as exc:
             logger.exception("Agency API unexpected error: %s %s", method, url)

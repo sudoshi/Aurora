@@ -17,7 +17,15 @@ from sqlalchemy.engine import Engine
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_SCHEMAS = {"vocab", "cdm", "omop", "clinical", "eunomia", "public", "achilles_results"}
+ALLOWED_SCHEMAS = {
+    "vocab",
+    "cdm",
+    "omop",
+    "clinical",
+    "eunomia",
+    "public",
+    "achilles_results",
+}
 
 
 class KnowledgeGraphService:
@@ -33,7 +41,9 @@ class KnowledgeGraphService:
     ) -> None:
         schema = vocab_schema
         if schema not in ALLOWED_SCHEMAS:
-            raise ValueError(f"Invalid schema name: {schema!r}. Allowed: {ALLOWED_SCHEMAS}")
+            raise ValueError(
+                f"Invalid schema name: {schema!r}. Allowed: {ALLOWED_SCHEMAS}"
+            )
         self.engine = engine
         self.redis_client = redis_client
         self.vocab_schema = schema
@@ -266,5 +276,7 @@ class KnowledgeGraphService:
             cid = c.get("concept_id", "")
             rel = c.get("relationship_id", "")
             domain = c.get("domain_id", "")
-            lines.append(f"  {i}. {name} (ID: {cid}, Relationship: {rel}, Domain: {domain})")
+            lines.append(
+                f"  {i}. {name} (ID: {cid}, Relationship: {rel}, Domain: {domain})"
+            )
         return "\n".join(lines)

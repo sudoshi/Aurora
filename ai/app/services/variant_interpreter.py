@@ -33,9 +33,7 @@ async def interpret_variant(
     Raises:
         Exception: Propagated from Ollama if service is unavailable.
     """
-    cancer_context = (
-        f"\nCancer type: {cancer_type}" if cancer_type else ""
-    )
+    cancer_context = f"\nCancer type: {cancer_type}" if cancer_type else ""
 
     prompt = f"""Interpret this genomic variant in a clinical oncology context.
 
@@ -73,11 +71,7 @@ Respond in JSON with this exact structure:
             data.get("clinical_significance", "Unable to determine")
         ),
         actionable=bool(data.get("actionable", False)),
-        targeted_therapies=[
-            str(t) for t in data.get("targeted_therapies", [])
-        ],
-        clinical_trials=[
-            str(t) for t in data.get("clinical_trials", [])
-        ],
+        targeted_therapies=[str(t) for t in data.get("targeted_therapies", [])],
+        clinical_trials=[str(t) for t in data.get("clinical_trials", [])],
         references=[str(r) for r in data.get("references", [])],
     )

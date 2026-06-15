@@ -2,10 +2,10 @@
 
 use App\Models\Clinical\GeneDrugInteraction;
 use App\Services\Genomics\OncoKbService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Support\Facades\Http;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTruncation::class);
 
 // --- syncInteractions -----------------------------------------------------
 

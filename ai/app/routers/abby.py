@@ -52,22 +52,28 @@ def _get_session(conversation_id: int | None) -> dict:
 
 # ── Pydantic models ──────────────────────────────────────────────────────────
 
+
 class AnalyzeRequest(BaseModel):
-    prompt: str = Field(..., min_length=5, max_length=3000,
-                        description="Natural language clinical case description")
-    page_context: str = Field(default="case-review",
-                              description="Current UI page the user is on")
+    prompt: str = Field(
+        ...,
+        min_length=5,
+        max_length=3000,
+        description="Natural language clinical case description",
+    )
+    page_context: str = Field(
+        default="case-review", description="Current UI page the user is on"
+    )
 
 
 class ClinicalFinding(BaseModel):
     text: str
-    domain: str        # condition | drug | procedure | measurement | observation
-    role: str          # primary | secondary | comorbidity | contraindication
+    domain: str  # condition | drug | procedure | measurement | observation
+    role: str  # primary | secondary | comorbidity | contraindication
     negated: bool = False
 
 
 class PatientDemographics(BaseModel):
-    sex: list[str] = []          # ['Female'] | ['Male'] | []
+    sex: list[str] = []  # ['Female'] | ['Male'] | []
     age_min: int | None = None
     age_max: int | None = None
     race: list[str] = []
@@ -75,9 +81,9 @@ class PatientDemographics(BaseModel):
 
 
 class TemporalContext(BaseModel):
-    onset_days: int | None = None       # days since onset
-    duration_days: int | None = None    # duration of condition
-    followup_days: int | None = None    # recommended follow-up
+    onset_days: int | None = None  # days since onset
+    duration_days: int | None = None  # duration of condition
+    followup_days: int | None = None  # recommended follow-up
 
 
 class AnalyzeResponse(BaseModel):
@@ -86,21 +92,22 @@ class AnalyzeResponse(BaseModel):
     demographics: PatientDemographics
     findings: list[ClinicalFinding]
     temporal: TemporalContext
-    case_type: str             # tumor_board | mdr | consultation | follow_up
-    urgency: str               # emergent | urgent | routine | elective
-    confidence: float          # 0-1, LLM self-assessment of analysis quality
+    case_type: str  # tumor_board | mdr | consultation | follow_up
+    urgency: str  # emergent | urgent | routine | elective
+    confidence: float  # 0-1, LLM self-assessment of analysis quality
     recommended_specialties: list[str] = []
     warnings: list[str] = []
-    raw_llm_output: str = ""   # for debug / transparency
+    raw_llm_output: str = ""  # for debug / transparency
 
 
 class ChatMessage(BaseModel):
-    role: str   # 'user' | 'assistant'
+    role: str  # 'user' | 'assistant'
     content: str
 
 
 class ResearchProfile(BaseModel):
     """Learned research profile for personalization."""
+
     research_interests: list[str] | None = []
     expertise_domains: dict[str, float] | None = {}
     interaction_preferences: dict | None = {}
@@ -118,11 +125,19 @@ class ResearchProfile(BaseModel):
         is a list or a JSON object, so dict fields may arrive as [].
         """
         if isinstance(data, dict):
-            dict_fields = {"expertise_domains", "interaction_preferences", "frequently_used"}
+            dict_fields = {
+                "expertise_domains",
+                "interaction_preferences",
+                "frequently_used",
+            }
             result: dict[str, object] = {}
             for k, v in data.items():
                 if v is None:
-                    result[k] = [] if k == "research_interests" else ({} if k in dict_fields else 0)
+                    result[k] = (
+                        []
+                        if k == "research_interests"
+                        else ({} if k in dict_fields else 0)
+                    )
                 elif k in dict_fields and isinstance(v, list):
                     result[k] = {}  # [] -> {}
                 else:
@@ -140,34 +155,30 @@ class UserProfile(BaseModel):
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=4000)
     page_context: str = Field(
-        default="general",
-        description="UI page context for Abby to tailor responses"
+        default="general", description="UI page context for Abby to tailor responses"
     )
     page_data: dict[str, Any] = Field(
         default_factory=dict,
-        description="Relevant page entity data (case name, current filters, etc.)"
+        description="Relevant page entity data (case name, current filters, etc.)",
     )
     history: list[ChatMessage] = Field(
         default_factory=list,
-        description="Prior conversation turns (last 10 recommended)"
+        description="Prior conversation turns (last 10 recommended)",
     )
     user_profile: UserProfile | None = Field(
-        default=None,
-        description="Current user info for personalized responses"
+        default=None, description="Current user info for personalized responses"
     )
     user_id: int | None = Field(
-        default=None,
-        description="Current user ID for personalized conversation memory"
+        default=None, description="Current user ID for personalized conversation memory"
     )
     conversation_id: int | None = Field(
-        default=None,
-        description="Conversation ID for session memory tracking"
+        default=None, description="Conversation ID for session memory tracking"
     )
 
 
 class ChatResponse(BaseModel):
     reply: str
-    suggestions: list[str] = []   # quick-action prompts the UI can surface as chips
+    suggestions: list[str] = []  # quick-action prompts the UI can surface as chips
     routing: dict = {}
     confidence: str = ""
     sources: list[dict] = []
@@ -296,7 +307,11 @@ PAGE_SYSTEM_PROMPTS: dict[str, str] = {
 
 # Map page context -> help JSON keys to inject as knowledge
 CONTEXT_HELP_KEYS: dict[str, list[str]] = {
-    "case_review": ["case-review", "case-review.findings", "case-review.recommendations"],
+    "case_review": [
+        "case-review",
+        "case-review.findings",
+        "case-review.recommendations",
+    ],
     "case_list": ["case-list"],
     "patient_profile": ["patient-profile", "patient-timeline"],
     "tumor_board": ["tumor-board", "tumor-board.staging", "tumor-board.guidelines"],
@@ -318,7 +333,12 @@ def _load_help_files() -> None:
     help_dir = Path(os.environ.get("HELP_DIR", "/var/www/html/resources/help"))
     if not help_dir.exists():
         # Try relative path for local development
-        alt_dir = Path(__file__).parent.parent.parent.parent / "backend" / "resources" / "help"
+        alt_dir = (
+            Path(__file__).parent.parent.parent.parent
+            / "backend"
+            / "resources"
+            / "help"
+        )
         if alt_dir.exists():
             help_dir = alt_dir
         else:
@@ -366,9 +386,12 @@ def _get_help_context(page_context: str) -> str:
     return "\n\nFEATURE DOCUMENTATION:\n" + "\n\n".join(sections)
 
 
-async def call_ollama(system_prompt: str, user_message: str,
-                      history: list[ChatMessage] | None = None,
-                      temperature: float = 0.1) -> str:
+async def call_ollama(
+    system_prompt: str,
+    user_message: str,
+    history: list[ChatMessage] | None = None,
+    temperature: float = 0.1,
+) -> str:
     """Call Ollama with the configured MedGemma model."""
     messages = [{"role": "system", "content": system_prompt}]
 
@@ -402,22 +425,33 @@ async def call_ollama(system_prompt: str, user_message: str,
                 return data["message"]["content"]  # type: ignore[no-any-return]
         except httpx.TimeoutException:
             if attempt < max_retries:
-                logger.warning("Ollama attempt %d/%d timed out, retrying...", attempt + 1, max_retries + 1)
+                logger.warning(
+                    "Ollama attempt %d/%d timed out, retrying...",
+                    attempt + 1,
+                    max_retries + 1,
+                )
                 continue
-            raise HTTPException(status_code=504, detail="LLM service timed out after retries.")
+            raise HTTPException(
+                status_code=504, detail="LLM service timed out after retries."
+            )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 500 and attempt < max_retries:
-                logger.warning("Ollama returned 500 on attempt %d, retrying...", attempt + 1)
+                logger.warning(
+                    "Ollama returned 500 on attempt %d, retrying...", attempt + 1
+                )
                 continue
             raise HTTPException(status_code=503, detail=f"LLM service error: {e}")
         except Exception as e:
             logger.error("Ollama call failed: %s", e)
             raise HTTPException(status_code=503, detail=f"LLM service unavailable: {e}")
 
-    raise HTTPException(status_code=503, detail="LLM service unavailable: all retries exhausted")
+    raise HTTPException(
+        status_code=503, detail="LLM service unavailable: all retries exhausted"
+    )
 
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
+
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analyze_case(request: AnalyzeRequest) -> AnalyzeResponse:
@@ -429,7 +463,7 @@ async def analyze_case(request: AnalyzeRequest) -> AnalyzeResponse:
     raw = await call_ollama(
         system_prompt=SYSTEM_PROMPT_CASE_ANALYZER,
         user_message=request.prompt,
-        temperature=0.05,   # near-deterministic for structured output
+        temperature=0.05,  # near-deterministic for structured output
     )
 
     # Strip any accidental markdown fences
@@ -455,7 +489,9 @@ async def analyze_case(request: AnalyzeRequest) -> AnalyzeResponse:
             urgency="routine",
             confidence=0.0,
             recommended_specialties=[],
-            warnings=["LLM could not parse the description into structured JSON. Falling back to manual review."],
+            warnings=[
+                "LLM could not parse the description into structured JSON. Falling back to manual review."
+            ],
             raw_llm_output=raw,
         )
 
@@ -515,7 +551,11 @@ def _build_chat_system_prompt(request: ChatRequest) -> str:
 
     # -- Step 2: User profile context ──────────────────────────────────────
     if request.user_profile and request.user_profile.name:
-        role_str = ", ".join(request.user_profile.roles) if request.user_profile.roles else "clinician"
+        role_str = (
+            ", ".join(request.user_profile.roles)
+            if request.user_profile.roles
+            else "clinician"
+        )
         system_prompt += (
             f"\n\nYou are assisting {request.user_profile.name}, "
             f"who has roles: {role_str}."
@@ -526,9 +566,13 @@ def _build_chat_system_prompt(request: ChatRequest) -> str:
         rp = request.user_profile.research_profile
         profile_parts = []
         if rp.research_interests:
-            profile_parts.append(f"Research interests: {', '.join(rp.research_interests)}")
+            profile_parts.append(
+                f"Research interests: {', '.join(rp.research_interests)}"
+            )
         if rp.expertise_domains:
-            top_domains = sorted(rp.expertise_domains.items(), key=lambda x: x[1], reverse=True)[:5]
+            top_domains = sorted(
+                rp.expertise_domains.items(), key=lambda x: x[1], reverse=True
+            )[:5]
             profile_parts.append(f"Expertise: {', '.join(d for d, _ in top_domains)}")
         if profile_parts:
             system_prompt += f"\n\nUSER PROFILE: {'; '.join(profile_parts)}"
@@ -562,11 +606,11 @@ def _build_chat_system_prompt(request: ChatRequest) -> str:
         " to make progress toward their goal within Aurora."
         " These are things the USER would TYPE TO YOU — short imperative commands or"
         " specific questions directed at you, NOT questions you are asking the user."
-        " Good examples: \"Summarize this case for tumor board\","
-        " \"Check for drug interactions with current medications\","
-        " \"Suggest additional workup for this presentation\"."
-        " Bad examples: \"Would you like to explore treatment options?\","
-        " \"Are you interested in specific lab results?\" (those are you asking the user)."
+        ' Good examples: "Summarize this case for tumor board",'
+        ' "Check for drug interactions with current medications",'
+        ' "Suggest additional workup for this presentation".'
+        ' Bad examples: "Would you like to explore treatment options?",'
+        ' "Are you interested in specific lab results?" (those are you asking the user).'
         '\n- Format as a JSON array on the last line: SUGGESTIONS: ["...", "...", "..."]'
     )
 
@@ -612,14 +656,22 @@ def _extract_suggestions(raw: str) -> tuple[str, list[str]]:
         return reply, suggestions[:3]
 
     # -- Format 2: Suggestion: text  (MedGemma's actual output) ───────────
-    suggestion_pattern = re.compile(r"Suggestion:\s*(.+?)(?=Suggestion:|$)", re.IGNORECASE | re.DOTALL)
+    suggestion_pattern = re.compile(
+        r"Suggestion:\s*(.+?)(?=Suggestion:|$)", re.IGNORECASE | re.DOTALL
+    )
     matches = suggestion_pattern.findall(reply)
     if matches:
-        suggestions = [m.strip().rstrip("?. ") + "?" if not m.strip().endswith("?") else m.strip()
-                       for m in matches]
+        suggestions = [
+            m.strip().rstrip("?. ") + "?" if not m.strip().endswith("?") else m.strip()
+            for m in matches
+        ]
         # Strip all Suggestion: lines from the reply body
-        reply = re.sub(r"\s*Suggestion:\s*.+?(?=Suggestion:|$)", "", reply,
-                       flags=re.IGNORECASE | re.DOTALL).strip()
+        reply = re.sub(
+            r"\s*Suggestion:\s*.+?(?=Suggestion:|$)",
+            "",
+            reply,
+            flags=re.IGNORECASE | re.DOTALL,
+        ).strip()
 
     return reply, suggestions[:3]
 
@@ -647,17 +699,55 @@ async def chat(request: ChatRequest) -> ChatResponse:
     domain_keywords = {
         "oncology": ["cancer", "tumor", "neoplasm", "metastasis", "staging", "chemo"],
         "cardiology": ["heart", "cardiac", "ecg", "arrhythmia", "hypertension", "mi"],
-        "pulmonology": ["lung", "respiratory", "copd", "asthma", "pneumonia", "ventilat"],
-        "nephrology": ["kidney", "renal", "dialysis", "creatinine", "gfr", "proteinuria"],
+        "pulmonology": [
+            "lung",
+            "respiratory",
+            "copd",
+            "asthma",
+            "pneumonia",
+            "ventilat",
+        ],
+        "nephrology": [
+            "kidney",
+            "renal",
+            "dialysis",
+            "creatinine",
+            "gfr",
+            "proteinuria",
+        ],
         "neurology": ["brain", "neuro", "stroke", "seizure", "neuropathy", "dementia"],
-        "endocrinology": ["diabetes", "thyroid", "insulin", "hba1c", "adrenal", "pituitary"],
+        "endocrinology": [
+            "diabetes",
+            "thyroid",
+            "insulin",
+            "hba1c",
+            "adrenal",
+            "pituitary",
+        ],
         "gastroenterology": ["liver", "gi", "gastro", "hepat", "pancrea", "bowel"],
-        "hematology": ["blood", "anemia", "coagulation", "platelet", "leukemia", "lymphoma"],
-        "infectious_disease": ["infection", "sepsis", "antibiotic", "viral", "bacterial", "fungal"],
+        "hematology": [
+            "blood",
+            "anemia",
+            "coagulation",
+            "platelet",
+            "leukemia",
+            "lymphoma",
+        ],
+        "infectious_disease": [
+            "infection",
+            "sepsis",
+            "antibiotic",
+            "viral",
+            "bacterial",
+            "fungal",
+        ],
     }
 
-    detected_topics = [domain for domain, keywords in domain_keywords.items()
-                       if any(kw in msg_lower for kw in keywords)]
+    detected_topics = [
+        domain
+        for domain, keywords in domain_keywords.items()
+        if any(kw in msg_lower for kw in keywords)
+    ]
     if detected_topics:
         topic = detected_topics[0]
 
@@ -690,9 +780,12 @@ async def chat(request: ChatRequest) -> ChatResponse:
     )
 
 
-async def _stream_ollama(system_prompt: str, user_message: str,
-                         history: list[ChatMessage] | None = None,
-                         temperature: float = 0.3) -> AsyncGenerator[str, None]:
+async def _stream_ollama(
+    system_prompt: str,
+    user_message: str,
+    history: list[ChatMessage] | None = None,
+    temperature: float = 0.3,
+) -> AsyncGenerator[str, None]:
     """Stream tokens from Ollama as SSE events."""
     messages = [{"role": "system", "content": system_prompt}]
     if history:
