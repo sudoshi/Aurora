@@ -1,7 +1,7 @@
 # Aurora — Authentik OIDC Setup & Cutover
 
-Status: backend + frontend implemented and merged on `v2/phase-0-scaffold` (commit `6264dca`).
-OIDC ships **disabled** (`OIDC_ENABLED=false`); local email/password login is unchanged and remains the break-glass path. This document covers the external steps that cannot be done from the repo: creating the Authentik provider and enabling OIDC in production.
+Status: backend + frontend implemented and merged on `v2/phase-0-scaffold` (commit `6264dca`). Production Authentik setup completed on 2026-06-15.
+OIDC is enabled in production through the encrypted `app.auth_provider_settings` row; local email/password login remains the break-glass path.
 
 ---
 
@@ -131,7 +131,7 @@ This Laravel-native shape (provider discovery → OIDC callback → one-time exc
 | App | OIDC slug | Redirect URI | Status |
 |-----|-----------|--------------|--------|
 | Parthenon | `parthenon-oidc` | `/api/v1/auth/oidc/callback` | source model (done) |
-| **Aurora** | `aurora-oidc` | `/api/auth/oidc/callback` | **code done; Authentik provider + prod enable pending (this doc)** |
+| **Aurora** | `aurora-oidc` | `/api/auth/oidc/callback` | **production Authentik provider/app enabled; `Aurora Admins` group-gated** |
 | Medgnosis | `medgnosis-oidc` | per that app's API prefix | not started — needs the same Laravel adapter |
 | Data Room / dev portal | `acumenus-dataroom-oidc` | TBD | not started |
 
