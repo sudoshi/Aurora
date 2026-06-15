@@ -50,4 +50,10 @@ export const handlers = [
       data: [],
     });
   }),
+
+  http.get("/api/odysseys", () =>
+    HttpResponse.json({ success: true, data: [], meta: { total: 0, page: 1, per_page: 25, last_page: 1 } }),
+  ),
+
+  http.get("/api/hpo/search", () => HttpResponse.json({ success: true, data: [] })),
 ];
