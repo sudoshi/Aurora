@@ -9,19 +9,19 @@ uses(RefreshDatabase::class);
 beforeEach(fn () => $this->auto = new AcmgAutoEvidence(new GeneSpecificationResolver));
 
 it('proposes BA1 for common variants', function () {
-    $c = $this->auto->fromFrequency('MYH7', 0.08);
+    $c = $this->auto->fromFrequency('ACMGTESTGENE', 0.08);
     expect(collect($c)->pluck('code'))->toContain('BA1');
 });
 
 it('proposes BS1 between the BS1 and BA1 thresholds', function () {
-    $c = $this->auto->fromFrequency('MYH7', 0.02);
+    $c = $this->auto->fromFrequency('ACMGTESTGENE', 0.02);
     $codes = collect($c)->pluck('code');
     expect($codes)->toContain('BS1');
     expect($codes)->not->toContain('BA1');
 });
 
 it('proposes PM2_Supporting for absent/rare variants', function () {
-    $c = $this->auto->fromFrequency('MYH7', 0.0);
+    $c = $this->auto->fromFrequency('ACMGTESTGENE', 0.0);
     $pm2 = collect($c)->firstWhere('code', 'PM2');
     expect($pm2)->not->toBeNull();
     expect($pm2['strength'])->toBe('supporting');

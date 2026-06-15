@@ -16,10 +16,13 @@ it('returns baseline (no overrides) when no gene spec exists', function () {
 });
 
 it('merges a gene-specific override and AF thresholds', function () {
+    // Test-only gene + spec id so this never collides with the AcmgGeneSpecificationSeeder
+    // rows (MYH7/GN001, BRCA1/GN002), which can leak between tests because
+    // DatabaseTruncation does not truncate the `clinical` schema.
     AcmgGeneSpecification::create([
-        'gene_symbol' => 'MYH7',
-        'vcep' => 'Cardiomyopathy VCEP',
-        'spec_id' => 'GN001',
+        'gene_symbol' => 'ACMGTESTGENE',
+        'vcep' => 'Test VCEP',
+        'spec_id' => 'TST001',
         'spec_version' => '1.0.0',
         'criteria_overrides' => [
             'BA1' => ['af_threshold' => 0.001],
@@ -29,8 +32,8 @@ it('merges a gene-specific override and AF thresholds', function () {
         ],
     ]);
 
-    $spec = $this->resolver->resolve('MYH7');
-    expect($spec['spec_id'])->toBe('GN001');
+    $spec = $this->resolver->resolve('ACMGTESTGENE');
+    expect($spec['spec_id'])->toBe('TST001');
     expect($spec['af_threshold_ba1'])->toBe(0.001);
     expect($spec['af_threshold_bs1'])->toBe(0.0002);
     expect($spec['af_threshold_pm2'])->toBe(0.00004);
