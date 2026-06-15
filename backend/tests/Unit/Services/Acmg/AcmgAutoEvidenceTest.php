@@ -43,3 +43,32 @@ it('maps REVEL to calibrated BP4 strengths', function () {
 it('proposes nothing in-silico for the intermediate gray zone', function () {
     expect($this->auto->fromInSilico(0.45))->toBe([]);
 });
+
+it('proposes PS1 for the same amino-acid change as a known pathogenic ClinVar variant', function () {
+    \App\Models\Clinical\ClinVarVariant::create([
+        'chromosome' => '17', 'position' => 43000000, 'reference_allele' => 'G', 'alternate_allele' => 'A',
+        'gene_symbol' => 'TP53', 'hgvs' => 'NP_000537.3:p.Arg175His', 'is_pathogenic' => true,
+        'clinical_significance' => 'Pathogenic',
+    ]);
+
+    $c = $this->auto->fromClinVar('TP53', 'p.Arg175His');
+    expect(collect($c)->firstWhere('code', 'PS1'))->not->toBeNull();
+});
+
+it('proposes PM5 for a novel change at a residue with a different known pathogenic missense', function () {
+    \App\Models\Clinical\ClinVarVariant::create([
+        'chromosome' => '17', 'position' => 43000000, 'reference_allele' => 'G', 'alternate_allele' => 'T',
+        'gene_symbol' => 'TP53', 'hgvs' => 'NP_000537.3:p.Arg175Leu', 'is_pathogenic' => true,
+        'clinical_significance' => 'Pathogenic',
+    ]);
+
+    $c = $this->auto->fromClinVar('TP53', 'p.Arg175His');
+    $codes = collect($c)->pluck('code');
+    expect($codes)->toContain('PM5');
+    expect($codes)->not->toContain('PS1');
+});
+
+it('proposes nothing from ClinVar when the residue is unseen or the change is not missense', function () {
+    expect($this->auto->fromClinVar('TP53', 'p.Arg175His'))->toBe([]);
+    expect($this->auto->fromClinVar('TP53', 'c.524G>A'))->toBe([]);
+});

@@ -2,6 +2,8 @@
 
 namespace App\Services\Genomics\Acmg;
 
+use App\Models\Clinical\ClinVarVariant;
+
 /**
  * Conservative auto-population of the SAFE ACMG criteria from data Aurora has
  * (population AF, calibrated in-silico score). Returns proposed criteria as
@@ -69,6 +71,50 @@ class AcmgAutoEvidence
         };
         if ($strength !== null) {
             return [['code' => 'BP4', 'strength' => $strength, 'data_source' => 'auto:insilico', 'evidence_value' => $ev]];
+        }
+
+        return [];
+    }
+
+    /**
+     * PS1 (same amino-acid change) / PM5 (same residue, different change) by matching
+     * the variant's protein change against pathogenic ClinVar variants in the same gene.
+     *
+     * @return array<int, array{code:string,strength:string,data_source:string,evidence_value:string}>
+     */
+    public function fromClinVar(string $gene, ?string $proteinHgvs): array
+    {
+        $target = HgvsProtein::parse($proteinHgvs);
+        if ($target === null) {
+            return [];
+        }
+
+        $candidates = ClinVarVariant::where('gene_symbol', $gene)
+            ->where('is_pathogenic', true)
+            ->whereNotNull('hgvs')
+            ->get(['hgvs', 'variation_id']);
+
+        $sameResidueDifferentAa = false;
+
+        foreach ($candidates as $cv) {
+            $other = HgvsProtein::parse($cv->hgvs);
+            if ($other === null || $other['ref'] !== $target['ref'] || $other['position'] !== $target['position']) {
+                continue;
+            }
+            if ($other['alt'] === $target['alt']) {
+                return [[
+                    'code' => 'PS1', 'strength' => 'strong', 'data_source' => 'auto:clinvar',
+                    'evidence_value' => 'ClinVar pathogenic '.$cv->hgvs.($cv->variation_id ? " (VID {$cv->variation_id})" : ''),
+                ]];
+            }
+            $sameResidueDifferentAa = true;
+        }
+
+        if ($sameResidueDifferentAa) {
+            return [[
+                'code' => 'PM5', 'strength' => 'moderate', 'data_source' => 'auto:clinvar',
+                'evidence_value' => "Different pathogenic missense at residue {$target['ref']}{$target['position']} in ClinVar",
+            ]];
         }
 
         return [];
