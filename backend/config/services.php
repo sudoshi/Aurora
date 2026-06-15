@@ -54,6 +54,10 @@ return [
         'url' => env('ANYVAR_URL'),
     ],
 
+    'clingen_gdv' => [
+        'csv_url' => env('CLINGEN_GDV_CSV_URL', 'https://search.clinicalgenome.org/kb/gene-validity/download'),
+    ],
+
     'oidc' => [
         'enabled' => filter_var(env('OIDC_ENABLED', false), FILTER_VALIDATE_BOOL),
         'discovery_url' => env('OIDC_DISCOVERY_URL', 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration'),

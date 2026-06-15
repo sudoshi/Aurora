@@ -80,3 +80,11 @@ it('creates a KbChangeAlert via factory', function () {
     expect($a->id)->toBeInt();
     expect($a->severity)->toBeString();
 });
+
+it('creates a ClinGenGeneValidity via factory', function () {
+    $v = \App\Models\Clinical\ClinGenGeneValidity::factory()->create();
+    expect($v->exists)->toBeTrue();
+    expect($v->id)->toBeInt();
+    expect($v->gene_symbol)->toBeString();
+    expect($v->classification)->toBe('Definitive');
+});
