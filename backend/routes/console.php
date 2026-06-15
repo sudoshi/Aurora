@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('genomics:refresh-evidence')->weekly()->sundays()->at('02:00');
+Schedule::command('genomics:reanalyze-variants')->monthlyOn(8, '03:00');
