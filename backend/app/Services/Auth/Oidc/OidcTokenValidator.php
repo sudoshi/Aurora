@@ -17,10 +17,19 @@ class OidcTokenValidator
     {
         $keys = JWK::parseKeySet($this->discovery->jwks());
 
+        // Tolerate small clock skew between this host and the IdP (seconds).
+        JWT::$leeway = 30;
+
         try {
             $payload = (array) JWT::decode($idToken, $keys);
         } catch (\Throwable $e) {
             throw new OidcTokenInvalidException('signature_invalid', $e->getMessage(), $e);
+        }
+
+        // firebase/php-jwt only enforces expiry when `exp` is present; require it
+        // explicitly so a token minted without `exp` cannot validate indefinitely.
+        if (! isset($payload['exp']) || ! is_numeric($payload['exp'])) {
+            throw new OidcTokenInvalidException('missing_claim', "Required claim 'exp' missing or non-numeric");
         }
 
         $issuer = (string) ($payload['iss'] ?? '');

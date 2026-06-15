@@ -58,11 +58,21 @@ it('returns validated claims for a well-formed token', function () {
         ->and($claims->groups)->toBe(['Aurora Admins', 'authentik Admins']);
 });
 
-it('rejects an expired token', function () {
+it('rejects an expired token (beyond the clock-skew leeway)', function () {
     $token = ($this->makeToken)([
         'iss' => $this->issuer, 'aud' => $this->audience,
         'sub' => 's', 'email' => 'a@b.net', 'name' => 'n',
-        'exp' => time() - 10, 'iat' => time() - 3600,
+        'exp' => time() - 120, 'iat' => time() - 3600,
+    ]);
+
+    $this->validator->validate($token);
+})->throws(OidcTokenInvalidException::class);
+
+it('rejects a token with no exp claim (cannot validate indefinitely)', function () {
+    $token = ($this->makeToken)([
+        'iss' => $this->issuer, 'aud' => $this->audience,
+        'sub' => 's', 'email' => 'a@b.net', 'name' => 'n',
+        // exp deliberately omitted
     ]);
 
     $this->validator->validate($token);
