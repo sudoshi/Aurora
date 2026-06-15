@@ -118,4 +118,6 @@ export const handlers = [
   ),
 
   http.get("/api/hpo/search", () => HttpResponse.json({ success: true, data: [] })),
+
+  http.get("/api/acmg/criteria", () => HttpResponse.json({ success: true, data: {} })),
 ];

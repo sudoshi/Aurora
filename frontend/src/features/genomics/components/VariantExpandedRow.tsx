@@ -4,6 +4,7 @@ import { EvidenceBadge } from "./EvidenceBadge";
 import { useVariantInterpretation } from "../hooks/useGenomics";
 import type { GenomicVariant, GeneDrugInteraction } from "../types";
 import { InlineActionMenu } from "@/features/patient-profile/components/InlineActionMenu";
+import { VariantClassificationPanel } from "@/features/variant-classification/components/VariantClassificationPanel";
 
 interface VariantExpandedRowProps {
   variant: GenomicVariant;
@@ -132,6 +133,12 @@ export function VariantExpandedRow({ variant, interactions, patientId }: Variant
           patientId={patientId}
           onDiscuss={() => {}}
         />
+      </div>
+
+      {/* ACMG Classification */}
+      <div className="mt-3">
+        <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">ACMG Classification</h4>
+        <VariantClassificationPanel genomicVariantId={variant.id} />
       </div>
     </div>
   );
