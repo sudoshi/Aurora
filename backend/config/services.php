@@ -50,6 +50,10 @@ return [
         'password' => env('CLINGEN_AR_PASSWORD'),
     ],
 
+    'anyvar' => [
+        'url' => env('ANYVAR_URL'),
+    ],
+
     'oidc' => [
         'enabled' => filter_var(env('OIDC_ENABLED', false), FILTER_VALIDATE_BOOL),
         'discovery_url' => env('OIDC_DISCOVERY_URL', 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration'),

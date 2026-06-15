@@ -1,0 +1,37 @@
+# GA4GH VRS computed-id stack for Aurora (anyvar).
+#
+# UTA lives in the HOST Postgres (per project decision), reached via host.docker.internal.
+# The aurora_seqrepo volume must be populated with seqrepo data before starting
+# (e.g. seqrepo pull -i /usr/local/share/seqrepo into the volume).
+# With ANYVAR_URL unset in backend/.env the app degrades cleanly to null vrs_id
+# — this overlay is opt-in and NOT wired into the main docker-compose.yml.
+#
+# Bring up:  docker compose -f docker/vrs/docker-compose.vrs.yml up -d
+# Then set   ANYVAR_URL=http://localhost:8087 in backend/.env and restart php.
+
+services:
+  seqrepo-rest:
+    image: biocommons/seqrepo:2024-12-20
+    # serves sequences for VRS normalization; expects the seqrepo data volume populated
+    volumes:
+      - aurora_seqrepo:/usr/local/share/seqrepo:ro
+    # NOTE: this image provides the seqrepo data dir; a seqrepo-rest-service may be layered separately.
+    restart: unless-stopped
+
+  anyvar:
+    image: ghcr.io/biocommons/anyvar:1.0.0
+    depends_on: [seqrepo-rest]
+    ports:
+      - "8087:8000"
+    environment:
+      # store computed VRS objects in the host Postgres (separate db 'anyvar')
+      ANYVAR_STORAGE_URI: "postgresql://claude_dev@host.docker.internal:5432/anyvar"
+      UTA_DB_URL: "postgresql://anonymous@host.docker.internal:5432/uta/uta_20241220"
+      SEQREPO_DATAPROXY_URI: "seqrepo+http://seqrepo-rest:5000/seqrepo"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  aurora_seqrepo:
+    external: true

@@ -9,12 +9,16 @@ use App\Models\Clinical\VariantCanonicalId;
 /**
  * Assigns a canonical identity to a genomic variant: a CAID + ClinVar VariationID
  * from the ClinGen Allele Registry when an HGVS string is available, otherwise a
- * coordinate match against the locally-synced ClinVar table. Persists a baseline
- * ClinVar-significance snapshot used by the reanalysis loop.
+ * coordinate match against the locally-synced ClinVar table. Also computes a
+ * GA4GH VRS Allele ID (ga4gh:VA.…) via AnyVar when ANYVAR_URL is configured.
+ * Persists a baseline ClinVar-significance snapshot used by the reanalysis loop.
  */
 class VariantCanonicalizer
 {
-    public function __construct(private ClinGenAlleleRegistryService $registry) {}
+    public function __construct(
+        private ClinGenAlleleRegistryService $registry,
+        private VrsService $vrs,
+    ) {}
 
     public function canonicalize(GenomicVariant $variant): VariantCanonicalId
     {
@@ -32,6 +36,8 @@ class VariantCanonicalizer
             }
         }
 
+        $vrsId = $hgvs !== null ? $this->vrs->computeId($hgvs) : null;
+
         $clinvar = $this->matchClinVar($variant);
         if ($variationId === null && $clinvar !== null) {
             $variationId = $clinvar->variation_id;
@@ -43,6 +49,7 @@ class VariantCanonicalizer
                 'caid' => $caid,
                 'clinvar_variation_id' => $variationId,
                 'dbsnp_rs' => $dbsnp,
+                'vrs_id' => $vrsId,
                 'assembly' => 'GRCh38',
                 'baseline_significance' => $clinvar?->clinical_significance,
                 'baseline_review_status' => $clinvar?->review_status,
