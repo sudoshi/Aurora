@@ -42,6 +42,7 @@ const TumorBoardPage = lazy(() => import("@/features/genomics/pages/TumorBoardPa
 const UploadDetailPage = lazy(() => import("@/features/genomics/pages/UploadDetailPage"));
 
 // Rare Disease
+const RareDiseaseWorklistPage = lazy(() => import("@/features/rare-disease/pages/RareDiseaseWorklistPage"));
 const OdysseyDetailPage = lazy(() => import("@/features/rare-disease/pages/OdysseyDetailPage"));
 
 // Admin pages
@@ -127,6 +128,7 @@ export default function App() {
                 <Route path="genomics/uploads/:id" element={<UploadDetailPage />} />
 
                 {/* Rare Disease */}
+                <Route path="rare-disease" element={<RareDiseaseWorklistPage />} />
                 <Route path="odysseys/:id" element={<OdysseyDetailPage />} />
 
                 {/* Commons */}
