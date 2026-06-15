@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('genomics:refresh-evidence')->weekly()->sundays()->at('02:00');
 Schedule::command('genomics:reanalyze-variants')->monthlyOn(8, '03:00');
+Schedule::command('genomics:reanalyze-gene-validity')->monthlyOn(9, '03:00');
