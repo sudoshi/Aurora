@@ -57,3 +57,15 @@ it('creates a PhenotypeFeature via factory', function () {
     expect($feature->id)->toBeInt();
     expect($feature->hpo_id)->toStartWith('HP:');
 });
+
+it('creates a VariantClassification via factory', function () {
+    $c = \App\Models\Clinical\VariantClassification::factory()->create();
+    expect($c->id)->toBeInt();
+    expect($c->computed_classification)->toBeString();
+});
+
+it('creates a ClassificationCriterion via factory', function () {
+    $crit = \App\Models\Clinical\ClassificationCriterion::factory()->create();
+    expect($crit->id)->toBeInt();
+    expect($crit->code)->toBeString();
+});
