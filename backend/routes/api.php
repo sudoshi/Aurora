@@ -202,6 +202,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/variant-drug-interactions', [RadiogenomicsController::class, 'variantDrugInteractions']);
     });
 
+    // ── ACMG variant classification ─────────────────────────────────────
+    Route::get('/acmg/criteria', [\App\Http\Controllers\VariantClassificationController::class, 'catalog']);
+    Route::post('/genomic-variants/{variant}/classifications', [\App\Http\Controllers\VariantClassificationController::class, 'store']);
+    Route::get('/classifications/{classification}', [\App\Http\Controllers\VariantClassificationController::class, 'show']);
+    Route::post('/classifications/{classification}/criteria', [\App\Http\Controllers\VariantClassificationController::class, 'addCriterion']);
+    Route::delete('/classification-criteria/{criterion}', [\App\Http\Controllers\VariantClassificationController::class, 'destroyCriterion']);
+    Route::post('/classifications/{classification}/confirm', [\App\Http\Controllers\VariantClassificationController::class, 'confirm']);
+
     // ── Fingerprint (Similarity Engine) ──────────────────────────────────
     Route::prefix('fingerprint')->group(function () {
         // View-level access (any authenticated clinician)
