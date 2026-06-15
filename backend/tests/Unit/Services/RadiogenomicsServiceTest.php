@@ -4,9 +4,9 @@ use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\GeneDrugInteraction;
 use App\Models\Clinical\GenomicVariant;
 use App\Services\RadiogenomicsService;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(DatabaseTruncation::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new RadiogenomicsService;

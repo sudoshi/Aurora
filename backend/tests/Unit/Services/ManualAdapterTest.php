@@ -11,9 +11,9 @@ use App\Models\Clinical\Observation;
 use App\Models\Clinical\Procedure;
 use App\Models\Clinical\Visit;
 use App\Services\Adapters\ManualAdapter;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(DatabaseTruncation::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->adapter = new ManualAdapter;

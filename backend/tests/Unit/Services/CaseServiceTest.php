@@ -5,10 +5,10 @@ use App\Models\Clinical\ClinicalPatient;
 use App\Models\ClinicalCase;
 use App\Models\User;
 use App\Services\CaseService;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
-uses(DatabaseTruncation::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = new CaseService;

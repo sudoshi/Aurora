@@ -5,9 +5,9 @@ use App\Models\DiagnosticOdyssey;
 use App\Models\PhenotypeFeature;
 use App\Models\User;
 use App\Services\RareDisease\PhenopacketExporter;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(DatabaseTruncation::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->exporter = new PhenopacketExporter;

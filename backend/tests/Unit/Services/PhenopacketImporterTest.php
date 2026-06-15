@@ -5,9 +5,9 @@ use App\Models\DiagnosticOdyssey;
 use App\Models\User;
 use App\Services\RareDisease\InvalidPhenopacketException;
 use App\Services\RareDisease\PhenopacketImporter;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(DatabaseTruncation::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->importer = new PhenopacketImporter;
