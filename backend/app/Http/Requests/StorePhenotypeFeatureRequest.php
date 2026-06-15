@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePhenotypeFeatureRequest extends FormRequest
 {
@@ -14,7 +15,11 @@ class StorePhenotypeFeatureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'hpo_id' => ['required', 'string', 'regex:/^HP:\d{7}$/'],
+            'hpo_id' => [
+                'required', 'string', 'regex:/^HP:\d{7}$/',
+                Rule::unique('app.phenotype_features', 'hpo_id')
+                    ->where('odyssey_id', $this->route('odyssey')),
+            ],
             'hpo_label' => 'required|string|max:255',
             'excluded' => 'sometimes|boolean',
             'onset_hpo_id' => ['nullable', 'string', 'regex:/^HP:\d{7}$/'],

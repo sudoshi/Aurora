@@ -55,3 +55,20 @@ it('maps observed and excluded phenotype features', function () {
     $ataxia = $features->firstWhere('type.id', 'HP:0001251');
     expect($ataxia['excluded'])->toBeTrue();
 });
+
+it('emits frequency as a bare OntologyClass per Phenopackets v2', function () {
+    PhenotypeFeature::factory()->create([
+        'odyssey_id' => $this->odyssey->id,
+        'hpo_id' => 'HP:0001250',
+        'hpo_label' => 'Seizure',
+        'frequency_hpo_id' => 'HP:0040283', // Occasional
+        'recorded_by' => $this->user->id,
+    ]);
+
+    $packet = $this->exporter->export($this->odyssey->fresh());
+    $feature = collect($packet['phenotypicFeatures'])->firstWhere('type.id', 'HP:0001250');
+
+    // v2: frequency is a bare OntologyClass {id,label}, NOT wrapped in an ontologyClass envelope.
+    expect($feature['frequency']['id'])->toBe('HP:0040283');
+    expect($feature['frequency'])->not->toHaveKey('ontologyClass');
+});

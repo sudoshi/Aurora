@@ -27,7 +27,9 @@ class PhenopacketExporter
                 $feature['severity'] = ['id' => $f->severity_hpo_id, 'label' => ''];
             }
             if ($f->frequency_hpo_id) {
-                $feature['frequency'] = ['ontologyClass' => ['id' => $f->frequency_hpo_id, 'label' => '']];
+                // Phenopackets v2: PhenotypicFeature.frequency is a bare OntologyClass (like severity),
+                // not wrapped in an ontologyClass envelope.
+                $feature['frequency'] = ['id' => $f->frequency_hpo_id, 'label' => ''];
             }
             if ($f->evidence) {
                 $feature['evidence'] = [['evidenceCode' => ['id' => 'ECO:0000033', 'label' => 'author statement supported by traceable reference']]];

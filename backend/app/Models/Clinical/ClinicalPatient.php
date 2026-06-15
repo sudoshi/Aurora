@@ -168,6 +168,11 @@ class ClinicalPatient extends Model
         return $this->hasMany(\App\Models\CaseDiscussion::class, 'patient_id');
     }
 
+    public function odysseys(): HasMany
+    {
+        return $this->hasMany(\App\Models\DiagnosticOdyssey::class, 'patient_id');
+    }
+
     public function fingerprint(): HasOne
     {
         return $this->hasOne(PatientFingerprint::class, 'patient_id');

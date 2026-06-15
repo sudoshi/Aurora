@@ -25,7 +25,7 @@ class DiagnosticOdysseyController extends Controller
     {
         $patientModel = ClinicalPatient::findOrFail($patient);
 
-        $odysseys = $patientModel->hasMany(DiagnosticOdyssey::class, 'patient_id')
+        $odysseys = $patientModel->odysseys()
             ->withCount('phenotypeFeatures')
             ->orderByDesc('created_at')
             ->get();

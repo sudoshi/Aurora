@@ -47,6 +47,21 @@ it('rejects a malformed HPO id', function () {
         ])->assertStatus(422);
 });
 
+it('rejects a duplicate HPO term on the same odyssey with 422', function () {
+    PhenotypeFeature::factory()->create([
+        'odyssey_id' => $this->odyssey->id,
+        'hpo_id' => 'HP:0001250',
+        'hpo_label' => 'Seizure',
+        'recorded_by' => $this->user->id,
+    ]);
+
+    $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/odysseys/{$this->odyssey->id}/phenotypes", [
+            'hpo_id' => 'HP:0001250',
+            'hpo_label' => 'Seizure',
+        ])->assertStatus(422);
+});
+
 it('lists phenotype features for an odyssey', function () {
     PhenotypeFeature::factory()->create([
         'odyssey_id' => $this->odyssey->id,
