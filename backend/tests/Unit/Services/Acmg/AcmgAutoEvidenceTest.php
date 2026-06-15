@@ -68,6 +68,17 @@ it('proposes PM5 for a novel change at a residue with a different known pathogen
     expect($codes)->not->toContain('PS1');
 });
 
+it('matches a ClinVar variant stored in the parenthesized predicted-consequence form', function () {
+    \App\Models\Clinical\ClinVarVariant::create([
+        'chromosome' => '17', 'position' => 43000000, 'reference_allele' => 'G', 'alternate_allele' => 'A',
+        'gene_symbol' => 'TP53', 'hgvs' => 'NP_000537.3:p.(Arg175His)', 'is_pathogenic' => true,
+        'clinical_significance' => 'Pathogenic',
+    ]);
+
+    $c = $this->auto->fromClinVar('TP53', 'p.Arg175His');
+    expect(collect($c)->firstWhere('code', 'PS1'))->not->toBeNull();
+});
+
 it('proposes nothing from ClinVar when the residue is unseen or the change is not missense', function () {
     expect($this->auto->fromClinVar('TP53', 'p.Arg175His'))->toBe([]);
     expect($this->auto->fromClinVar('TP53', 'c.524G>A'))->toBe([]);

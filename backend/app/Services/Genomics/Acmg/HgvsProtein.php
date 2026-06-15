@@ -24,9 +24,11 @@ class HgvsProtein
         }
 
         if (str_contains($hgvs, 'p.')) {
-            $hgvs = substr($hgvs, strpos($hgvs, 'p.'));
+            $hgvs = substr($hgvs, strpos($hgvs, 'p.') + 2);
         }
-        $expr = ltrim($hgvs, 'p.()');
+        // Strip the optional surrounding parentheses of the predicted-consequence
+        // form p.(Arg175His) — ClinVar HGVS strings routinely use this.
+        $expr = trim($hgvs, '()');
 
         // Three-letter form: ArgNNNHis
         if (preg_match('/^([A-Z][a-z]{2})(\d+)([A-Z][a-z]{2})$/', $expr, $m)) {

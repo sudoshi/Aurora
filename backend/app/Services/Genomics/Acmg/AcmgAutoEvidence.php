@@ -89,9 +89,14 @@ class AcmgAutoEvidence
             return [];
         }
 
+        // Same-residue (PS1/PM5) matches must contain the residue number in their HGVS,
+        // so prefilter on it to avoid loading every pathogenic record for hot genes
+        // (BRCA1/TP53 hold thousands); the exact parse below still confirms ref+position.
         $candidates = ClinVarVariant::where('gene_symbol', $gene)
             ->where('is_pathogenic', true)
             ->whereNotNull('hgvs')
+            ->where('hgvs', 'like', '%'.$target['position'].'%')
+            ->limit(2000)
             ->get(['hgvs', 'variation_id']);
 
         $sameResidueDifferentAa = false;
