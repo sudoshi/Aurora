@@ -120,11 +120,11 @@ jobs:
           DB_DATABASE: aurora_test
           DB_USERNAME: aurora
           DB_PASSWORD: secret
+          DB_MIGRATIONS_TABLE: public.migrations
 
       - name: Pest tests
         working-directory: backend
         run: ./vendor/bin/pest --exclude-group=mockery-alias
-        continue-on-error: true  # V1 feature tests need migration updates — enforce after test refactor
         env:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
@@ -132,6 +132,7 @@ jobs:
           DB_DATABASE: aurora_test
           DB_USERNAME: aurora
           DB_PASSWORD: secret
+          DB_MIGRATIONS_TABLE: public.migrations
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
 
