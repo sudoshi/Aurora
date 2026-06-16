@@ -29,6 +29,9 @@ class ClinicalCase extends Model
         'institution_id',
         'scheduled_at',
         'closed_at',
+        'template_id',
+        'state',
+        'structured_data',
     ];
 
     protected function casts(): array
@@ -36,6 +39,7 @@ class ClinicalCase extends Model
         return [
             'scheduled_at' => 'datetime',
             'closed_at' => 'datetime',
+            'structured_data' => 'array',
         ];
     }
 
@@ -49,6 +53,11 @@ class ClinicalCase extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(ClinicalPatient::class, 'patient_id');
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(CaseTemplate::class, 'template_id');
     }
 
     public function teamMembers(): HasMany

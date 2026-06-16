@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Models\CaseTemplate;
 use App\Models\ClinicalCase;
+use App\Services\BoardTemplateService;
 use App\Services\CaseService;
+use App\Services\CaseStateMachine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -12,6 +15,8 @@ class CaseController extends Controller
 {
     public function __construct(
         private readonly CaseService $caseService,
+        private readonly BoardTemplateService $boardTemplateService,
+        private readonly CaseStateMachine $caseStateMachine,
     ) {}
 
     /**
@@ -52,11 +57,30 @@ class CaseController extends Controller
             'summary' => 'nullable|string|max:10000',
             'institution_id' => 'nullable|integer',
             'scheduled_at' => 'nullable|date',
+            'template_id' => ['nullable', 'integer', 'exists:app.case_templates,id'],
+            'structured_data' => ['nullable', 'array'],
         ]);
+
+        // Soft template binding: resolve the board template (if any), run SOFT
+        // validation (warnings only, never rejects), and seed the case's initial
+        // state from the template's state machine. Stateless templates leave state null.
+        $warnings = [];
+
+        if (! empty($validated['template_id'])) {
+            $template = CaseTemplate::find($validated['template_id']);
+
+            if ($template !== null) {
+                $warnings = $this->boardTemplateService->validate(
+                    $template,
+                    $validated['structured_data'] ?? [],
+                );
+                $validated['state'] = $this->caseStateMachine->initialState($template);
+            }
+        }
 
         $case = $this->caseService->createCase($validated, $request->user()->id);
 
-        return ApiResponse::success($case, 'Case created', 201);
+        return ApiResponse::success($case, 'Case created', 201, ['warnings' => $warnings]);
     }
 
     /**

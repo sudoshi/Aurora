@@ -25,6 +25,10 @@ class CaseTemplateController extends Controller
             $query->where('case_type', $request->input('case_type'));
         }
 
+        if ($request->boolean('active')) {
+            $query->where('is_active', true);
+        }
+
         $templates = $query->orderBy('specialty')->orderBy('name')->get();
 
         return ApiResponse::success($templates, 'Case templates retrieved');
