@@ -158,9 +158,14 @@ Use the Chroma MCP tools (available as `claude-devbrain` in your MCP server list
 For manual updates or to re-index after significant changes:
 
 ```bash
+# NOTE: use the dedicated venv interpreter (Python 3.13). Bare `python3` is the
+# system Python (3.14), which has no chromadb wheels and will fail on import.
+DEVBRAIN_PY=/home/smudoshi/Github/claude-devbrain/.venv/bin/python
+INGEST=/home/smudoshi/Github/claude-devbrain/scripts/ingest.py
+
 # Incremental docs only (fast -- skips unchanged files)
-python3 ~/.claude-devbrain/ingest.py -s /home/smudoshi/Github/Aurora --collection aurora_docs --code-collection aurora_code -i
+$DEVBRAIN_PY $INGEST -s /home/smudoshi/Github/Aurora --collection aurora_docs --code-collection aurora_code -i
 
 # Full re-index with code
-python3 ~/.claude-devbrain/ingest.py -s /home/smudoshi/Github/Aurora --collection aurora_docs --code-collection aurora_code --include-code
+$DEVBRAIN_PY $INGEST -s /home/smudoshi/Github/Aurora --collection aurora_docs --code-collection aurora_code --include-code
 ```
