@@ -129,4 +129,20 @@ export const handlers = [
 
   http.get("/api/odysseys/:id/mme-matches", () => HttpResponse.json({ success: true, data: [] })),
   http.post("/api/odysseys/:id/mme-search", () => HttpResponse.json({ success: true, data: { stored: 0 } })),
+
+  http.post("/api/cases/:id/decisions/draft", () =>
+    HttpResponse.json({
+      success: true,
+      data: {
+        decision_type: "treatment_recommendation",
+        recommendation: "",
+        rationale: "",
+        confidence: 0,
+        guideline_references: [],
+        sources: [],
+        model: "",
+        evidence_counts: { articles: 0, trials: 0, variants: 0 },
+      },
+    }),
+  ),
 ];

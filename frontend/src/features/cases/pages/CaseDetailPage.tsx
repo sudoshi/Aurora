@@ -32,6 +32,7 @@ import { ClinicalEventCard } from "@/features/patient-profile/components/Clinica
 import { CollaborationPanel } from "@/features/patient-profile/components/CollaborationPanel";
 import { VIEW_TAB_TO_DOMAIN } from "@/features/patient-profile/types/collaboration";
 import { downloadEventsAsCsv } from "@/features/patient-profile/utils/csvExport";
+import { AbbyDecisionDraft } from "@/features/abby-ai/components/AbbyDecisionDraft";
 
 // ── Color maps ───────────────────────────────────────────────────────────────
 
@@ -60,6 +61,7 @@ const URGENCY_COLORS: Record<string, string> = {
 
 const TABS = [
   { id: "overview",   label: "Overview",   icon: <Clock size={14} /> },
+  { id: "decisions",  label: "Decisions",  icon: <Gavel size={14} /> },
   { id: "documents",  label: "Documents",  icon: <FileText size={14} /> },
   { id: "team",       label: "Team",       icon: <Users size={14} /> },
 ];
@@ -758,6 +760,14 @@ export default function CaseDetailPage() {
     )}
   </div>
 )}
+      {activeTab === "decisions" && (
+        <div className="space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#7A8298]">
+            AI Decision Draft
+          </h2>
+          <AbbyDecisionDraft caseId={caseId} />
+        </div>
+      )}
       {activeTab === "documents" && <DocumentsTab caseId={caseId} />}
       {activeTab === "team" && (
         <CaseTeamPanel
