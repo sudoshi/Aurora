@@ -1,37 +1,60 @@
-# GA4GH VRS computed-id stack for Aurora (anyvar).
+# GA4GH VRS computed-id stack for Aurora (anyvar). Opt-in overlay — NOT wired into
+# the main docker-compose.yml. With ANYVAR_URL unset in backend/.env the app degrades
+# cleanly to null vrs_id, so this stack is optional.
 #
-# UTA lives in the HOST Postgres (per project decision), reached via host.docker.internal.
-# The aurora_seqrepo volume must be populated with seqrepo data before starting
-# (e.g. seqrepo pull -i /usr/local/share/seqrepo into the volume).
-# With ANYVAR_URL unset in backend/.env the app degrades cleanly to null vrs_id
-# — this overlay is opt-in and NOT wired into the main docker-compose.yml.
+#   Bring up:  docker compose -f docker/vrs/docker-compose.vrs.yml up -d
+#   Then set   ANYVAR_URL=http://localhost:8087 in backend/.env and restart php.
 #
-# Bring up:  docker compose -f docker/vrs/docker-compose.vrs.yml up -d
-# Then set   ANYVAR_URL=http://localhost:8087 in backend/.env and restart php.
+# Sequence resolution uses the PUBLIC biocommons SeqRepo REST service
+# (services.genomicmedlab.org) — no ~13GB local seqrepo download required.
+#
+# UTA: any HGVS input (g. or c.) is parsed via the `hgvs` library, which connects to
+# UTA — so UTA must be reachable for Aurora's variants (the `variant` field is HGVS).
+# UTA is loaded into the HOST Postgres (db `uta`, schema uta_20241220, 329k transcripts)
+# per project decision, reached below via host.docker.internal. The host PG requires
+# password auth from the docker subnet, so there is ONE required host-PG step:
+#     ALTER ROLE anonymous WITH LOGIN PASSWORD 'anonymous';
+# (anonymous is the read-only UTA role created when the dump was loaded.) Without it,
+# anyvar returns 500 on HGVS and VrsService degrades vrs_id to null. VCF/SPDI inputs
+# resolve with SeqRepo alone and do not need UTA.
 
 services:
-  seqrepo-rest:
-    image: biocommons/seqrepo:2024-12-20
-    # serves sequences for VRS normalization; expects the seqrepo data volume populated
+  # Sidecar Postgres holding the computed VRS objects (keeps anyvar state off the host PG).
+  # Built from postgres:17 with the btree_gist + varchar-gist-opclass init baked in
+  # (see Dockerfile.storage) so anyvar's schema creation succeeds regardless of host perms.
+  anyvar-storage:
+    build:
+      context: .
+      dockerfile: Dockerfile.storage
+    environment:
+      POSTGRES_DB: anyvar
+      POSTGRES_USER: anyvar
+      POSTGRES_PASSWORD: anyvar
     volumes:
-      - aurora_seqrepo:/usr/local/share/seqrepo:ro
-    # NOTE: this image provides the seqrepo data dir; a seqrepo-rest-service may be layered separately.
+      - aurora_anyvar_storage:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anyvar -d anyvar"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
   anyvar:
     image: ghcr.io/biocommons/anyvar:1.0.0
-    depends_on: [seqrepo-rest]
+    depends_on:
+      anyvar-storage:
+        condition: service_healthy
     ports:
       - "8087:8000"
     environment:
-      # store computed VRS objects in the host Postgres (separate db 'anyvar')
-      ANYVAR_STORAGE_URI: "postgresql://claude_dev@host.docker.internal:5432/anyvar"
-      UTA_DB_URL: "postgresql://anonymous@host.docker.internal:5432/uta/uta_20241220"
-      SEQREPO_DATAPROXY_URI: "seqrepo+http://seqrepo-rest:5000/seqrepo"
+      ANYVAR_STORAGE_URI: "postgresql://anyvar:anyvar@anyvar-storage:5432/anyvar"
+      SEQREPO_DATAPROXY_URI: "seqrepo+https://services.genomicmedlab.org/seqrepo"
+      # Host-PG UTA (loaded: uta_20241220, 329k transcripts). Requires the one-time
+      # `ALTER ROLE anonymous ... PASSWORD` above to be reachable from this container.
+      UTA_DB_URL: "postgresql://anonymous:anonymous@host.docker.internal:5432/uta/uta_20241220"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
 volumes:
-  aurora_seqrepo:
-    external: true
+  aurora_anyvar_storage:

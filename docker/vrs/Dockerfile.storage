@@ -1,0 +1,5 @@
+# AnyVar storage Postgres with the btree_gist + varchar-gist-opclass fix baked in,
+# so anyvar's schema creation succeeds without depending on host bind-mount permissions.
+# (See init-storage/01-anyvar-gist.sql for why this is needed.)
+FROM postgres:17
+COPY init-storage/ /docker-entrypoint-initdb.d/
