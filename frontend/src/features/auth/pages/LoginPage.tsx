@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { KeyRound } from "lucide-react";
 import { authApi } from "@/features/auth/api/authApi";
@@ -6,6 +6,8 @@ import type { AuthProviderDiscovery } from "@/features/auth/api/authApi";
 import { useAuthStore } from "@/stores/authStore";
 import { AxiosError } from "axios";
 import AuthLayout from "@/features/auth/components/AuthLayout";
+
+const AUTHENTIK_REDIRECT_PATH = "/api/auth/oidc/redirect";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -63,9 +65,13 @@ export default function LoginPage() {
     }
   };
 
-  const handleSsoLogin = () => {
-    if (providers?.oidc_redirect_path) {
-      window.location.assign(providers.oidc_redirect_path);
+  const authentikRedirectPath = providers?.oidc_redirect_path || AUTHENTIK_REDIRECT_PATH;
+  const authentikUnavailable = providers?.oidc_enabled === false;
+
+  const handleSsoLogin = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (providers?.oidc_enabled === false) {
+      event.preventDefault();
+      setError("Authentik login is not enabled for this environment.");
     }
   };
 
@@ -112,17 +118,19 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {providers?.oidc_enabled && (
-        <>
-          <div className="auth-divider">
-            <span>or</span>
-          </div>
-          <button type="button" className="auth-sso-button" onClick={handleSsoLogin}>
-            <KeyRound size={17} aria-hidden="true" />
-            <span>{providers.oidc_label || "Sign in with Authentik"}</span>
-          </button>
-        </>
-      )}
+      <div className="auth-divider">
+        <span>or</span>
+      </div>
+      <a
+        className={`auth-sso-button${authentikUnavailable ? " auth-sso-button--disabled" : ""}`}
+        href={authentikRedirectPath}
+        role="button"
+        aria-disabled={authentikUnavailable}
+        onClick={handleSsoLogin}
+      >
+        <KeyRound size={17} aria-hidden="true" />
+        <span>Login with Authentik</span>
+      </a>
 
       <p className="auth-footer">
         Don&apos;t have an account?{" "}

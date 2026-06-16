@@ -79,4 +79,47 @@ describe("LoginPage", () => {
     expect(link).toBeInTheDocument();
     expect(link.closest("a")).toHaveAttribute("href", "/register");
   });
+
+  it("renders a Login with Authentik button", () => {
+    renderWithProviders(<LoginPage />);
+
+    expect(
+      screen.getByRole("button", { name: /login with authentik/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("links to the Authentik OIDC endpoint", () => {
+    server.use(
+      http.get("/api/auth/providers", () => {
+        return HttpResponse.json({
+          oidc_enabled: true,
+          oidc_label: "Authentik OpenID Connect",
+          oidc_redirect_path: "/api/auth/oidc/redirect",
+        });
+      }),
+    );
+
+    renderWithProviders(<LoginPage />);
+
+    expect(
+      screen.getByRole("button", { name: /login with authentik/i }).closest("a"),
+    ).toHaveAttribute("href", "/api/auth/oidc/redirect");
+  });
+
+  it("shows an error instead of navigating when Authentik is disabled", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<LoginPage />);
+
+    const authentikButton = screen.getByRole("button", { name: /login with authentik/i });
+    await waitFor(() => {
+      expect(authentikButton).toHaveAttribute("aria-disabled", "true");
+    });
+
+    await user.click(authentikButton);
+
+    expect(
+      await screen.findByText("Authentik login is not enabled for this environment."),
+    ).toBeInTheDocument();
+  });
 });
