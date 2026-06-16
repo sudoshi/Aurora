@@ -126,4 +126,7 @@ export const handlers = [
   http.get("/api/kb-alerts", () =>
     HttpResponse.json({ success: true, data: [], meta: { total: 0, current_page: 1, last_page: 1, per_page: 25 } }),
   ),
+
+  http.get("/api/odysseys/:id/mme-matches", () => HttpResponse.json({ success: true, data: [] })),
+  http.post("/api/odysseys/:id/mme-search", () => HttpResponse.json({ success: true, data: { stored: 0 } })),
 ];
