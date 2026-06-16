@@ -27,6 +27,12 @@ class Decision extends Model
         'finalized_by',
         'urgency',
         'record_refs',
+        'ai_generated',
+        'ai_model',
+        'ai_confidence',
+        'ai_rationale',
+        'ai_sources',
+        'ai_drafted_at',
     ];
 
     protected function casts(): array
@@ -34,6 +40,10 @@ class Decision extends Model
         return [
             'finalized_at' => 'datetime',
             'record_refs' => 'array',
+            'ai_generated' => 'boolean',
+            'ai_confidence' => 'float',
+            'ai_sources' => 'array',
+            'ai_drafted_at' => 'datetime',
         ];
     }
 

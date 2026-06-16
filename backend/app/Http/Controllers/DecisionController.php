@@ -63,11 +63,33 @@ class DecisionController extends Controller
             'rationale' => 'nullable|string',
             'guideline_reference' => 'nullable|string|max:255',
             'urgency' => 'sometimes|string|in:routine,urgent,emergent',
+            'ai_generated' => 'sometimes|boolean',
+            'ai_model' => 'nullable|string',
+            'ai_confidence' => 'nullable|numeric|between:0,1',
+            'ai_rationale' => 'nullable|string',
+            'ai_sources' => 'nullable|array',
+            'ai_sources.*.id' => 'required_with:ai_sources|string',
         ]);
 
         $validated['case_id'] = $case;
         $validated['proposed_by'] = $request->user()->id;
         $validated['status'] = 'proposed';
+
+        if (! empty($validated['ai_generated'])) {
+            $validated['ai_drafted_at'] = now();
+
+            // Accept draft-response field aliases (model, confidence, sources)
+            // when the caller passes the AI service response shape directly.
+            if (! isset($validated['ai_model']) && $request->has('model')) {
+                $validated['ai_model'] = $request->input('model');
+            }
+            if (! isset($validated['ai_confidence']) && $request->has('confidence')) {
+                $validated['ai_confidence'] = $request->input('confidence');
+            }
+            if (! isset($validated['ai_sources']) && $request->has('sources')) {
+                $validated['ai_sources'] = $request->input('sources');
+            }
+        }
 
         $decision = Decision::create($validated);
         $decision->load('proposer:id,name', 'session:id,title');

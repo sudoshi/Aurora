@@ -290,6 +290,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Decisions ────────────────────────────────────────────────────────
     Route::get('decisions/dashboard', [DecisionController::class, 'dashboard']);
     Route::get('cases/{case}/decisions', [DecisionController::class, 'index']);
+    Route::post('cases/{case}/decisions/draft', [\App\Http\Controllers\AiDecisionController::class, 'draft']);
     Route::post('cases/{case}/decisions', [DecisionController::class, 'store']);
     Route::patch('decisions/{decision}', [DecisionController::class, 'update']);
     Route::post('decisions/{decision}/vote', [DecisionController::class, 'vote']);
