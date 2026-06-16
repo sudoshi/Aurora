@@ -60,6 +60,18 @@ Route::get('/health', fn () => response()->json([
 // MME (MatchMaker Exchange) — public inbound endpoint, peer-token authenticated
 Route::post('/mme/v1/match', [\App\Http\Controllers\Mme\MatchController::class, 'match'])->middleware('mme.peer');
 
+// Beacon v2 — GA4GH public discovery endpoints (no auth required)
+Route::prefix('beacon')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Beacon\BeaconController::class, 'index']);
+    Route::get('/info', [\App\Http\Controllers\Beacon\BeaconController::class, 'info']);
+    Route::get('/service-info', [\App\Http\Controllers\Beacon\BeaconController::class, 'serviceInfo']);
+    Route::get('/configuration', [\App\Http\Controllers\Beacon\BeaconController::class, 'configuration']);
+    Route::get('/map', [\App\Http\Controllers\Beacon\BeaconController::class, 'map']);
+    Route::get('/entry_types', [\App\Http\Controllers\Beacon\BeaconController::class, 'entryTypes']);
+    Route::get('/filtering_terms', [\App\Http\Controllers\Beacon\BeaconController::class, 'filteringTerms']);
+    Route::get('/g_variants', [\App\Http\Controllers\Beacon\BeaconController::class, 'gVariants'])->middleware('throttle:60,1');
+});
+
 // Auth (public — tightly throttled)
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
