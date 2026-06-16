@@ -54,6 +54,15 @@ return [
         'url' => env('ANYVAR_URL'),
     ],
 
+    'mme' => [
+        'contact' => [
+            'name' => env('MME_CONTACT_NAME', 'Aurora MDT'),
+            'href' => env('MME_CONTACT_HREF', 'mailto:mdt@example.org'),
+            'institution' => env('MME_CONTACT_INSTITUTION', 'Aurora'),
+        ],
+        'disclaimer' => env('MME_DISCLAIMER'),
+    ],
+
     'clingen_gdv' => [
         'csv_url' => env('CLINGEN_GDV_CSV_URL', 'https://search.clinicalgenome.org/kb/gene-validity/download'),
     ],
