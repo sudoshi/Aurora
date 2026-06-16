@@ -57,6 +57,9 @@ Route::get('/health', fn () => response()->json([
     'timestamp' => now()->toISOString(),
 ]));
 
+// MME (MatchMaker Exchange) — public inbound endpoint, peer-token authenticated
+Route::post('/mme/v1/match', [\App\Http\Controllers\Mme\MatchController::class, 'match'])->middleware('mme.peer');
+
 // Auth (public — tightly throttled)
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -107,6 +110,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'index']);
     Route::post('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'store']);
     Route::delete('/phenotypes/{phenotype}', [\App\Http\Controllers\PhenotypeFeatureController::class, 'destroy']);
+
+    // ── MME outbound search + match listing ──────────────────────────────
+    Route::post('/odysseys/{odyssey}/mme-search', [\App\Http\Controllers\Mme\MmeSearchController::class, 'search']);
+    Route::get('/odysseys/{odyssey}/mme-matches', [\App\Http\Controllers\Mme\MmeSearchController::class, 'list']);
 
     // Rare Disease — HPO terminology proxy
     Route::get('/hpo/search', [\App\Http\Controllers\HpoTermController::class, 'search'])

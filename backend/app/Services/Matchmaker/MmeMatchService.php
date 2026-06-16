@@ -9,6 +9,15 @@ class MmeMatchService
 {
     public function __construct(private MmeProfileSerializer $serializer) {}
 
+    /** @param array<string,mixed> $request @return array<string,mixed> */
+    public function resultsEnvelope(array $request): array
+    {
+        return array_filter(
+            ['results' => $this->matchAgainstLocal($request), 'disclaimer' => config('services.mme.disclaimer')],
+            fn ($v) => $v !== null,
+        );
+    }
+
     /** @param array<string,mixed> $request @return list<array<string,mixed>> */
     public function matchAgainstLocal(array $request): array
     {
