@@ -15,12 +15,15 @@ ai/.coverage
 
 # Build artifacts
 /frontend/dist/
+/frontend/build/
 /backend/public/build/
 /backend/public/hot
 /backend/public/ohif/
 
 # Claude tooling
 .superpowers/
+.firecrawl/
+/setup-claude-sudo.sh
 
 # Laravel
 /backend/storage/*.key
