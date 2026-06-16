@@ -1,8 +1,8 @@
 <?php
 
+use App\Models\Clinical\GenomicVariant;
 use App\Models\DiagnosticOdyssey;
 use App\Models\PhenotypeFeature;
-use App\Models\Clinical\GenomicVariant;
 use App\Services\Matchmaker\MmeProfileSerializer;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
