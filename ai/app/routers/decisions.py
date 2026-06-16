@@ -21,7 +21,6 @@ from sqlalchemy import text
 
 from app.config import settings
 from app.db import get_session
-from app.routers.copilot import _fetch_patient_summary_data
 from app.routing.claude_client import ClaudeClient
 from app.services.biomcp_service import BioMcpService
 
@@ -48,6 +47,62 @@ class DraftDecisionRequest(BaseModel):
     patient_id: int
     clinical_question: str | None = None
     decision_type: str | None = None
+
+
+def _fetch_clinical_context(patient_id: int) -> dict:
+    """De-identifiable clinical snapshot using Aurora's ACTUAL clinical schema
+    (clinical.patients.sex, conditions.concept_name, medications.drug_name, …).
+    Returns the shape `_deidentified_context` consumes."""
+    with get_session() as session:
+        def rows(sql: str):
+            return session.execute(text(sql), {"pid": patient_id}).fetchall()
+
+        prow = session.execute(
+            text("SELECT date_of_birth, sex FROM clinical.patients WHERE id = :pid"),
+            {"pid": patient_id},
+        ).fetchone()
+        patient = {
+            "date_of_birth": str(prow.date_of_birth) if prow and prow.date_of_birth else None,
+            "gender": prow.sex if prow else None,
+        }
+        conditions = [
+            {"name": r.concept_name, "status": r.status}
+            for r in rows(
+                "SELECT concept_name, status FROM clinical.conditions "
+                "WHERE patient_id = :pid ORDER BY onset_date DESC NULLS LAST"
+            )
+        ]
+        medications = [
+            {"name": r.drug_name, "dosage": " ".join(
+                p for p in [str(r.dose_value) if r.dose_value is not None else None, r.dose_unit] if p
+            )}
+            for r in rows(
+                "SELECT drug_name, dose_value, dose_unit FROM clinical.medications "
+                "WHERE patient_id = :pid AND (status IS NULL OR status <> 'stopped') "
+                "ORDER BY start_date DESC NULLS LAST"
+            )
+        ]
+        measurements = [
+            {"name": r.measurement_name, "value": r.value_numeric, "unit": r.unit}
+            for r in rows(
+                "SELECT measurement_name, value_numeric, unit FROM clinical.measurements "
+                "WHERE patient_id = :pid ORDER BY measured_at DESC NULLS LAST LIMIT 15"
+            )
+        ]
+        observations = [
+            {"name": r.observation_name, "value": r.value_text}
+            for r in rows(
+                "SELECT observation_name, value_text FROM clinical.observations "
+                "WHERE patient_id = :pid ORDER BY observed_at DESC NULLS LAST LIMIT 15"
+            )
+        ]
+    return {
+        "patient": patient,
+        "conditions": conditions,
+        "medications": medications,
+        "measurements": measurements,
+        "observations": observations,
+    }
 
 
 def _fetch_patient_genes(patient_id: int) -> list[str]:
@@ -114,7 +169,7 @@ def _extract_json(reply: str) -> dict:
 
 @router.post("/draft-decision")
 async def draft_decision(req: DraftDecisionRequest) -> dict:
-    snapshot = _fetch_patient_summary_data(req.patient_id)
+    snapshot = _fetch_clinical_context(req.patient_id)
     genes = _fetch_patient_genes(req.patient_id)
     conditions = [c.get("name") for c in (snapshot.get("conditions") or []) if c.get("name")]
     drugs = [m.get("name") for m in (snapshot.get("medications") or []) if m.get("name")]

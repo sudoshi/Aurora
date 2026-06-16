@@ -65,7 +65,7 @@ class _FakeClaude:
 
 @pytest.fixture(autouse=True)
 def _patch(monkeypatch):
-    monkeypatch.setattr(mod, "_fetch_patient_summary_data", lambda pid: _SNAPSHOT)
+    monkeypatch.setattr(mod, "_fetch_clinical_context", lambda pid: _SNAPSHOT)
     monkeypatch.setattr(mod, "_fetch_patient_genes", lambda pid: ["BRAF"])
     monkeypatch.setattr(mod, "BioMcpService", _FakeBioMcp)
     monkeypatch.setattr(mod, "ClaudeClient", _FakeClaude)

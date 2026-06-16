@@ -1,0 +1,27 @@
+# Aurora AI ("Abby") FastAPI service — the runtime for Abby, copilot, and the
+# evidence-grounded decision-draft endpoint. Built on python:3.12 (the ai/ deps lack
+# cp314 wheels; see ai/Dockerfile + reference-aurora-deploy memory).
+#
+#   Build:  docker build -t aurora-ai:dev ai/
+#   Up:     CLAUDE_API_KEY=sk-... AI_DATABASE_URL=postgresql://USER:PW@host.docker.internal:5432/aurora \
+#           docker compose -f docker/ai/docker-compose.ai.yml up -d
+#   Then:   set AI_SERVICE_URL=http://host.docker.internal:8100 in backend/.env + recreate php.
+#
+# Secrets are read from the environment — NOTHING sensitive is committed here.
+# Without CLAUDE_API_KEY the decision-draft endpoint returns 502 gracefully (the rest
+# of the service still serves). Reaches host PG + the VRS anyvar overlay via
+# host.docker.internal.
+services:
+  ai:
+    image: aurora-ai:dev
+    ports:
+      - "8100:8100"
+    environment:
+      DATABASE_URL: "${AI_DATABASE_URL:-postgresql://smudoshi@host.docker.internal:5432/aurora}"
+      CLAUDE_API_KEY: "${CLAUDE_API_KEY:-}"
+      CLAUDE_MODEL: "${CLAUDE_MODEL:-claude-sonnet-4-6}"
+      BIOMCP_ENABLED: "true"
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
