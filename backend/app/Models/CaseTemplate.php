@@ -17,6 +17,11 @@ class CaseTemplate extends Model
             'decision_types' => 'array',
             'guideline_sets' => 'array',
             'default_team_roles' => 'array',
+            'data_schema' => 'array',
+            'candidacy_rubric' => 'array',
+            'agenda' => 'array',
+            'state_machine' => 'array',
+            'is_active' => 'boolean',
         ];
     }
 }
