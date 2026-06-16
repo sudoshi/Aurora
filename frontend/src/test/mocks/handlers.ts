@@ -130,6 +130,34 @@ export const handlers = [
   http.get("/api/odysseys/:id/mme-matches", () => HttpResponse.json({ success: true, data: [] })),
   http.post("/api/odysseys/:id/mme-search", () => HttpResponse.json({ success: true, data: { stored: 0 } })),
 
+  http.get("/api/case-templates", () =>
+    HttpResponse.json({
+      success: true,
+      data: [
+        {
+          id: 1, slug: "oncology-tumor-board", name: "Oncology Tumor Board",
+          specialty: "oncology", case_type: "tumor_board", description: "",
+          time_model: "episodic",
+          data_schema: [
+            { key: "primary_site", label: "Primary site", type: "string", required: true },
+          ],
+          candidacy_rubric: null, decision_types: [], agenda: [],
+          state_machine: null, is_active: true,
+        },
+        {
+          id: 2, slug: "rare-disease-diagnostic-odyssey", name: "Rare Disease Diagnostic Odyssey",
+          specialty: "rare_disease", case_type: "diagnostic_odyssey", description: "",
+          time_model: "diagnostic_odyssey",
+          data_schema: [
+            { key: "hpo_terms", label: "HPO terms", type: "string", required: false },
+          ],
+          candidacy_rubric: null, decision_types: [], agenda: [],
+          state_machine: { initial: "referral", states: ["referral"] }, is_active: true,
+        },
+      ],
+    }),
+  ),
+
   http.post("/api/cases/:id/decisions/draft", () =>
     HttpResponse.json({
       success: true,

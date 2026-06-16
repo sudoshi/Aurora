@@ -97,6 +97,32 @@ export interface CreateCaseData {
   clinical_question?: string;
   summary?: string;
   patient_id?: number;
+  template_id?: number;
+  structured_data?: Record<string, unknown>;
+}
+
+export interface BoardTemplateField {
+  key: string;
+  label: string;
+  type: "string" | "number" | "boolean" | "array";
+  required: boolean;
+  options?: string[];
+}
+
+export interface CaseTemplate {
+  id: number;
+  slug: string;
+  name: string;
+  specialty: string;
+  case_type: string;
+  description: string;
+  time_model: "episodic" | "episode_of_care" | "longitudinal" | "diagnostic_odyssey";
+  data_schema: BoardTemplateField[];
+  candidacy_rubric: { key: string; label: string; required: boolean }[] | null;
+  decision_types: string[];
+  agenda: string[];
+  state_machine: { initial: string; states: string[] } | null;
+  is_active: boolean;
 }
 
 export interface UpdateCaseData extends Partial<CreateCaseData> {
