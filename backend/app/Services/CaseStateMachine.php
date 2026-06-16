@@ -17,8 +17,11 @@ class CaseStateMachine
     public function canTransition(CaseTemplate $template, string $from, string $to): bool
     {
         $fsm = $template->state_machine;
-        if (empty($fsm) || empty($fsm['transitions'])) {
-            return true;
+        if (empty($fsm)) {
+            return true; // genuinely stateless template ⇒ no constraints
+        }
+        if (empty($fsm['transitions'])) {
+            return false; // stateful but no transitions defined ⇒ terminal, nothing allowed
         }
 
         foreach ($fsm['transitions'] as $t) {

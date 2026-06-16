@@ -140,10 +140,15 @@ class SpecialtyTemplateSeeder extends Seeder
         ];
 
         foreach ($templates as $t) {
-            DB::table('app.case_templates')->updateOrInsert(
-                ['slug' => $t['slug']],
-                $t,
-            );
+            // Idempotent upsert by slug. created_at is insert-only so re-running
+            // the seeder never clobbers the original creation timestamp.
+            if (DB::table('app.case_templates')->where('slug', $t['slug'])->exists()) {
+                $update = $t;
+                unset($update['created_at']);
+                DB::table('app.case_templates')->where('slug', $t['slug'])->update($update);
+            } else {
+                DB::table('app.case_templates')->insert($t);
+            }
         }
     }
 }

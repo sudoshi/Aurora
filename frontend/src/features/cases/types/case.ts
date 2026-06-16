@@ -12,6 +12,9 @@ export interface ClinicalCase {
   status: CaseStatus;
   patient_id: number | null;
   case_type: CaseType;
+  template_id?: number | null;
+  state?: string | null;
+  structured_data?: Record<string, unknown> | null;
   clinical_question: string | null;
   summary: string | null;
   created_by: number;
@@ -121,7 +124,11 @@ export interface CaseTemplate {
   candidacy_rubric: { key: string; label: string; required: boolean }[] | null;
   decision_types: string[];
   agenda: string[];
-  state_machine: { initial: string; states: string[] } | null;
+  state_machine: {
+    initial: string;
+    states: string[];
+    transitions: { from: string; to: string; event: string }[];
+  } | null;
   is_active: boolean;
 }
 

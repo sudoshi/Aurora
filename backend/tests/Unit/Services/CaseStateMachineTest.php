@@ -32,3 +32,12 @@ it('allows a declared transition and rejects an undeclared one', function () {
 it('treats every transition as a no-op (allowed) for a stateless template', function () {
     expect($this->sm->canTransition($this->stateless, 'anything', 'whatever'))->toBeTrue();
 });
+
+it('rejects every transition for a stateful template with no declared transitions', function () {
+    $terminal = new CaseTemplate(['slug' => 't', 'state_machine' => [
+        'initial' => 'done',
+        'states' => ['done'],
+        'transitions' => [],
+    ]]);
+    expect($this->sm->canTransition($terminal, 'done', 'anything'))->toBeFalse();
+});

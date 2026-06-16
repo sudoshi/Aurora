@@ -58,7 +58,8 @@ class CaseController extends Controller
             'institution_id' => 'nullable|integer',
             'scheduled_at' => 'nullable|date',
             'template_id' => ['nullable', 'integer', 'exists:app.case_templates,id'],
-            'structured_data' => ['nullable', 'array'],
+            'structured_data' => ['nullable', 'array', 'max:50'],
+            'structured_data.*' => ['nullable', 'string', 'max:10000'],
         ]);
 
         // Soft template binding: resolve the board template (if any), run SOFT
