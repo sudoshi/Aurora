@@ -122,4 +122,8 @@ export const handlers = [
   http.get("/api/acmg/criteria", () => HttpResponse.json({ success: true, data: {} })),
 
   http.get("/api/patients/:id/kb-alerts", () => HttpResponse.json({ success: true, data: [] })),
+
+  http.get("/api/kb-alerts", () =>
+    HttpResponse.json({ success: true, data: [], meta: { total: 0, current_page: 1, last_page: 1, per_page: 25 } }),
+  ),
 ];

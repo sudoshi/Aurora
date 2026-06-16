@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   KeyRound,
   Bell,
+  BellRing,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +47,7 @@ export const navGroups: NavGroup[] = [
       { path: "/sessions", label: "Sessions", icon: Calendar },
       { path: "/profiles", label: "Patient Profiles", icon: Users },
       { path: "/rare-disease", label: "Rare Disease", icon: Microscope },
+      { path: "/kb-alerts", label: "Reanalysis Alerts", icon: BellRing },
       { path: "/decisions", label: "Decisions", icon: CheckCircle2 },
     ],
   },

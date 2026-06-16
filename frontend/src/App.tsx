@@ -45,6 +45,9 @@ const UploadDetailPage = lazy(() => import("@/features/genomics/pages/UploadDeta
 const RareDiseaseWorklistPage = lazy(() => import("@/features/rare-disease/pages/RareDiseaseWorklistPage"));
 const OdysseyDetailPage = lazy(() => import("@/features/rare-disease/pages/OdysseyDetailPage"));
 
+// Reanalysis
+const KbAlertWorklistPage = lazy(() => import("@/features/reanalysis/pages/KbAlertWorklistPage"));
+
 // Admin pages
 const AdminDashboardPage = lazy(() => import("@/features/administration/pages/AdminDashboardPage"));
 const UsersPage = lazy(() => import("@/features/administration/pages/UsersPage"));
@@ -130,6 +133,9 @@ export default function App() {
                 {/* Rare Disease */}
                 <Route path="rare-disease" element={<RareDiseaseWorklistPage />} />
                 <Route path="odysseys/:id" element={<OdysseyDetailPage />} />
+
+                {/* Reanalysis */}
+                <Route path="kb-alerts" element={<KbAlertWorklistPage />} />
 
                 {/* Commons */}
                 <Route path="commons" element={<CommonsPage />} />

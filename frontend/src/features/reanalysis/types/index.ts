@@ -17,6 +17,12 @@ export interface KbChangeAlert {
     review_status?: string;
     gene?: string;
     variation_url?: string;
+    disease?: string;
+    mondo?: string;
+    moi?: string;
+    classification?: string;
+    baseline_classification?: string;
+    report_url?: string;
   } | null;
   status: KbAlertStatus;
   task_id: number | null;
@@ -25,6 +31,11 @@ export interface KbChangeAlert {
   resolution_note: string | null;
   created_at: string;
   variant?: { id: number; gene: string; patient_id: number };
+}
+
+export interface KbAlertPage {
+  data: KbChangeAlert[];
+  meta?: { total: number; current_page: number; last_page: number; per_page: number };
 }
 
 export const BUCKET_LABEL: Record<string, string> = {

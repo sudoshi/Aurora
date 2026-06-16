@@ -38,4 +38,36 @@ describe("ReanalysisAlertsPanel", () => {
     renderWithProviders(<ReanalysisAlertsPanel patientId={5} />);
     await waitFor(() => expect(screen.getByText(/no reanalysis alerts/i)).toBeInTheDocument());
   });
+
+  it("renders GDV alert with ClinGen copy and hides ClinVar copy", async () => {
+    server.use(
+      http.get("/api/patients/5/kb-alerts", () =>
+        HttpResponse.json({
+          success: true,
+          data: [
+            {
+              id: 12, patient_id: 5, genomic_variant_id: 4, source: "clingen_gdv",
+              clinvar_variation_id: null, from_bucket: "Limited", to_bucket: "Definitive",
+              from_stars: 3, to_stars: 6, severity: "high",
+              evidence: {
+                gene: "BRCA1", disease: "BRCA1-related cancer predisposition",
+                classification: "Definitive", baseline_classification: "Limited",
+                report_url: "https://search.clinicalgenome.org/x",
+              },
+              status: "new", task_id: 2, acknowledged_by: null, acknowledged_at: null,
+              resolution_note: null, created_at: "2026-06-15T00:00:00Z",
+            },
+          ],
+        }),
+      ),
+    );
+
+    renderWithProviders(<ReanalysisAlertsPanel patientId={5} />);
+
+    await waitFor(() => expect(screen.getByText(/ClinGen reclassified the gene–disease validity/i)).toBeInTheDocument());
+    expect(screen.getByRole("link", { name: /ClinGen report/i })).toBeInTheDocument();
+    expect(screen.getByText(/Limited/)).toBeInTheDocument();
+    expect(screen.getByText(/Definitive/)).toBeInTheDocument();
+    expect(screen.queryByText(/ClinVar reclassified/i)).toBeNull();
+  });
 });

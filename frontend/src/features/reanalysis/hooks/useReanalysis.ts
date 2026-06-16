@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { acknowledgeKbAlert, getPatientKbAlerts } from "../api/reanalysisApi";
-import type { KbAlertStatus, KbChangeAlert } from "../types";
+import { acknowledgeKbAlert, getKbAlertWorklist, getPatientKbAlerts } from "../api/reanalysisApi";
+import type { KbAlertSeverity, KbAlertStatus, KbChangeAlert } from "../types";
 
 const KEY = "reanalysis";
 
@@ -9,6 +9,13 @@ export function usePatientKbAlerts(patientId: number, status?: KbAlertStatus) {
     queryKey: [KEY, "patient", patientId, status],
     queryFn: () => getPatientKbAlerts(patientId, status),
     enabled: Number.isFinite(patientId) && patientId > 0,
+  });
+}
+
+export function useKbAlertWorklist(filters?: { status?: KbAlertStatus; severity?: KbAlertSeverity }) {
+  return useQuery({
+    queryKey: [KEY, "worklist", filters?.status, filters?.severity],
+    queryFn: () => getKbAlertWorklist(filters),
   });
 }
 
