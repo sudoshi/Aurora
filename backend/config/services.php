@@ -63,6 +63,15 @@ return [
         'disclaimer' => env('MME_DISCLAIMER'),
     ],
 
+    'beacon' => [
+        'id' => env('BEACON_ID', 'org.aurora.beacon'),
+        'name' => env('BEACON_NAME', 'Aurora Beacon'),
+        'org_id' => env('BEACON_ORG_ID', 'org.aurora'),
+        'org_name' => env('BEACON_ORG_NAME', 'Aurora'),
+        'welcome_url' => env('BEACON_WELCOME_URL', 'https://aurora.example.org'),
+        'default_granularity' => env('BEACON_DEFAULT_GRANULARITY', 'boolean'),
+    ],
+
     'clingen_gdv' => [
         'csv_url' => env('CLINGEN_GDV_CSV_URL', 'https://search.clinicalgenome.org/kb/gene-validity/download'),
     ],
