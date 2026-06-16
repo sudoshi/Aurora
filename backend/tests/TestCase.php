@@ -22,20 +22,28 @@ abstract class TestCase extends BaseTestCase
      * env_file). Laravel's immutable dotenv will NOT let .env.testing override a real OS
      * env var, and `php artisan test` does not reliably honor phpunit.xml's <env force>.
      * Without this guard the DatabaseTruncation feature suite TRUNCATES the dev `aurora`
-     * database. We force the test connection onto a *_test database before any trait
+     * database. We force EVERY pgsql connection onto a *_test database before any trait
      * (DatabaseTruncation/RefreshDatabase) can touch it. Runs only inside the test suite.
+     *
+     * This must cover the named `app`/`clinical` connections too — not just the default —
+     * because `exists:app.users` / `Rule::unique('app.phenotype_features')` validation rules
+     * resolve `app`/`clinical` as CONNECTION names; if those still pointed at the live
+     * `aurora` DB, validation would query prod (no test data) and writes could hit prod.
      */
     public function createApplication()
     {
         $app = parent::createApplication();
 
-        $connection = (string) $app['config']->get('database.default');
-        $key = "database.connections.{$connection}.database";
-        $database = (string) $app['config']->get($key);
+        foreach ((array) $app['config']->get('database.connections') as $name => $config) {
+            if (($config['driver'] ?? null) !== 'pgsql') {
+                continue;
+            }
 
-        if ($database !== '' && ! str_ends_with($database, '_test')) {
-            $app['config']->set($key, $database.'_test');
-            $app['db']->purge($connection);
+            $database = (string) ($config['database'] ?? '');
+            if ($database !== '' && ! str_ends_with($database, '_test')) {
+                $app['config']->set("database.connections.{$name}.database", $database.'_test');
+                $app['db']->purge($name);
+            }
         }
 
         return $app;
