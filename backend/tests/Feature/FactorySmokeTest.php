@@ -88,3 +88,7 @@ it('creates a ClinGenGeneValidity via factory', function () {
     expect($v->gene_symbol)->toBeString();
     expect($v->classification)->toBe('Definitive');
 });
+
+it('creates an MmePeer via factory', fn () => expect(\App\Models\MmePeer::factory()->create()->exists)->toBeTrue());
+
+it('creates an MmeMatch via factory', fn () => expect(\App\Models\MmeMatch::factory()->create()->exists)->toBeTrue());
