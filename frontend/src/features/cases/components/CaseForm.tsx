@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCaseTemplates } from "../hooks/useCaseTemplates";
 import type {
   ClinicalCase,
   CaseSpecialty,
   CaseType,
   CaseUrgency,
+  CaseTemplate,
   CreateCaseData,
   UpdateCaseData,
 } from "../types/case";
@@ -44,6 +46,15 @@ interface CaseFormProps {
 export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFormProps) {
   const isEdit = !!clinicalCase;
 
+  const { data: templates = [] } = useCaseTemplates();
+
+  // edit-path template preselect: future (ClinicalCase has no template/structured_data yet)
+  const [templateSlug, setTemplateSlug] = useState<string>("");
+  const [structured, setStructured] = useState<Record<string, unknown>>({});
+
+  const selected: CaseTemplate | null =
+    templates.find((t) => t.slug === templateSlug) ?? null;
+
   const [title, setTitle] = useState(clinicalCase?.title ?? "");
   const [specialty, setSpecialty] = useState<CaseSpecialty>(
     clinicalCase?.specialty ?? "oncology",
@@ -72,6 +83,8 @@ export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFor
       clinical_question: clinicalQuestion.trim() || undefined,
       summary: summary.trim() || undefined,
       patient_id: patientId.trim() ? parseInt(patientId.trim(), 10) : undefined,
+      template_id: selected?.id,
+      structured_data: structured,
     };
     onSubmit(data);
   };
@@ -119,6 +132,50 @@ export function CaseForm({ clinicalCase, isPending, onSubmit, onClose }: CaseFor
               required
             />
           </div>
+
+          {/* Board Template — rendered once templates are loaded so the
+              selectable options exist before any change can be applied */}
+          {templates.length > 0 && (
+            <div className="form-group">
+              <label htmlFor="board-template" className="form-label">
+                Board Template
+              </label>
+              <select
+                id="board-template"
+                value={templateSlug}
+                onChange={(e) => {
+                  setTemplateSlug(e.target.value);
+                  setStructured({});
+                }}
+                className="form-input"
+              >
+                <option value="">Select a board template…</option>
+                {templates.map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Template-driven structured-data fields */}
+          {selected?.data_schema.map((field) => (
+            <div className="form-group" key={field.key}>
+              <label htmlFor={`sd-${field.key}`} className="form-label">
+                {field.label}
+              </label>
+              <input
+                id={`sd-${field.key}`}
+                type="text"
+                value={String(structured[field.key] ?? "")}
+                onChange={(e) =>
+                  setStructured((s) => ({ ...s, [field.key]: e.target.value }))
+                }
+                className="form-input"
+              />
+            </div>
+          ))}
 
           {/* Specialty + Case Type row */}
           <div className="grid grid-cols-2 gap-3">
