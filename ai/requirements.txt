@@ -1,9 +1,9 @@
 # Core framework
 fastapi==0.115.0
-uvicorn[standard]==0.32.0
-pydantic==2.10.0
+uvicorn[standard]==0.34.2  # 0.34.2 min required by biomcp-python
+pydantic==2.10.6  # 2.10.6 min required by biomcp-python; fastapi/anthropic allow <3
 pydantic-settings==2.7.0
-httpx==0.28.0
+httpx==0.28.1  # 0.28.1 min required by biomcp-python; anthropic allows <1
 python-dotenv==1.0.1
 
 # Database
@@ -18,6 +18,9 @@ redis==5.2.1
 anthropic==0.40.0
 numpy==2.2.0
 markdown==3.7
+
+# Evidence retrieval (PubMed / ClinicalTrials.gov / variants)
+biomcp-python==0.7.3
 
 # Optional: SapBERT embeddings (requires torch — install separately if needed)
 # sentence-transformers==3.3.1

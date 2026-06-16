@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     phi_detection_enabled: bool = True
     phi_block_on_detection: bool = True
 
+    # BioMCP evidence retrieval (PubMed / trials / variants)
+    biomcp_enabled: bool = True
+
     # Cost controls (budget enforcement)
     cloud_monthly_budget_usd: float = 500.0
     cloud_budget_alert_thresholds: list[float] = [0.50, 0.80, 0.95]

@@ -8,6 +8,7 @@ from .routers.abby import router as abby_router
 from .routers.clinical_nlp import router as clinical_nlp_router
 from .routers.copilot import router as copilot_router
 from .routers.decision_support import router as decision_support_router
+from .routers.decisions import router as decisions_router
 from .routers.embeddings import router as embeddings_router
 from .routers.health import router as health_router
 from .routers.fingerprint import router as fingerprint_router
@@ -40,6 +41,7 @@ app.add_middleware(
 
 app.include_router(health_router, prefix="/api/ai")
 app.include_router(abby_router, prefix="/api/ai/abby")
+app.include_router(decisions_router, prefix="/api/ai/abby")
 app.include_router(embeddings_router, prefix="/api/ai")
 app.include_router(clinical_nlp_router, prefix="/api/ai")
 app.include_router(decision_support_router, prefix="/api/ai")
