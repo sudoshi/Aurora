@@ -11,7 +11,7 @@ Usage:
 Environment:
     ORTHANC_URL     (default: http://localhost:8042)
     ORTHANC_USER    (default: parthenon)
-    ORTHANC_PASS    (default: orthanc_secret)
+    ORTHANC_PASS    (default: current local Orthanc password)
     DB_HOST         (default: empty for unix socket peer auth)
     DB_PORT         (default: 5432)
     DB_NAME         (default: aurora)

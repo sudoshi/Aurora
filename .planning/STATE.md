@@ -1,136 +1,90 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: Completed 10-02-PLAN.md
-last_updated: "2026-03-25T22:08:40.762Z"
-last_activity: "2026-03-25 -- Phase 10 Plan 02 executed: Genomics tab and case lifecycle E2E tests, 5 tests (3 pass, 2 skip for missing genomic data)"
+milestone: v2-post-stabilization
+milestone_name: Aurora Post-Stabilization Product Hardening
+status: active
+last_updated: "2026-06-17T23:45:00-04:00"
+last_activity: "2026-06-17 -- Roadmap reconciled; Orthanc/OHIF imaging sync closed out with live verification; devlog updated."
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 19
-  completed_plans: 19
-  percent: 100
+  completed_phases: 1
+  active_phase: 2
+  percent: 14
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-25)
+See: `.planning/ROADMAP.md`
 
-**Core value:** Every existing feature works end-to-end with automated tests proving it
-**Current focus:** Phase 10 - E2E Tests (Complete)
+**Core value:** Aurora is now a feature-rich v2 clinical MDT platform. The
+current milestone is product hardening: make the deployed system reliable,
+demonstrable, and operationally coherent before starting another broad feature
+tranche.
 
 ## Current Position
 
-Phase: 10 of 10 (E2E Tests)
-Plan: 2 of 2 in current phase (Complete)
-Status: Complete
-Last activity: 2026-03-25 -- Phase 10 Plan 02 executed: Genomics tab and case lifecycle E2E tests, 5 tests (3 pass, 2 skip for missing genomic data)
+Phase: 1 complete, Phase 2 next
 
-Progress: [██████████] 100%
+Current focus: static production frontend serving, then imaging productization
+and interoperability adapter implementation.
 
-## Performance Metrics
+## Completed In This Tranche
 
-**Velocity:**
-- Total plans completed: 15
-- Average duration: 3.0min
-- Total execution time: 0.75 hours
+- Reconciled `.planning/ROADMAP.md` away from the stale March stabilization
+  checklist and into the current post-stabilization product roadmap.
+- Replaced this state file with current milestone state.
+- Verified Orthanc proxy health through nginx:
+  - `/orthanc/statistics` returned HTTP 200.
+  - `/orthanc/dicom-web/studies` returned HTTP 200 with a 2.4 MB DICOMweb
+    response.
+- Ran `dicom/sync_orthanc_to_aurora.py --auto-create-patients` through a
+  temporary `/tmp/aurora-sync-venv` containing `psycopg2-binary`.
+- Inserted 2,208 Orthanc-backed imaging studies into
+  `clinical.imaging_studies`.
+- Created 1,761 TCIA patient records and identifier mappings.
+- Verified Aurora now reports:
+  - `orthanc/tcia`: 2,208 imaging studies.
+  - total imaging studies through the authenticated API: 2,377.
+  - indexed study rows include `dicom_endpoint=orthanc` and
+    `wadors_uri=/orthanc/dicom-web`.
+- Fixed E2E helpers for the current Authentik-enabled UI and dropdown-based
+  top navigation.
+- Updated the imaging E2E smoke to assert the current Medical Imaging page
+  structure.
+- Verified `npx playwright test tests/imaging.spec.ts --project=chromium`
+  passes: 4/4 tests.
+- Wrote `.planning/quick/1-refactor-imaging-pipeline-for-re-indexed/1-SUMMARY.md`.
+- Added a detailed 2026-06-17 devlog entry.
 
-**By Phase:**
+## Active Backlog
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01-fix-critical-blocker | 1 | 8min | 8min |
-| 02-verify-genomics-ai | 1 | 3min | 3min |
-| 03-backend-test-infrastructure | 1 | 5min | 5min |
-| 04-frontend-ai-test-infrastructure | 2 | 5min | 2.5min |
-| 05-backend-feature-tests | 3 | 8min | 2.7min |
-| 06-backend-unit-tests | 2 | 4min | 2min |
-| 07-frontend-tests | 4/4 | 8min | 2min |
-| 08-ai-service-tests | 1/1 | 3min | 3min |
+1. Static production frontend serving.
+2. Imaging productization and remaining DICOM/OHIF endpoint work.
+3. FHIR/OMOP adapter implementation.
+4. AI decision-intelligence slice 2: ambient MDT capture and instrumentation.
+5. Rare-disease follow-ons: VRS/SeqRepo/UTA, ClinGen GDV, ClinVar TSV,
+   Phen2Gene/Exomiser, and real MME peer configuration.
+6. First non-rare population pack, recommended: Cardiac Heart Team / TAVR.
 
-**Recent Trend:**
-- Last 5 plans: 06-02 (2min), 07-02 (1min), 07-03 (3min), 07-04 (3min), 08-01 (3min)
-- Trend: Stable
+## Known Follow-Ups
 
-*Updated after each plan completion*
-| Phase 07 P02 | 1min | 1 tasks | 1 files |
-| Phase 07 P03 | 3min | 2 tasks | 5 files |
-| Phase 07-frontend-tests P04 | 3min | 2 tasks | 3 files |
-| Phase 08-ai-service-tests P01 | 3min | 2 tasks | 6 files |
-| Phase 09 P01 | 2min | 1 tasks | 2 files |
-| Phase 09-feature-completion P02 | 5min | 2 tasks | 8 files |
-| Phase 10-e2e-tests P01 | 15min | 2 tasks | 5 files |
-| Phase 10-e2e-tests P02 | 3min | 2 tasks | 2 files |
-
-## Accumulated Context
-
-### Decisions
-
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- [Roadmap]: Add `clinical` database connection alias (not change validation rules) -- simpler fix
-- [Roadmap]: Sequential phase execution despite some parallelizable phases -- per config
-- [Roadmap]: Feature completion (Phase 9) after backend tests so new code is tested immediately
-- [01-01]: Clinical connection alias with search_path clinical,public added to database.php
-- [01-01]: Register endpoint 500 is pre-existing session/DNS infra issue, not register logic
-- [02-01]: BUG-10 passes with graceful degradation (503 from Laravel proxy due to Docker networking; direct AI service generates real briefings)
-- [02-01]: Token extraction uses fallback pattern (.data.access_token // .access_token) for varying API response formats
-- [02-01]: GeneDrugInteractionSeeder produces 42 records (not 43 as initially researched)
-- [03-01]: DatabaseTruncation over RefreshDatabase for multi-schema PostgreSQL performance
-- [03-01]: Unqualified table names in $exceptTables (DatabaseTruncation matches without schema prefix)
-- [03-01]: ClinicalCaseFactory uses ClinicalPatient instead of legacy Patient model
-- [03-01]: Clinical factories use explicit newFactory() to resolve sub-namespace discovery
-- [04-01]: onUnhandledRequest: 'warn' (not 'error') to prevent false test failures
-- [04-01]: V8 coverage provider over istanbul for native speed
-- [04-01]: resetStores() covers all 4 Zustand stores for test isolation
-- [04-02]: cov-fail-under=0 for infrastructure phase; Phase 8 raises to 80
-- [04-02]: httpx.AsyncClient.post patch for Ollama mock (matches actual client usage)
-- [04-02]: npm install needed in e2e/ as node_modules not committed
-- [05-01]: Assert >=400 for unimplemented endpoints because catch-all exception handler converts all exceptions to 500
-- [05-01]: Index pagination tests use data.data path since ApiResponse::success wraps paginator differently than ApiResponse::paginated
-- [05-02]: Add 'app' database connection alias (search_path: app,public) to resolve exists:app.users validation -- mirrors clinical alias from 01-01
-- [05-02]: Use >=400 assertion for route model binding 404s on non-existent sessions
-- [05-03]: PCOV/Xdebug not available; coverage measurement deferred to CI setup
-- [05-03]: ClinVar endpoints tested against actual response shapes (no success field on clinvarStatus, raw paginator on clinvarSearch)
-- [06-01]: DB-backed unit tests with RefreshDatabase instead of Mockery alias mocks for service-layer tests
-- [06-01]: Http::fake for Resend API calls in register tests rather than mocking sendTempPasswordEmail
-- [06-01]: 50 iterations for generateTempPassword ambiguous char exclusion verification
-- [06-02]: case_type required in createCase test data (NOT NULL constraint on app.cases table)
-- [06-02]: Test RadiogenomicsService correlations via GeneDrugInteraction factory seeding
-- [06-02]: Config override before OncoKbService instantiation since constructor reads token at init
-- [07-01]: Factory pattern for shared mock data avoids inline duplication across test files
-- [Phase 07]: Full URL for AI service MSW handler since generateGenomicBriefing uses native fetch
-- [07-03]: Mock InlineActionMenu and VariantExpandedRow via vi.mock to isolate genomics component tests
-- [07-03]: MSW delay() pattern for testing loading states in mutation-based components
-- [Phase 07-frontend-tests]: Scoped coverage include to tested modules (stores, genomics components/hooks, auth, lib) for 87.73% statement coverage
-- [08-01]: Patch check_ollama_health at import site (app.routers.health) not source module
-- [08-01]: Scoped coverage to 7 modules (~330 lines) for achievable 80% threshold (actual: 82.42%)
-- [Phase 09]: variant_pattern='*' for gene-level OncoKB treatments; drug names normalized lowercase+trimmed; unknown levels skipped gracefully
-- [09-02]: find() + explicit ApiResponse::error 404 instead of findOrFail() (exception handler converts ModelNotFoundException to 500)
-- [09-02]: Storage::disk('local') for genomic file uploads with stored_path tracked in DB column
-- [10-01]: Playwright storageState auth setup to share login across tests, avoiding throttle:5,1 rate limit exhaustion
-- [10-01]: Three Playwright projects (setup, auth-tests, chromium) to separate auth-testing from authenticated-tests
-- [10-02]: Genomics tests use test.skip() with clear message when Genomics button absent (data-dependent)
-- [10-02]: Case lifecycle uses serial describe with shared Date.now() caseTitle for create-then-detail flow
-- [10-02]: Assert single Add Member button to avoid Playwright strict mode violation with .or() multiple matches
-
-### Pending Todos
-
-None yet.
-
-### Blockers/Concerns
-
-- ~~`exists:clinical.patients,id` 500 error blocks all case endpoints~~ (RESOLVED in 01-01)
-- PCOV Docker installation may need build dependencies (Phase 3/4 concern)
-- Pre-existing: host.docker.internal DNS resolution fails intermittently in session middleware (infra)
+- Twenty-four Orthanc studies were skipped by the sync because no patient
+  mapping was available. Investigate whether those studies have blank DICOM
+  PatientID values, unsupported identifiers, or should be linked to synthetic
+  records.
+- Several imaging endpoints are still explicit stubs:
+  `indexFromDicomweb`, `indexSeries`, `extractNlp`, `importLocalTrigger`,
+  `autoLinkStudies`, `aiExtractMeasurements`, and `suggestTemplate`.
+- The production frontend still needs to move from public Vite-dev serving to
+  static built assets.
+- `backend/app/Services/Adapters/FhirAdapter.php` and
+  `backend/app/Services/Adapters/OmopAdapter.php` still throw
+  `not yet implemented` exceptions.
 
 ## Session Continuity
 
-Last session: 2026-03-25T22:03:00Z
-Stopped at: Completed 10-02-PLAN.md
-Resume file: None
+Last updated: 2026-06-17
+Branch: `v2/phase-0-scaffold`
+Worktree note: unrelated untracked files may remain and should not be swept into
+commits unless explicitly requested.

@@ -1,196 +1,147 @@
-# Roadmap: Aurora Stabilization & Verification
+# Roadmap: Aurora Post-Stabilization Product Hardening
 
-## Overview
+## Status As Of 2026-06-17
 
-Aurora has a fully-built Patient Genomics Tab feature across all layers (Laravel backend, React/TypeScript frontend, Python FastAPI AI service) but critical bugs block endpoint access and zero automated test coverage exists. This roadmap fixes the blockers, verifies every existing endpoint works, stands up test infrastructure for all three services, writes comprehensive tests layer by layer, completes deferred feature stubs, and validates everything end-to-end with Playwright. The goal: every feature works, and automated tests prove it.
+Aurora's original stabilization and verification milestone is complete. The
+current branch, `v2/phase-0-scaffold`, has moved beyond the March 2026
+genomics/test-hardening roadmap and now contains the major v2 platform slices:
 
-## Phases
+- Stabilization and verification across backend, frontend, AI, and E2E tests.
+- Authentik OIDC production login with Sanctum fallback.
+- Rare-disease diagnostic odyssey foundation, worklist, HPO capture, and
+  Phenopackets v2 import/export.
+- ACMG/AMP points engine with evidence criteria, provisional classification,
+  and human confirmation.
+- Variant canonical identity and ClinVar/ClinGen reanalysis alert surfaces.
+- Matchmaker Exchange inbound/outbound support and public Beacon v2 endpoints.
+- Evidence-grounded Abby decision draft and AI-attribution capture.
+- Board-template engine fields, case-template binding, dynamic case form data,
+  and template-driven case state.
+- Orthanc/OHIF imaging pipeline re-synced into Aurora.
+- Laravel 12 security baseline and frontend dependency advisories cleared.
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+The old "Aurora Stabilization & Verification" roadmap is retained in
+`.planning/STATE.md` as historical context, but it is no longer the active
+development sequence.
 
-Decimal phases appear between their surrounding integers in numeric order.
+## Current Product Position
 
-- [x] **Phase 1: Fix Critical Blocker & Verify Core Endpoints** - Fix database connection alias and verify auth, dashboard, patient, and case endpoints return correct responses (completed 2026-03-25)
-- [ ] **Phase 2: Verify Genomics & AI Endpoints** - Verify genomics interactions, stats, and AI briefing endpoints return correct data
-- [ ] **Phase 3: Backend Test Infrastructure** - Configure Pest with multi-schema PostgreSQL and create model factories for all clinical models
-- [x] **Phase 4: Frontend & AI Test Infrastructure** - Configure Vitest with coverage, set up MSW handlers, configure pytest, and update Playwright (completed 2026-03-25)
-- [x] **Phase 5: Backend Feature Tests** - Write feature tests for all six controllers plus dashboard, reaching 80%+ backend coverage (completed 2026-03-25)
-- [x] **Phase 6: Backend Unit Tests** - Write unit tests for all service classes (Auth, Patient, Case, Radiogenomics, OncoKb) (completed 2026-03-25)
-- [x] **Phase 7: Frontend Tests** - Write store, hook, and component tests for auth, genomics, and UI components (completed 2026-03-25)
-- [x] **Phase 8: AI Service Tests** - Write endpoint and service tests for FastAPI health and genomic briefing (completed 2026-03-25)
-- [x] **Phase 9: Feature Completion** - Implement OncoKB response parsing, genomics upload endpoints, and criteria endpoints (completed 2026-03-25)
-- [x] **Phase 10: E2E Tests** - Write Playwright tests for login, patient profile, genomics tab, and case management flows (completed 2026-03-25)
+Aurora is now feature-rich but unevenly productized. The next work should make
+the platform reliable, demonstrable, and operationally coherent before adding
+another broad capability tranche.
 
-## Phase Details
+## Active Roadmap
 
-### Phase 1: Fix Critical Blocker & Verify Core Endpoints
-**Goal**: Every core API endpoint (auth, dashboard, patients, cases) responds correctly without 500 errors
-**Depends on**: Nothing (first phase)
-**Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05, BUG-06, BUG-07
-**Success Criteria** (what must be TRUE):
-  1. `POST /api/login` with admin@acumenus.net / superuser returns 200 with a Sanctum token
-  2. `POST /api/register` with a new email returns success (temp password generated)
-  3. `POST /api/change-password` under auth returns 200 and issues new token
-  4. `GET /api/dashboard` returns patient domain counts without error
-  5. `GET /api/patients` returns patient list; `POST /api/patients` creates a patient; case CRUD works without the `exists:clinical` 500 error
-**Plans**: 1 plan
+### Phase 1: Roadmap, Devlog, And Imaging Closeout
 
-Plans:
-- [ ] 01-01: Fix database connection alias and verify core endpoints
+**Status:** Complete on 2026-06-17.
 
-### Phase 2: Verify Genomics & AI Endpoints
-**Goal**: All genomics and AI service endpoints return meaningful data from seeded records and Ollama
-**Depends on**: Phase 1
-**Requirements**: BUG-08, BUG-09, BUG-10
-**Success Criteria** (what must be TRUE):
-  1. `GET /api/genomics/interactions` returns the 42 seeded gene-drug interaction records
-  2. `GET /api/genomics/stats` returns variant statistics in expected format
-  3. `POST /decision-support/genomic-briefing` on the AI service returns a narrative briefing
-**Plans**: 1 plan
+**Goal:** Reconcile stale planning state and close the Orthanc/OHIF indexing
+loop with live evidence.
 
-Plans:
-- [ ] 02-01: Verify genomics and AI service endpoints
+**Completed tasks:**
+- Replaced the stale roadmap with this post-stabilization roadmap.
+- Updated `.planning/STATE.md` to reflect the current milestone and next
+  backlog.
+- Re-synced Orthanc into Aurora: 2,208 indexed Orthanc studies inserted, 1,761
+  TCIA patient records created, and 24 Orthanc studies left unlinked because no
+  patient mapping was available.
+- Verified `/orthanc/statistics`, `/orthanc/dicom-web/studies`, authenticated
+  `/api/imaging/studies`, and the imaging browser E2E smoke.
+- Wrote `.planning/quick/1-refactor-imaging-pipeline-for-re-indexed/1-SUMMARY.md`.
+- Added a detailed `docs/devlog.md` entry.
 
-### Phase 3: Backend Test Infrastructure
-**Goal**: Pest test suite can run against multi-schema PostgreSQL with factories for all models
-**Depends on**: Phase 1
-**Requirements**: INFRA-01, INFRA-02
-**Success Criteria** (what must be TRUE):
-  1. Running `php artisan test` executes Pest with DatabaseTruncation across app, clinical, and public schemas
-  2. Factories exist for User, Patient, ClinicalCase, GeneDrugInteraction, and GenomicVariant and produce valid model instances
-  3. A sample test using factories passes against the test database
-**Plans**: 1 plan
+### Phase 2: Static Production Frontend Serving
 
-Plans:
-- [ ] 03-01-PLAN.md — Configure Pest multi-schema and create model factories
+**Goal:** Stop serving the public production frontend through the Docker Vite
+development server.
 
-### Phase 4: Frontend & AI Test Infrastructure
-**Goal**: Vitest, MSW, pytest, and Playwright are all configured and a smoke test passes in each
-**Depends on**: Phase 1
-**Requirements**: INFRA-03, INFRA-04, INFRA-05, INFRA-06, INFRA-07, INFRA-08
-**Success Criteria** (what must be TRUE):
-  1. `npx vitest run` executes with coverage output (V8 provider) and jsdom/happy-dom environment
-  2. MSW 2.x handlers intercept API calls in test environment and return realistic responses
-  3. React test utilities (QueryClient wrapper, Router wrapper, Zustand reset) are available for component tests
-  4. `pytest --cov` runs with asyncio_mode=auto and generates coverage output
-  5. Playwright config points to correct dev server URL and a skeleton test launches the browser
-**Plans**: 2 plans
+**Tasks:**
+- Update nginx/compose/deploy behavior so production serves `frontend/dist`
+  static assets.
+- Preserve Vite HMR only for local development.
+- Verify `https://aurora.acumenus.net` serves built assets without `@vite/client`.
+- Add deployment checks that catch a public Vite-dev leak.
 
-Plans:
-- [ ] 04-01: Configure Vitest, MSW handlers, and React test utilities
-- [ ] 04-02: Configure pytest and update Playwright configuration
+### Phase 3: Imaging Productization
 
-### Phase 5: Backend Feature Tests
-**Goal**: Every API controller has feature tests exercising its endpoints with realistic data
-**Depends on**: Phase 3
-**Requirements**: BTEST-01, BTEST-02, BTEST-03, BTEST-04, BTEST-05, BTEST-06, BTEST-07, BTEST-13
-**Success Criteria** (what must be TRUE):
-  1. AuthController tests cover login (valid/invalid), register, change-password, and logout flows
-  2. PatientController tests cover CRUD, clinical notes, and timeline endpoints
-  3. CaseController tests cover CRUD, archive, and team member management
-  4. SessionController, GenomicsController, DashboardController, and RadiogenomicsController each have passing feature tests
-  5. Backend test coverage is at or above 80%
-**Plans**: 3 plans
+**Goal:** Turn the now-indexed Orthanc study corpus into a dependable clinical
+imaging workflow.
 
-Plans:
-- [ ] 05-01-PLAN.md � Fix .env.testing, verify AuthController tests, add PatientController and DashboardController tests
-- [ ] 05-02-PLAN.md � Feature tests for CaseController and SessionController
-- [ ] 05-03-PLAN.md � Feature tests for GenomicsController and RadiogenomicsController, coverage gate
+**Tasks:**
+- Investigate the 24 Orthanc studies skipped by the sync because no patient
+  mapping was available.
+- Implement or retire stubbed imaging endpoints:
+  `indexFromDicomweb`, `indexSeries`, `extractNlp`, `importLocalTrigger`,
+  `autoLinkStudies`, `aiExtractMeasurements`, and `suggestTemplate`.
+- Add authenticated API tests for indexed study metadata and OHIF WADO-RS
+  values.
+- Add a browser smoke that opens a real indexed study detail page and verifies
+  the OHIF iframe URL includes the StudyInstanceUID.
+- Decide whether DICOMweb indexing should be a UI action, scheduled job, or
+  one-way ops script.
 
-### Phase 6: Backend Unit Tests
-**Goal**: All service classes have unit tests validating business logic independently of HTTP layer
-**Depends on**: Phase 3
-**Requirements**: BTEST-08, BTEST-09, BTEST-10, BTEST-11, BTEST-12
-**Success Criteria** (what must be TRUE):
-  1. AuthService tests validate login logic, temp password generation, and password change flow
-  2. PatientService tests validate domain count aggregation and patient retrieval
-  3. CaseService tests validate create, update, archive, and team management logic
-  4. RadiogenomicsService tests validate variant classification and panel generation
-  5. OncoKbService tests validate connectivity check and response parsing logic
-**Plans**: 2 plans
+### Phase 4: Interoperability Spine
 
-Plans:
-- [ ] 06-01-PLAN.md — Unit tests for AuthService and PatientService
-- [ ] 06-02-PLAN.md — Unit tests for CaseService, RadiogenomicsService, and OncoKbService
+**Goal:** Replace placeholder clinical-data adapters with working, testable
+FHIR/OMOP flows.
 
-### Phase 7: Frontend Tests
-**Goal**: Zustand stores, TanStack Query hooks, and all genomics/auth components have passing tests
-**Depends on**: Phase 4
-**Requirements**: FTEST-01, FTEST-02, FTEST-03, FTEST-04, FTEST-05, FTEST-06, FTEST-07, FTEST-08, FTEST-09, FTEST-10
-**Success Criteria** (what must be TRUE):
-  1. authStore and profileStore tests validate login/logout state transitions and profile loading
-  2. useGenomics hook tests validate data fetching for interactions, briefing, variants, and radiogenomics
-  3. Genomics component tests (GenomicBriefing, ActionableVariantsPanel, GenomicVariantTable, TreatmentTimeline, EvidenceBadge) render correctly with mock data
-  4. LoginForm and RegisterPage tests validate form submission and validation behavior
-  5. Frontend test coverage is at or above 80%
-**Plans**: 4 plans
+**Tasks:**
+- Implement `FhirAdapter` read paths for patient, conditions, medications,
+  procedures, measurements, observations, notes, imaging studies, genomic
+  variants, and cases.
+- Implement `OmopAdapter` read paths or clearly scope it to the actual local
+  OMOP schema available in Aurora.
+- Add contract tests for adapter output shapes used by Abby, decision drafting,
+  patient profile, and cohort tools.
+- Define the first outbound emit path: Phenopackets, FHIR Genomics, mCODE, or
+  FHIR Task/CarePlan.
 
-Plans:
-- [ ] 07-01-PLAN.md — Store tests for authStore and profileStore with shared mock factories
-- [ ] 07-02-PLAN.md — Hook tests for useGenomics hooks with MSW
-- [ ] 07-03-PLAN.md — Component tests for genomics components (EvidenceBadge, ActionableVariantsPanel, TreatmentTimeline, GenomicBriefing, GenomicVariantTable)
-- [ ] 07-04-PLAN.md — Auth page tests (LoginPage, RegisterPage) and coverage gate
+### Phase 5: AI Decision Intelligence Slice 2
 
-### Phase 8: AI Service Tests
-**Goal**: FastAPI health and genomic briefing endpoints have comprehensive tests with mocked Ollama
-**Depends on**: Phase 4
-**Requirements**: ATEST-01, ATEST-02, ATEST-03, ATEST-04
-**Success Criteria** (what must be TRUE):
-  1. Health check endpoint test verifies 200 response with expected payload
-  2. Genomic briefing endpoint test verifies narrative generation with mocked Ollama responses
-  3. Service-level tests validate prompt construction and narrative extraction logic
-  4. AI service test coverage is at or above 80%
-**Plans**: 1 plan
+**Goal:** Move beyond structured case-summary drafting into live MDT decision
+capture.
 
-Plans:
-- [ ] 08-01: AI service endpoint and service tests with mocked Ollama
+**Tasks:**
+- Add ambient discussion transcript ingestion with local audio-first defaults.
+- Convert transcript segments into draft decisions, dissent points, follow-ups,
+  and task suggestions.
+- Extend AI attribution with review time, edit distance, accepted/rejected
+  evidence, and decision-quality instrumentation.
+- Add UI affordances that force evidence review before finalizing an AI-drafted
+  decision.
 
-### Phase 9: Feature Completion
-**Goal**: All stub endpoints are fully implemented with real business logic and persistence
-**Depends on**: Phase 5, Phase 6
-**Requirements**: FEAT-01, FEAT-02, FEAT-03
-**Success Criteria** (what must be TRUE):
-  1. OncoKbService parses treatment annotations from OncoKB API responses, maps evidence levels, and upserts GeneDrugInteraction records
-  2. `POST /api/genomics/uploads` accepts a file, stores it, and `GET /api/genomics/uploads` lists stored uploads
-  3. Criteria CRUD endpoints (list, store, update, destroy) persist and retrieve genomic criteria records
-**Plans**: 2 plans
+### Phase 6: Rare-Disease Follow-Ons
 
-Plans:
-- [ ] 09-01-PLAN.md — OncoKB response parsing with evidence level mapping and upsert
-- [ ] 09-02-PLAN.md — GenomicUpload and GenomicCriteria models, migrations, and persistence
+**Goal:** Deepen the rare-disease lead vertical after the core GA4GH and ACMG
+surfaces are stable.
 
-### Phase 10: E2E Tests
-**Goal**: Critical user flows are validated end-to-end through the browser with Playwright
-**Depends on**: Phase 7, Phase 9
-**Requirements**: E2E-01, E2E-02, E2E-03, E2E-04
-**Success Criteria** (what must be TRUE):
-  1. Admin can log in at the login page and see the dashboard with patient counts
-  2. User can navigate to a patient profile and view demographic, timeline, and clinical tabs
-  3. User can open the Genomics tab and see the AI briefing, variant table, interactions, and treatment timeline
-  4. User can create a clinical case, add a team member, and view the case detail page
-**Plans**: 2 plans
+**Tasks:**
+- Provision VRS/SeqRepo/UTA or formally defer computed VRS IDs behind CAID.
+- Add ClinGen Gene-Disease Validity as a second KB-change alert source.
+- Upgrade ClinVar ingestion to `variant_summary.txt.gz` if
+  `DateLastEvaluated` becomes required.
+- Add Phen2Gene or Exomiser prioritization behind a process-isolated boundary.
+- Configure real MME peers and document privacy/consent controls.
 
-Plans:
-- [ ] 10-01-PLAN.md � E2E tests for login and patient profile flows
-- [ ] 10-02-PLAN.md � E2E tests for genomics tab and case management flows
+### Phase 7: First Non-Rare Population Pack
 
-## Progress
+**Goal:** Use the board-template engine for a focused complex-care expansion.
 
-**Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
-Note: Phases 3 and 4 can run in parallel (both depend only on Phase 1). Phases 5 and 6 can run in parallel (both depend on Phase 3). Phases 7 and 8 can run in parallel (both depend on Phase 4). Sequential execution per config.
+**Recommended beachhead:** Cardiac Heart Team / TAVR.
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Fix Critical Blocker & Verify Core Endpoints | 1/1 | Complete   | 2026-03-25 |
-| 2. Verify Genomics & AI Endpoints | 0/1 | Not started | - |
-| 3. Backend Test Infrastructure | 0/1 | Not started | - |
-| 4. Frontend & AI Test Infrastructure | 2/2 | Complete   | 2026-03-25 |
-| 5. Backend Feature Tests | 3/3 | Complete    | 2026-03-25 |
-| 6. Backend Unit Tests | 2/2 | Complete    | 2026-03-25 |
-| 7. Frontend Tests | 3/4 | Complete    | 2026-03-25 |
-| 8. AI Service Tests | 0/1 | Complete    | 2026-03-25 |
-| 9. Feature Completion | 2/2 | Complete    | 2026-03-25 |
-| 10. E2E Tests | 2/2 | Complete    | 2026-03-25 |
+**Tasks:**
+- Define the TAVR case template, candidacy rubric, agenda, and state machine.
+- Add computable risk-score inputs and placeholders for RCRI, frailty, and
+  pulmonary risk.
+- Add a structured decision schema for candidacy, optimization, and procedural
+  planning.
+- Reuse imaging and task infrastructure for episode-of-care follow-through.
+
+## Operating Rules
+
+- Keep commits scoped and use explicit path staging; the worktree can contain
+  unrelated local planning files.
+- Verify public host behavior for production-facing changes.
+- Prefer live API and DB evidence over stale documentation.
+- Add devlog entries for every completed roadmap tranche.

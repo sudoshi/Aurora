@@ -1,5 +1,140 @@
 # Aurora Devlog
 
+## 2026-06-17 — Roadmap Reconciliation + Orthanc/OHIF Imaging Closeout
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Completed the first post-stabilization hardening tranche: reconciled stale
+planning files, finished the Orthanc re-index sync into Aurora, repaired the
+imaging E2E smoke after the Authentik/top-nav UI changes, and captured the work
+in a dedicated quick-plan summary.
+
+### Completed Tasks
+
+1. **Audited roadmap state**
+   - Reviewed `.planning/ROADMAP.md`, `.planning/STATE.md`, `docs/devlog.md`,
+     recent plan docs, current routes, current feature modules, and recent git
+     history.
+   - Confirmed the old March stabilization roadmap was stale: `.planning/STATE.md`
+     already marked the 10-phase milestone complete, while `.planning/ROADMAP.md`
+     still had several unchecked historical items.
+   - Confirmed the current branch already contains rare-disease odyssey,
+     HPO/Phenopackets, ACMG classification, variant reanalysis, Matchmaker,
+     Beacon, Abby decision draft, and board-template engine work.
+
+2. **Replaced the stale active roadmap**
+   - Rewrote `.planning/ROADMAP.md` as the active
+     "Aurora Post-Stabilization Product Hardening" roadmap.
+   - Recorded completed platform slices and set the next sequence:
+     static production frontend serving, imaging productization,
+     FHIR/OMOP adapters, AI decision-intelligence slice 2, rare-disease
+     follow-ons, and the first non-rare population pack.
+
+3. **Updated current project state**
+   - Replaced `.planning/STATE.md` with the current
+     `v2-post-stabilization` state.
+   - Captured active backlog, known follow-ups, and the worktree hygiene note
+     about unrelated local planning files.
+
+4. **Verified Orthanc proxy health**
+   - `GET http://localhost:8085/orthanc/statistics` returned HTTP 200.
+   - Orthanc reported 2,232 studies, 1,762 patients, 8,077 series, and
+     546,462 instances.
+
+5. **Verified DICOMweb through nginx**
+   - `GET http://localhost:8085/orthanc/dicom-web/studies` returned HTTP 200.
+   - The DICOMweb response size was 2,427,848 bytes.
+
+6. **Verified Aurora's pre-sync imaging DB state**
+   - Before sync, `clinical.imaging_studies` had zero rows with
+     `dicom_endpoint='orthanc'`.
+   - Existing rows were only `NULL/synthetic` and `NULL/golden_cohort`, so the
+     UI could not represent the re-indexed Orthanc corpus as indexed data.
+
+7. **Prepared sync tooling without changing system Python**
+   - Host Python was externally managed and rejected direct `pip --user`
+     installation.
+   - Created a temporary venv at `/tmp/aurora-sync-venv`.
+   - Installed `psycopg2-binary` in that venv.
+   - Verified PostgreSQL socket access to database `aurora` as user `smudoshi`.
+
+8. **Ran the Orthanc-to-Aurora sync**
+   - Ran:
+     `/tmp/aurora-sync-venv/bin/python dicom/sync_orthanc_to_aurora.py --auto-create-patients`.
+   - Fetched 2,232 studies from Orthanc.
+   - Created 1,761 new TCIA patient records and identifier mappings.
+   - Inserted 2,208 `clinical.imaging_studies` rows with
+     `dicom_endpoint='orthanc'`.
+   - Left 24 Orthanc studies skipped because no patient mapping was available.
+
+9. **Verified post-sync database state**
+   - `orthanc/tcia`: 2,208 imaging studies.
+   - `NULL/synthetic`: 104 imaging studies.
+   - `NULL/golden_cohort`: 65 imaging studies.
+   - Total authenticated imaging API count: 2,377 studies.
+
+10. **Verified authenticated imaging API output**
+    - Created a temporary Sanctum token for `admin@acumenus.net`, used it for a
+      single probe, and deleted it immediately.
+    - `GET https://aurora.acumenus.net/api/imaging/studies?per_page=2` returned
+      `success=true`.
+    - Sample API rows returned `status=indexed`, `dicom_endpoint=orthanc`, and
+      `wadors_uri=/orthanc/dicom-web`.
+
+11. **Updated stale Orthanc sync documentation**
+    - Updated `dicom/sync_orthanc_to_aurora.py` so the environment block no
+      longer documents the old `orthanc_secret` default.
+
+12. **Fixed E2E login helper for Authentik-era UI**
+    - `loginAsAdmin` now detects persisted Playwright storage-state auth before
+      submitting another local login form.
+    - It waits for the main navigation before returning, avoiding SPA-loading
+      races.
+    - It clicks the exact local `Sign In` button so `Login with Authentik` is
+      not also matched.
+
+13. **Fixed E2E navigation helper for dropdown top nav**
+    - `navigateTo` now supports dropdown navigation groups:
+      Clinical, Intelligence, and Admin.
+    - This matches the current top-nav design where Imaging lives under the
+      Intelligence dropdown.
+
+14. **Updated imaging E2E smoke assertions**
+    - `e2e/tests/imaging.spec.ts` now loads `/imaging` directly after auth.
+    - It asserts the `Medical Imaging` heading, `Studies` tab, visible table,
+      `indexed` rows, and stat-card labels.
+    - Replaced broad text/locator unions that caused Playwright strict-mode
+      violations.
+
+15. **Verified browser-level imaging smoke**
+    - Cleared the application cache to remove local-auth throttle state created
+      by repeated failed Playwright attempts.
+    - Ran `npx playwright test tests/imaging.spec.ts --project=chromium`.
+    - Result: 4 passed.
+
+16. **Wrote the imaging quick-plan summary**
+    - Added
+      `.planning/quick/1-refactor-imaging-pipeline-for-re-indexed/1-SUMMARY.md`.
+    - Included objective, every completed task, verification commands, evidence,
+      and remaining follow-ups.
+
+### Remaining Follow-Ups
+
+- Investigate the 24 skipped Orthanc studies and decide whether to link,
+  ignore, or quarantine them.
+- Implement or intentionally retire the remaining imaging stubs in
+  `ImagingController`.
+- Add an OHIF study-detail smoke that opens a specific indexed study and
+  asserts the iframe URL carries the expected `StudyInstanceUIDs` parameter.
+- Move production frontend serving from public Vite dev server to static
+  `frontend/dist` assets.
+- Start the FHIR/OMOP adapter implementation tranche after static serving and
+  imaging productization are stable.
+
+---
+
 ## 2026-03-25 — Stabilization & Verification Milestone Complete (10 Phases)
 
 **Branch:** `v2/phase-0-scaffold`

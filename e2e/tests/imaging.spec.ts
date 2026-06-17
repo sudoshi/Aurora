@@ -1,40 +1,26 @@
 import { test, expect } from "@playwright/test";
-import { loginAsAdmin, navigateTo } from "./helpers";
+import { loginAsAdmin } from "./helpers";
 
 test.describe("Imaging", () => {
   test.beforeEach(async ({ page }) => {
     await loginAsAdmin(page);
+    await page.goto("/imaging");
+    await expect(page.getByRole("heading", { name: /medical imaging/i })).toBeVisible();
   });
 
-  test("navigate to Imaging page", async ({ page }) => {
-    await navigateTo(page, "Imaging");
-
-    await expect(
-      page
-        .getByRole("heading", { name: /imaging/i })
-        .or(page.getByText(/imaging|studies|dicom/i).first())
-    ).toBeVisible();
+  test("loads the Imaging page", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: /medical imaging/i })).toBeVisible();
   });
 
   test("verify study browser loads", async ({ page }) => {
-    await navigateTo(page, "Imaging");
-
-    // Study browser or study list should be visible
-    await expect(
-      page
-        .getByText(/studies|study browser|study list|no studies/i)
-        .or(page.locator("[data-testid='study-browser'], .study-browser, table"))
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole("button", { name: /studies/i })).toBeVisible();
+    await expect(page.getByRole("table").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("indexed").first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("verify stats bar renders", async ({ page }) => {
-    await navigateTo(page, "Imaging");
-
-    // Stats bar with imaging metrics
-    await expect(
-      page
-        .getByText(/total|studies|series|images|patients/i)
-        .or(page.locator("[data-testid='stats-bar'], .stats-bar, .stats"))
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Total Studies", { exact: true }).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("AI Features", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Persons with Imaging", { exact: true })).toBeVisible();
   });
 });
