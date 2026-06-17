@@ -54,6 +54,7 @@ def _fetch_clinical_context(patient_id: int) -> dict:
     (clinical.patients.sex, conditions.concept_name, medications.drug_name, …).
     Returns the shape `_deidentified_context` consumes."""
     with get_session() as session:
+
         def rows(sql: str):
             return session.execute(text(sql), {"pid": patient_id}).fetchall()
 
@@ -62,7 +63,9 @@ def _fetch_clinical_context(patient_id: int) -> dict:
             {"pid": patient_id},
         ).fetchone()
         patient = {
-            "date_of_birth": str(prow.date_of_birth) if prow and prow.date_of_birth else None,
+            "date_of_birth": str(prow.date_of_birth)
+            if prow and prow.date_of_birth
+            else None,
             "gender": prow.sex if prow else None,
         }
         conditions = [
@@ -73,9 +76,17 @@ def _fetch_clinical_context(patient_id: int) -> dict:
             )
         ]
         medications = [
-            {"name": r.drug_name, "dosage": " ".join(
-                p for p in [str(r.dose_value) if r.dose_value is not None else None, r.dose_unit] if p
-            )}
+            {
+                "name": r.drug_name,
+                "dosage": " ".join(
+                    p
+                    for p in [
+                        str(r.dose_value) if r.dose_value is not None else None,
+                        r.dose_unit,
+                    ]
+                    if p
+                ),
+            }
             for r in rows(
                 "SELECT drug_name, dose_value, dose_unit FROM clinical.medications "
                 "WHERE patient_id = :pid AND (status IS NULL OR status <> 'stopped') "
@@ -128,12 +139,16 @@ def _age(dob: Any) -> int | None:
         return None
 
 
-def _deidentified_context(snapshot: dict, genes: list[str], evidence: dict, question: str | None) -> str:
+def _deidentified_context(
+    snapshot: dict, genes: list[str], evidence: dict, question: str | None
+) -> str:
     """Build the LLM message from clinical facts only — never identifiers."""
     patient = snapshot.get("patient") or {}
     lines: list[str] = ["# Patient (de-identified)"]
     age = _age(patient.get("date_of_birth"))
-    lines.append(f"- Age: {age if age is not None else 'unknown'}; Sex: {patient.get('gender') or 'unknown'}")
+    lines.append(
+        f"- Age: {age if age is not None else 'unknown'}; Sex: {patient.get('gender') or 'unknown'}"
+    )
     if genes:
         lines.append(f"- Genes with variants: {', '.join(genes)}")
 
@@ -142,10 +157,26 @@ def _deidentified_context(snapshot: dict, genes: list[str], evidence: dict, ques
             lines.append(f"\n## {title}")
             lines.extend(f"- {fmt(i)}" for i in items[:15])
 
-    _section("Conditions", snapshot.get("conditions") or [], lambda c: f"{c.get('name')} ({c.get('status')})")
-    _section("Medications", snapshot.get("medications") or [], lambda m: f"{m.get('name')} {m.get('dosage') or ''}".strip())
-    _section("Recent measurements", snapshot.get("measurements") or [], lambda x: f"{x.get('name')}: {x.get('value')} {x.get('unit') or ''}".strip())
-    _section("Observations", snapshot.get("observations") or [], lambda o: f"{o.get('name')}: {o.get('value')}")
+    _section(
+        "Conditions",
+        snapshot.get("conditions") or [],
+        lambda c: f"{c.get('name')} ({c.get('status')})",
+    )
+    _section(
+        "Medications",
+        snapshot.get("medications") or [],
+        lambda m: f"{m.get('name')} {m.get('dosage') or ''}".strip(),
+    )
+    _section(
+        "Recent measurements",
+        snapshot.get("measurements") or [],
+        lambda x: f"{x.get('name')}: {x.get('value')} {x.get('unit') or ''}".strip(),
+    )
+    _section(
+        "Observations",
+        snapshot.get("observations") or [],
+        lambda o: f"{o.get('name')}: {o.get('value')}",
+    )
 
     lines.append("\n# Clinical question")
     lines.append(question or "What is the recommended next step for this patient?")
@@ -171,16 +202,26 @@ def _extract_json(reply: str) -> dict:
 async def draft_decision(req: DraftDecisionRequest) -> dict:
     snapshot = _fetch_clinical_context(req.patient_id)
     genes = _fetch_patient_genes(req.patient_id)
-    conditions = [c.get("name") for c in (snapshot.get("conditions") or []) if c.get("name")]
-    drugs = [m.get("name") for m in (snapshot.get("medications") or []) if m.get("name")]
+    conditions = [
+        c.get("name") for c in (snapshot.get("conditions") or []) if c.get("name")
+    ]
+    drugs = [
+        m.get("name") for m in (snapshot.get("medications") or []) if m.get("name")
+    ]
 
-    evidence = await BioMcpService().gather(genes=genes, conditions=conditions, drugs=drugs)
-    sources = [e for kind in ("articles", "trials", "variants") for e in evidence.get(kind, [])]
+    evidence = await BioMcpService().gather(
+        genes=genes, conditions=conditions, drugs=drugs
+    )
+    sources = [
+        e for kind in ("articles", "trials", "variants") for e in evidence.get(kind, [])
+    ]
 
     message = _deidentified_context(snapshot, genes, evidence, req.clinical_question)
 
     if not settings.claude_api_key:
-        raise HTTPException(status_code=502, detail="Claude is not configured (CLAUDE_API_KEY).")
+        raise HTTPException(
+            status_code=502, detail="Claude is not configured (CLAUDE_API_KEY)."
+        )
     try:
         resp = ClaudeClient(api_key=settings.claude_api_key).chat(
             system_prompt=_SYSTEM_PROMPT, message=message
@@ -190,15 +231,21 @@ async def draft_decision(req: DraftDecisionRequest) -> dict:
         raise
     except Exception as exc:  # noqa: BLE001
         logger.exception("draft-decision generation failed")
-        raise HTTPException(status_code=502, detail=f"Decision draft failed: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Decision draft failed: {exc}"
+        ) from exc
 
     return {
-        "decision_type": req.decision_type or draft.get("decision_type") or "treatment_recommendation",
+        "decision_type": req.decision_type
+        or draft.get("decision_type")
+        or "treatment_recommendation",
         "recommendation": draft.get("recommendation") or "",
         "rationale": draft.get("rationale") or "",
         "confidence": float(draft.get("confidence") or 0.0),
         "guideline_references": draft.get("guideline_references") or [],
         "sources": sources,
         "model": settings.claude_model,
-        "evidence_counts": {k: len(evidence.get(k, [])) for k in ("articles", "trials", "variants")},
+        "evidence_counts": {
+            k: len(evidence.get(k, [])) for k in ("articles", "trials", "variants")
+        },
     }

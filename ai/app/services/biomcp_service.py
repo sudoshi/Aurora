@@ -46,7 +46,9 @@ class BioMcpService:
             return {"articles": [], "trials": [], "variants": []}
 
         return {
-            "articles": await self._safe(self._articles(genes, conditions, max_per_source)),
+            "articles": await self._safe(
+                self._articles(genes, conditions, max_per_source)
+            ),
             "trials": await self._safe(self._trials(conditions, max_per_source)),
             "variants": await self._safe(self._variants(genes, max_per_source)),
         }
@@ -58,7 +60,9 @@ class BioMcpService:
             logger.warning("BioMCP retrieval failed: %s", exc)
             return []
 
-    async def _articles(self, genes: list[str], conditions: list[str], n: int) -> list[dict]:
+    async def _articles(
+        self, genes: list[str], conditions: list[str], n: int
+    ) -> list[dict]:
         genes, conditions = _clean(genes), _clean(conditions)
         if not genes and not conditions:
             return []
