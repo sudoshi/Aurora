@@ -120,6 +120,38 @@ in a dedicated quick-plan summary.
     - Included objective, every completed task, verification commands, evidence,
       and remaining follow-ups.
 
+17. **Published the scoped implementation tranche**
+    - Staged only the roadmap/state docs, imaging quick summary, Orthanc sync
+      script comment, devlog entry, and imaging E2E helper/spec changes.
+    - Committed the tranche on `v2/phase-0-scaffold`.
+    - Pushed the branch to `origin/v2/phase-0-scaffold`.
+
+18. **Deployed the pushed branch to production**
+    - Ran `./deploy.sh` after the scoped push.
+    - Deployment pulled the latest branch, installed backend/frontend
+      dependencies, confirmed no pending migrations, rebuilt frontend assets,
+      refreshed Laravel caches, synced frontend dependencies in Docker, and
+      restarted the nginx, PHP, and node services.
+
+19. **Verified production after deploy**
+    - Confirmed Docker services were up after restart.
+    - `GET https://aurora.acumenus.net/api/health` returned HTTP 200 with
+      `status=ok`.
+    - `GET https://aurora.acumenus.net/api/auth/providers` returned HTTP 200
+      with OIDC enabled.
+    - Rechecked `GET http://localhost:8085/orthanc/statistics` after deploy.
+    - Rechecked authenticated `/api/imaging/studies?per_page=2`; it still
+      returned `success=true`, total 2,377 studies, and indexed Orthanc rows.
+    - Rechecked the database totals: 2,208 Orthanc-backed studies and 2,377
+      imaging studies overall.
+
+20. **Confirmed GitHub Actions for the pushed commit**
+    - Watched Aurora CI run `27726521351` to completion.
+    - Federation, Backend Lint, Frontend, AI Service, Security Audit, and Backend
+      Tests all completed successfully.
+    - The deploy and E2E workflow jobs were skipped by workflow conditions; the
+      production deploy and imaging E2E smoke were run manually in this session.
+
 ### Remaining Follow-Ups
 
 - Investigate the 24 skipped Orthanc studies and decide whether to link,
