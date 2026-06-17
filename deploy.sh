@@ -5,8 +5,17 @@ umask 0022
 DEPLOY_DIR="/home/smudoshi/Github/Aurora"
 echo "=== Aurora V2 Deployment ==="
 
+docker_service_running() {
+    local service="$1"
+    (cd "$DEPLOY_DIR" && docker compose ps --services --status running 2>/dev/null | grep -qx "$service")
+}
+
 docker_php_running() {
-    (cd "$DEPLOY_DIR" && docker compose ps --services --status running 2>/dev/null | grep -qx php)
+    docker_service_running php
+}
+
+docker_node_running() {
+    docker_service_running node
 }
 
 run_artisan() {
@@ -46,7 +55,11 @@ normalize_backend_permissions() {
 
 restart_runtime() {
     if docker_php_running; then
-        (cd "$DEPLOY_DIR" && docker compose restart php nginx)
+        if docker_node_running; then
+            (cd "$DEPLOY_DIR" && docker compose restart php nginx node)
+        else
+            (cd "$DEPLOY_DIR" && docker compose restart php nginx)
+        fi
     else
         sudo systemctl reload php8.4-fpm 2>/dev/null || echo "PHP-FPM reload skipped (may need sudo)"
     fi
@@ -78,6 +91,10 @@ echo "[5/6] Building frontend..."
 cd "$DEPLOY_DIR/frontend"
 npm ci 2>/dev/null || npm install
 npm run build
+if docker_node_running; then
+    echo "Syncing frontend dependencies inside Docker node service..."
+    (cd "$DEPLOY_DIR" && docker compose exec -T node npm ci)
+fi
 rm -rf "$DEPLOY_DIR/backend/public/build"
 mkdir -p "$DEPLOY_DIR/backend/public/build"
 cp -a dist/. "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend build copy skipped (dist may not exist yet)"
