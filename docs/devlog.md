@@ -60,12 +60,53 @@ development compose file.
    - Added the explicit dev-HMR compose command:
      `docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev up -d`.
 
+7. **Published and deployed the static-serving tranche**
+   - Committed the scoped implementation as
+     `482dfb1 chore: serve production frontend statically`.
+   - Pushed `v2/phase-0-scaffold` to origin.
+   - Ran `./deploy.sh` after the push.
+   - Deployment rebuilt the frontend, copied `frontend/dist` into
+     `backend/public/build`, restarted nginx/PHP, and stopped the leftover
+     `aurora-node` dev container.
+   - The new deploy smoke passed: the served root and `/imaging` fallback
+     referenced `/build/assets` and did not contain Vite dev markers.
+
+8. **Verified production static serving**
+   - Confirmed the default production compose stack contains `redis`, `php`, and
+     `nginx`, with no running `aurora-node` container.
+   - Confirmed `https://aurora.acumenus.net/` and
+     `https://aurora.acumenus.net/imaging` serve HTML that references
+     `/build/assets`.
+   - Confirmed production HTML does not contain `@vite/client`, `react-refresh`,
+     or `/src/main`.
+   - Confirmed hashed JS assets return long-lived immutable cache headers.
+
+9. **Verified API and browser behavior after deploy**
+   - `GET https://aurora.acumenus.net/api/health` returned HTTP 200 with
+     `status=ok`.
+   - `GET https://aurora.acumenus.net/api/auth/providers` returned HTTP 200 with
+     OIDC enabled.
+   - Cleared Laravel cache to avoid local-auth throttle noise.
+   - Ran `npx playwright test tests/imaging.spec.ts --project=chromium` against
+     `https://aurora.acumenus.net`.
+   - Result: 4 passed.
+
+10. **Confirmed GitHub Actions for the pushed commit**
+    - Watched Aurora CI run `27728530274` to completion.
+    - AI Service, Security Audit, Backend Lint, Federation, Frontend, and Backend
+      Tests all completed successfully.
+    - Deploy and E2E workflow jobs were skipped by workflow conditions; the
+      production deploy and imaging E2E smoke were run manually in this session.
+
 ### Verification Commands
 
 ```bash
 bash -n deploy.sh
 docker compose -f docker-compose.yml config
 docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev config
+npm run build
+./deploy.sh
+npx playwright test tests/imaging.spec.ts --project=chromium
 ```
 
 ### Remaining Follow-Ups
