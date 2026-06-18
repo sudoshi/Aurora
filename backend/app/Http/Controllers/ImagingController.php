@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\ImagingMeasurement;
+use App\Models\Clinical\ImagingSeries;
 use App\Models\Clinical\ImagingStudy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ImagingController extends Controller
 {
@@ -32,6 +34,7 @@ class ImagingController extends Controller
             'study_description' => $study->description,
             'description' => $study->description,
             'body_part' => $study->body_part,
+            'body_part_examined' => $study->body_part,
             'laterality' => $study->laterality,
             'accession_number' => $study->accession_number,
             'num_series' => $study->num_series,
@@ -44,8 +47,27 @@ class ImagingController extends Controller
             'source_id' => $study->source_id,
             'source_type' => $study->source_type,
             'measurement_count' => $study->imagingMeasurements()->count(),
+            'measurements_count' => $study->imagingMeasurements()->count(),
             'segmentation_count' => $study->segmentations()->count(),
+            'created_at' => $study->created_at?->toISOString(),
+            'updated_at' => $study->updated_at?->toISOString(),
         ];
+    }
+
+    private function orthancRequest()
+    {
+        $request = Http::baseUrl(rtrim((string) config('services.orthanc.base_url'), '/'))
+            ->acceptJson()
+            ->timeout(30);
+
+        $user = config('services.orthanc.user');
+        $password = config('services.orthanc.password');
+
+        if ($user && $password) {
+            $request = $request->withBasicAuth((string) $user, (string) $password);
+        }
+
+        return $request;
     }
 
     private function formatMeasurement(ImagingMeasurement $m): array
@@ -90,6 +112,10 @@ class ImagingController extends Controller
             'total_measurements' => $totalMeasurements,
             'modality_counts' => $modalityCounts,
             'body_part_counts' => $bodyPartCounts,
+            'total_features' => 0,
+            'persons_with_imaging' => $totalPatients,
+            'studies_by_modality' => $modalityCounts,
+            'features_by_type' => [],
         ], 'Imaging stats retrieved');
     }
 
@@ -138,10 +164,15 @@ class ImagingController extends Controller
         $data['series'] = $study->series->map(fn ($s) => [
             'id' => $s->id,
             'series_uid' => $s->series_uid,
+            'series_instance_uid' => $s->series_uid,
             'series_number' => $s->series_number,
             'modality' => $s->modality,
             'description' => $s->description,
+            'series_description' => $s->description,
             'num_instances' => $s->num_instances,
+            'num_images' => $s->num_instances,
+            'source_id' => $s->source_id,
+            'source_type' => $s->source_type,
         ])->values();
         $data['measurements'] = $study->imagingMeasurements->map(fn ($m) => $this->formatMeasurement($m))->values();
         $data['segmentations'] = $study->segmentations->map(fn ($seg) => [
@@ -170,7 +201,7 @@ class ImagingController extends Controller
     }
 
     // =====================================================================
-    //  5. POST /imaging/studies/{id}/index-series  (stub)
+    //  5. POST /imaging/studies/{id}/index-series
     // =====================================================================
 
     public function indexSeries(int $id): JsonResponse
@@ -181,10 +212,109 @@ class ImagingController extends Controller
             return ApiResponse::error('Imaging study not found', 404);
         }
 
-        return ApiResponse::success([
-            'indexed' => 0,
-            'errors' => 0,
-        ], 'Series indexing not yet implemented');
+        if (! $study->study_uid) {
+            return ApiResponse::error('Study has no StudyInstanceUID', 422);
+        }
+
+        try {
+            $findResponse = $this->orthancRequest()->post('/tools/find', [
+                'Level' => 'Study',
+                'Query' => [
+                    'StudyInstanceUID' => $study->study_uid,
+                ],
+            ]);
+
+            if ($findResponse->failed()) {
+                return ApiResponse::error('Orthanc study lookup failed', 502, [
+                    'status' => $findResponse->status(),
+                ]);
+            }
+
+            $orthancStudyIds = $findResponse->json();
+            if (! is_array($orthancStudyIds) || empty($orthancStudyIds)) {
+                return ApiResponse::error('Study not found in Orthanc', 404);
+            }
+
+            $orthancStudyId = (string) $orthancStudyIds[0];
+            $studyResponse = $this->orthancRequest()->get('/studies/'.$orthancStudyId);
+
+            if ($studyResponse->failed()) {
+                return ApiResponse::error('Orthanc study metadata fetch failed', 502, [
+                    'status' => $studyResponse->status(),
+                ]);
+            }
+
+            $orthancStudy = $studyResponse->json();
+            $seriesIds = is_array($orthancStudy) ? ($orthancStudy['Series'] ?? []) : [];
+            if (! is_array($seriesIds)) {
+                $seriesIds = [];
+            }
+
+            $indexed = 0;
+            $updated = 0;
+            $errors = 0;
+            $totalInstances = 0;
+
+            foreach ($seriesIds as $orthancSeriesId) {
+                $seriesResponse = $this->orthancRequest()->get('/series/'.(string) $orthancSeriesId);
+
+                if ($seriesResponse->failed()) {
+                    $errors++;
+
+                    continue;
+                }
+
+                $orthancSeries = $seriesResponse->json();
+                $tags = is_array($orthancSeries) && is_array($orthancSeries['MainDicomTags'] ?? null)
+                    ? $orthancSeries['MainDicomTags']
+                    : [];
+                $seriesUid = $tags['SeriesInstanceUID'] ?? null;
+
+                if (! $seriesUid) {
+                    $errors++;
+
+                    continue;
+                }
+
+                $orthancInstances = is_array($orthancSeries) ? ($orthancSeries['Instances'] ?? null) : null;
+                $instances = is_array($orthancInstances)
+                    ? count($orthancInstances)
+                    : null;
+                $totalInstances += $instances ?? 0;
+
+                $series = ImagingSeries::updateOrCreate(
+                    ['series_uid' => $seriesUid],
+                    [
+                        'imaging_study_id' => $study->id,
+                        'series_number' => isset($tags['SeriesNumber']) ? (int) $tags['SeriesNumber'] : null,
+                        'modality' => $tags['Modality'] ?? null,
+                        'description' => $tags['SeriesDescription'] ?? null,
+                        'num_instances' => $instances,
+                        'source_id' => (string) $orthancSeriesId,
+                        'source_type' => 'orthanc',
+                    ],
+                );
+
+                $series->wasRecentlyCreated ? $indexed++ : $updated++;
+            }
+
+            $study->forceFill([
+                'num_series' => count($seriesIds),
+                'num_instances' => $totalInstances > 0 ? $totalInstances : $study->num_instances,
+                'dicom_endpoint' => 'orthanc',
+            ])->save();
+
+            return ApiResponse::success([
+                'indexed' => $indexed,
+                'updated' => $updated,
+                'errors' => $errors,
+                'series_total' => $indexed + $updated,
+            ], 'Series indexed from Orthanc');
+        } catch (\Throwable $e) {
+            return ApiResponse::error('Unable to index series from Orthanc', 502, [
+                'detail' => $e->getMessage(),
+            ]);
+        }
     }
 
     // =====================================================================

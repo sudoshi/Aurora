@@ -40,6 +40,12 @@ return [
         'base_url' => env('AI_SERVICE_URL', 'http://localhost:8100'),
     ],
 
+    'orthanc' => [
+        'base_url' => env('ORTHANC_URL', 'http://host.docker.internal:8042'),
+        'user' => env('ORTHANC_USER'),
+        'password' => env('ORTHANC_PASS', env('ORTHANC_PASSWORD')),
+    ],
+
     'oncokb' => [
         'token' => env('ONCOKB_API_TOKEN'),
     ],

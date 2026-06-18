@@ -1,5 +1,5 @@
 export type ImagingModality = 'CT' | 'MR' | 'PT' | 'US' | 'CR' | 'DX' | 'MG' | 'XA' | 'NM' | 'RF' | string;
-export type StudyStatus = 'indexed' | 'processed' | 'error';
+export type StudyStatus = 'indexed' | 'processed' | 'pending' | 'error';
 export type FeatureType = 'nlp_finding' | 'ai_classification' | 'radiomic' | 'manual';
 export type CriteriaType = 'modality' | 'anatomy' | 'quantitative' | 'ai_classification' | 'dose';
 
@@ -15,39 +15,54 @@ export type ResponseCriteria = 'recist' | 'ct_severity' | 'deauville' | 'rano';
 
 export interface ImagingStudy {
   id: number;
-  source_id: number;
+  source_id: string | number | null;
+  source_type: string | null;
+  patient_id: number | null;
   person_id: number | null;
+  study_uid: string;
   study_instance_uid: string;
   accession_number: string | null;
   modality: ImagingModality | null;
+  body_part: string | null;
   body_part_examined: string | null;
   study_description: string | null;
+  description: string | null;
   study_date: string | null;
   num_series: number;
   num_images: number;
+  num_instances: number;
+  dicom_endpoint: string | null;
   orthanc_study_id: string | null;
   wadors_uri: string | null;
   status: StudyStatus;
-  image_occurrence_id: number | null;
-  created_at: string;
-  updated_at: string;
-  series?: ImagingSeries[];
+  image_occurrence_id?: number | null;
+  measurement_count?: number;
   measurements_count?: number;
+  segmentation_count?: number;
+  created_at?: string | null;
+  updated_at?: string | null;
+  series?: ImagingSeries[];
 }
 
 export interface ImagingSeries {
   id: number;
-  study_id: number;
+  study_id?: number;
+  imaging_study_id?: number;
+  series_uid: string;
   series_instance_uid: string;
+  description: string | null;
   series_description: string | null;
   modality: ImagingModality | null;
-  body_part_examined: string | null;
+  body_part_examined?: string | null;
   series_number: number | null;
+  num_instances: number | null;
   num_images: number;
-  slice_thickness_mm: number | null;
-  manufacturer: string | null;
-  manufacturer_model: string | null;
-  created_at: string;
+  slice_thickness_mm?: number | null;
+  manufacturer?: string | null;
+  manufacturer_model?: string | null;
+  source_id?: string | number | null;
+  source_type?: string | null;
+  created_at?: string | null;
 }
 
 export interface ImagingFeature {
@@ -81,8 +96,12 @@ export interface ImagingCohortCriterion {
 
 export interface ImagingStats {
   total_studies: number;
+  total_patients: number;
+  total_measurements: number;
   total_features: number;
   studies_by_modality: Record<string, number>;
+  modality_counts: Record<string, number>;
+  body_part_counts: Record<string, number>;
   features_by_type: Record<string, number>;
   persons_with_imaging: number;
 }
@@ -99,6 +118,23 @@ export interface PaginatedResponse<T> {
   last_page: number;
   per_page: number;
   total: number;
+}
+
+export interface ApiPaginatedResponse<T> {
+  success?: boolean;
+  message?: string;
+  data?: T[];
+  meta?: {
+    total?: number;
+    page?: number;
+    current_page?: number;
+    per_page?: number;
+    last_page?: number;
+  };
+  current_page?: number;
+  last_page?: number;
+  per_page?: number;
+  total?: number;
 }
 
 // ── Imaging Outcomes Research Types ──────────────────────────────────────
@@ -168,6 +204,7 @@ export interface TimelineStudy {
   study_instance_uid: string;
   study_date: string | null;
   modality: ImagingModality | null;
+  body_part: string | null;
   body_part_examined: string | null;
   study_description: string | null;
   num_series: number;

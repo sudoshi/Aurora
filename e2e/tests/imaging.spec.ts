@@ -1,5 +1,43 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { loginAsAdmin } from "./helpers";
+
+type IndexedStudy = {
+  id: number;
+  study_instance_uid: string;
+  status: string;
+  wadors_uri?: string | null;
+};
+
+async function fetchFirstIndexedStudy(page: Page): Promise<IndexedStudy | null> {
+  return page.evaluate(async () => {
+    const persisted = window.localStorage.getItem("aurora-auth");
+    let token: string | null = null;
+
+    if (persisted) {
+      try {
+        token = JSON.parse(persisted)?.state?.token ?? null;
+      } catch {
+        token = null;
+      }
+    }
+
+    const response = await fetch("/api/imaging/studies?per_page=25", {
+      headers: {
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const payload = await response.json();
+    const studies = Array.isArray(payload.data) ? payload.data : [];
+
+    return studies.find(
+      (study: IndexedStudy) => study.status === "indexed" && Boolean(study.study_instance_uid),
+    ) ?? null;
+  });
+}
 
 test.describe("Imaging", () => {
   test.beforeEach(async ({ page }) => {
@@ -22,5 +60,23 @@ test.describe("Imaging", () => {
     await expect(page.getByText("Total Studies", { exact: true }).first()).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText("AI Features", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Persons with Imaging", { exact: true })).toBeVisible();
+  });
+
+  test("opens an indexed study detail page with StudyInstanceUID in the OHIF URL", async ({ page }) => {
+    const study = await fetchFirstIndexedStudy(page);
+    test.skip(!study, "No indexed imaging study is available in this environment");
+    if (!study) return;
+
+    await page.goto(`/imaging/studies/${study.id}`);
+
+    await expect(page.getByRole("heading", { name: /dicom study/i })).toBeVisible();
+    await expect(page.getByText(study.study_instance_uid).first()).toBeVisible();
+
+    const iframe = page.locator('iframe[title="OHIF DICOM Viewer"]');
+    await expect(iframe).toBeVisible({ timeout: 15_000 });
+
+    const src = await iframe.getAttribute("src");
+    expect(src).toContain("/ohif/viewer");
+    expect(decodeURIComponent(src ?? "")).toContain(`StudyInstanceUIDs=${study.study_instance_uid}`);
   });
 });

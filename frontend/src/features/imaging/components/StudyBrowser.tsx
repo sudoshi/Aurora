@@ -34,6 +34,10 @@ function getMeasurementCount(s: AnyStudy): number {
   return 0;
 }
 
+function getBodyPart(s: AnyStudy): string | null {
+  return ("body_part" in s ? s.body_part : null) ?? s.body_part_examined ?? null;
+}
+
 // ── Study Card ──────────────────────────────────────────────────────────
 
 function StudyCard({ study, onCompare, compareSelected }: {
@@ -103,7 +107,7 @@ function StudyCard({ study, onCompare, compareSelected }: {
 
       <div className="px-3 py-2.5 space-y-1">
         <p className="text-xs font-medium text-[#E8ECF4] truncate">
-          {study.study_description ?? study.body_part_examined ?? "DICOM Study"}
+          {study.study_description ?? getBodyPart(study) ?? "DICOM Study"}
         </p>
         <div className="flex items-center justify-between">
           <p className="text-[10px] text-[#4A5068]">{formatDate(getStudyDate(study))}</p>

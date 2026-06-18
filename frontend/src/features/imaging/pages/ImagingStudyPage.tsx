@@ -43,11 +43,13 @@ export default function ImagingStudyPage() {
     );
   }
 
+  const bodyPart = study.body_part ?? study.body_part_examined ?? "--";
+
   const fields = [
     { label: "Study Instance UID", value: study.study_instance_uid },
     { label: "Accession Number", value: study.accession_number ?? "--" },
     { label: "Modality", value: study.modality ?? "--" },
-    { label: "Body Part", value: study.body_part_examined ?? "--" },
+    { label: "Body Part", value: bodyPart },
     { label: "Description", value: study.study_description ?? "--" },
     { label: "Study Date", value: study.study_date ?? "--" },
     { label: "Series Count", value: study.num_series },
@@ -126,7 +128,8 @@ export default function ImagingStudyPage() {
 
       {indexSeries.isSuccess && (
         <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-          Indexed {(indexSeries.data as { indexed: number }).indexed} series.
+          Indexed {(indexSeries.data as { indexed: number }).indexed} new /{" "}
+          updated {(indexSeries.data as { updated: number }).updated} series.
         </div>
       )}
       {extractNlp.isSuccess && (
@@ -226,10 +229,14 @@ export default function ImagingStudyPage() {
                     <td className="px-4 py-3 text-xs font-semibold text-[#B4BAC8]">
                       {s.modality ?? "--"}
                     </td>
-                    <td className="px-4 py-3 text-[#7A8298] text-xs">{s.series_description ?? "--"}</td>
-                    <td className="px-4 py-3 text-[#B4BAC8] text-xs">{s.num_images}</td>
                     <td className="px-4 py-3 text-[#7A8298] text-xs">
-                      {s.slice_thickness_mm !== null ? `${s.slice_thickness_mm} mm` : "--"}
+                      {s.series_description ?? s.description ?? "--"}
+                    </td>
+                    <td className="px-4 py-3 text-[#B4BAC8] text-xs">
+                      {s.num_images ?? s.num_instances ?? "--"}
+                    </td>
+                    <td className="px-4 py-3 text-[#7A8298] text-xs">
+                      {s.slice_thickness_mm != null ? `${s.slice_thickness_mm} mm` : "--"}
                     </td>
                     <td className="px-4 py-3 text-[#4A5068] text-xs">
                       {[s.manufacturer, s.manufacturer_model].filter(Boolean).join(" · ") || "--"}

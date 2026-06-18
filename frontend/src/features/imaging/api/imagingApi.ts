@@ -11,7 +11,20 @@ import type {
   PatientWithImaging,
   MeasurementTrend,
   PaginatedResponse,
+  ApiPaginatedResponse,
 } from "../types";
+
+function normalizePaginated<T>(payload: ApiPaginatedResponse<T>): PaginatedResponse<T> {
+  const meta = payload.meta ?? {};
+
+  return {
+    data: payload.data ?? [],
+    current_page: payload.current_page ?? meta.current_page ?? meta.page ?? 1,
+    last_page: payload.last_page ?? meta.last_page ?? 1,
+    per_page: payload.per_page ?? meta.per_page ?? payload.data?.length ?? 0,
+    total: payload.total ?? meta.total ?? payload.data?.length ?? 0,
+  };
+}
 
 export const imagingApi = {
   // Stats
@@ -26,8 +39,8 @@ export const imagingApi = {
     page?: number;
   }) =>
     apiClient
-      .get<PaginatedResponse<ImagingStudy>>("/imaging/studies", { params })
-      .then((r) => r.data),
+      .get<ApiPaginatedResponse<ImagingStudy>>("/imaging/studies", { params })
+      .then((r) => normalizePaginated(r.data)),
 
   getStudy: (id: number) =>
     apiClient.get<{ data: ImagingStudy }>(`/imaging/studies/${id}`).then((r) => r.data.data),
@@ -42,7 +55,7 @@ export const imagingApi = {
 
   indexSeries: (studyId: number) =>
     apiClient
-      .post<{ data: { indexed: number; errors: number } }>(
+      .post<{ data: { indexed: number; updated: number; errors: number; series_total: number } }>(
         `/imaging/studies/${studyId}/index-series`,
       )
       .then((r) => r.data.data),
@@ -61,8 +74,8 @@ export const imagingApi = {
     per_page?: number;
   }) =>
     apiClient
-      .get<PaginatedResponse<ImagingFeature>>("/imaging/features", { params })
-      .then((r) => r.data),
+      .get<ApiPaginatedResponse<ImagingFeature>>("/imaging/features", { params })
+      .then((r) => normalizePaginated(r.data)),
 
   // Criteria
   getCriteria: (params?: { type?: string }) =>
@@ -121,8 +134,8 @@ export const imagingApi = {
     page?: number;
   }) =>
     apiClient
-      .get<PaginatedResponse<PatientWithImaging>>("/imaging/patients", { params })
-      .then((r) => r.data),
+      .get<ApiPaginatedResponse<PatientWithImaging>>("/imaging/patients", { params })
+      .then((r) => normalizePaginated(r.data)),
 
   // Study-person linking
   linkStudyToPerson: (studyId: number, personId: number) =>

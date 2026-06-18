@@ -59,7 +59,7 @@ function ModalityBadge({ modality }: { modality: string | null }) {
 
 function StudyStatusBadge({ status }: { status: string }) {
   const cls =
-    status === "processed"
+    status === "indexed" || status === "processed"
       ? "bg-[#2DD4BF]/15 text-[#2DD4BF]"
       : status === "error"
         ? "bg-[#F0607A]/15 text-[#F0607A]"
@@ -256,7 +256,7 @@ function StudiesTab() {
                     <ModalityBadge modality={study.modality} />
                   </td>
                   <td className="px-4 py-3 text-[#7A8298] text-xs">
-                    {study.body_part_examined ?? "--"}
+                    {study.body_part ?? study.body_part_examined ?? "--"}
                   </td>
                   <td className="px-4 py-3 text-[#7A8298] text-xs max-w-xs truncate">
                     {study.study_description ?? "--"}

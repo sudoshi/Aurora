@@ -1,5 +1,114 @@
 # Aurora Devlog
 
+## 2026-06-18 — Imaging Productization Tranche 1
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Closed the first Phase 3 imaging productization tranche: classified the 24
+skipped Orthanc studies, implemented real Orthanc series indexing for a single
+study, normalized the imaging API/frontend contract, and added backend plus
+browser coverage for indexed-study/OHIF behavior.
+
+### Completed Tasks
+
+1. **Audited the current imaging API and UI contracts**
+   - Reviewed `ImagingController`, imaging models, imaging routes, React
+     imaging pages/components/hooks/types, Playwright imaging tests, and the
+     Orthanc sync script.
+   - Confirmed the backend already emits Orthanc/OHIF-ready study fields, while
+     the frontend still preferred older `body_part_examined` and series field
+     names.
+   - Confirmed `indexSeries` was still returning stub success.
+
+2. **Added Orthanc service configuration**
+   - Added `services.orthanc` config keys for base URL, user, and password.
+   - Added non-secret Orthanc placeholders to `.env.example` and
+     `backend/.env.example`.
+
+3. **Implemented real study series indexing**
+   - Replaced the `indexSeries` stub with Orthanc REST integration.
+   - The endpoint now looks up a study by `StudyInstanceUID`, fetches Orthanc
+     study metadata, fetches each series, and upserts `clinical.imaging_series`
+     rows by `series_uid`.
+   - The endpoint updates `num_series`, `num_instances`, and `dicom_endpoint`
+     on the parent study.
+
+4. **Normalized indexed-study API payloads**
+   - Added `body_part_examined` as a compatibility alias for `body_part`.
+   - Added `measurements_count`, `created_at`, and `updated_at` fields.
+   - Added normalized series aliases: `series_instance_uid`,
+     `series_description`, and `num_images`.
+   - Added stats aliases consumed by the current imaging UI:
+     `total_features`, `persons_with_imaging`, `studies_by_modality`, and
+     `features_by_type`.
+
+5. **Normalized frontend imaging API handling**
+   - Added a paginated-response normalizer for imaging list endpoints so Laravel
+     `meta.page` payloads and direct pagination payloads both work.
+   - Updated imaging types to include current Orthanc fields and compatibility
+     aliases.
+   - Updated the study table, study cards, and detail metadata to prefer
+     `body_part` while falling back to `body_part_examined`.
+   - Updated series rendering to fall back across current and legacy field names
+     without showing `undefined`.
+
+6. **Investigated the 24 skipped Orthanc studies**
+   - Added `--skipped-report` to `dicom/sync_orthanc_to_aurora.py`.
+   - Made dry-run auto-create behavior use placeholder mappings so studies that
+     would receive new patients are not mislabeled as skipped.
+   - Ran:
+     `/tmp/aurora-sync-venv/bin/python dicom/sync_orthanc_to_aurora.py --dry-run --skipped-report /tmp/aurora_orthanc_skipped_2026-06-18.csv`.
+   - Result: 2,208 would-upsert, 24 no-patient-match, 0 missing Study UID.
+   - Classification: all 24 skipped rows have blank DICOM PatientID values; all
+     24 are MR studies, mostly cardiac/perfusion descriptions.
+
+7. **Added backend imaging coverage**
+   - Added `backend/tests/Feature/Api/ImagingStudyApiTest.php`.
+   - Covered indexed Orthanc list payloads, OHIF WADO fields, normalized detail
+     series fields, and the new Orthanc-backed `indexSeries` endpoint with
+     `Http::fake`.
+
+8. **Added browser-level OHIF detail coverage**
+   - Extended `e2e/tests/imaging.spec.ts`.
+   - The new smoke fetches a real indexed study through the live authenticated
+     API, opens `/imaging/studies/{id}`, and asserts the OHIF iframe URL
+     includes the expected `StudyInstanceUIDs` parameter.
+   - The test skips only when an environment has no indexed study.
+
+9. **Restored local runtime permissions after installing backend dev tools**
+   - `php artisan test` was unavailable because the local vendor tree had been
+     installed without Composer dev dependencies.
+   - Ran `composer install --no-interaction --prefer-dist` in `backend`.
+   - The bind-mounted PHP container briefly lost read/write access to newly
+     installed vendor/cache paths.
+   - Restored readable vendor permissions and writable `bootstrap/cache` plus
+     `storage` permissions, then verified the public API health returned HTTP
+     200 again.
+
+10. **Verified the tranche**
+    - `python3 -m py_compile dicom/sync_orthanc_to_aurora.py` passed.
+    - `php -l` passed for touched backend PHP files.
+    - `DB_HOST=/var/run/postgresql DB_USERNAME=smudoshi DB_PASSWORD= DB_DATABASE=aurora_test DB_MIGRATIONS_TABLE=public.migrations php artisan test tests/Feature/Api/ImagingStudyApiTest.php` passed: 3 tests, 35 assertions.
+    - `./vendor/bin/pint --test app/Http/Controllers/ImagingController.php config/services.php tests/Feature/Api/ImagingStudyApiTest.php` passed.
+    - `npm --prefix frontend run typecheck` passed.
+    - `npm --prefix frontend run build` passed.
+    - `cd e2e && npx playwright test tests/imaging.spec.ts --project=chromium` passed: 5 tests.
+    - `git diff --check` passed.
+
+### Remaining Follow-Ups
+
+- Decide policy for the 24 blank-DICOM-PatientID MR studies: quarantine, manual
+  link, or synthetic research records.
+- Implement or retire the remaining explicit imaging stubs:
+  `indexFromDicomweb`, `extractNlp`, `importLocalTrigger`, `autoLinkStudies`,
+  `aiExtractMeasurements`, and `suggestTemplate`.
+- Decide whether broader DICOMweb indexing belongs in the UI, a scheduled job,
+  or the ops sync script.
+
+---
+
 ## 2026-06-18 — Static Production Frontend Serving
 
 **Branch:** `v2/phase-0-scaffold`

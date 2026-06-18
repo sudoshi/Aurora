@@ -7,6 +7,7 @@ records for DICOM patients that don't exist yet, then upserts imaging_studies.
 
 Usage:
     python3 sync_orthanc_to_aurora.py [--dry-run] [--collection COLLECTION] [--auto-create-patients]
+    python3 sync_orthanc_to_aurora.py --dry-run --skipped-report /tmp/orthanc_skipped.csv
 
 Environment:
     ORTHANC_URL     (default: http://localhost:8042)
@@ -293,6 +294,7 @@ def auto_create_patients(studies: list[dict], conn, dry_run: bool = False) -> di
             print(f"  DRY RUN: Would create patient MRN={mrn} "
                   f"({first_name} {last_name}, collection={collection})")
             created += 1
+            existing_mapping[dicom_pid] = -created
             continue
 
         # Check MRN doesn't already exist (could be from a prior partial run)
@@ -357,8 +359,48 @@ def determine_body_part(description: str, modalities: list[str]) -> str | None:
     return None
 
 
+SKIPPED_REPORT_FIELDS = [
+    "reason",
+    "orthanc_id",
+    "study_uid",
+    "patient_id_dicom",
+    "patient_name",
+    "study_date",
+    "study_description",
+    "modalities",
+    "num_series",
+    "num_instances",
+]
+
+
+def skipped_study_row(study: dict, reason: str) -> dict:
+    """Build a CSV-safe row for skipped Orthanc study investigation."""
+    return {
+        "reason": reason,
+        "orthanc_id": study.get("orthanc_id", ""),
+        "study_uid": study.get("study_uid", ""),
+        "patient_id_dicom": study.get("patient_id_dicom", ""),
+        "patient_name": study.get("patient_name", ""),
+        "study_date": study.get("study_date", ""),
+        "study_description": study.get("study_description", ""),
+        "modalities": "|".join(study.get("modalities", [])),
+        "num_series": study.get("num_series", 0),
+        "num_instances": study.get("num_instances", 0),
+    }
+
+
+def write_skipped_report(path: str, rows: list[dict]) -> None:
+    """Write skipped Orthanc study rows to CSV for operator review."""
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=SKIPPED_REPORT_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def sync_studies(studies: list[dict], conn, dry_run: bool = False,
-                 patient_mapping: dict[str, int] | None = None):
+                 patient_mapping: dict[str, int] | None = None,
+                 skipped_report: str | None = None):
     """Upsert Orthanc studies into Aurora's imaging_studies table."""
     if patient_mapping is None:
         patient_mapping = get_patient_mapping(conn)
@@ -366,11 +408,20 @@ def sync_studies(studies: list[dict], conn, dry_run: bool = False,
 
     cur = conn.cursor()
 
-    stats = {"inserted": 0, "updated": 0, "skipped_no_patient": 0, "skipped_exists": 0}
+    stats = {
+        "inserted": 0,
+        "updated": 0,
+        "skipped_no_patient": 0,
+        "skipped_no_study_uid": 0,
+        "skipped_exists": 0,
+    }
+    skipped_rows = []
 
     for study in studies:
         study_uid = study["study_uid"]
         if not study_uid:
+            stats["skipped_no_study_uid"] += 1
+            skipped_rows.append(skipped_study_row(study, "missing_study_uid"))
             continue
 
         dicom_patient_id = study["patient_id_dicom"]
@@ -378,6 +429,8 @@ def sync_studies(studies: list[dict], conn, dry_run: bool = False,
 
         if not aurora_patient_id:
             stats["skipped_no_patient"] += 1
+            reason = "missing_dicom_patient_id" if not dicom_patient_id else "no_patient_mapping"
+            skipped_rows.append(skipped_study_row(study, reason))
             continue
 
         study_date = format_dicom_date(study["study_date"])
@@ -452,6 +505,10 @@ def sync_studies(studies: list[dict], conn, dry_run: bool = False,
     if not dry_run:
         conn.commit()
 
+    if skipped_report:
+        write_skipped_report(skipped_report, skipped_rows)
+        print(f"  Wrote skipped study report: {skipped_report} ({len(skipped_rows)} rows)")
+
     cur.close()
     return stats
 
@@ -467,6 +524,8 @@ def main():
     parser.add_argument("--no-auto-create-patients", action="store_false",
                         dest="auto_create_patients",
                         help="Skip auto-creation of patient records")
+    parser.add_argument("--skipped-report", type=str,
+                        help="Write skipped Orthanc studies to a CSV report")
     args = parser.parse_args()
 
     print("=== Orthanc → Aurora Sync ===")
@@ -514,7 +573,8 @@ def main():
     # Sync studies
     print("\n[4/4] Syncing studies to Aurora...")
     result = sync_studies(studies, conn, dry_run=args.dry_run,
-                         patient_mapping=patient_mapping)
+                         patient_mapping=patient_mapping,
+                         skipped_report=args.skipped_report)
 
     conn.close()
 
@@ -522,6 +582,9 @@ def main():
     print(f"  Inserted:          {result['inserted']}")
     print(f"  Updated:           {result['updated']}")
     print(f"  No patient match:  {result['skipped_no_patient']}")
+    print(f"  No Study UID:      {result['skipped_no_study_uid']}")
+    if args.skipped_report:
+        print(f"  Skipped report:    {args.skipped_report}")
 
 
 if __name__ == "__main__":

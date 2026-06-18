@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v2-post-stabilization
 milestone_name: Aurora Post-Stabilization Product Hardening
 status: active
-last_updated: "2026-06-18T00:25:00-04:00"
-last_activity: "2026-06-18 -- Production frontend serving moved from Vite dev proxy to static built assets; deploy smoke added."
+last_updated: "2026-06-18T10:00:41-04:00"
+last_activity: "2026-06-18 -- Imaging productization tranche added skipped-study reporting, Orthanc series indexing, API/UI contract coverage, and live OHIF detail smoke."
 progress:
   completed_phases: 2
   active_phase: 3
-  percent: 29
+  percent: 36
 ---
 
 # Project State
@@ -24,7 +24,7 @@ tranche.
 
 ## Current Position
 
-Phase: 2 complete, Phase 3 next
+Phase: 2 complete, Phase 3 in progress
 
 Current focus: imaging productization, then interoperability adapter
 implementation.
@@ -63,6 +63,22 @@ implementation.
 - Updated `deploy.sh` so production uses `docker-compose.yml`, stops a leftover
   `aurora-node` dev container, and fails deployment if the served root or SPA
   fallback contains Vite dev markers or lacks `/build/assets` references.
+- Added a `--skipped-report` CSV option to
+  `dicom/sync_orthanc_to_aurora.py`.
+- Ran the Orthanc sync in dry-run report mode and confirmed the 24 skipped
+  Orthanc studies are all blank-DICOM-PatientID MR studies; none are missing
+  StudyInstanceUID values.
+- Implemented `POST /api/imaging/studies/{id}/index-series` against Orthanc:
+  StudyInstanceUID lookup, Orthanc series metadata fetch, and
+  `clinical.imaging_series` upserts.
+- Added Orthanc service configuration keys to environment examples.
+- Normalized imaging API/frontend contracts for `body_part`,
+  `body_part_examined`, series UID/description aliases, and paginated metadata.
+- Added backend feature coverage for indexed study list/detail payloads and
+  Orthanc-backed series indexing.
+- Added a Playwright imaging smoke that opens a real indexed production study
+  detail page and verifies the OHIF iframe URL carries the expected
+  `StudyInstanceUIDs` parameter.
 
 ## Active Backlog
 
@@ -75,13 +91,13 @@ implementation.
 
 ## Known Follow-Ups
 
-- Twenty-four Orthanc studies were skipped by the sync because no patient
-  mapping was available. Investigate whether those studies have blank DICOM
-  PatientID values, unsupported identifiers, or should be linked to synthetic
-  records.
+- Twenty-four Orthanc studies were skipped because their DICOM PatientID values
+  are blank. They are all MR studies, mostly cardiac/perfusion descriptions.
+  Decide whether to quarantine them, manually link them, or import them under
+  synthetic research records.
 - Several imaging endpoints are still explicit stubs:
-  `indexFromDicomweb`, `indexSeries`, `extractNlp`, `importLocalTrigger`,
-  `autoLinkStudies`, `aiExtractMeasurements`, and `suggestTemplate`.
+  `indexFromDicomweb`, `extractNlp`, `importLocalTrigger`, `autoLinkStudies`,
+  `aiExtractMeasurements`, and `suggestTemplate`.
 - `backend/app/Services/Adapters/FhirAdapter.php` and
   `backend/app/Services/Adapters/OmopAdapter.php` still throw
   `not yet implemented` exceptions.

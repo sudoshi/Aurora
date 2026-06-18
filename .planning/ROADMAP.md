@@ -70,19 +70,30 @@ development server.
 
 ### Phase 3: Imaging Productization
 
+**Status:** In progress as of 2026-06-18.
+
 **Goal:** Turn the now-indexed Orthanc study corpus into a dependable clinical
 imaging workflow.
 
+**Completed so far:**
+- Added skipped-study reporting to the Orthanc sync script and confirmed the
+  24 skipped studies all have blank DICOM PatientID values; none are missing
+  StudyInstanceUID values.
+- Implemented Orthanc-backed `indexSeries` for single-study series metadata
+  upserts into `clinical.imaging_series`.
+- Normalized imaging API response aliases for current Orthanc fields and legacy
+  frontend field names.
+- Added authenticated backend coverage for indexed Orthanc metadata, OHIF
+  WADO-RS fields, normalized series fields, and the Orthanc series indexer.
+- Added a browser smoke that opens a live indexed study detail page and verifies
+  the OHIF iframe URL includes the `StudyInstanceUIDs` parameter.
+
 **Tasks:**
-- Investigate the 24 Orthanc studies skipped by the sync because no patient
-  mapping was available.
-- Implement or retire stubbed imaging endpoints:
-  `indexFromDicomweb`, `indexSeries`, `extractNlp`, `importLocalTrigger`,
-  `autoLinkStudies`, `aiExtractMeasurements`, and `suggestTemplate`.
-- Add authenticated API tests for indexed study metadata and OHIF WADO-RS
-  values.
-- Add a browser smoke that opens a real indexed study detail page and verifies
-  the OHIF iframe URL includes the StudyInstanceUID.
+- Decide whether blank-PatientID MR studies should be quarantined, manually
+  linked, or imported under synthetic research records.
+- Implement or retire remaining stubbed imaging endpoints:
+  `indexFromDicomweb`, `extractNlp`, `importLocalTrigger`, `autoLinkStudies`,
+  `aiExtractMeasurements`, and `suggestTemplate`.
 - Decide whether DICOMweb indexing should be a UI action, scheduled job, or
   one-way ops script.
 
