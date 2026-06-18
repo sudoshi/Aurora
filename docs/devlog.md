@@ -1,5 +1,86 @@
 # Aurora Devlog
 
+## 2026-06-18 — Static Production Frontend Serving
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Moved Aurora's default production frontend path away from the Docker Vite
+development server and onto the built Vite bundle served from
+`backend/public/build`. Vite HMR remains available only through an explicit
+development compose file.
+
+### Completed Tasks
+
+1. **Audited the current production serving path**
+   - Confirmed `deploy.sh` uses the default `docker-compose.yml` stack.
+   - Confirmed `docker/nginx/default.conf` proxied SPA traffic to `node:5173`.
+   - Confirmed the default compose stack made nginx depend on the node service
+     and published the Vite container on host port `5177`.
+
+2. **Changed production nginx to serve static built assets**
+   - Removed the Vite upstream and HMR proxy locations from
+     `docker/nginx/default.conf`.
+   - Added a root and SPA fallback path that serves `/build/index.html`.
+   - Preserved long-lived immutable caching only for hashed files under
+     `/build/assets/`.
+   - Preserved Laravel API, Sanctum, broadcasting, storage, image, OHIF, and
+     Orthanc proxy routes.
+
+3. **Moved Vite HMR to an explicit development path**
+   - Added `docker/nginx/dev.conf` with the previous Vite proxy behavior.
+   - Added `docker-compose.dev.yml` so local development can opt into the dev
+     nginx config and node service.
+   - Marked the `node` service in `docker-compose.yml` with the `dev` profile
+     so it is excluded from the default production stack.
+
+4. **Hardened production deployment behavior**
+   - Updated `deploy.sh` to call `docker compose -f docker-compose.yml`
+     explicitly.
+   - Removed production dependency syncing inside the node dev container.
+   - Added a stop step for any leftover `aurora-node` container during
+     production deployment.
+   - Added a static frontend smoke that fails deployment if the served root HTML
+     contains Vite dev markers such as `@vite/client`, `/src/main`, or
+     `react-refresh`.
+   - Added an SPA fallback smoke that verifies `/imaging` returns the built
+     frontend bundle references.
+
+5. **Validated compose and script syntax locally**
+   - `bash -n deploy.sh` passed.
+   - `docker compose -f docker-compose.yml config` showed the production stack
+     with no default node service.
+   - `docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev config`
+     showed the explicit dev stack with node and `docker/nginx/dev.conf`.
+
+6. **Updated operator-facing Docker guidance**
+   - Replaced the stale README Docker snippet with the current static frontend
+     production-like path.
+   - Added the explicit dev-HMR compose command:
+     `docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev up -d`.
+
+### Verification Commands
+
+```bash
+bash -n deploy.sh
+docker compose -f docker-compose.yml config
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev config
+```
+
+### Remaining Follow-Ups
+
+- Investigate the 24 skipped Orthanc studies and decide whether to link,
+  ignore, or quarantine them.
+- Implement or intentionally retire the remaining imaging stubs in
+  `ImagingController`.
+- Add an OHIF study-detail smoke that opens a specific indexed study and
+  asserts the iframe URL carries the expected `StudyInstanceUIDs` parameter.
+- Start the FHIR/OMOP adapter implementation tranche after imaging
+  productization is stable.
+
+---
+
 ## 2026-06-17 — Roadmap Reconciliation + Orthanc/OHIF Imaging Closeout
 
 **Branch:** `v2/phase-0-scaffold`

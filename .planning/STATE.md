@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v2-post-stabilization
 milestone_name: Aurora Post-Stabilization Product Hardening
 status: active
-last_updated: "2026-06-17T23:45:00-04:00"
-last_activity: "2026-06-17 -- Roadmap reconciled; Orthanc/OHIF imaging sync closed out with live verification; devlog updated."
+last_updated: "2026-06-18T00:25:00-04:00"
+last_activity: "2026-06-18 -- Production frontend serving moved from Vite dev proxy to static built assets; deploy smoke added."
 progress:
-  completed_phases: 1
-  active_phase: 2
-  percent: 14
+  completed_phases: 2
+  active_phase: 3
+  percent: 29
 ---
 
 # Project State
@@ -24,10 +24,10 @@ tranche.
 
 ## Current Position
 
-Phase: 1 complete, Phase 2 next
+Phase: 2 complete, Phase 3 next
 
-Current focus: static production frontend serving, then imaging productization
-and interoperability adapter implementation.
+Current focus: imaging productization, then interoperability adapter
+implementation.
 
 ## Completed In This Tranche
 
@@ -56,16 +56,22 @@ and interoperability adapter implementation.
   passes: 4/4 tests.
 - Wrote `.planning/quick/1-refactor-imaging-pipeline-for-re-indexed/1-SUMMARY.md`.
 - Added a detailed 2026-06-17 devlog entry.
+- Moved the default production nginx path from Vite dev proxying to static
+  `backend/public/build` serving.
+- Added an explicit `docker-compose.dev.yml` and `docker/nginx/dev.conf` path
+  for local Vite HMR.
+- Updated `deploy.sh` so production uses `docker-compose.yml`, stops a leftover
+  `aurora-node` dev container, and fails deployment if the served root or SPA
+  fallback contains Vite dev markers or lacks `/build/assets` references.
 
 ## Active Backlog
 
-1. Static production frontend serving.
-2. Imaging productization and remaining DICOM/OHIF endpoint work.
-3. FHIR/OMOP adapter implementation.
-4. AI decision-intelligence slice 2: ambient MDT capture and instrumentation.
-5. Rare-disease follow-ons: VRS/SeqRepo/UTA, ClinGen GDV, ClinVar TSV,
+1. Imaging productization and remaining DICOM/OHIF endpoint work.
+2. FHIR/OMOP adapter implementation.
+3. AI decision-intelligence slice 2: ambient MDT capture and instrumentation.
+4. Rare-disease follow-ons: VRS/SeqRepo/UTA, ClinGen GDV, ClinVar TSV,
    Phen2Gene/Exomiser, and real MME peer configuration.
-6. First non-rare population pack, recommended: Cardiac Heart Team / TAVR.
+5. First non-rare population pack, recommended: Cardiac Heart Team / TAVR.
 
 ## Known Follow-Ups
 
@@ -76,15 +82,13 @@ and interoperability adapter implementation.
 - Several imaging endpoints are still explicit stubs:
   `indexFromDicomweb`, `indexSeries`, `extractNlp`, `importLocalTrigger`,
   `autoLinkStudies`, `aiExtractMeasurements`, and `suggestTemplate`.
-- The production frontend still needs to move from public Vite-dev serving to
-  static built assets.
 - `backend/app/Services/Adapters/FhirAdapter.php` and
   `backend/app/Services/Adapters/OmopAdapter.php` still throw
   `not yet implemented` exceptions.
 
 ## Session Continuity
 
-Last updated: 2026-06-17
+Last updated: 2026-06-18
 Branch: `v2/phase-0-scaffold`
 Worktree note: unrelated untracked files may remain and should not be swept into
 commits unless explicitly requested.

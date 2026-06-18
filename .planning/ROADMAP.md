@@ -53,15 +53,20 @@ loop with live evidence.
 
 ### Phase 2: Static Production Frontend Serving
 
+**Status:** Complete on 2026-06-18.
+
 **Goal:** Stop serving the public production frontend through the Docker Vite
 development server.
 
-**Tasks:**
-- Update nginx/compose/deploy behavior so production serves `frontend/dist`
-  static assets.
-- Preserve Vite HMR only for local development.
-- Verify `https://aurora.acumenus.net` serves built assets without `@vite/client`.
-- Add deployment checks that catch a public Vite-dev leak.
+**Completed tasks:**
+- Updated the default compose/nginx path so production serves the built
+  frontend from `backend/public/build`.
+- Moved Vite HMR behind an explicit development compose/nginx path.
+- Updated deploy behavior so production uses the default production compose
+  file, stops any leftover dev Vite container, and fails if served HTML contains
+  Vite dev markers.
+- Verified static SPA fallback and built asset references locally before
+  deployment.
 
 ### Phase 3: Imaging Productization
 

@@ -158,8 +158,16 @@ cd ..
 ### Docker
 
 ```bash
-cp .env.docker.example .env
-docker compose -f docker-compose.prod.yml up -d
+# Production-like static frontend stack
+cd frontend && npm ci && npm run build
+rm -rf ../backend/public/build
+mkdir -p ../backend/public/build
+cp -a dist/. ../backend/public/build/
+cd ..
+docker compose up -d
+
+# Local Vite HMR stack
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev up -d
 ```
 
 See [docs/deployment/](docs/deployment/) for full setup guide.

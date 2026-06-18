@@ -9,8 +9,6 @@ services:
     depends_on:
       php:
         condition: service_healthy
-      node:
-        condition: service_started
     extra_hosts: ["host.docker.internal:host-gateway"]
     networks: [aurora]
     restart: unless-stopped
@@ -47,6 +45,7 @@ services:
     environment: [NODE_ENV=development]
     extra_hosts: ["host.docker.internal:host-gateway"]
     networks: [aurora]
+    profiles: [dev]
     restart: unless-stopped
 
   redis:
