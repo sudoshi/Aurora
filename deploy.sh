@@ -27,6 +27,28 @@ run_artisan() {
 }
 
 normalize_backend_permissions() {
+    local readable_paths=(
+        app
+        bootstrap
+        config
+        database
+        public
+        resources
+        routes
+    )
+    local path
+
+    for path in "${readable_paths[@]}"; do
+        if [ -d "$DEPLOY_DIR/backend/$path" ]; then
+            find "$DEPLOY_DIR/backend/$path" -type d -exec chmod 755 {} + 2>/dev/null || true
+            find "$DEPLOY_DIR/backend/$path" -type f -exec chmod 644 {} + 2>/dev/null || true
+        fi
+    done
+
+    if [ -f "$DEPLOY_DIR/backend/artisan" ]; then
+        chmod 755 "$DEPLOY_DIR/backend/artisan" 2>/dev/null || true
+    fi
+
     if [ -d "$DEPLOY_DIR/backend/vendor" ]; then
         find "$DEPLOY_DIR/backend/vendor" -type d -exec chmod 755 {} + 2>/dev/null || true
         find "$DEPLOY_DIR/backend/vendor" -type f -exec chmod 644 {} + 2>/dev/null || true
@@ -40,6 +62,15 @@ normalize_backend_permissions() {
 
     if docker_php_running; then
         compose exec -T php sh -lc '
+            for path in app bootstrap config database public resources routes; do
+                if [ -d "/var/www/html/$path" ]; then
+                    find "/var/www/html/$path" -type d -exec chmod 755 {} +
+                    find "/var/www/html/$path" -type f -exec chmod 644 {} +
+                fi
+            done
+            if [ -f /var/www/html/artisan ]; then
+                chmod 755 /var/www/html/artisan
+            fi
             if [ -d /var/www/html/vendor ]; then
                 find /var/www/html/vendor -type d -exec chmod 755 {} +
                 find /var/www/html/vendor -type f -exec chmod 644 {} +
