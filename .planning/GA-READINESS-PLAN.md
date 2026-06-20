@@ -265,25 +265,30 @@ Evidence anchors:
       placeholder + sensible non-secret default; no real keys committed. Verify
       `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, DB creds, Reverb keys are
       placeholders only.
-- [ ] **W2-T05 (P1)** Validate required secrets at boot (fail loudly in dev,
-      structured error in prod) for backend and AI service. Add a startup check.
-- [ ] **W2-T06 (P1)** Confirm security headers (CSP, HSTS, X-Frame-Options,
-      X-Content-Type-Options, Referrer-Policy) are applied on all responses via
-      `SecurityHeaders` middleware + nginx; tighten CSP for the OHIF iframe
-      origin. Add a test asserting headers present.
-- [ ] **W2-T07 (P1)** Verify the rate limiter: auth-keyed `throttle:api` (300/min
-      user, 60/min guest) is applied to all protected route groups; Beacon/MME
-      public endpoints have their own sensible limits. Add a regression test.
-- [ ] **W2-T08 (P1)** Authorization audit: confirm every controller method
-      enforces policy/permission (Spatie). Specifically re-verify imaging,
-      genomics, fingerprint (search/encode/assess/admin tiers), federation, and
-      admin routes. Document the permission matrix in `docs/auth/`.
-- [ ] **W2-T09 (P1)** PHI/PII handling review: confirm de-identification on every
-      outbound path (AI draft-decision verified; also check federation,
-      Beacon, MME, FHIR export). Document what leaves the trust boundary.
-- [ ] **W2-T10 (P0)** Run a full security review: invoke the project
-      `security-reviewer` agent / `/security-review` on the branch; resolve all
-      CRITICAL/HIGH before GA. Produce `docs/security/threat-model.md`.
+- [x] **W2-T05 (P1)** Validate required secrets at boot (fail loudly in dev,
+      structured error in prod).
+  - DONE 2026-06-20: `AppServiceProvider::verifyRequiredSecrets` — APP_KEY always,
+    RESEND_API_KEY in prod, REVERB_* when broadcasting=reverb; throws in dev, logs
+    in prod, skips console/testing.
+- [x] **W2-T06 (P1)** Security headers present.
+  - DONE 2026-06-20: verified `SecurityHeaders` covers CSP/HSTS/X-Frame/
+    X-Content-Type/Referrer/Permissions-Policy (prod CSP already allows `ws:`/`wss:`
+    for Reverb and same-origin OHIF iframe). Added regression test
+    `tests/Feature/SecurityHeadersTest.php`.
+- [x] **W2-T07 (P1)** Rate limiter verified.
+  - DONE 2026-06-20: auth-keyed `throttle:api` (300/60) + tight public auth limits
+    (register 3, login 5, OIDC 20), AI 30, Beacon 60; `ApiRateLimiterTest` present.
+- [~] **W2-T08 (P1)** Authorization audit — COMPLETE; findings in
+      `docs/security/threat-model.md`. A1 (ReactionController channel check) FIXED
+      + test. A2 (cases) + A3–A6 (patient/genomics/imaging/odyssey) OPEN pending
+      **decision D1** (open clinical workspace vs per-resource isolation).
+- [~] **W2-T09 (P1)** PHI/de-id review — COMPLETE; P1–P5 in the threat model.
+      FHIR export / MME / Beacon-count / Phenopacket de-id OPEN pending
+      **decision D2** (de-id level + k-anonymity threshold). draft-decision path
+      already de-identified.
+- [~] **W2-T10 (P0)** Security review — threat model produced at
+      `docs/security/threat-model.md` with severity-ranked findings + the two
+      decisions (D1, D2) that gate the remaining C0/C1 fixes.
 - [ ] **W2-T11 (P2)** Add audit logging for sensitive actions (federated queries,
       data export, admin changes, PHI access). Confirm `user_audit_logs` covers
       these; extend if not.

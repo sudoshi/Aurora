@@ -124,6 +124,28 @@ it('creates and broadcasts a thread-reply notification to the parent author', fu
     });
 });
 
+it('forbids reacting on a private channel the user has not joined', function () {
+    Event::fake([ReactionUpdated::class]);
+    $owner = commonsActor();
+    $channel = Channel::factory()->private()->create();
+    ChannelMember::factory()->create([
+        'channel_id' => $channel->id,
+        'user_id' => $owner->id,
+        'role' => 'owner',
+    ]);
+    $message = Message::factory()->create([
+        'channel_id' => $channel->id,
+        'user_id' => $owner->id,
+    ]);
+
+    $outsider = commonsActor();
+    $this->actingAs($outsider, 'sanctum')
+        ->postJson("/api/commons/messages/{$message->id}/reactions", ['emoji' => 'thumbsup'])
+        ->assertStatus(403);
+
+    Event::assertNotDispatched(ReactionUpdated::class);
+});
+
 it('does not notify when replying to your own message', function () {
     Event::fake([NotificationSent::class]);
     $user = commonsActor();

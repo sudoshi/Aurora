@@ -6,11 +6,14 @@ use App\Events\Commons\ReactionUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Commons\Message;
 use App\Models\Commons\Reaction;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReactionController extends Controller
 {
+    use AuthorizesRequests;
+
     public function toggle(Request $request, int $id): JsonResponse
     {
         $request->validate([
@@ -18,6 +21,10 @@ class ReactionController extends Controller
         ]);
 
         $message = Message::findOrFail($id);
+
+        // Reacting requires access to the message's channel — mirrors the
+        // ChannelPolicy check the other commons controllers enforce.
+        $this->authorize('view', $message->channel);
 
         if ($message->isDeleted()) {
             return response()->json(['message' => 'Cannot react to a deleted message.'], 422);
