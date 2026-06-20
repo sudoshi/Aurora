@@ -90,8 +90,8 @@ async def encode_genomic(
     structured[7] = type_counts.get("CNV", 0) / max(n_variants, 1)
 
     # Mean allele frequency
-    afs = [v.get("allele_frequency") for v in variants if v.get("allele_frequency")]
-    structured[8] = np.mean(afs) if afs else 0.0
+    afs = [float(v["allele_frequency"]) for v in variants if v.get("allele_frequency")]
+    structured[8] = float(np.mean(afs)) if afs else 0.0
 
     # Build text representation for embedding (remaining 192 dims)
     gene_variant_strs = []

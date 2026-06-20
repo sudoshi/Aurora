@@ -43,7 +43,7 @@ must_haves:
 Fix the imaging pipeline so that Orthanc's re-indexed DICOM data (2036 studies, 484K instances on NVMe RAID0) displays correctly in Aurora.
 
 Three issues to fix:
-1. **Nginx proxy auth is wrong** -- uses old password `orthanc_secret` but Orthanc now requires `GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih` (from Parthenon .env). This breaks OHIF viewer and all DICOMweb requests.
+1. **Nginx proxy auth is wrong** -- uses old password `orthanc_secret` but Orthanc now requires `<ORTHANC_PASSWORD-redacted-rotate>` (from Parthenon .env). This breaks OHIF viewer and all DICOMweb requests.
 2. **Most studies show as "pending" not "indexed"** -- Only 70 of 2320 studies have `dicom_endpoint='orthanc'`. The other 2185 TCIA studies have file:// paths as their endpoint. The `formatStudy()` method only marks studies as "indexed" if `source_type='orthanc'` OR `dicom_endpoint='orthanc'`, missing all the `dicom_endpoint='file://...'` + `source_type='tcia'` studies that ARE in Orthanc now.
 3. **Sync script needs re-run** -- The `sync_orthanc_to_aurora.py` script sets `dicom_endpoint='orthanc'` on upsert, but the old file:// records were never updated after re-indexing into Orthanc.
 
@@ -70,7 +70,7 @@ Current state (from investigation):
 - 2185 rows have file:// paths as dicom_endpoint (from original TCIA import before Orthanc re-index)
 - Nginx proxy at /orthanc/ uses wrong Basic auth (401 on all requests)
 - The old Basic auth header `cGFydGhlbm9uOm9ydGhhbmNfc2VjcmV0` decodes to `parthenon:orthanc_secret` (wrong)
-- Correct password is in Parthenon's .env: `GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih`
+- Correct password is in Parthenon's .env: `<ORTHANC_PASSWORD-redacted-rotate>`
 
 DB breakdown:
 - `file:///media/smudoshi/DATA/TCIA-downloads/*` + `tcia`: 2185 rows (the bulk)
@@ -86,7 +86,7 @@ DB breakdown:
   <name>Task 1: Fix nginx Orthanc proxy auth and update formatStudy logic</name>
   <files>docker/nginx/default.conf, backend/app/Http/Controllers/ImagingController.php, backend/.env</files>
   <action>
-1. **Fix nginx proxy auth**: In `docker/nginx/default.conf`, the `/orthanc/` location block has a hardcoded Basic auth header. Replace the old base64 value with the correct one. The correct credentials are `parthenon:GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih`. Generate the base64: `echo -n 'parthenon:GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih' | base64`. Replace the `proxy_set_header Authorization` line with the new value.
+1. **Fix nginx proxy auth**: In `docker/nginx/default.conf`, the `/orthanc/` location block has a hardcoded Basic auth header. Replace the old base64 value with the correct one. The correct credentials are `parthenon:<ORTHANC_PASSWORD-redacted-rotate>`. Generate the base64: `echo -n 'parthenon:<ORTHANC_PASSWORD-redacted-rotate>' | base64`. Replace the `proxy_set_header Authorization` line with the new value.
 
    IMPORTANT: Do NOT hardcode the password in nginx config long-term. For now, update the base64 header to get things working. Add a comment noting this should eventually use env substitution.
 
@@ -103,12 +103,12 @@ DB breakdown:
 
    Also update the `wadors_uri` assignment on line 40. Currently it returns `/orthanc/dicom-web` only when indexed. This is correct -- OHIF uses this as the WADO-RS base URL via nginx proxy. No change needed there.
 
-3. **Add ORTHANC env vars to backend/.env** (if not already present): Add `ORTHANC_URL=http://localhost:8042`, `ORTHANC_USER=parthenon`, `ORTHANC_PASSWORD=GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih` for future use by the indexSeries/indexFromDicomweb endpoints when they are implemented. These are NOT secrets that go in source -- they go in .env only.
+3. **Add ORTHANC env vars to backend/.env** (if not already present): Add `ORTHANC_URL=http://localhost:8042`, `ORTHANC_USER=parthenon`, `ORTHANC_PASSWORD=<from-secret-store>` for future use by the indexSeries/indexFromDicomweb endpoints when they are implemented. These are NOT secrets that go in source -- they go in .env only.
 
 4. **Restart nginx**: Run `docker compose restart nginx` to pick up the new config.
   </action>
   <verify>
-    <automated>curl -s -o /dev/null -w "%{http_code}" -u parthenon:GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih http://localhost:8042/statistics && echo " orthanc-direct-ok"; curl -s -o /dev/null -w "%{http_code}" http://localhost:8085/orthanc/statistics && echo " nginx-proxy-ok"</automated>
+    <automated>curl -s -o /dev/null -w "%{http_code}" -u "parthenon:$ORTHANC_PASSWORD" http://localhost:8042/statistics && echo " orthanc-direct-ok"; curl -s -o /dev/null -w "%{http_code}" http://localhost:8085/orthanc/statistics && echo " nginx-proxy-ok"</automated>
   </verify>
   <done>Nginx proxy returns 200 for /orthanc/statistics (not 401). formatStudy correctly identifies orthanc and dicom-web endpoint studies as indexed.</done>
 </task>
@@ -117,7 +117,7 @@ DB breakdown:
   <name>Task 2: Re-sync Orthanc studies to Aurora DB to fix dicom_endpoint values</name>
   <files>dicom/sync_orthanc_to_aurora.py</files>
   <action>
-1. **Update sync script credentials**: In `sync_orthanc_to_aurora.py`, the default `ORTHANC_PASS` on line 35 is `orthanc_secret`. Update it to read from env with the correct default: `os.environ.get("ORTHANC_PASS", "GixsEIl0hpOAeOwKdmmlAMe04SQ0CKih")`.
+1. **Update sync script credentials**: In `sync_orthanc_to_aurora.py`, the default `ORTHANC_PASS` on line 35 is `orthanc_secret`. Update it to read from env with the correct default: `os.environ.get("ORTHANC_PASS", "<ORTHANC_PASSWORD-redacted-rotate>")`.
 
    NOTE: This is a local development script, not deployed code. The password default is acceptable here (same pattern as existing ORTHANC_USER default).
 

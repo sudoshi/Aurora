@@ -4,7 +4,7 @@ uvicorn[standard]==0.34.2  # 0.34.2 min required by biomcp-python
 pydantic==2.10.6  # 2.10.6 min required by biomcp-python; fastapi/anthropic allow <3
 pydantic-settings==2.7.0
 httpx==0.28.1  # 0.28.1 min required by biomcp-python; anthropic allows <1
-python-dotenv==1.0.1
+python-dotenv==1.2.2  # CVE-2026-28684 fix
 
 # Database
 psycopg2-binary==2.9.10
@@ -17,7 +17,7 @@ redis==5.2.1
 # LLM / AI
 anthropic==0.40.0
 numpy==2.2.0
-markdown==3.7
+markdown==3.8.1  # PYSEC-2026-89 fix
 
 # Evidence retrieval (PubMed / ClinicalTrials.gov / variants)
 biomcp-python==0.7.3
@@ -27,7 +27,7 @@ biomcp-python==0.7.3
 # torch>=2.0.0
 
 # Testing & typing
-pytest==8.3.0
+pytest==9.0.3  # CVE-2025-71176 fix
 pytest-cov>=5.0.0
 pytest-asyncio>=0.24.0
 mypy==1.14.0

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -338,7 +339,7 @@ class PlanEngine:
         )
         from app.agency.tools.sql_tools import execute_sql
 
-        tool_map = {
+        tool_map: dict[str, Callable[..., Awaitable[Any]]] = {
             # Read-only tools
             "case_lookup": self._execute_api_tool,
             "patient_search": self._execute_api_tool,

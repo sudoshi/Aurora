@@ -216,7 +216,6 @@ jobs:
       - name: mypy (type check)
         working-directory: ai
         run: mypy app/ --ignore-missing-imports --no-error-summary
-        continue-on-error: true  # Enforce once stubs are complete
 
       - name: pytest
         working-directory: ai
@@ -265,7 +264,6 @@ jobs:
       - name: npm audit (critical/high)
         working-directory: frontend
         run: npm ci && npm audit --audit-level=high
-        continue-on-error: true
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -282,8 +280,41 @@ jobs:
         run: |
           pip install pip-audit
           pip install -r requirements.txt
-          pip-audit
-        continue-on-error: true
+          # Known transitive CVEs locked under the fastapi / biomcp-python pins
+          # (starlette, mcp) plus diskcache (no upstream fix). Clearing these
+          # needs a coordinated fastapi + biomcp-python major bump validated
+          # against the BioMCP evidence path — tracked as GA plan W0-T03b.
+          # Any NEW or non-listed vulnerability still fails this job.
+          pip-audit \
+            --ignore-vuln CVE-2025-69872 \
+            --ignore-vuln CVE-2025-66416 \
+            --ignore-vuln PYSEC-2026-161 \
+            --ignore-vuln CVE-2024-47874 \
+            --ignore-vuln CVE-2025-54121 \
+            --ignore-vuln CVE-2026-48818 \
+            --ignore-vuln CVE-2026-48817 \
+            --ignore-vuln CVE-2026-54283 \
+            --ignore-vuln CVE-2026-54282
+
+  # ── Secret scan ────────────────────────────────────────────────────────────
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+
+      - name: Scan working tree
+        # --no-git scans files on disk (not history) so the job is not blocked by
+        # the pre-rotation Orthanc credential still present in git history. Enable
+        # full-history scanning (drop --no-git) after the W2-T03 history scrub.
+        run: gitleaks detect --no-git --redact --no-banner --source . --config .gitleaks.toml
 
   # ── E2E (Playwright) — runs after frontend build ──────────────────────────
   e2e:
@@ -291,7 +322,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [backend-test, frontend]
-    if: github.event_name == 'pull_request'
+    # Runs on PRs and on pushes (incl. main) so it can gate deploy.
 
     services:
       postgres:
@@ -392,7 +423,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [backend-test, frontend, ai, security]
+    needs: [backend-test, frontend, ai, security, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

@@ -102,23 +102,30 @@ Evidence anchors:
 - `.github/workflows/ci.yml:293-294` — e2e job `if: github.event_name == 'pull_request'`
 - `.github/workflows/ci.yml:395-396` — deploy `needs: [backend-test, frontend, ai, security]` (E2E excluded)
 
-- [ ] **W0-T01 (P1)** Remove the `mypy` mask. Fix the underlying type errors in
+- [x] **W0-T01 (P1)** Remove the `mypy` mask. Fix the underlying type errors in
       `ai/app/` until `mypy app/ --ignore-missing-imports` exits 0, then delete
       `continue-on-error` at `ci.yml:219`.
-  - Acceptance: AI CI job fails on a new type error.
-  - Verify: `docker run --rm aurora-ai:dev mypy app/ --ignore-missing-imports; echo $?` → `0`.
-- [ ] **W0-T02 (P1)** Triage `npm audit --audit-level=high`. Patch/upgrade or
-      document an accepted-risk allowlist (`.nsprc`/audit-ci config), then remove
-      `continue-on-error` at `ci.yml:268`.
-  - Verify: `npm --prefix frontend audit --audit-level=high; echo $?` → `0`.
-- [ ] **W0-T03 (P1)** Same for `pip-audit` (`ci.yml:286`). Pin/upgrade vulnerable
-      transitive deps in `ai/requirements.txt`; remove the mask.
-  - Verify: `pip-audit -r ai/requirements.txt; echo $?` → `0`.
-- [ ] **W0-T04 (P0)** Make E2E gate `main`. Change the e2e job to run on
-      `push` to `main` as well, and add `e2e` to the deploy job `needs:`
-      (`ci.yml:395`). If E2E is too slow/flaky for every push, gate deploy on a
-      tagged-release E2E run instead — but deploy must not ship un-E2E'd code.
-  - Acceptance: a deploy cannot succeed while E2E is red.
+  - DONE 2026-06-19: fixed 3 type errors (response_assessment `CRITERIA_ASSESSORS`
+    typed + recist dead-key dropped; fingerprint_encoder float coercion;
+    plan_engine `tool_map: dict[str, Callable[..., Awaitable[Any]]]`). mypy clean,
+    ruff clean, 40 tests pass (81.57%). Mask removed.
+- [x] **W0-T02 (P1)** Triage `npm audit --audit-level=high`. Patch/upgrade or
+      document an accepted-risk allowlist, then remove `continue-on-error`.
+  - DONE 2026-06-19: `npm audit --audit-level=high` → 0 vulnerabilities. Mask removed.
+- [x] **W0-T03 (P1)** Same for `pip-audit`. Pin/upgrade vulnerable deps; remove mask.
+  - DONE 2026-06-19: bumped python-dotenv→1.2.2, markdown→3.8.1, pytest→9.0.3
+    (tests still pass). Residual 10 CVEs are transitive under fastapi/biomcp-python
+    pins (starlette/mcp) + diskcache (no upstream fix); replaced blanket mask with
+    explicit per-CVE `--ignore-vuln` so NEW vulns fail CI. pip-audit exits 0.
+    Coordinated framework bump tracked as **W0-T03b**.
+- [ ] **W0-T03b (P1)** Coordinated `fastapi` + `biomcp-python` (+`starlette`/`mcp`)
+      major bump to clear the 9 ignored transitive CVEs, validated against the
+      BioMCP evidence-retrieval path (PubMed/trials/variants). Remove the matching
+      `--ignore-vuln` entries from `ci.yml` as each clears.
+- [x] **W0-T04 (P0)** Make E2E gate `main`. Change the e2e job to run on
+      `push` as well, and add `e2e` to the deploy job `needs:`.
+  - DONE 2026-06-19: removed e2e `if: pull_request` (now runs on PRs + pushes);
+    deploy `needs:` now includes `e2e`. Deploy cannot ship while E2E is red.
 - [ ] **W0-T05 (P1)** Rebuild `ai/venv` reproducibly. Host Python 3.14 cannot
       install `pydantic-core==2.27.2` (PyO3). Pin the AI toolchain to Python 3.12
       and make the canonical AI test path the Docker image
@@ -138,12 +145,19 @@ Evidence anchors:
 - [ ] **W0-T08 (P2)** Add a frontend coverage floor in `vite.config.ts`
       (`coverage.thresholds`) and stop excluding real source from the report
       unless genuinely untestable.
-- [ ] **W0-T09 (P1)** Add a secret-scan job to CI (gitleaks or trufflehog) that
-      hard-fails on findings. (Pairs with W2.)
-  - Verify: the job flags the current hardcoded Orthanc header (then W2 fixes it).
+- [x] **W0-T09 (P1)** Add a secret-scan job to CI (gitleaks) that hard-fails on
+      findings. (Pairs with W2.)
+  - DONE 2026-06-19: added `secret-scan` job (gitleaks v8.30.1, `--no-git`
+    working-tree scan). It immediately caught the credential leaking into
+    `dicom/sync_orthanc_to_aurora.py:36` (hardcoded default) and 5 lines of
+    `1-PLAN.md` — all redacted. `.gitleaks.toml` narrowly allowlists one prose
+    false positive. Clean-tree scan exits 0. Full-history scanning to be enabled
+    after the W2-T03 history scrub (drop `--no-git`).
 - [ ] **W0-T10 (P2)** Add a "no stub-success" guard to CI: a grep/lint step that
       fails if `frontend/src/lib/echo.ts` still contains the `stub` marker once
       W1 lands, and that asserts imaging stub regression tests are present.
+  - NOTE: deferred into W1 — the echo `stub` marker is still present until W1
+    replaces it; enforcing the guard now would red CI. Land it with W1-T05.
 
 ---
 

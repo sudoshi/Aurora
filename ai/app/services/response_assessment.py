@@ -4,6 +4,7 @@ Evaluates treatment response by comparing baseline and follow-up imaging measure
 """
 
 import json
+from collections.abc import Callable
 from enum import Enum
 from typing import Any
 
@@ -200,8 +201,14 @@ def _assess_rano(
     return ResponseCategory.SD, percent_change
 
 
-CRITERIA_ASSESSORS = {
-    "recist": _assess_recist,
+# RECIST is handled separately above (it takes precomputed sums + measurements),
+# so this map holds only the uniform 2-arg assessors dispatched by name.
+_Assessor = Callable[
+    [list[dict[str, Any]], list[dict[str, Any]]],
+    tuple["ResponseCategory", float | None],
+]
+
+CRITERIA_ASSESSORS: dict[str, _Assessor] = {
     "lugano": _assess_lugano,
     "deauville": _assess_deauville,
     "rano": _assess_rano,

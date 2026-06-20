@@ -1,0 +1,16 @@
+# Aurora gitleaks configuration.
+# Extends the built-in ruleset; adds narrowly-scoped allowlist entries for
+# known false positives only. Do NOT broadly exclude paths like .planning/ —
+# the scanner has already caught a real leaked credential there.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Vetted false positives"
+regexTarget = "match"
+regexes = [
+  # Prose in a test-plan doc that matches the generic-api-key heuristic:
+  # "...sync with/without token, success/failure/exception paths"
+  '''token, success/failure/exception''',
+]
