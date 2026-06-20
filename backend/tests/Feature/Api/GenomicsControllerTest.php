@@ -1,17 +1,33 @@
 <?php
 
+use App\Jobs\Genomics\ProcessGenomicUploadJob;
+use App\Models\Clinical\ClinicalPatient;
+use App\Models\Clinical\ClinVarVariant;
 use App\Models\Clinical\GeneDrugInteraction;
 use App\Models\Clinical\GenomicCriteria;
 use App\Models\Clinical\GenomicUpload;
+use App\Models\Clinical\GenomicUploadVariant;
 use App\Models\Clinical\GenomicVariant;
+use App\Models\Clinical\PatientIdentifier;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     app(\Database\Seeders\SuperuserSeeder::class)->run();
     $this->user = User::where('email', 'admin@acumenus.net')->first();
 });
+
+function auroraGenomicVcf(string $sampleId = 'SAMPLE-001', string $info = 'GENEINFO=BRAF:673;AF=0.33'): string
+{
+    return implode("\n", [
+        '##fileformat=VCFv4.2',
+        '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	'.$sampleId,
+        '7	140453136	rs113488022	A	T	99	PASS	'.$info.'	GT:AD:DP	0/1:20,10:30',
+        '',
+    ]);
+}
 
 // ── Stats ────────────────────────────────────────────────────────────────
 
@@ -141,11 +157,57 @@ describe('GET /api/genomics/variants/{id}', function () {
     });
 });
 
+describe('GET /api/genomics/patients/{patient}/fhir-report', function () {
+    it('exports a FHIR Genomics report bundle for a patient', function () {
+        $patient = ClinicalPatient::factory()->create([
+            'mrn' => 'MRN-FHIR-REPORT-01',
+            'first_name' => 'FHIR',
+            'last_name' => 'Patient',
+            'sex' => 'female',
+        ]);
+
+        GenomicVariant::factory()->create([
+            'patient_id' => $patient->id,
+            'gene' => 'BRAF',
+            'variant' => 'V600E',
+            'clinical_significance' => 'pathogenic',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/genomics/patients/{$patient->id}/fhir-report");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.standard', 'FHIR R4')
+            ->assertJsonPath('meta.scope', 'local_export')
+            ->assertJsonPath('meta.variant_count', 1)
+            ->assertJsonPath('data.resourceType', 'Bundle')
+            ->assertJsonPath('data.type', 'collection')
+            ->assertJsonPath('data.entry.0.resource.resourceType', 'Patient')
+            ->assertJsonPath('data.entry.1.resource.resourceType', 'DiagnosticReport')
+            ->assertJsonPath('data.entry.1.resource.meta.profile.0', \App\Services\Genomics\FhirGenomicsReportExporter::GENOMIC_REPORT_PROFILE)
+            ->assertJsonPath('data.entry.2.resource.resourceType', 'Observation')
+            ->assertJsonPath('data.entry.2.resource.meta.profile.0', \App\Services\Genomics\FhirGenomicsReportExporter::VARIANT_PROFILE);
+    });
+
+    it('returns 404 for a missing patient', function () {
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/genomics/patients/99999/fhir-report')
+            ->assertStatus(404);
+    });
+
+    it('requires authentication', function () {
+        $this->getJson('/api/genomics/patients/1/fhir-report')
+            ->assertStatus(401);
+    });
+});
+
 // ── Genomics uploads ─────────────────────────────────────────────────────
 
 describe('Genomics uploads', function () {
     it('storeUpload stores file on disk and creates DB record', function () {
         fakeIsolatedLocalDisk('genomic-upload-store');
+        Queue::fake();
 
         $file = UploadedFile::fake()->create('sample.vcf', 1024);
 
@@ -162,15 +224,17 @@ describe('Genomics uploads', function () {
             ->assertJsonPath('data.file_format', 'vcf')
             ->assertJsonPath('data.genome_build', 'GRCh38')
             ->assertJsonPath('data.sample_id', 'SAMPLE-001')
-            ->assertJsonPath('data.status', 'uploaded');
+            ->assertJsonPath('data.status', 'parsing');
 
         $this->assertDatabaseHas('clinical.genomic_uploads', [
             'file_format' => 'vcf',
             'sample_id' => 'SAMPLE-001',
             'uploaded_by' => $this->user->id,
+            'status' => 'parsing',
         ]);
 
         Storage::disk('local')->assertExists($response->json('data.stored_path'));
+        Queue::assertPushed(ProcessGenomicUploadJob::class, fn ($job) => $job->uploadId === $response->json('data.id') && $job->queue === 'genomics');
     });
 
     it('storeUpload validates required fields', function () {
@@ -245,6 +309,259 @@ describe('Genomics uploads', function () {
             ->deleteJson('/api/genomics/uploads/99999');
 
         $response->assertStatus(404);
+    });
+
+    it('parses VCF uploads into staged variants and deterministically matches sample identifiers', function () {
+        fakeIsolatedLocalDisk('genomic-upload-vcf-parse');
+
+        $patient = ClinicalPatient::factory()->create(['mrn' => 'MRN-GEN-001']);
+        PatientIdentifier::create([
+            'patient_id' => $patient->id,
+            'identifier_type' => 'sample_id',
+            'identifier_value' => 'SAMPLE-VCF-001',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('sample.vcf', auroraGenomicVcf('SAMPLE-VCF-001')),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.status', 'mapped')
+            ->assertJsonPath('data.total_variants', 1)
+            ->assertJsonPath('data.mapped_variants', 1)
+            ->assertJsonPath('data.review_required', 0);
+
+        $this->assertDatabaseHas('clinical.genomic_upload_variants', [
+            'genomic_upload_id' => $response->json('data.id'),
+            'patient_id' => $patient->id,
+            'sample_id' => 'SAMPLE-VCF-001',
+            'mapping_status' => 'matched',
+            'chromosome' => '7',
+            'position' => 140453136,
+            'reference_allele' => 'A',
+            'alternate_allele' => 'T',
+            'gene_symbol' => 'BRAF',
+        ]);
+    });
+
+    it('imports matched staged variants idempotently into clinical genomic variants', function () {
+        fakeIsolatedLocalDisk('genomic-upload-import');
+
+        $patient = ClinicalPatient::factory()->create(['mrn' => 'SAMPLE-IMPORT-001']);
+
+        $uploadResponse = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('sample.vcf', auroraGenomicVcf('SAMPLE-IMPORT-001')),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $uploadId = $uploadResponse->json('data.id');
+
+        $firstImport = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/import");
+
+        $firstImport->assertStatus(200)
+            ->assertJsonPath('data.operation.status', 'succeeded')
+            ->assertJsonPath('data.result.created', 1)
+            ->assertJsonPath('data.result.written', 1)
+            ->assertJsonPath('data.upload.status', 'imported');
+
+        $secondImport = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/import");
+
+        $secondImport->assertStatus(200)
+            ->assertJsonPath('data.result.created', 0)
+            ->assertJsonPath('data.result.updated', 1);
+
+        expect(GenomicVariant::where('source_type', 'upload')
+            ->where('source_id', (string) $uploadId)
+            ->count())->toBe(1);
+
+        $this->assertDatabaseHas('clinical.genomic_variants', [
+            'patient_id' => $patient->id,
+            'source_type' => 'upload',
+            'source_id' => (string) $uploadId,
+            'gene' => 'BRAF',
+            'chromosome' => '7',
+            'position' => 140453136,
+            'ref_allele' => 'A',
+            'alt_allele' => 'T',
+        ]);
+    });
+
+    it('blocks import when staged variants have unmatched samples', function () {
+        fakeIsolatedLocalDisk('genomic-upload-unmatched');
+
+        $uploadResponse = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('sample.vcf', auroraGenomicVcf('UNKNOWN-SAMPLE')),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $uploadResponse->assertStatus(201)
+            ->assertJsonPath('data.status', 'review')
+            ->assertJsonPath('data.review_required', 1);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads/'.$uploadResponse->json('data.id').'/import')
+            ->assertStatus(409)
+            ->assertJsonPath('message', 'Upload has unmatched or review-required variants');
+    });
+
+    it('returns 422 when person matching is requested without parsed variants', function () {
+        $upload = GenomicUpload::factory()->create(['status' => 'review']);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$upload->id}/match-persons")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'No parsed variants are available for person matching');
+    });
+
+    it('marks malformed VCF uploads failed instead of reporting false success', function () {
+        fakeIsolatedLocalDisk('genomic-upload-malformed');
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('malformed.vcf', "7\t140453136\t.\tA\tT\n"),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.status', 'failed')
+            ->assertJsonPath('data.error_message', 'No importable variants were parsed from the upload.');
+    });
+
+    it('deduplicates repeated VCF rows while staging upload variants', function () {
+        fakeIsolatedLocalDisk('genomic-upload-duplicates');
+
+        ClinicalPatient::factory()->create(['mrn' => 'SAMPLE-DUP-001']);
+        $content = auroraGenomicVcf('SAMPLE-DUP-001')."7\t140453136\trs113488022\tA\tT\t99\tPASS\tGENEINFO=BRAF:673;AF=0.33\tGT:AD:DP\t0/1:20,10:30\n";
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('dupe.vcf', $content),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.total_variants', 1);
+
+        expect(GenomicUploadVariant::where('genomic_upload_id', $response->json('data.id'))->count())->toBe(1);
+    });
+
+    it('parses CSV uploads and imports matched variants', function () {
+        fakeIsolatedLocalDisk('genomic-upload-csv');
+
+        $patient = ClinicalPatient::factory()->create(['mrn' => 'CSV-SAMPLE-001']);
+        $csv = implode("\n", [
+            'sample_id,gene,chromosome,position,ref,alt,allele_frequency',
+            'CSV-SAMPLE-001,TP53,17,7674220,C,T,0.42',
+            '',
+        ]);
+
+        $uploadResponse = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('variants.csv', $csv),
+                'file_format' => 'csv',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $uploadResponse->assertStatus(201)
+            ->assertJsonPath('data.status', 'mapped')
+            ->assertJsonPath('data.total_variants', 1);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads/'.$uploadResponse->json('data.id').'/import')
+            ->assertStatus(200)
+            ->assertJsonPath('data.result.written', 1);
+
+        $this->assertDatabaseHas('clinical.genomic_variants', [
+            'patient_id' => $patient->id,
+            'gene' => 'TP53',
+            'chromosome' => '17',
+            'position' => 7674220,
+            'ref_allele' => 'C',
+            'alt_allele' => 'T',
+        ]);
+    });
+
+    it('annotates imported upload variants from the local ClinVar cache', function () {
+        fakeIsolatedLocalDisk('genomic-upload-clinvar');
+
+        ClinicalPatient::factory()->create(['mrn' => 'SAMPLE-CLINVAR-001']);
+        ClinVarVariant::create([
+            'variation_id' => '113488022',
+            'chromosome' => '7',
+            'position' => 140453136,
+            'reference_allele' => 'A',
+            'alternate_allele' => 'T',
+            'genome_build' => 'GRCh38',
+            'gene_symbol' => 'BRAF',
+            'clinical_significance' => 'Pathogenic',
+            'disease_name' => 'Melanoma',
+            'review_status' => 'reviewed by expert panel',
+            'is_pathogenic' => true,
+        ]);
+
+        $uploadResponse = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('sample.vcf', auroraGenomicVcf('SAMPLE-CLINVAR-001', 'GENEINFO=BRAF:673')),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $uploadId = $uploadResponse->json('data.id');
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/import")
+            ->assertStatus(200);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/annotate-clinvar");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.operation.performed', true)
+            ->assertJsonPath('data.result.annotated', 1)
+            ->assertJsonPath('data.result.missing_reference', 0);
+
+        $this->assertDatabaseHas('clinical.genomic_variants', [
+            'source_type' => 'upload',
+            'source_id' => (string) $uploadId,
+            'clinical_significance' => 'Pathogenic',
+            'clinvar_disease' => 'Melanoma',
+            'clinvar_review_status' => 'reviewed by expert panel',
+        ]);
+    });
+
+    it('requires a populated ClinVar cache before upload annotation', function () {
+        fakeIsolatedLocalDisk('genomic-upload-clinvar-empty');
+
+        ClinicalPatient::factory()->create(['mrn' => 'SAMPLE-NO-CLINVAR-001']);
+
+        $uploadResponse = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/genomics/uploads', [
+                'file' => UploadedFile::fake()->createWithContent('sample.vcf', auroraGenomicVcf('SAMPLE-NO-CLINVAR-001', 'GENEINFO=BRAF:673')),
+                'file_format' => 'vcf',
+                'genome_build' => 'GRCh38',
+            ]);
+
+        $uploadId = $uploadResponse->json('data.id');
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/import")
+            ->assertStatus(200);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/genomics/uploads/{$uploadId}/annotate-clinvar")
+            ->assertStatus(503)
+            ->assertJsonPath('message', 'ClinVar cache is empty; sync ClinVar before annotating uploads');
     });
 });
 

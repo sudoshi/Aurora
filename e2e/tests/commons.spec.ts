@@ -10,9 +10,7 @@ test.describe("Commons chat", () => {
     await navigateTo(page, "Commons");
 
     await expect(
-      page
-        .getByRole("heading", { name: /commons/i })
-        .or(page.getByText(/commons|channels/i).first())
+      page.getByRole("heading", { name: "Commons" })
     ).toBeVisible();
   });
 

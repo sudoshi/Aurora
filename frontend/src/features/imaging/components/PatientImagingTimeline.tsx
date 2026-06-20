@@ -1,11 +1,10 @@
 import { useState } from "react";
 import {
-  Search, Users, ChevronRight, Loader2, ScanLine, Link2,
+  Search, Users, ChevronRight, Loader2, ScanLine,
 } from "lucide-react";
 import {
   usePatientsWithImaging,
   usePatientTimeline,
-  useAutoLinkStudies,
 } from "../hooks/useImaging";
 import PatientTimeline from "./PatientTimeline";
 
@@ -25,8 +24,6 @@ export default function PatientImagingTimeline() {
     error: timelineError,
   } = usePatientTimeline(selectedPersonId);
 
-  const autoLink = useAutoLinkStudies();
-
   const handleSearch = () => {
     const pid = parseInt(personIdInput);
     if (pid > 0) setSelectedPersonId(pid);
@@ -39,7 +36,7 @@ export default function PatientImagingTimeline() {
 
   return (
     <div className="space-y-6">
-      {/* Search + Auto-link bar */}
+      {/* Search bar */}
       <div className="flex items-end gap-4 flex-wrap">
         <div className="flex-1 min-w-[200px]">
           <label className="block text-xs text-[#7A8298] mb-1.5">Patient Person ID</label>
@@ -63,26 +60,7 @@ export default function PatientImagingTimeline() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => autoLink.mutate()}
-          disabled={autoLink.isPending}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
-        >
-          {autoLink.isPending ? (
-            <Loader2 size={14} className="animate-spin" />
-          ) : (
-            <Link2 size={14} />
-          )}
-          Auto-Link Studies
-        </button>
       </div>
-
-      {autoLink.isSuccess && (
-        <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-          Auto-linked {(autoLink.data as { linked: number }).linked} studies to OMOP persons.
-        </div>
-      )}
 
       {/* Timeline view (when a patient is selected) */}
       {selectedPersonId > 0 && (
@@ -153,8 +131,7 @@ export default function PatientImagingTimeline() {
 
           {!patientsLoading && (!patients?.data || patients.data.length === 0) && (
             <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-10 text-center text-sm text-[#4A5068]">
-              No patients with linked imaging studies found. Use "Auto-Link Studies" to match DICOM patient IDs to OMOP persons,
-              or manually link studies on the Studies tab.
+              No patients with linked imaging studies found.
             </div>
           )}
 

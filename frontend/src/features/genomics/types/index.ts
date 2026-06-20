@@ -1,4 +1,4 @@
-export type FileFormat = 'vcf' | 'maf' | 'cbio_maf' | 'fhir_genomics';
+export type FileFormat = 'vcf' | 'maf' | 'cbio_maf' | 'fhir_genomics' | 'csv' | 'tsv';
 export type GenomeBuild = 'GRCh38' | 'GRCh37' | 'hg38' | 'hg19';
 export type UploadStatus = 'pending' | 'parsing' | 'mapped' | 'review' | 'imported' | 'failed';
 export type MappingStatus = 'mapped' | 'unmapped' | 'review';
@@ -9,20 +9,56 @@ export interface GenomicUpload {
   source_id: number;
   created_by: number;
   filename: string;
+  original_filename?: string;
   file_format: FileFormat;
   file_size_bytes: number;
+  file_size?: number;
   status: UploadStatus;
+  raw_status?: string;
   genome_build: GenomeBuild | null;
   sample_id: string | null;
   total_variants: number;
   mapped_variants: number;
+  unmapped_variants?: number;
   review_required: number;
   error_message: string | null;
+  last_result?: Record<string, unknown> | null;
+  matched_at?: string | null;
+  clinvar_annotated_at?: string | null;
   parsed_at: string | null;
   imported_at: string | null;
   created_at: string;
   updated_at: string;
   creator?: { id: number; name: string };
+}
+
+export interface GenomicOperation {
+  name: string;
+  status: 'queued' | 'succeeded' | 'completed_with_errors' | 'failed';
+  performed: boolean;
+}
+
+export interface GenomicMatchResult {
+  candidates: number;
+  matched: number;
+  unmatched: number;
+  review_required: number;
+}
+
+export interface GenomicImportResult {
+  created: number;
+  updated: number;
+  written: number;
+  skipped: number;
+  errors: string[];
+}
+
+export interface GenomicClinVarAnnotationResult {
+  eligible: number;
+  annotated: number;
+  already_annotated: number;
+  missing_reference: number;
+  skipped: number;
 }
 
 export interface GenomicVariant {

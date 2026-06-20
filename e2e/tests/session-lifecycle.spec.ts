@@ -10,9 +10,7 @@ test.describe("Session workflow", () => {
     await navigateTo(page, "Sessions");
 
     await expect(
-      page
-        .getByRole("heading", { name: /session/i })
-        .or(page.getByText(/sessions/i).first())
+      page.getByRole("heading", { name: "Sessions", exact: true })
     ).toBeVisible();
   });
 

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Jobs\Genomics\ProcessGenomicUploadJob;
+use App\Models\Clinical\ClinicalPatient;
 use App\Models\Clinical\ClinVarSyncLog;
 use App\Models\Clinical\ClinVarVariant;
 use App\Models\Clinical\GenomicCriteria;
 use App\Models\Clinical\GenomicUpload;
 use App\Models\Clinical\GenomicVariant;
-use App\Services\Genomics\ClinVarAnnotationService;
 use App\Services\Genomics\ClinVarSyncService;
+use App\Services\Genomics\FhirGenomicsReportExporter;
+use App\Services\Genomics\GenomicUploadIngestionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +21,8 @@ class GenomicsController extends Controller
 {
     public function __construct(
         private readonly ClinVarSyncService $clinVarSync,
-        private readonly ClinVarAnnotationService $clinVarAnnotation,
+        private readonly GenomicUploadIngestionService $uploadIngestion,
+        private readonly FhirGenomicsReportExporter $fhirReportExporter,
     ) {}
     // ── Stats ────────────────────────────────────────────────────────────
 
@@ -30,12 +34,35 @@ class GenomicsController extends Controller
         $total = GenomicVariant::count();
         $pathogenic = GenomicVariant::whereRaw("LOWER(clinical_significance) IN ('pathogenic', 'likely_pathogenic')")->count();
         $vus = GenomicVariant::whereRaw("LOWER(clinical_significance) IN ('vus', 'uncertain significance')")->count();
+        $uploadsByStatus = [];
+        GenomicUpload::query()
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->get()
+            ->each(function ($row) use (&$uploadsByStatus): void {
+                $status = $this->normalizeUploadStatus((string) $row->status);
+                $uploadsByStatus[$status] = ($uploadsByStatus[$status] ?? 0) + (int) $row->aggregate;
+            });
+        $topGenes = GenomicVariant::query()
+            ->whereNotNull('gene')
+            ->selectRaw('gene, COUNT(*) as aggregate')
+            ->groupBy('gene')
+            ->orderByDesc('aggregate')
+            ->limit(10)
+            ->pluck('aggregate', 'gene')
+            ->map(fn ($count) => (int) $count)
+            ->all();
 
         return ApiResponse::success([
             'total_variants' => $total,
+            'total_uploads' => GenomicUpload::count(),
             'uploads_count' => GenomicUpload::count(),
             'pathogenic_count' => $pathogenic,
             'vus_count' => $vus,
+            'mapped_variants' => (int) GenomicUpload::sum('mapped_variants'),
+            'review_required' => (int) GenomicUpload::sum('unmapped_variants'),
+            'uploads_by_status' => $uploadsByStatus,
+            'top_genes' => $topGenes,
         ], 'Genomics stats retrieved');
     }
 
@@ -59,7 +86,9 @@ class GenomicsController extends Controller
         }
 
         $perPage = (int) $request->input('per_page', 25);
-        $paginator = $query->orderBy('id', 'desc')->paginate($perPage);
+        $paginator = $query->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->through(fn (GenomicUpload $upload) => $this->formatUpload($upload));
 
         return ApiResponse::paginated($paginator, 'Uploads retrieved');
     }
@@ -71,7 +100,7 @@ class GenomicsController extends Controller
     {
         $request->validate([
             'file' => 'required|file',
-            'file_format' => 'required|string',
+            'file_format' => 'required|string|in:vcf,maf,cbio_maf,fhir_genomics,csv,tsv',
             'genome_build' => 'sometimes|string',
             'sample_id' => 'sometimes|string',
         ]);
@@ -85,12 +114,18 @@ class GenomicsController extends Controller
             'file_format' => $request->input('file_format'),
             'genome_build' => $request->input('genome_build', 'GRCh38'),
             'sample_id' => $request->input('sample_id'),
-            'status' => 'uploaded',
+            'status' => 'parsing',
             'file_size' => $file->getSize(),
             'uploaded_by' => auth()->id(),
+            'last_result' => [
+                'operation' => 'parse_upload',
+                'status' => 'queued',
+            ],
         ]);
 
-        return ApiResponse::success($upload, 'Upload created', 201);
+        ProcessGenomicUploadJob::dispatch($upload->id)->onQueue('genomics');
+
+        return ApiResponse::success($this->formatUpload($upload->refresh()), 'Upload created and parsing queued', 201);
     }
 
     /**
@@ -104,7 +139,7 @@ class GenomicsController extends Controller
             return ApiResponse::error('Upload not found', 404);
         }
 
-        return ApiResponse::success($upload, 'Upload retrieved');
+        return ApiResponse::success($this->formatUpload($upload), 'Upload retrieved');
     }
 
     /**
@@ -129,9 +164,30 @@ class GenomicsController extends Controller
      */
     public function matchPersons(int $id): JsonResponse
     {
+        $upload = GenomicUpload::find($id);
+
+        if (! $upload) {
+            return ApiResponse::error('Upload not found', 404);
+        }
+
+        if (in_array($this->normalizeUploadStatus($upload->status), ['pending', 'parsing'], true)) {
+            return ApiResponse::error('Upload parsing is still in progress', 409);
+        }
+
+        if ($upload->stagedVariants()->count() === 0) {
+            return ApiResponse::error('No parsed variants are available for person matching', 422);
+        }
+
+        $result = $this->uploadIngestion->matchPersons($upload);
+
         return ApiResponse::success([
-            'matched' => 0,
-            'unmatched' => 0,
+            'operation' => [
+                'name' => 'match_persons',
+                'status' => 'succeeded',
+                'performed' => true,
+            ],
+            'upload' => $this->formatUpload($upload->refresh()),
+            'result' => $result,
         ], 'Person matching complete');
     }
 
@@ -140,27 +196,47 @@ class GenomicsController extends Controller
      */
     public function importToOmop(int $id): JsonResponse
     {
-        $upload = [
-            'id' => $id,
-            'original_filename' => 'stub.vcf',
-            'file_format' => 'vcf',
-            'genome_build' => 'GRCh38',
-            'sample_id' => null,
-            'status' => 'imported',
-            'total_variants' => 0,
-            'mapped_variants' => 0,
-            'unmapped_variants' => 0,
-            'created_at' => now()->toIso8601String(),
-            'updated_at' => now()->toIso8601String(),
-        ];
+        $upload = GenomicUpload::find($id);
+
+        if (! $upload) {
+            return ApiResponse::error('Upload not found', 404);
+        }
+
+        if (in_array($this->normalizeUploadStatus($upload->status), ['pending', 'parsing'], true)) {
+            return ApiResponse::error('Upload parsing is still in progress', 409);
+        }
+
+        $stagedCount = $upload->stagedVariants()->count();
+        if ($stagedCount === 0) {
+            return ApiResponse::error('No parsed variants are available for import', 422);
+        }
+
+        $reviewRequired = $upload->stagedVariants()
+            ->where(function ($query) {
+                $query->whereNull('patient_id')
+                    ->orWhereNotIn('mapping_status', ['matched', 'imported']);
+            })
+            ->count();
+
+        if ($reviewRequired > 0) {
+            return ApiResponse::error('Upload has unmatched or review-required variants', 409, [
+                'review_required' => $reviewRequired,
+                'matched' => $upload->stagedVariants()->whereNotNull('patient_id')->count(),
+            ]);
+        }
+
+        $result = $this->uploadIngestion->importUpload($upload);
 
         return ApiResponse::success([
-            'upload' => $upload,
-            'result' => [
-                'written' => 0,
-                'skipped' => 0,
-                'errors' => 0,
+            'operation' => [
+                'name' => 'import_to_omop',
+                'status' => $result['errors'] === [] ? 'succeeded' : 'completed_with_errors',
+                'performed' => ($result['created'] + $result['updated']) > 0,
             ],
+            'upload' => $this->formatUpload($upload->refresh()),
+            'result' => array_merge($result, [
+                'written' => $result['created'] + $result['updated'],
+            ]),
         ], 'Import complete');
     }
 
@@ -169,10 +245,38 @@ class GenomicsController extends Controller
      */
     public function annotateClinVar(int $id): JsonResponse
     {
+        $upload = GenomicUpload::find($id);
+
+        if (! $upload) {
+            return ApiResponse::error('Upload not found', 404);
+        }
+
+        if (ClinVarVariant::count() === 0) {
+            return ApiResponse::error('ClinVar cache is empty; sync ClinVar before annotating uploads', 503);
+        }
+
+        $eligible = GenomicVariant::where('source_type', 'upload')
+            ->where('source_id', (string) $upload->id)
+            ->count();
+
+        if ($eligible === 0) {
+            return ApiResponse::error('No imported variants are available for ClinVar annotation', 422);
+        }
+
+        $result = $this->uploadIngestion->annotateClinVar($upload);
+        $performed = $result['annotated'] > 0;
+
         return ApiResponse::success([
-            'annotated' => 0,
-            'skipped' => 0,
-        ], 'ClinVar annotation complete');
+            'operation' => [
+                'name' => 'annotate_clinvar',
+                'status' => 'succeeded',
+                'performed' => $performed,
+            ],
+            'upload' => $this->formatUpload($upload->refresh()),
+            'result' => array_merge($result, [
+                'skipped' => $result['already_annotated'] + $result['missing_reference'],
+            ]),
+        ], $performed ? 'ClinVar annotation complete' : 'No variants required annotation');
     }
 
     // ── Variants ────────────────────────────────────────────────────────
@@ -204,15 +308,25 @@ class GenomicsController extends Controller
         }
 
         if ($request->filled('gene')) {
-            $query->where('gene', $request->input('gene'));
+            $query->where('gene', 'ilike', $request->input('gene'));
         }
 
         if ($request->filled('clinvar_significance')) {
             $query->where('clinical_significance', $request->input('clinvar_significance'));
         }
 
+        if ($request->filled('mapping_status')) {
+            if ($request->input('mapping_status') === 'mapped') {
+                $query->whereNotNull('patient_id');
+            } elseif ($request->input('mapping_status') === 'unmapped') {
+                $query->whereNull('patient_id');
+            }
+        }
+
         $perPage = (int) $request->input('per_page', 25);
-        $paginator = $query->orderBy('id', 'desc')->paginate($perPage);
+        $paginator = $query->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->through(fn (GenomicVariant $variant) => $this->formatVariant($variant));
 
         return ApiResponse::paginated($paginator, 'Variants retrieved');
     }
@@ -228,7 +342,30 @@ class GenomicsController extends Controller
             return ApiResponse::error('Variant not found', 404);
         }
 
-        return ApiResponse::success($variant, 'Variant retrieved');
+        return ApiResponse::success($this->formatVariant($variant), 'Variant retrieved');
+    }
+
+    /**
+     * GET /api/genomics/patients/{patient}/fhir-report
+     */
+    public function fhirReport(int $patient): JsonResponse
+    {
+        $patientModel = ClinicalPatient::find($patient);
+
+        if (! $patientModel) {
+            return ApiResponse::error('Patient not found', 404);
+        }
+
+        $bundle = $this->fhirReportExporter->exportForPatient($patientModel);
+
+        return ApiResponse::success($bundle, 'FHIR Genomics report exported', 200, [
+            'standard' => 'FHIR R4',
+            'implementation_guide' => 'HL7 FHIR Genomics Reporting',
+            'profile' => FhirGenomicsReportExporter::GENOMIC_REPORT_PROFILE,
+            'variant_profile' => FhirGenomicsReportExporter::VARIANT_PROFILE,
+            'variant_count' => $this->fhirReportExporter->variantCountForPatient($patientModel),
+            'scope' => 'local_export',
+        ]);
     }
 
     // ── Cohort Criteria ─────────────────────────────────────────────────
@@ -416,5 +553,103 @@ class GenomicsController extends Controller
             'success' => true,
             'data' => $interactions,
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function formatUpload(GenomicUpload $upload): array
+    {
+        $status = $this->normalizeUploadStatus($upload->status);
+
+        return [
+            'id' => $upload->id,
+            'source_id' => $upload->id,
+            'created_by' => $upload->uploaded_by,
+            'uploaded_by' => $upload->uploaded_by,
+            'filename' => $upload->original_filename,
+            'original_filename' => $upload->original_filename,
+            'stored_path' => $upload->stored_path,
+            'file_format' => $upload->file_format,
+            'file_size_bytes' => $upload->file_size,
+            'file_size' => $upload->file_size,
+            'status' => $status,
+            'raw_status' => $upload->status,
+            'genome_build' => $upload->genome_build,
+            'sample_id' => $upload->sample_id,
+            'total_variants' => (int) $upload->total_variants,
+            'mapped_variants' => (int) $upload->mapped_variants,
+            'unmapped_variants' => (int) $upload->unmapped_variants,
+            'review_required' => (int) $upload->unmapped_variants,
+            'error_message' => $upload->error_message,
+            'last_result' => $upload->last_result,
+            'parsed_at' => $upload->parsed_at?->toIso8601String(),
+            'matched_at' => $upload->matched_at?->toIso8601String(),
+            'imported_at' => $upload->imported_at?->toIso8601String(),
+            'clinvar_annotated_at' => $upload->clinvar_annotated_at?->toIso8601String(),
+            'created_at' => $upload->created_at?->toIso8601String(),
+            'updated_at' => $upload->updated_at?->toIso8601String(),
+        ];
+    }
+
+    private function normalizeUploadStatus(?string $status): string
+    {
+        return match ($status) {
+            'uploaded', 'pending' => 'pending',
+            'processing' => 'parsing',
+            'completed' => 'mapped',
+            'parsing', 'mapped', 'review', 'imported', 'failed' => $status,
+            default => 'pending',
+        };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function formatVariant(GenomicVariant $variant): array
+    {
+        $uploadId = $variant->source_type === 'upload' && is_numeric($variant->source_id)
+            ? (int) $variant->source_id
+            : null;
+
+        return [
+            'id' => $variant->id,
+            'upload_id' => $uploadId,
+            'source_id' => $uploadId ?? $variant->source_id,
+            'source_type' => $variant->source_type,
+            'person_id' => $variant->patient_id,
+            'patient_id' => $variant->patient_id,
+            'sample_id' => null,
+            'chromosome' => $variant->chromosome,
+            'position' => $variant->position,
+            'reference_allele' => $variant->ref_allele,
+            'alternate_allele' => $variant->alt_allele,
+            'ref_allele' => $variant->ref_allele,
+            'alt_allele' => $variant->alt_allele,
+            'genome_build' => null,
+            'gene_symbol' => $variant->gene,
+            'gene' => $variant->gene,
+            'variant' => $variant->variant,
+            'hgvs_c' => null,
+            'hgvs_p' => null,
+            'variant_type' => $variant->variant_type,
+            'variant_class' => null,
+            'consequence' => null,
+            'quality' => null,
+            'filter_status' => null,
+            'zygosity' => $variant->zygosity,
+            'allele_frequency' => $variant->allele_frequency === null ? null : (float) $variant->allele_frequency,
+            'read_depth' => null,
+            'clinvar_id' => null,
+            'clinvar_significance' => $variant->clinical_significance,
+            'clinical_significance' => $variant->clinical_significance,
+            'clinvar_disease' => $variant->clinvar_disease,
+            'clinvar_review_status' => $variant->clinvar_review_status,
+            'cosmic_id' => null,
+            'measurement_concept_id' => null,
+            'mapping_status' => $variant->patient_id === null ? 'unmapped' : 'mapped',
+            'created_at' => $variant->created_at?->toIso8601String(),
+            'updated_at' => $variant->updated_at?->toIso8601String(),
+        ];
     }
 }

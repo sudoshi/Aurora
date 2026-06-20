@@ -85,8 +85,10 @@ export function useImportToOmop() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => importToOmop(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["genomics", "uploads"] });
+      qc.invalidateQueries({ queryKey: ["genomics", "uploads", id] });
+      qc.invalidateQueries({ queryKey: ["genomics", "variants"] });
       qc.invalidateQueries({ queryKey: ["genomics", "stats"] });
     },
   });
@@ -174,8 +176,9 @@ export function useAnnotateClinVar() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (uploadId: number) => annotateClinVar(uploadId),
-    onSuccess: () => {
+    onSuccess: (_, uploadId) => {
       qc.invalidateQueries({ queryKey: ["genomics", "uploads"] });
+      qc.invalidateQueries({ queryKey: ["genomics", "uploads", uploadId] });
       qc.invalidateQueries({ queryKey: ["genomics", "variants"] });
     },
   });

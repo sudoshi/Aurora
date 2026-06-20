@@ -81,7 +81,7 @@ Route::get('/auth/oidc/callback', [OidcController::class, 'callback'])->middlewa
 Route::post('/auth/oidc/exchange', [OidcController::class, 'exchange'])->middleware('throttle:20,1');
 
 // Auth (protected)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
@@ -166,6 +166,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/studies/index-from-dicomweb', [ImagingController::class, 'indexFromDicomweb']);
         Route::post('/studies/bulk-link', [ImagingController::class, 'bulkLinkStudies']);
         Route::post('/studies/auto-link', [ImagingController::class, 'autoLinkStudies']);
+        Route::get('/ingestion-runs', [ImagingController::class, 'ingestionRuns']);
+        Route::get('/ingestion-runs/{id}', [ImagingController::class, 'ingestionRunShow']);
         Route::get('/studies/{id}', [ImagingController::class, 'studyShow']);
         Route::post('/studies/{id}/index-series', [ImagingController::class, 'indexSeries']);
         Route::post('/studies/{id}/extract-nlp', [ImagingController::class, 'extractNlp']);
@@ -205,6 +207,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/uploads/{id}/annotate-clinvar', [GenomicsController::class, 'annotateClinVar']);
         Route::get('/variants', [GenomicsController::class, 'listVariants']);
         Route::get('/variants/{id}', [GenomicsController::class, 'showVariant']);
+        Route::get('/patients/{patient}/fhir-report', [GenomicsController::class, 'fhirReport']);
         Route::get('/criteria', [GenomicsController::class, 'listCriteria']);
         Route::post('/criteria', [GenomicsController::class, 'storeCriterion']);
         Route::put('/criteria/{id}', [GenomicsController::class, 'updateCriterion']);

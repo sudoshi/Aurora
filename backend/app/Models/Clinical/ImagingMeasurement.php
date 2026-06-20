@@ -16,6 +16,7 @@ class ImagingMeasurement extends Model
         return [
             'value_numeric' => 'decimal:6',
             'target_lesion' => 'boolean',
+            'confidence' => 'decimal:4',
             'measured_at' => 'datetime',
         ];
     }
@@ -23,5 +24,10 @@ class ImagingMeasurement extends Model
     public function imagingStudy(): BelongsTo
     {
         return $this->belongsTo(ImagingStudy::class, 'imaging_study_id');
+    }
+
+    public function imagingSeries(): BelongsTo
+    {
+        return $this->belongsTo(ImagingSeries::class, 'imaging_series_id');
     }
 }

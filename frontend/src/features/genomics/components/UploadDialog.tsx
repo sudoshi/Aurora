@@ -19,6 +19,16 @@ const FORMAT_INFO: Record<FileFormat, { label: string; ext: string; desc: string
     ext: ".txt, .maf",
     desc: "cBioPortal tab-delimited mutation data file",
   },
+  csv: {
+    label: "CSV",
+    ext: ".csv",
+    desc: "Comma-separated variants with sample, coordinate, allele, and gene columns",
+  },
+  tsv: {
+    label: "TSV",
+    ext: ".tsv, .txt",
+    desc: "Tab-separated variants with sample, coordinate, allele, and gene columns",
+  },
   fhir_genomics: {
     label: "FHIR Genomics",
     ext: ".json",
@@ -45,6 +55,10 @@ export function UploadDialog({ onClose }: Props) {
     const name = f.name.toLowerCase();
     if (name.endsWith(".maf") || name.endsWith(".maf.gz")) {
       setFormat("maf");
+    } else if (name.endsWith(".csv")) {
+      setFormat("csv");
+    } else if (name.endsWith(".tsv") || name.endsWith(".txt")) {
+      setFormat("tsv");
     } else if (name.endsWith(".json")) {
       setFormat("fhir_genomics");
     } else {
@@ -106,7 +120,7 @@ export function UploadDialog({ onClose }: Props) {
             <input
               ref={fileRef}
               type="file"
-              accept=".vcf,.vcf.gz,.maf,.maf.gz,.txt,.json"
+              accept=".vcf,.vcf.gz,.maf,.maf.gz,.csv,.tsv,.txt,.json"
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
             />
@@ -120,7 +134,7 @@ export function UploadDialog({ onClose }: Props) {
               <>
                 <Upload size={24} className="text-[#4A5068] mb-2" />
                 <p className="text-sm text-[#7A8298]">Drop file here or click to browse</p>
-                <p className="text-xs text-[#4A5068] mt-1">.vcf, .maf, .json</p>
+                <p className="text-xs text-[#4A5068] mt-1">.vcf, .maf, .csv, .tsv, .json</p>
               </>
             )}
           </div>
@@ -202,7 +216,7 @@ export function UploadDialog({ onClose }: Props) {
             {upload.isPending ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                Uploading & parsing...
+                Uploading & queuing parse...
               </>
             ) : (
               <>

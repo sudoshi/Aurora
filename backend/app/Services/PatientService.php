@@ -13,7 +13,10 @@ use App\Models\Clinical\Medication;
 use App\Models\Clinical\Observation;
 use App\Models\Clinical\Procedure;
 use App\Models\Clinical\Visit;
+use App\Services\Adapters\FhirAdapter;
 use App\Services\Adapters\ManualAdapter;
+use App\Services\Adapters\OmopAdapter;
+use InvalidArgumentException;
 
 class PatientService
 {
@@ -21,7 +24,7 @@ class PatientService
 
     public function __construct(?ClinicalDataAdapter $adapter = null)
     {
-        $this->adapter = $adapter ?? new ManualAdapter;
+        $this->adapter = $adapter ?? $this->resolveConfiguredAdapter();
     }
 
     /**
@@ -66,5 +69,17 @@ class PatientService
             'imaging_studies' => ImagingStudy::where('patient_id', $patientId)->count(),
             'genomic_variants' => GenomicVariant::where('patient_id', $patientId)->count(),
         ];
+    }
+
+    private function resolveConfiguredAdapter(): ClinicalDataAdapter
+    {
+        $driver = strtolower((string) config('clinical.adapter', 'manual'));
+
+        return match ($driver) {
+            'manual' => new ManualAdapter,
+            'fhir' => new FhirAdapter,
+            'omop' => new OmopAdapter,
+            default => throw new InvalidArgumentException("Unsupported clinical data adapter [{$driver}]."),
+        };
     }
 }

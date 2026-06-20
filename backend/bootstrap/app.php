@@ -14,10 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
-        $middleware->api(prepend: [
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':60,1',
-        ]);
-
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

@@ -16,7 +16,7 @@ class GenomicUploadFactory extends Factory
     {
         $formats = ['vcf', 'csv', 'tsv', 'maf'];
         $builds = ['GRCh37', 'GRCh38'];
-        $statuses = ['uploaded', 'processing', 'completed', 'failed'];
+        $statuses = ['pending', 'parsing', 'mapped', 'review', 'imported', 'failed'];
 
         return [
             'original_filename' => fake()->word().'.'.fake()->randomElement($formats),
@@ -30,6 +30,12 @@ class GenomicUploadFactory extends Factory
             'unmapped_variants' => fake()->numberBetween(0, 5000),
             'file_size' => fake()->numberBetween(1024, 104857600),
             'uploaded_by' => null,
+            'parsed_at' => null,
+            'matched_at' => null,
+            'imported_at' => null,
+            'clinvar_annotated_at' => null,
+            'error_message' => null,
+            'last_result' => null,
         ];
     }
 }

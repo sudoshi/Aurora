@@ -5,7 +5,6 @@ import {
   Layers,
   BarChart3,
   Filter,
-  RefreshCw,
   Brain,
   ChevronRight,
   Loader2,
@@ -13,16 +12,18 @@ import {
   Trash2,
   FolderInput,
   Activity,
+  Save,
 } from "lucide-react";
 import {
   useImagingStats,
   useImagingStudies,
   useImagingFeatures,
   useImagingCriteria,
+  useCreateImagingCriterion,
   useDeleteImagingCriterion,
-  useIndexFromDicomweb,
   usePopulationAnalytics,
   useImportLocalDicom,
+  useIndexFromDicomweb,
 } from "../hooks/useImaging";
 import type { ImagingStudy, ImagingFeature } from "../types";
 import PatientImagingTimeline from "../components/PatientImagingTimeline";
@@ -114,12 +115,8 @@ function StatsBar() {
 }
 
 function LocalImportPanel() {
-  const [dir, setDir] = useState("dicom_samples");
+  const [path, setPath] = useState("");
   const importMutation = useImportLocalDicom();
-
-  const handleImport = () => {
-    importMutation.mutate({ dir });
-  };
 
   return (
     <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 space-y-3">
@@ -130,54 +127,45 @@ function LocalImportPanel() {
       </div>
       <div className="flex items-end gap-3 flex-wrap">
         <div className="flex-1 min-w-[200px]">
-          <label className="block text-xs text-[#7A8298] mb-1.5">Directory (relative to repo root)</label>
+          <label className="block text-xs text-[#7A8298] mb-1.5">Directory</label>
           <input
-            className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors font-mono"
-            value={dir}
-            onChange={(e) => setDir(e.target.value)}
-            placeholder="dicom_samples"
+            className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] font-mono focus:outline-none focus:border-[#2DD4BF] transition-colors"
+            value={path}
+            onChange={(event) => setPath(event.target.value)}
+            placeholder="/data/dicom-imports/run-001"
           />
         </div>
         <button
           type="button"
-          onClick={handleImport}
-          disabled={importMutation.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
+          onClick={() => importMutation.mutate({ path })}
+          disabled={!path || importMutation.isPending}
+          className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
         >
-          {importMutation.isPending ? (
-            <Loader2 size={14} className="animate-spin" />
-          ) : (
-            <FolderInput size={14} />
-          )}
-          {importMutation.isPending ? "Scanning..." : "Import"}
+          {importMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <FolderInput size={14} />}
+          Queue Import
         </button>
       </div>
       {importMutation.isSuccess && (
-        <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-          Import complete -- {(importMutation.data as Record<string, number>)?.studies_imported ?? 0} studies,{" "}
-          {(importMutation.data as Record<string, number>)?.series_imported ?? 0} series,{" "}
-          {(importMutation.data as Record<string, number>)?.instances_imported ?? 0} instances
+        <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-xs text-[#2DD4BF]">
+          Queued run #{importMutation.data.run_id}: {importMutation.data.status}
         </div>
       )}
       {importMutation.isError && (
-        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-sm text-[#F0607A]">
-          Import failed: {importMutation.error instanceof Error ? importMutation.error.message : "Unknown error"}
+        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-xs text-[#F0607A]">
+          {(importMutation.error as Error).message}
         </div>
       )}
-      <p className="text-[10px] text-[#4A5068]">
-        Scans DICOM files on the server at the specified path. Files must be accessible from the Aurora backend container.
-      </p>
     </div>
   );
 }
 
 function StudiesTab() {
   const [modality, setModality] = useState("");
+  const dicomwebIndex = useIndexFromDicomweb();
   const { data, isLoading } = useImagingStudies({
     modality: modality || undefined,
     per_page: 25,
   });
-  const indexMutation = useIndexFromDicomweb();
 
   return (
     <div className="space-y-4">
@@ -197,23 +185,23 @@ function StudiesTab() {
         </div>
         <button
           type="button"
-          onClick={() =>
-            indexMutation.mutate({
-              modality: modality || undefined,
-            })
-          }
-          disabled={indexMutation.isPending}
+          onClick={() => dicomwebIndex.mutate({ modality: modality || undefined, limit: 100 })}
+          disabled={dicomwebIndex.isPending}
           className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
         >
-          <RefreshCw size={14} className={indexMutation.isPending ? "animate-spin" : ""} />
-          Index from DICOMweb
+          {dicomwebIndex.isPending ? <Loader2 size={14} className="animate-spin" /> : <FolderInput size={14} />}
+          Queue DICOMweb Index
         </button>
       </div>
 
-      {indexMutation.isSuccess && (
-        <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-          Indexed {(indexMutation.data as { indexed: number }).indexed} new /{" "}
-          updated {(indexMutation.data as { updated: number }).updated} studies
+      {dicomwebIndex.isSuccess && (
+        <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-xs text-[#2DD4BF]">
+          Queued run #{dicomwebIndex.data.run_id}: {dicomwebIndex.data.status}
+        </div>
+      )}
+      {dicomwebIndex.isError && (
+        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-xs text-[#F0607A]">
+          {(dicomwebIndex.error as Error).message}
         </div>
       )}
 
@@ -404,7 +392,14 @@ function FeaturesTab() {
 
 function CriteriaTab() {
   const { data: criteria, isLoading } = useImagingCriteria();
+  const createMutation = useCreateImagingCriterion();
   const deleteMutation = useDeleteImagingCriterion();
+  const [name, setName] = useState("");
+  const [criteriaType, setCriteriaType] = useState("modality");
+  const [description, setDescription] = useState("");
+  const [definitionText, setDefinitionText] = useState('{\n  "modality": "CT"\n}');
+  const [isShared, setIsShared] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const TYPE_LABELS: Record<string, string> = {
     modality: "Modality",
@@ -414,12 +409,120 @@ function CriteriaTab() {
     dose: "Radiation Dose",
   };
 
+  const handleCreate = () => {
+    setFormError(null);
+
+    let criteriaDefinition: Record<string, unknown>;
+    try {
+      const parsed = JSON.parse(definitionText) as unknown;
+      if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+        setFormError("Criteria definition must be a JSON object.");
+        return;
+      }
+      criteriaDefinition = parsed as Record<string, unknown>;
+    } catch {
+      setFormError("Criteria definition must be valid JSON.");
+      return;
+    }
+
+    if (!name.trim()) {
+      setFormError("Name is required.");
+      return;
+    }
+
+    createMutation.mutate({
+      name: name.trim(),
+      criteria_type: criteriaType,
+      criteria_definition: criteriaDefinition,
+      description: description.trim() || undefined,
+      is_shared: isShared,
+    }, {
+      onSuccess: () => {
+        setName("");
+        setCriteriaType("modality");
+        setDescription("");
+        setDefinitionText('{\n  "modality": "CT"\n}');
+        setIsShared(false);
+      },
+    });
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-[#7A8298]">
         Saved imaging cohort criteria. Use these in the Cohort Builder to select patients based on
         imaging characteristics.
       </p>
+
+      <div className="rounded-lg border border-[#1C1C48] bg-[#10102A] p-4 space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-[#7A8298] mb-1.5">Name</label>
+            <input
+              className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Chest CT baseline cohort"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-[#7A8298] mb-1.5">Type</label>
+            <select
+              className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] focus:outline-none focus:border-[#2DD4BF] transition-colors"
+              value={criteriaType}
+              onChange={(e) => setCriteriaType(e.target.value)}
+            >
+              {Object.entries(TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs text-[#7A8298] mb-1.5">Description</label>
+          <input
+            className="w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Optional"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-[#7A8298] mb-1.5">Definition JSON</label>
+          <textarea
+            className="min-h-28 w-full rounded-lg bg-[#0A0A18] border border-[#1C1C48] px-3 py-2 text-sm text-[#E8ECF4] placeholder:text-[#4A5068] focus:outline-none focus:border-[#2DD4BF] focus:ring-1 focus:ring-[#2DD4BF]/40 transition-colors font-mono"
+            value={definitionText}
+            onChange={(e) => setDefinitionText(e.target.value)}
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="inline-flex items-center gap-2 text-xs text-[#B4BAC8]">
+            <input
+              type="checkbox"
+              checked={isShared}
+              onChange={(e) => setIsShared(e.target.checked)}
+              className="h-4 w-4 rounded border-[#1C1C48] bg-[#0A0A18]"
+            />
+            Shared
+          </label>
+          {formError && <span className="text-xs text-[#F0607A]">{formError}</span>}
+          {createMutation.isError && (
+            <span className="text-xs text-[#F0607A]">
+              {createMutation.error instanceof Error ? createMutation.error.message : "Create failed"}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleCreate}
+            disabled={createMutation.isPending}
+            className="ml-auto inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
+          >
+            {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Save Criterion
+          </button>
+        </div>
+      </div>
 
       {isLoading && (
         <div className="flex items-center gap-2 text-[#4A5068]">

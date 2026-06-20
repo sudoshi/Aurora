@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft, Layers, Brain, Loader2, ScanLine, Monitor, Ruler } from "lucide-react";
-import { useImagingStudy, useIndexSeries, useExtractNlp, useImagingFeatures } from "../hooks/useImaging";
+import { useImagingStudy, useIndexSeries, useImagingFeatures, useExtractNlp } from "../hooks/useImaging";
 import type { ImagingSeries, ImagingFeature } from "../types";
 import OhifViewer from "../components/OhifViewer";
 import MeasurementPanel from "../components/MeasurementPanel";
@@ -109,20 +109,16 @@ export default function ImagingStudyPage() {
             Index Series
           </button>
           {study.person_id && (
-            <button
-              type="button"
-              onClick={() => extractNlp.mutate(studyId)}
-              disabled={extractNlp.isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#2DD4BF] px-4 py-2 text-sm font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
-            >
-              {extractNlp.isPending ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                <Brain size={14} />
-              )}
-              Extract NLP
-            </button>
-          )}
+              <button
+                type="button"
+                onClick={() => extractNlp.mutate(studyId)}
+                disabled={extractNlp.isPending}
+                className="inline-flex items-center gap-2 rounded-lg border border-[#222256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
+              >
+                {extractNlp.isPending ? <Loader2 size={14} className="animate-spin" /> : <Brain size={14} />}
+                Extract NLP
+              </button>
+            )}
         </div>
       </div>
 
@@ -134,8 +130,12 @@ export default function ImagingStudyPage() {
       )}
       {extractNlp.isSuccess && (
         <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-          Extracted {(extractNlp.data as { extracted: number }).extracted} findings,{" "}
-          {(extractNlp.data as { mapped: number }).mapped} OMOP-mapped.
+          Extracted {extractNlp.data.extracted} imaging features.
+        </div>
+      )}
+      {extractNlp.isError && (
+        <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-sm text-[#F0607A]">
+          {(extractNlp.error as Error).message}
         </div>
       )}
 

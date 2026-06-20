@@ -3,10 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Jobs\Imaging\ImportLocalDicomJob;
+use App\Jobs\Imaging\IndexDicomwebStudiesJob;
 use App\Models\Clinical\ClinicalPatient;
+use App\Models\Clinical\ImagingCriteria;
+use App\Models\Clinical\ImagingFeature;
+use App\Models\Clinical\ImagingIngestionRun;
 use App\Models\Clinical\ImagingMeasurement;
+use App\Models\Clinical\ImagingResponseAssessment;
 use App\Models\Clinical\ImagingSeries;
 use App\Models\Clinical\ImagingStudy;
+use App\Services\Imaging\ImagingIngestionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -15,6 +22,8 @@ use Illuminate\Support\Facades\Http;
 
 class ImagingController extends Controller
 {
+    public function __construct(private readonly ImagingIngestionService $ingestionService) {}
+
     // ─── Helper: format a study row for JSON ─────────────────────────────
 
     private function formatStudy(ImagingStudy $study): array
@@ -72,17 +81,112 @@ class ImagingController extends Controller
 
     private function formatMeasurement(ImagingMeasurement $m): array
     {
+        $study = $m->relationLoaded('imagingStudy') ? $m->imagingStudy : null;
+        $seriesId = $m->imaging_series_id;
+
+        if ($seriesId === null && $m->source_type === 'series' && is_numeric($m->source_id)) {
+            $seriesId = (int) $m->source_id;
+        }
+
+        $value = (float) $m->value_numeric;
+        $measurementName = $m->measurement_name ?: $m->measurement_type;
+        $bodySite = $m->body_site ?: $study?->body_part;
+        $algorithmName = $m->algorithm_name ?: $m->measured_by;
+
         return [
             'id' => $m->id,
             'imaging_study_id' => $m->imaging_study_id,
+            'study_id' => $m->imaging_study_id,
+            'person_id' => $study?->patient_id,
+            'series_id' => $seriesId,
             'measurement_type' => $m->measurement_type,
+            'measurement_name' => $measurementName,
             'target_lesion' => $m->target_lesion,
-            'value_numeric' => $m->value_numeric,
+            'is_target_lesion' => $m->target_lesion,
+            'target_lesion_number' => $m->target_lesion_number,
+            'value_numeric' => $value,
+            'value_as_number' => $value,
             'unit' => $m->unit,
+            'body_site' => $bodySite,
+            'laterality' => $m->laterality,
             'measured_by' => $m->measured_by,
+            'algorithm_name' => $algorithmName,
+            'confidence' => $m->confidence !== null ? (float) $m->confidence : null,
             'measured_at' => $m->measured_at?->toISOString(),
             'source_id' => $m->source_id,
             'source_type' => $m->source_type,
+            'created_by' => null,
+            'created_at' => $m->created_at?->toISOString(),
+            'updated_at' => $m->updated_at?->toISOString(),
+            'study' => $study ? [
+                'id' => $study->id,
+                'study_date' => $study->study_date?->toDateString(),
+                'modality' => $study->modality,
+                'body_part_examined' => $study->body_part,
+            ] : null,
+        ];
+    }
+
+    private function formatResponseAssessment(ImagingResponseAssessment $assessment): array
+    {
+        $baselineStudy = $assessment->relationLoaded('baselineStudy') ? $assessment->baselineStudy : null;
+        $currentStudy = $assessment->relationLoaded('currentStudy') ? $assessment->currentStudy : null;
+
+        return [
+            'id' => $assessment->id,
+            'person_id' => $assessment->patient_id,
+            'criteria_type' => $assessment->criteria_type,
+            'assessment_date' => $assessment->assessment_date?->toDateString(),
+            'body_site' => $assessment->body_site,
+            'baseline_study_id' => $assessment->baseline_study_id,
+            'current_study_id' => $assessment->current_study_id,
+            'baseline_value' => $assessment->baseline_value !== null ? (float) $assessment->baseline_value : null,
+            'nadir_value' => $assessment->nadir_value !== null ? (float) $assessment->nadir_value : null,
+            'current_value' => $assessment->current_value !== null ? (float) $assessment->current_value : null,
+            'percent_change_from_baseline' => $assessment->percent_change_from_baseline !== null
+                ? (float) $assessment->percent_change_from_baseline
+                : null,
+            'percent_change_from_nadir' => $assessment->percent_change_from_nadir !== null
+                ? (float) $assessment->percent_change_from_nadir
+                : null,
+            'response_category' => $assessment->response_category,
+            'rationale' => $assessment->rationale,
+            'assessed_by' => $assessment->assessed_by,
+            'is_confirmed' => $assessment->is_confirmed,
+            'source_type' => $assessment->source_type,
+            'source_id' => $assessment->source_id,
+            'created_at' => $assessment->created_at?->toISOString(),
+            'baseline_study' => $baselineStudy ? $this->formatStudy($baselineStudy) : null,
+            'current_study' => $currentStudy ? $this->formatStudy($currentStudy) : null,
+        ];
+    }
+
+    private function formatFeature(ImagingFeature $feature): array
+    {
+        return [
+            'id' => $feature->id,
+            'study_id' => $feature->imaging_study_id,
+            'imaging_study_id' => $feature->imaging_study_id,
+            'source_id' => $feature->source_id,
+            'person_id' => $feature->patient_id,
+            'patient_id' => $feature->patient_id,
+            'feature_type' => $feature->feature_type,
+            'algorithm_name' => $feature->algorithm_name,
+            'feature_name' => $feature->feature_name,
+            'feature_source_value' => $feature->feature_source_value,
+            'value_as_number' => $feature->value_numeric !== null ? (float) $feature->value_numeric : null,
+            'value_numeric' => $feature->value_numeric !== null ? (float) $feature->value_numeric : null,
+            'value_as_string' => $feature->value_text,
+            'value_text' => $feature->value_text,
+            'value_concept_id' => $feature->value_concept_id,
+            'unit_source_value' => $feature->unit,
+            'unit' => $feature->unit,
+            'body_site' => $feature->body_site,
+            'confidence' => $feature->confidence !== null ? (float) $feature->confidence : null,
+            'requires_review' => $feature->requires_review,
+            'source_type' => $feature->source_type,
+            'metadata' => $feature->metadata,
+            'created_at' => $feature->created_at?->toISOString(),
         ];
     }
 
@@ -95,6 +199,7 @@ class ImagingController extends Controller
         $totalStudies = ImagingStudy::count();
         $totalPatients = ImagingStudy::distinct()->count('patient_id');
         $totalMeasurements = ImagingMeasurement::count();
+        $totalFeatures = ImagingFeature::count();
 
         $modalityCounts = ImagingStudy::select('modality', DB::raw('count(*) as count'))
             ->whereNotNull('modality')
@@ -105,6 +210,10 @@ class ImagingController extends Controller
             ->whereNotNull('body_part')
             ->groupBy('body_part')
             ->pluck('count', 'body_part');
+        $featuresByType = ImagingFeature::select('feature_type', DB::raw('count(*) as count'))
+            ->whereNotNull('feature_type')
+            ->groupBy('feature_type')
+            ->pluck('count', 'feature_type');
 
         return ApiResponse::success([
             'total_studies' => $totalStudies,
@@ -112,10 +221,10 @@ class ImagingController extends Controller
             'total_measurements' => $totalMeasurements,
             'modality_counts' => $modalityCounts,
             'body_part_counts' => $bodyPartCounts,
-            'total_features' => 0,
+            'total_features' => $totalFeatures,
             'persons_with_imaging' => $totalPatients,
             'studies_by_modality' => $modalityCounts,
-            'features_by_type' => [],
+            'features_by_type' => $featuresByType,
         ], 'Imaging stats retrieved');
     }
 
@@ -174,7 +283,10 @@ class ImagingController extends Controller
             'source_id' => $s->source_id,
             'source_type' => $s->source_type,
         ])->values();
-        $data['measurements'] = $study->imagingMeasurements->map(fn ($m) => $this->formatMeasurement($m))->values();
+        $data['measurements'] = $study->imagingMeasurements
+            ->each->setRelation('imagingStudy', $study)
+            ->map(fn ($m) => $this->formatMeasurement($m))
+            ->values();
         $data['segmentations'] = $study->segmentations->map(fn ($seg) => [
             'id' => $seg->id,
             'segmentation_uid' => $seg->segmentation_uid,
@@ -188,16 +300,36 @@ class ImagingController extends Controller
     }
 
     // =====================================================================
-    //  4. POST /imaging/studies/index-from-dicomweb  (stub)
+    //  4. POST /imaging/studies/index-from-dicomweb
     // =====================================================================
 
     public function indexFromDicomweb(Request $request): JsonResponse
     {
-        return ApiResponse::success([
-            'indexed' => 0,
-            'updated' => 0,
-            'errors' => 0,
-        ], 'DICOMweb indexing not yet implemented');
+        $validated = $request->validate([
+            'limit' => 'sometimes|integer|min:1|max:500',
+            'modality' => 'nullable|string|max:20',
+            'patient_id' => 'nullable|string|max:255',
+            'accession_number' => 'nullable|string|max:255',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+            'index_series' => 'sometimes|boolean',
+        ]);
+
+        [$run, $created] = $this->ingestionService->createOrReuseRun(
+            'dicomweb_index',
+            $validated,
+            $request->user()?->id,
+        );
+
+        if ($created) {
+            IndexDicomwebStudiesJob::dispatch($run->id)->onQueue('imaging');
+        }
+
+        return ApiResponse::success(
+            $this->ingestionService->runPayload($run),
+            $created ? 'DICOMweb indexing queued' : 'Matching DICOMweb indexing run is already active',
+            202
+        );
     }
 
     // =====================================================================
@@ -318,7 +450,7 @@ class ImagingController extends Controller
     }
 
     // =====================================================================
-    //  6. POST /imaging/studies/{id}/extract-nlp  (stub)
+    //  6. POST /imaging/studies/{id}/extract-nlp
     // =====================================================================
 
     public function extractNlp(int $id): JsonResponse
@@ -329,38 +461,118 @@ class ImagingController extends Controller
             return ApiResponse::error('Imaging study not found', 404);
         }
 
-        return ApiResponse::success([
-            'extracted' => 0,
-            'mapped' => 0,
-            'errors' => 0,
-        ], 'NLP extraction not yet implemented');
+        $aiBaseUrl = rtrim((string) config('services.ai.base_url', 'http://localhost:8100'), '/');
+
+        try {
+            $response = Http::timeout(120)
+                ->acceptJson()
+                ->post($aiBaseUrl.'/api/ai/imaging/extract-features', [
+                    'study_id' => $study->id,
+                ]);
+
+            if ($response->failed()) {
+                return ApiResponse::error('AI feature extraction failed', 502, [
+                    'status' => $response->status(),
+                ]);
+            }
+
+            $features = $response->json('features');
+
+            if (! is_array($features)) {
+                return ApiResponse::error('AI feature extraction returned an invalid payload', 502);
+            }
+
+            ImagingFeature::where('imaging_study_id', $study->id)
+                ->where('source_type', 'ai_feature_extraction')
+                ->delete();
+
+            $created = collect($features)
+                ->filter(fn (mixed $feature) => is_array($feature))
+                ->reject(fn (array $feature) => ($feature['confidence'] ?? null) === 0.0
+                    && ($feature['feature_name'] ?? '') === 'No measurements available')
+                ->map(function (array $feature) use ($study) {
+                    return ImagingFeature::create([
+                        'imaging_study_id' => $study->id,
+                        'patient_id' => $study->patient_id,
+                        'feature_type' => (string) ($feature['category'] ?? 'other'),
+                        'algorithm_name' => 'aurora-ai-nlp',
+                        'feature_name' => (string) ($feature['feature_name'] ?? 'Imaging feature'),
+                        'feature_source_value' => isset($feature['value']) ? (string) $feature['value'] : null,
+                        'value_text' => isset($feature['value']) ? (string) $feature['value'] : null,
+                        'body_site' => $study->body_part,
+                        'confidence' => is_numeric($feature['confidence'] ?? null) ? (float) $feature['confidence'] : null,
+                        'requires_review' => true,
+                        'source_type' => 'ai_feature_extraction',
+                        'source_id' => 'ai-feature:'.$study->id.':'.md5(json_encode($feature)),
+                        'metadata' => [
+                            'study_uid' => $study->study_uid,
+                        ],
+                    ]);
+                })
+                ->values();
+
+            return ApiResponse::success([
+                'extracted' => $created->count(),
+                'mapped' => $created->count(),
+                'errors' => 0,
+                'features' => $created->map(fn (ImagingFeature $feature) => $this->formatFeature($feature))->values(),
+            ], $created->isEmpty() ? 'No imaging features extracted' : 'Imaging features extracted');
+        } catch (\Throwable $e) {
+            return ApiResponse::error('Unable to extract imaging features', 502, [
+                'detail' => $e->getMessage(),
+            ]);
+        }
     }
 
     // =====================================================================
-    //  7. GET /imaging/features  (stub, paginated)
+    //  7. GET /imaging/features
     // =====================================================================
 
     public function features(Request $request): JsonResponse
     {
         $perPage = min((int) ($request->input('per_page', 25)), 100);
-        $page = max((int) ($request->input('page', 1)), 1);
+        $query = ImagingFeature::query()->orderByDesc('created_at')->orderByDesc('id');
 
-        $paginator = new LengthAwarePaginator([], 0, $perPage, $page);
+        if ($request->filled('study_id')) {
+            $query->where('imaging_study_id', (int) $request->input('study_id'));
+        }
 
-        return ApiResponse::paginated($paginator, 'Imaging features retrieved');
+        if ($request->filled('person_id')) {
+            $query->where('patient_id', (int) $request->input('person_id'));
+        }
+
+        if ($request->filled('feature_type')) {
+            $query->where('feature_type', (string) $request->input('feature_type'));
+        }
+
+        $paginator = $query->paginate($perPage);
+
+        $mapped = new LengthAwarePaginator(
+            collect($paginator->items())->map(fn (ImagingFeature $feature) => $this->formatFeature($feature)),
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+        );
+
+        return ApiResponse::paginated($mapped, 'Imaging features retrieved');
     }
 
     // =====================================================================
-    //  8. GET /imaging/criteria  (stub)
+    //  8. GET /imaging/criteria
     // =====================================================================
 
     public function criteriaIndex(Request $request): JsonResponse
     {
-        return ApiResponse::success([], 'Imaging criteria retrieved');
+        $criteria = ImagingCriteria::query()
+            ->when($request->filled('type'), fn ($q) => $q->where('criteria_type', $request->input('type')))
+            ->orderByDesc('created_at')
+            ->get();
+
+        return ApiResponse::success($criteria, 'Imaging criteria retrieved');
     }
 
     // =====================================================================
-    //  9. POST /imaging/criteria  (stub)
+    //  9. POST /imaging/criteria
     // =====================================================================
 
     public function criteriaStore(Request $request): JsonResponse
@@ -373,28 +585,32 @@ class ImagingController extends Controller
             'is_shared' => 'sometimes|boolean',
         ]);
 
-        return ApiResponse::success([
-            'id' => 0,
-            'name' => $validated['name'],
-            'criteria_type' => $validated['criteria_type'],
-            'criteria_definition' => $validated['criteria_definition'],
-            'description' => $validated['description'] ?? null,
-            'is_shared' => $validated['is_shared'] ?? false,
-            'created_at' => now()->toISOString(),
-        ], 'Criterion created (stub)', 201);
+        $criterion = ImagingCriteria::create(array_merge($validated, [
+            'created_by' => $request->user()?->id,
+        ]));
+
+        return ApiResponse::success($criterion, 'Criterion created', 201);
     }
 
     // =====================================================================
-    //  10. DELETE /imaging/criteria/{id}  (stub)
+    //  10. DELETE /imaging/criteria/{id}
     // =====================================================================
 
     public function criteriaDestroy(int $id): JsonResponse
     {
-        return ApiResponse::success(null, 'Criterion deleted (stub)');
+        $criterion = ImagingCriteria::find($id);
+
+        if (! $criterion) {
+            return ApiResponse::error('Criterion not found', 404);
+        }
+
+        $criterion->delete();
+
+        return ApiResponse::success(null, 'Criterion deleted');
     }
 
     // =====================================================================
-    //  11. GET /imaging/analytics/population  (stub)
+    //  11. GET /imaging/analytics/population
     // =====================================================================
 
     public function populationAnalytics(Request $request): JsonResponse
@@ -409,38 +625,102 @@ class ImagingController extends Controller
         $totalStudies = $query->count();
         $totalPatients = (clone $query)->distinct()->count('patient_id');
 
-        $modalityDistribution = ImagingStudy::select('modality', DB::raw('count(*) as count'))
+        $byModality = ImagingStudy::select(
+            'modality',
+            DB::raw('count(*) as n'),
+            DB::raw('count(distinct patient_id) as unique_persons')
+        )
             ->whereNotNull('modality')
             ->when($modality, fn ($q) => $q->where('modality', $modality))
             ->groupBy('modality')
-            ->pluck('count', 'modality');
+            ->orderByDesc('n')
+            ->get()
+            ->map(fn (ImagingStudy $row) => [
+                'modality' => $row->modality,
+                'n' => (int) $row->n,
+                'unique_persons' => (int) $row->unique_persons,
+            ])
+            ->values();
 
-        $bodyPartDistribution = ImagingStudy::select('body_part', DB::raw('count(*) as count'))
+        $byBodyPart = ImagingStudy::select('body_part', DB::raw('count(*) as n'))
             ->whereNotNull('body_part')
             ->when($modality, fn ($q) => $q->where('modality', $modality))
             ->groupBy('body_part')
-            ->pluck('count', 'body_part');
+            ->orderByDesc('n')
+            ->get()
+            ->map(fn (ImagingStudy $row) => [
+                'body_part_examined' => $row->body_part,
+                'n' => (int) $row->n,
+            ])
+            ->values();
 
         return ApiResponse::success([
             'total_studies' => $totalStudies,
             'total_patients' => $totalPatients,
-            'modality_distribution' => $modalityDistribution,
-            'body_part_distribution' => $bodyPartDistribution,
+            'by_modality' => $byModality,
+            'by_body_part' => $byBodyPart,
+            'top_features' => ImagingFeature::select('feature_name', 'feature_type', DB::raw('count(*) as n'))
+                ->when($modality, function ($q) use ($modality) {
+                    $studyIds = ImagingStudy::where('modality', $modality)->pluck('id');
+
+                    return $q->whereIn('imaging_study_id', $studyIds);
+                })
+                ->groupBy('feature_name', 'feature_type')
+                ->orderByDesc('n')
+                ->limit(10)
+                ->get()
+                ->map(fn (ImagingFeature $row) => [
+                    'feature_name' => $row->feature_name,
+                    'feature_type' => $row->feature_type,
+                    'n' => (int) $row->n,
+                ])
+                ->values(),
+            'modality_distribution' => $byModality->mapWithKeys(fn (array $row) => [$row['modality'] => $row['n']]),
+            'body_part_distribution' => $byBodyPart->mapWithKeys(fn (array $row) => [$row['body_part_examined'] => $row['n']]),
             'temporal_distribution' => [],
         ], 'Population analytics retrieved');
     }
 
     // =====================================================================
-    //  12. POST /imaging/import-local/trigger  (stub)
+    //  12. POST /imaging/import-local/trigger
     // =====================================================================
 
     public function importLocalTrigger(Request $request): JsonResponse
     {
-        return ApiResponse::success([
-            'studies_imported' => 0,
-            'series_imported' => 0,
-            'instances_imported' => 0,
-        ], 'Local import not yet implemented');
+        $validated = $request->validate([
+            'path' => 'nullable|required_without:dir|string|max:4096',
+            'dir' => 'nullable|required_without:path|string|max:4096',
+        ]);
+
+        $path = $validated['path'] ?? $validated['dir'] ?? null;
+
+        if (empty($this->ingestionService->localImportRoots())) {
+            return ApiResponse::error('Local DICOM import roots are not configured', 503);
+        }
+
+        if (! config('services.imaging.local_import_command')) {
+            return ApiResponse::error('Local DICOM import command is not configured', 503);
+        }
+
+        if (! $path || ! $this->ingestionService->pathIsAllowlisted($path)) {
+            return ApiResponse::error('Local DICOM import path is outside the configured allowlist', 422);
+        }
+
+        [$run, $created] = $this->ingestionService->createOrReuseRun(
+            'local_import',
+            ['path' => $path],
+            $request->user()?->id,
+        );
+
+        if ($created) {
+            ImportLocalDicomJob::dispatch($run->id)->onQueue('imaging');
+        }
+
+        return ApiResponse::success(
+            $this->ingestionService->runPayload($run),
+            $created ? 'Local DICOM import queued' : 'Matching local import run is already active',
+            202
+        );
     }
 
     // =====================================================================
@@ -460,6 +740,20 @@ class ImagingController extends Controller
             ->with('imagingMeasurements')
             ->get();
 
+        $timelineStudies = $studies->map(fn (ImagingStudy $s) => [
+            'id' => $s->id,
+            'study_instance_uid' => $s->study_uid,
+            'study_date' => $s->study_date?->toDateString(),
+            'modality' => $s->modality,
+            'body_part' => $s->body_part,
+            'body_part_examined' => $s->body_part,
+            'study_description' => $s->description,
+            'num_series' => $s->num_series ?? 0,
+            'num_images' => $s->num_instances ?? 0,
+            'status' => ($s->dicom_endpoint === 'orthanc' || $s->source_type === 'orthanc') ? 'indexed' : 'pending',
+            'measurement_count' => $s->imagingMeasurements->count(),
+        ])->values();
+
         $events = $studies->map(fn (ImagingStudy $s) => [
             'study_id' => $s->id,
             'study_date' => $s->study_date?->toDateString(),
@@ -469,9 +763,61 @@ class ImagingController extends Controller
             'measurement_count' => $s->imagingMeasurements->count(),
         ])->values();
 
+        $measurements = $studies
+            ->flatMap(fn (ImagingStudy $s) => $s->imagingMeasurements->each->setRelation('imagingStudy', $s))
+            ->sortByDesc(fn (ImagingMeasurement $m) => $m->measured_at?->timestamp ?? 0)
+            ->values()
+            ->map(fn (ImagingMeasurement $m) => $this->formatMeasurement($m));
+
+        $drugExposures = DB::table('drug_eras')
+            ->where('patient_id', $personId)
+            ->orderBy('era_start')
+            ->get()
+            ->map(function ($drug) {
+                $start = $drug->era_start ? strtotime((string) $drug->era_start) : null;
+                $end = $drug->era_end ? strtotime((string) $drug->era_end) : null;
+
+                return [
+                    'drug_concept_id' => 0,
+                    'drug_name' => $drug->drug_name,
+                    'drug_class' => null,
+                    'start_date' => $drug->era_start,
+                    'end_date' => $drug->era_end,
+                    'total_days' => ($start && $end) ? max(0, (int) floor(($end - $start) / 86400)) : 0,
+                ];
+            })
+            ->values();
+
+        $studyDates = $studies->pluck('study_date')->filter();
+        $firstStudyDate = $studyDates->min()?->toDateString();
+        $lastStudyDate = $studyDates->max()?->toDateString();
+
         return ApiResponse::success([
             'person_id' => $personId,
             'events' => $events,
+            'person' => [
+                'person_id' => $personId,
+                'year_of_birth' => $patient->date_of_birth?->year,
+                'gender' => $patient->sex,
+                'race' => $patient->race,
+            ],
+            'studies' => $timelineStudies,
+            'drug_exposures' => $drugExposures,
+            'measurements' => $measurements,
+            'summary' => [
+                'total_studies' => $studies->count(),
+                'modalities' => $studies->pluck('modality')->filter()->unique()->values(),
+                'date_range' => [
+                    'first' => $firstStudyDate,
+                    'last' => $lastStudyDate,
+                ],
+                'total_measurements' => $measurements->count(),
+                'measurement_types' => $measurements->pluck('measurement_type')->filter()->unique()->values(),
+                'total_drugs' => $drugExposures->count(),
+                'imaging_span_days' => ($firstStudyDate && $lastStudyDate)
+                    ? max(0, (int) floor((strtotime($lastStudyDate) - strtotime($firstStudyDate)) / 86400))
+                    : null,
+            ],
         ], 'Patient imaging timeline retrieved');
     }
 
@@ -594,14 +940,21 @@ class ImagingController extends Controller
     }
 
     // =====================================================================
-    //  18. POST /imaging/studies/auto-link  (stub)
+    //  18. POST /imaging/studies/auto-link
     // =====================================================================
 
     public function autoLinkStudies(): JsonResponse
     {
-        return ApiResponse::success([
-            'linked' => 0,
-        ], 'Auto-link not yet implemented');
+        return ApiResponse::error(
+            'Auto-link requires staged unlinked studies. Current imaging ingestion resolves deterministic DICOM patient identifiers before insert and quarantines unmatched studies.',
+            422,
+            [
+                'rules' => [
+                    'blank_patient_id' => 'manual_review',
+                    'deterministic_identifier_match' => 'ingest_only',
+                ],
+            ]
+        );
     }
 
     // =====================================================================
@@ -617,6 +970,7 @@ class ImagingController extends Controller
         }
 
         $measurements = $study->imagingMeasurements()
+            ->with('imagingStudy')
             ->orderBy('measured_at', 'desc')
             ->get()
             ->map(fn (ImagingMeasurement $m) => $this->formatMeasurement($m));
@@ -651,19 +1005,39 @@ class ImagingController extends Controller
             'target_lesion_number' => 'nullable|integer',
         ]);
 
+        $seriesId = $validated['series_id'] ?? null;
+        if ($seriesId !== null) {
+            $series = ImagingSeries::where('id', $seriesId)
+                ->where('imaging_study_id', $study->id)
+                ->first();
+
+            if (! $series) {
+                return ApiResponse::error('Series not found for this study', 422);
+            }
+        }
+
+        $algorithmName = $validated['algorithm_name'] ?? null;
+
         $measurement = ImagingMeasurement::create([
             'imaging_study_id' => $study->id,
+            'imaging_series_id' => $seriesId,
             'measurement_type' => $validated['measurement_type'],
+            'measurement_name' => $validated['measurement_name'] ?? $validated['measurement_type'],
             'target_lesion' => $validated['is_target_lesion'] ?? false,
+            'target_lesion_number' => $validated['target_lesion_number'] ?? null,
             'value_numeric' => $validated['value_as_number'],
             'unit' => $validated['unit'],
-            'measured_by' => $validated['algorithm_name'] ?? null,
+            'body_site' => $validated['body_site'] ?? null,
+            'laterality' => $validated['laterality'] ?? null,
+            'measured_by' => $algorithmName,
+            'algorithm_name' => $algorithmName,
+            'confidence' => $validated['confidence'] ?? null,
             'measured_at' => $validated['measured_at'] ?? now(),
-            'source_id' => $validated['series_id'] ?? null,
-            'source_type' => $validated['series_id'] ? 'series' : null,
+            'source_id' => $seriesId,
+            'source_type' => $seriesId ? 'series' : 'manual',
         ]);
 
-        return ApiResponse::success($this->formatMeasurement($measurement), 'Measurement created', 201);
+        return ApiResponse::success($this->formatMeasurement($measurement->load('imagingStudy')), 'Measurement created', 201);
     }
 
     // =====================================================================
@@ -680,12 +1054,19 @@ class ImagingController extends Controller
 
         $validated = $request->validate([
             'measurement_type' => 'sometimes|string|max:50',
+            'measurement_name' => 'nullable|string|max:255',
             'value_as_number' => 'sometimes|numeric',
             'value_numeric' => 'sometimes|numeric',
             'unit' => 'sometimes|string|max:30',
+            'body_site' => 'nullable|string|max:100',
+            'laterality' => 'nullable|string|max:30',
+            'series_id' => 'nullable|integer',
             'target_lesion' => 'sometimes|boolean',
             'is_target_lesion' => 'sometimes|boolean',
+            'target_lesion_number' => 'nullable|integer',
             'measured_by' => 'nullable|string|max:255',
+            'algorithm_name' => 'nullable|string|max:255',
+            'confidence' => 'nullable|numeric|min:0|max:1',
             'measured_at' => 'nullable|date',
         ]);
 
@@ -693,6 +1074,9 @@ class ImagingController extends Controller
 
         if (array_key_exists('measurement_type', $validated)) {
             $updates['measurement_type'] = $validated['measurement_type'];
+        }
+        if (array_key_exists('measurement_name', $validated)) {
+            $updates['measurement_name'] = $validated['measurement_name'];
         }
         if (array_key_exists('value_as_number', $validated)) {
             $updates['value_numeric'] = $validated['value_as_number'];
@@ -702,13 +1086,44 @@ class ImagingController extends Controller
         if (array_key_exists('unit', $validated)) {
             $updates['unit'] = $validated['unit'];
         }
+        if (array_key_exists('body_site', $validated)) {
+            $updates['body_site'] = $validated['body_site'];
+        }
+        if (array_key_exists('laterality', $validated)) {
+            $updates['laterality'] = $validated['laterality'];
+        }
+        if (array_key_exists('series_id', $validated)) {
+            $seriesId = $validated['series_id'];
+            if ($seriesId !== null) {
+                $series = ImagingSeries::where('id', $seriesId)
+                    ->where('imaging_study_id', $measurement->imaging_study_id)
+                    ->first();
+
+                if (! $series) {
+                    return ApiResponse::error('Series not found for this study', 422);
+                }
+            }
+            $updates['imaging_series_id'] = $seriesId;
+            $updates['source_id'] = $seriesId;
+            $updates['source_type'] = $seriesId ? 'series' : 'manual';
+        }
         if (array_key_exists('is_target_lesion', $validated)) {
             $updates['target_lesion'] = $validated['is_target_lesion'];
         } elseif (array_key_exists('target_lesion', $validated)) {
             $updates['target_lesion'] = $validated['target_lesion'];
         }
+        if (array_key_exists('target_lesion_number', $validated)) {
+            $updates['target_lesion_number'] = $validated['target_lesion_number'];
+        }
         if (array_key_exists('measured_by', $validated)) {
             $updates['measured_by'] = $validated['measured_by'];
+        }
+        if (array_key_exists('algorithm_name', $validated)) {
+            $updates['algorithm_name'] = $validated['algorithm_name'];
+            $updates['measured_by'] = $validated['algorithm_name'];
+        }
+        if (array_key_exists('confidence', $validated)) {
+            $updates['confidence'] = $validated['confidence'];
         }
         if (array_key_exists('measured_at', $validated)) {
             $updates['measured_at'] = $validated['measured_at'];
@@ -719,7 +1134,7 @@ class ImagingController extends Controller
             $measurement->refresh();
         }
 
-        return ApiResponse::success($this->formatMeasurement($measurement), 'Measurement updated');
+        return ApiResponse::success($this->formatMeasurement($measurement->load('imagingStudy')), 'Measurement updated');
     }
 
     // =====================================================================
@@ -754,6 +1169,7 @@ class ImagingController extends Controller
         $studyIds = ImagingStudy::where('patient_id', $personId)->pluck('id');
 
         $query = ImagingMeasurement::whereIn('imaging_study_id', $studyIds)
+            ->with('imagingStudy')
             ->orderBy('measured_at', 'desc');
 
         if ($request->filled('measurement_type')) {
@@ -761,11 +1177,13 @@ class ImagingController extends Controller
         }
 
         if ($request->filled('body_site')) {
-            // body_site maps to source_type or similar — filter via study body_part
             $filteredStudyIds = ImagingStudy::where('patient_id', $personId)
                 ->where('body_part', $request->input('body_site'))
                 ->pluck('id');
-            $query->whereIn('imaging_study_id', $filteredStudyIds);
+            $query->where(function ($q) use ($request, $filteredStudyIds) {
+                $q->where('body_site', $request->input('body_site'))
+                    ->orWhereIn('imaging_study_id', $filteredStudyIds);
+            });
         }
 
         $measurements = $query->get()->map(fn (ImagingMeasurement $m) => $this->formatMeasurement($m));
@@ -801,7 +1219,10 @@ class ImagingController extends Controller
             $filteredStudyIds = ImagingStudy::where('patient_id', $personId)
                 ->where('body_part', $request->input('body_site'))
                 ->pluck('id');
-            $query->whereIn('imaging_study_id', $filteredStudyIds);
+            $query->where(function ($q) use ($request, $filteredStudyIds) {
+                $q->where('body_site', $request->input('body_site'))
+                    ->orWhereIn('imaging_study_id', $filteredStudyIds);
+            });
         }
 
         $measurements = $query->with('imagingStudy')->get();
@@ -809,10 +1230,15 @@ class ImagingController extends Controller
         $trends = $measurements->map(fn (ImagingMeasurement $m) => [
             'measurement_id' => $m->id,
             'study_id' => $m->imaging_study_id,
+            'date' => $m->imagingStudy?->study_date?->toDateString() ?? $m->measured_at?->toDateString(),
             'study_date' => $m->imagingStudy?->study_date?->toDateString(),
             'measurement_type' => $m->measurement_type,
-            'value_numeric' => $m->value_numeric,
+            'measurement_name' => $m->measurement_name ?: $m->measurement_type,
+            'value_numeric' => (float) $m->value_numeric,
+            'value' => (float) $m->value_numeric,
             'unit' => $m->unit,
+            'body_site' => $m->body_site ?: $m->imagingStudy?->body_part,
+            'is_target_lesion' => $m->target_lesion,
             'measured_at' => $m->measured_at?->toISOString(),
         ])->values();
 
@@ -829,6 +1255,19 @@ class ImagingController extends Controller
 
         if (! $patient) {
             return ApiResponse::error('Patient not found', 404);
+        }
+
+        $stored = ImagingResponseAssessment::where('patient_id', $personId)
+            ->with(['baselineStudy', 'currentStudy'])
+            ->orderByDesc('assessment_date')
+            ->orderByDesc('id')
+            ->get();
+
+        if ($stored->isNotEmpty()) {
+            return ApiResponse::success(
+                $stored->map(fn (ImagingResponseAssessment $a) => $this->formatResponseAssessment($a))->values(),
+                'Response assessments retrieved'
+            );
         }
 
         return $this->computeRecistAssessments($personId);
@@ -862,15 +1301,30 @@ class ImagingController extends Controller
             'is_confirmed' => 'sometimes|boolean',
         ]);
 
-        // Return the assessment as-is (no dedicated table yet — stub persistence)
-        $assessment = array_merge($validated, [
-            'id' => 0,
-            'person_id' => $personId,
-            'is_confirmed' => $validated['is_confirmed'] ?? false,
-            'created_at' => now()->toISOString(),
-        ]);
+        $baselineStudy = ImagingStudy::where('id', $validated['baseline_study_id'])
+            ->where('patient_id', $personId)
+            ->first();
 
-        return ApiResponse::success($assessment, 'Response assessment created (stub)', 201);
+        if (! $baselineStudy) {
+            return ApiResponse::error('Baseline study not found for this patient', 404);
+        }
+
+        $currentStudy = ImagingStudy::where('id', $validated['current_study_id'])
+            ->where('patient_id', $personId)
+            ->first();
+
+        if (! $currentStudy) {
+            return ApiResponse::error('Current study not found for this patient', 404);
+        }
+
+        $assessment = ImagingResponseAssessment::create(array_merge($validated, [
+            'patient_id' => $personId,
+            'assessed_by' => $request->user()?->id,
+            'is_confirmed' => $validated['is_confirmed'] ?? false,
+            'source_type' => 'manual',
+        ]))->load(['baselineStudy', 'currentStudy']);
+
+        return ApiResponse::success($this->formatResponseAssessment($assessment), 'Response assessment created', 201);
     }
 
     // =====================================================================
@@ -920,7 +1374,10 @@ class ImagingController extends Controller
             return ApiResponse::error('Need at least two distinct studies for assessment', 422);
         }
 
-        $criteriaType = $validated['criteria_type'] ?? 'RECIST';
+        $criteriaType = $validated['criteria_type'] ?? 'recist';
+        if ($criteriaType === 'auto') {
+            $criteriaType = 'recist';
+        }
 
         $baselineTargets = $baselineStudy->imagingMeasurements->where('target_lesion', true);
         $currentTargets = $currentStudy->imagingMeasurements->where('target_lesion', true);
@@ -947,13 +1404,50 @@ class ImagingController extends Controller
             }
         }
 
-        return ApiResponse::success([
-            'id' => 0,
-            'person_id' => $personId,
+        $assessment = ImagingResponseAssessment::updateOrCreate([
+            'patient_id' => $personId,
             'criteria_type' => $criteriaType,
-            'assessment_date' => now()->toDateString(),
             'baseline_study_id' => $baselineStudy->id,
             'current_study_id' => $currentStudy->id,
+            'source_type' => 'computed',
+        ], [
+            'assessment_date' => now()->toDateString(),
+            'body_site' => $currentStudy->body_part,
+            'baseline_value' => round((float) $baselineSum, 2),
+            'nadir_value' => null,
+            'current_value' => round((float) $currentSum, 2),
+            'percent_change_from_baseline' => $percentChange,
+            'percent_change_from_nadir' => null,
+            'response_category' => $category,
+            'rationale' => "Computed via {$criteriaType}: baseline sum={$baselineSum}, current sum={$currentSum}",
+            'is_confirmed' => false,
+            'assessed_by' => $request->user()?->id,
+            'source_id' => "baseline:{$baselineStudy->id};current:{$currentStudy->id}",
+        ])->load(['baselineStudy', 'currentStudy']);
+
+        return ApiResponse::success($this->formatResponseAssessment($assessment), 'Response computed');
+    }
+
+    private function computedResponsePayload(
+        int $personId,
+        ImagingStudy $baseline,
+        ImagingStudy $current,
+        string $criteriaType,
+        string $category,
+        float|int $baselineSum,
+        float|int $currentSum,
+        ?float $percentChange
+    ): array {
+        return [
+            'id' => -$current->id,
+            'person_id' => $personId,
+            'criteria_type' => $criteriaType,
+            'assessment_date' => $current->study_date?->toDateString() ?? now()->toDateString(),
+            'body_site' => $current->body_part,
+            'baseline_study_id' => $baseline->id,
+            'baseline_date' => $baseline->study_date?->toDateString(),
+            'current_study_id' => $current->id,
+            'current_date' => $current->study_date?->toDateString(),
             'response_category' => $category,
             'baseline_value' => round((float) $baselineSum, 2),
             'nadir_value' => null,
@@ -962,10 +1456,13 @@ class ImagingController extends Controller
             'percent_change_from_nadir' => null,
             'rationale' => "Computed via {$criteriaType}: baseline sum={$baselineSum}, current sum={$currentSum}",
             'is_confirmed' => false,
-            'created_at' => now()->toISOString(),
-        ], 'Response computed');
+            'created_at' => null,
+            'criteria' => strtoupper($criteriaType),
+            'percent_change' => $percentChange,
+            'baseline_sum_diameters' => round((float) $baselineSum, 2),
+            'current_sum_diameters' => round((float) $currentSum, 2),
+        ];
     }
-
     // =====================================================================
     //  28. POST /imaging/patients/{personId}/assess-preview
     // =====================================================================
@@ -1050,10 +1547,10 @@ class ImagingController extends Controller
     }
 
     // =====================================================================
-    //  29. POST /imaging/studies/{id}/ai-extract  (stub)
+    //  29. POST /imaging/studies/{id}/ai-extract
     // =====================================================================
 
-    public function aiExtractMeasurements(int $id): JsonResponse
+    public function aiExtractMeasurements(Request $request, int $id): JsonResponse
     {
         $study = ImagingStudy::find($id);
 
@@ -1061,14 +1558,93 @@ class ImagingController extends Controller
             return ApiResponse::error('Imaging study not found', 404);
         }
 
-        return ApiResponse::success([
-            'extracted' => 0,
-            'measurement_types' => [],
-        ], 'AI extraction not yet implemented');
+        $validated = $request->validate([
+            'measurement_type' => 'sometimes|string|in:tumor_volume,organ_volume',
+        ]);
+
+        $measurementType = $validated['measurement_type'] ?? 'tumor_volume';
+        $aiBaseUrl = rtrim((string) config('services.ai.base_url', 'http://localhost:8100'), '/');
+
+        try {
+            $response = Http::timeout(120)
+                ->acceptJson()
+                ->post($aiBaseUrl.'/api/ai/imaging/volume', [
+                    'study_id' => $study->id,
+                    'measurement_type' => $measurementType,
+                ]);
+
+            if ($response->failed()) {
+                return ApiResponse::error('AI measurement extraction failed', 502, [
+                    'status' => $response->status(),
+                ]);
+            }
+
+            $payload = $response->json();
+            $measurements = collect();
+
+            if (is_numeric($payload['volume_cm3'] ?? null)) {
+                $measurements->push(ImagingMeasurement::updateOrCreate([
+                    'imaging_study_id' => $study->id,
+                    'source_type' => 'ai_extraction',
+                    'source_id' => 'ai-volume:'.$study->id.':'.$measurementType,
+                ], [
+                    'measurement_type' => $measurementType,
+                    'measurement_name' => $measurementType === 'organ_volume' ? 'Organ volume' : 'Tumor volume',
+                    'target_lesion' => $measurementType === 'tumor_volume',
+                    'value_numeric' => (float) $payload['volume_cm3'],
+                    'unit' => 'cm3',
+                    'body_site' => $study->body_part,
+                    'measured_by' => 'aurora-ai',
+                    'algorithm_name' => 'aurora-ai-volumetric',
+                    'confidence' => null,
+                    'measured_at' => now(),
+                ]));
+            }
+
+            if (is_numeric($payload['longest_diameter_mm'] ?? null)) {
+                $measurements->push(ImagingMeasurement::updateOrCreate([
+                    'imaging_study_id' => $study->id,
+                    'source_type' => 'ai_extraction',
+                    'source_id' => 'ai-longest-diameter:'.$study->id.':'.$measurementType,
+                ], [
+                    'measurement_type' => 'longest_diameter',
+                    'measurement_name' => 'Longest diameter',
+                    'target_lesion' => true,
+                    'value_numeric' => (float) $payload['longest_diameter_mm'],
+                    'unit' => 'mm',
+                    'body_site' => $study->body_part,
+                    'measured_by' => 'aurora-ai',
+                    'algorithm_name' => 'aurora-ai-volumetric',
+                    'confidence' => null,
+                    'measured_at' => now(),
+                ]));
+            }
+
+            if ($measurements->isEmpty()) {
+                return ApiResponse::error('AI service did not return extractable measurements for this study', 422, [
+                    'ai_payload' => $payload,
+                ]);
+            }
+
+            $measurementPayloads = $measurements
+                ->map(fn (ImagingMeasurement $measurement) => $this->formatMeasurement($measurement->load('imagingStudy')))
+                ->values();
+
+            return ApiResponse::success([
+                'extracted' => $measurementPayloads->count(),
+                'measurement_types' => $measurementPayloads->pluck('measurement_type')->unique()->values(),
+                'measurements' => $measurementPayloads,
+                'requires_review' => true,
+            ], 'AI measurements extracted');
+        } catch (\Throwable $e) {
+            return ApiResponse::error('Unable to extract AI measurements', 502, [
+                'detail' => $e->getMessage(),
+            ]);
+        }
     }
 
     // =====================================================================
-    //  30. GET /imaging/studies/{id}/suggest-template  (stub)
+    //  30. GET /imaging/studies/{id}/suggest-template
     // =====================================================================
 
     public function suggestTemplate(int $id): JsonResponse
@@ -1079,10 +1655,83 @@ class ImagingController extends Controller
             return ApiResponse::error('Imaging study not found', 404);
         }
 
+        $modality = strtoupper((string) $study->modality);
+        $bodyPart = strtolower((string) $study->body_part);
+        $template = 'general';
+        $fields = [
+            ['type' => 'longest_diameter', 'name' => 'Longest Diameter', 'unit' => 'mm'],
+        ];
+
+        if ($modality === 'PT' || str_contains($bodyPart, 'lymph')) {
+            $template = 'pet-lymphoma';
+            $fields = [
+                ['type' => 'suvmax', 'name' => 'SUVmax', 'unit' => 'g/mL'],
+                ['type' => 'metabolic_tumor_volume', 'name' => 'Metabolic Tumor Volume', 'unit' => 'cm3'],
+                ['type' => 'total_lesion_glycolysis', 'name' => 'Total Lesion Glycolysis', 'unit' => 'g'],
+            ];
+        } elseif ($modality === 'CT' && str_contains($bodyPart, 'chest')) {
+            $template = 'ct-chest-recist';
+            $fields = [
+                ['type' => 'longest_diameter', 'name' => 'Target Lesion Longest Diameter', 'unit' => 'mm'],
+                ['type' => 'perpendicular_diameter', 'name' => 'Perpendicular Diameter', 'unit' => 'mm'],
+                ['type' => 'density_hu', 'name' => 'Density', 'unit' => 'HU'],
+            ];
+        } elseif (in_array($modality, ['MR', 'MRI'], true) && str_contains($bodyPart, 'brain')) {
+            $template = 'brain-rano';
+            $fields = [
+                ['type' => 'longest_diameter', 'name' => 'Enhancing Lesion Longest Diameter', 'unit' => 'mm'],
+                ['type' => 'perpendicular_diameter', 'name' => 'Perpendicular Diameter', 'unit' => 'mm'],
+                ['type' => 'tumor_volume', 'name' => 'Tumor Volume', 'unit' => 'cm3'],
+            ];
+        } elseif (str_contains($bodyPart, 'abdomen') || str_contains($bodyPart, 'liver')) {
+            $template = 'abdominal-tumor-volumetrics';
+            $fields = [
+                ['type' => 'tumor_volume', 'name' => 'Tumor Volume', 'unit' => 'cm3'],
+                ['type' => 'longest_diameter', 'name' => 'Longest Diameter', 'unit' => 'mm'],
+                ['type' => 'enhancement_ratio', 'name' => 'Enhancement Ratio', 'unit' => 'ratio'],
+            ];
+        }
+
         return ApiResponse::success([
-            'template' => 'general',
-            'fields' => [],
-        ], 'Template suggestion not yet implemented');
+            'template' => $template,
+            'fields' => $fields,
+            'rationale' => "Suggested from modality={$study->modality} and body_part={$study->body_part}",
+        ], 'Measurement template suggested');
+    }
+
+    public function ingestionRuns(Request $request): JsonResponse
+    {
+        $perPage = min((int) ($request->input('per_page', 25)), 100);
+        $query = ImagingIngestionRun::query()->orderByDesc('created_at')->orderByDesc('id');
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->input('status'));
+        }
+
+        if ($request->filled('run_type')) {
+            $query->where('run_type', (string) $request->input('run_type'));
+        }
+
+        $paginator = $query->paginate($perPage);
+        $mapped = new LengthAwarePaginator(
+            collect($paginator->items())->map(fn (ImagingIngestionRun $run) => $this->ingestionService->runPayload($run)),
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+        );
+
+        return ApiResponse::paginated($mapped, 'Imaging ingestion runs retrieved');
+    }
+
+    public function ingestionRunShow(int $id): JsonResponse
+    {
+        $run = ImagingIngestionRun::find($id);
+
+        if (! $run) {
+            return ApiResponse::error('Imaging ingestion run not found', 404);
+        }
+
+        return ApiResponse::success($this->ingestionService->runPayload($run), 'Imaging ingestion run retrieved');
     }
 
     // =====================================================================
@@ -1211,32 +1860,56 @@ class ImagingController extends Controller
 
         $validated = $request->validate([
             'measurement_type' => 'required|string|max:30',
+            'measurement_name' => 'nullable|string|max:255',
             'target_lesion' => 'sometimes|boolean',
+            'is_target_lesion' => 'sometimes|boolean',
+            'target_lesion_number' => 'nullable|integer',
             'value_numeric' => 'required|numeric',
+            'value_as_number' => 'sometimes|numeric',
             'unit' => 'required|string|max:30',
+            'body_site' => 'nullable|string|max:100',
+            'laterality' => 'nullable|string|max:30',
+            'series_id' => 'nullable|integer',
             'measured_by' => 'nullable|string|max:255',
+            'algorithm_name' => 'nullable|string|max:255',
+            'confidence' => 'nullable|numeric|min:0|max:1',
             'measured_at' => 'nullable|date',
         ]);
 
+        $seriesId = $validated['series_id'] ?? null;
+        if ($seriesId !== null) {
+            $series = ImagingSeries::where('id', $seriesId)
+                ->where('imaging_study_id', $studyModel->id)
+                ->first();
+
+            if (! $series) {
+                return ApiResponse::error('Series not found for this study', 422);
+            }
+        }
+
+        $algorithmName = $validated['algorithm_name'] ?? $validated['measured_by'] ?? null;
+        $value = $validated['value_as_number'] ?? $validated['value_numeric'];
+
         $measurement = ImagingMeasurement::create([
             'imaging_study_id' => $studyModel->id,
+            'imaging_series_id' => $seriesId,
             'measurement_type' => $validated['measurement_type'],
-            'target_lesion' => $validated['target_lesion'] ?? false,
-            'value_numeric' => $validated['value_numeric'],
+            'measurement_name' => $validated['measurement_name'] ?? $validated['measurement_type'],
+            'target_lesion' => $validated['is_target_lesion'] ?? $validated['target_lesion'] ?? false,
+            'target_lesion_number' => $validated['target_lesion_number'] ?? null,
+            'value_numeric' => $value,
             'unit' => $validated['unit'],
-            'measured_by' => $validated['measured_by'] ?? null,
+            'body_site' => $validated['body_site'] ?? null,
+            'laterality' => $validated['laterality'] ?? null,
+            'measured_by' => $algorithmName,
+            'algorithm_name' => $algorithmName,
+            'confidence' => $validated['confidence'] ?? null,
             'measured_at' => $validated['measured_at'] ?? now(),
+            'source_id' => $seriesId,
+            'source_type' => $seriesId ? 'series' : 'manual',
         ]);
 
-        return ApiResponse::success([
-            'id' => $measurement->id,
-            'measurement_type' => $measurement->measurement_type,
-            'target_lesion' => $measurement->target_lesion,
-            'value_numeric' => $measurement->value_numeric,
-            'unit' => $measurement->unit,
-            'measured_by' => $measurement->measured_by,
-            'measured_at' => $measurement->measured_at?->toISOString(),
-        ], 'Measurement added', 201);
+        return ApiResponse::success($this->formatMeasurement($measurement->load('imagingStudy')), 'Measurement added', 201);
     }
 
     /**
@@ -1300,17 +1973,16 @@ class ImagingController extends Controller
                 }
             }
 
-            $assessments[] = [
-                'baseline_study_id' => $baseline->id,
-                'baseline_date' => $baseline->study_date?->toDateString(),
-                'current_study_id' => $current->id,
-                'current_date' => $current->study_date?->toDateString(),
-                'criteria' => 'RECIST',
-                'response_category' => $category,
-                'percent_change' => $percentChange,
-                'baseline_sum_diameters' => round((float) $baselineSum, 2),
-                'current_sum_diameters' => round((float) $currentSum, 2),
-            ];
+            $assessments[] = $this->computedResponsePayload(
+                $patientId,
+                $baseline,
+                $current,
+                'recist',
+                $category,
+                $baselineSum,
+                $currentSum,
+                $percentChange
+            );
         }
 
         return ApiResponse::success($assessments, 'Response assessments retrieved');

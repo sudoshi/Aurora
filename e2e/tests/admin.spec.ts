@@ -10,20 +10,19 @@ test.describe("Admin features", () => {
     await navigateTo(page, "Admin");
 
     await expect(
-      page
-        .getByRole("heading", { name: /admin|dashboard/i })
-        .or(page.getByText(/admin|administration/i).first())
+      page.getByRole("heading", { name: "Administration" })
     ).toBeVisible();
   });
 
   test("admin dashboard loads with metrics", async ({ page }) => {
     await navigateTo(page, "Admin");
-
-    // Dashboard should have some metric cards or stats
     await expect(
-      page
-        .getByText(/users|cases|sessions|active|total/i)
-        .or(page.locator("[data-testid='metric-card'], .metric-card, .stat-card"))
+      page.getByRole("heading", { name: "Administration" })
+    ).toBeVisible();
+
+    // Dashboard should have metric cards once its API calls settle.
+    await expect(
+      page.locator("main .metric-card").first()
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -31,18 +30,13 @@ test.describe("Admin features", () => {
     await navigateTo(page, "Admin");
 
     // Click on Users sub-navigation
-    const usersLink = page
-      .getByRole("link", { name: /users/i })
-      .or(page.getByRole("tab", { name: /users/i }))
-      .or(page.getByRole("button", { name: /users/i }));
+    const usersLink = page.getByRole("link", { name: /User Management/i });
 
-    await usersLink.first().click();
+    await usersLink.click();
 
     // User list should load
     await expect(
-      page
-        .getByText(/admin@acumenus.net|user management|users/i)
-        .or(page.locator("table, [data-testid='user-list']"))
+      page.getByRole("heading", { name: "Users" })
     ).toBeVisible({ timeout: 10_000 });
   });
 

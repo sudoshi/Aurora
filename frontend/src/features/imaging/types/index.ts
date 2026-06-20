@@ -83,6 +83,28 @@ export interface ImagingFeature {
   created_at: string;
 }
 
+export interface ImagingIngestionRun {
+  run_id: number;
+  operation: string;
+  status: "queued" | "running" | "succeeded" | "failed" | string;
+  fingerprint: string;
+  parameters: Record<string, unknown>;
+  result: Record<string, unknown>;
+  error_message: string | null;
+  requested_count: number;
+  processed_count: number;
+  studies_created: number;
+  studies_updated: number;
+  series_created: number;
+  series_updated: number;
+  studies_skipped: number;
+  errors_count: number;
+  queued_at: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  poll_url: string;
+}
+
 export interface ImagingCohortCriterion {
   id: number;
   created_by: number;

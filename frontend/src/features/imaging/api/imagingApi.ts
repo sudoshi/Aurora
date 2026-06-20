@@ -3,6 +3,7 @@ import type {
   ImagingStats,
   ImagingStudy,
   ImagingFeature,
+  ImagingIngestionRun,
   ImagingCohortCriterion,
   ImagingMeasurement,
   ImagingResponseAssessment,
@@ -47,7 +48,7 @@ export const imagingApi = {
 
   indexFromDicomweb: (payload: { limit?: number; modality?: string }) =>
     apiClient
-      .post<{ data: { indexed: number; updated: number; errors: number } }>(
+      .post<{ data: ImagingIngestionRun }>(
         "/imaging/studies/index-from-dicomweb",
         payload,
       )
@@ -105,9 +106,9 @@ export const imagingApi = {
       .then((r) => r.data.data),
 
   // Local DICOM import (triggers server-side Python scan)
-  importLocal: (payload: { dir?: string }) =>
+  importLocal: (payload: { path?: string; dir?: string }) =>
     apiClient
-      .post<{ data: { studies_imported: number; series_imported: number; instances_imported: number } }>(
+      .post<{ data: ImagingIngestionRun }>(
         "/imaging/import-local/trigger",
         payload,
       )

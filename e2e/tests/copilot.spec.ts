@@ -19,16 +19,16 @@ test.describe("AI Copilot", () => {
   test("verify copilot tabs load", async ({ page }) => {
     await navigateTo(page, "Copilot");
 
-    const expectedTabs = ["Trials", "Guidelines", "Drugs", "Genomics", "Prognosis"];
-
-    for (const tabName of expectedTabs) {
-      const tab = page
-        .getByRole("tab", { name: new RegExp(tabName, "i") })
-        .or(page.getByRole("button", { name: new RegExp(tabName, "i") }))
-        .or(page.getByText(new RegExp(tabName, "i")));
-
-      await expect(tab.first()).toBeVisible({ timeout: 5000 });
-    }
+    await expect(
+      page.getByRole("heading", { name: "Abby Copilot" })
+    ).toBeVisible();
+    await expect(page.getByPlaceholder(/enter patient id/i)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /load patient/i })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /select a patient/i })
+    ).toBeVisible();
   });
 
   test("switch between copilot tabs", async ({ page }) => {

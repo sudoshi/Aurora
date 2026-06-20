@@ -46,6 +46,14 @@ return [
         'password' => env('ORTHANC_PASS', env('ORTHANC_PASSWORD')),
     ],
 
+    'imaging' => [
+        'local_import_roots' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('IMAGING_LOCAL_IMPORT_ROOTS', ''))
+        ))),
+        'local_import_command' => env('IMAGING_LOCAL_IMPORT_COMMAND'),
+    ],
+
     'oncokb' => [
         'token' => env('ONCOKB_API_TOKEN'),
     ],

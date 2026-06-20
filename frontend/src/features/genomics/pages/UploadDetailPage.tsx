@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -37,10 +38,19 @@ const CLINVAR_COLOR: Record<string, string> = {
   Benign: "text-[#2DD4BF]",
 };
 
+function apiErrorMessage(error: unknown): string {
+  const maybe = error as { response?: { data?: { message?: string } }; message?: string };
+  return maybe.response?.data?.message ?? maybe.message ?? "Request failed";
+}
+
 export default function UploadDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const uploadId = Number(id);
+  const [actionNotice, setActionNotice] = useState<{
+    type: "success" | "warning" | "error";
+    text: string;
+  } | null>(null);
 
   const { data: upload, isLoading: uploadLoading } = useQuery({
     queryKey: ["genomics", "uploads", uploadId],
@@ -61,6 +71,14 @@ export default function UploadDetailPage() {
   });
 
   const variants = variantsPage?.data ?? [];
+  const canMatch = upload?.status === "mapped" || upload?.status === "review";
+  const canImport = upload?.status === "mapped";
+  const noticeClass =
+    actionNotice?.type === "success"
+      ? "border-[#2DD4BF]/30 bg-[#2DD4BF]/10 text-[#2DD4BF]"
+      : actionNotice?.type === "warning"
+        ? "border-amber-400/30 bg-amber-400/10 text-amber-300"
+        : "border-[#F0607A]/30 bg-[#F0607A]/10 text-[#F0607A]";
 
   if (uploadLoading) {
     return (
@@ -106,11 +124,24 @@ export default function UploadDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {upload.status === "mapped" && (
+          {canMatch && (
             <>
               <button
                 type="button"
-                onClick={() => matchPersons.mutate(uploadId)}
+                onClick={() => {
+                  setActionNotice(null);
+                  matchPersons.mutate(uploadId, {
+                    onSuccess: ({ result }) => {
+                      setActionNotice({
+                        type: result.review_required > 0 || result.unmatched > 0 ? "warning" : "success",
+                        text: `Matched ${result.matched.toLocaleString()} of ${result.candidates.toLocaleString()} staged variants; ${result.review_required.toLocaleString()} require review.`,
+                      });
+                    },
+                    onError: (error) => {
+                      setActionNotice({ type: "error", text: apiErrorMessage(error) });
+                    },
+                  });
+                }}
                 disabled={matchPersons.isPending}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-[#222256] bg-[#10102A] px-3 py-2 text-xs font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#2A2A60] disabled:opacity-50 transition-colors"
               >
@@ -121,9 +152,23 @@ export default function UploadDetailPage() {
                 )}
                 Match Persons
               </button>
+              {canImport && (
               <button
                 type="button"
-                onClick={() => importOmop.mutate(uploadId)}
+                onClick={() => {
+                  setActionNotice(null);
+                  importOmop.mutate(uploadId, {
+                    onSuccess: ({ result }) => {
+                      setActionNotice({
+                        type: result.errors.length > 0 ? "warning" : "success",
+                        text: `Imported ${result.written.toLocaleString()} variants; ${result.skipped.toLocaleString()} skipped.`,
+                      });
+                    },
+                    onError: (error) => {
+                      setActionNotice({ type: "error", text: apiErrorMessage(error) });
+                    },
+                  });
+                }}
                 disabled={importOmop.isPending}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#2DD4BF] px-3 py-2 text-xs font-medium text-[#0A0A18] hover:bg-[#26B8A5] disabled:opacity-50 transition-colors"
               >
@@ -134,6 +179,7 @@ export default function UploadDetailPage() {
                 )}
                 Import to OMOP
               </button>
+              )}
             </>
           )}
           <div className={`flex items-center gap-1.5 text-sm font-medium ${STATUS_COLOR[upload.status]}`}>
@@ -155,6 +201,12 @@ export default function UploadDetailPage() {
       {upload.error_message && (
         <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 p-4 text-[#F0607A] text-sm">
           <strong>Parse error:</strong> {upload.error_message}
+        </div>
+      )}
+
+      {actionNotice && (
+        <div className={`rounded-lg border p-4 text-sm ${noticeClass}`}>
+          {actionNotice.text}
         </div>
       )}
 

@@ -10,6 +10,12 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+const isJsdom = () =>
+  typeof navigator !== "undefined" && /\bjsdom\b/i.test(navigator.userAgent);
+
+const shouldRedirectOnUnauthorized = () =>
+  typeof window !== "undefined" && !isJsdom();
+
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) {
@@ -23,7 +29,9 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      if (shouldRedirectOnUnauthorized()) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error as Error);
   },

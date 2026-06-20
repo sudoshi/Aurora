@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Ruler, Plus, Trash2, Loader2, Target, Sparkles } from "lucide-react";
-import { useStudyMeasurements, useCreateMeasurement, useDeleteMeasurement, useAiExtractMeasurements, useSuggestTemplate } from "../hooks/useImaging";
+import { useStudyMeasurements, useCreateMeasurement, useDeleteMeasurement, useAiExtractMeasurements } from "../hooks/useImaging";
 import type { ImagingMeasurement, MeasurementType } from "../types";
 
 const MEASUREMENT_PRESETS: Array<{
@@ -63,9 +63,7 @@ export default function MeasurementPanel({ studyId, personId }: MeasurementPanel
   const { data: measurements, isLoading } = useStudyMeasurements(studyId);
   const createMutation = useCreateMeasurement();
   const deleteMutation = useDeleteMeasurement();
-
-  const aiExtract = useAiExtractMeasurements();
-  const { data: suggestedTemplate } = useSuggestTemplate(studyId);
+  const aiExtractMutation = useAiExtractMeasurements();
 
   const [showForm, setShowForm] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
@@ -132,28 +130,22 @@ export default function MeasurementPanel({ studyId, personId }: MeasurementPanel
           </div>
           <button
             type="button"
-            onClick={() => aiExtract.mutate(studyId)}
-            disabled={aiExtract.isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#A78BFA] px-4 py-2 text-sm font-medium text-white hover:bg-[#8B5CF6] disabled:opacity-50 transition-colors"
+            onClick={() => aiExtractMutation.mutate(studyId)}
+            disabled={aiExtractMutation.isPending}
+            className="inline-flex items-center gap-2 rounded-lg border border-[#2A2256] bg-[#10102A] px-4 py-2 text-sm font-medium text-[#7A8298] hover:text-[#B4BAC8] hover:border-[#3A2A70] disabled:opacity-50 transition-colors"
           >
-            {aiExtract.isPending ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-            {aiExtract.isPending ? "Extracting..." : "Auto-Extract"}
+            {aiExtractMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+            Auto-Extract
           </button>
         </div>
-        <p className="text-xs text-[#7A8298]">
-          Uses MedGemma to extract quantitative measurements from radiology reports and DICOM metadata.
-          {suggestedTemplate ? ` Suggested template: ${suggestedTemplate.template}` : ""}
-        </p>
-        {aiExtract.isSuccess && (
-          <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-sm text-[#2DD4BF]">
-            Extracted {(aiExtract.data as { extracted: number }).extracted} measurements
-            {(aiExtract.data as { measurement_types: string[] }).measurement_types.length > 0 &&
-              ` (${(aiExtract.data as { measurement_types: string[] }).measurement_types.join(", ")})`}
+        {aiExtractMutation.isSuccess && (
+          <div className="rounded-lg border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 px-4 py-3 text-xs text-[#2DD4BF]">
+            Extracted {aiExtractMutation.data.extracted} measurements.
           </div>
         )}
-        {aiExtract.isError && (
-          <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-sm text-[#F0607A]">
-            Extraction failed: {(aiExtract.error as Error)?.message ?? "Unknown error"}
+        {aiExtractMutation.isError && (
+          <div className="rounded-lg border border-[#F0607A]/30 bg-[#F0607A]/10 px-4 py-3 text-xs text-[#F0607A]">
+            {(aiExtractMutation.error as Error).message}
           </div>
         )}
       </div>

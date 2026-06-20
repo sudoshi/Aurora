@@ -14,6 +14,10 @@ import type {
   GenomicBriefingRequest,
   GenomicBriefingResponse,
   RadiogenomicsPanel,
+  GenomicOperation,
+  GenomicMatchResult,
+  GenomicImportResult,
+  GenomicClinVarAnnotationResult,
 } from "../types";
 
 const BASE = "/genomics";
@@ -65,14 +69,14 @@ export async function deleteUpload(id: number): Promise<void> {
 
 export async function matchPersons(
   id: number
-): Promise<{ matched: number; unmatched: number }> {
+): Promise<{ operation: GenomicOperation; upload: GenomicUpload; result: GenomicMatchResult }> {
   const { data } = await apiClient.post(`${BASE}/uploads/${id}/match-persons`);
   return data.data;
 }
 
 export async function importToOmop(
   id: number
-): Promise<{ upload: GenomicUpload; result: { written: number; skipped: number; errors: number } }> {
+): Promise<{ operation: GenomicOperation; upload: GenomicUpload; result: GenomicImportResult }> {
   const { data } = await apiClient.post(`${BASE}/uploads/${id}/import`);
   return data.data;
 }
@@ -165,8 +169,9 @@ export async function syncClinVar(papuOnly = false): Promise<{
 }
 
 export async function annotateClinVar(uploadId: number): Promise<{
-  annotated: number;
-  skipped: number;
+  operation: GenomicOperation;
+  upload: GenomicUpload;
+  result: GenomicClinVarAnnotationResult;
 }> {
   const { data } = await apiClient.post(`${BASE}/uploads/${uploadId}/annotate-clinvar`);
   return data.data;

@@ -74,6 +74,11 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+function apiErrorMessage(error: unknown): string {
+  const maybe = error as { response?: { data?: { message?: string } }; message?: string };
+  return maybe.response?.data?.message ?? maybe.message ?? "Request failed";
+}
+
 // -- ClinVar Panel ----------------------------------------------------------
 
 function ClinVarPanel({ initialGene }: { initialGene?: string }) {
@@ -382,6 +387,10 @@ export default function GenomicsPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("uploads");
   const [clinvarGeneFilter, setClinvarGeneFilter] = useState("");
+  const [actionNotice, setActionNotice] = useState<{
+    type: "success" | "warning" | "error";
+    text: string;
+  } | null>(null);
 
   const { data: stats, isLoading: statsLoading } = useGenomicsStats();
   const { data: uploadsPage, isLoading: uploadsLoading } = useGenomicUploads({ per_page: 20 });
@@ -389,6 +398,12 @@ export default function GenomicsPage() {
   const annotate = useAnnotateClinVar();
 
   const uploads = uploadsPage?.data ?? [];
+  const noticeClass =
+    actionNotice?.type === "success"
+      ? "border-[#2DD4BF]/30 bg-[#2DD4BF]/10 text-[#2DD4BF]"
+      : actionNotice?.type === "warning"
+        ? "border-amber-400/30 bg-amber-400/10 text-amber-300"
+        : "border-[#F0607A]/30 bg-[#F0607A]/10 text-[#F0607A]";
 
   const metricCards = stats
     ? [
@@ -506,6 +521,12 @@ export default function GenomicsPage() {
         </div>
       )}
 
+      {actionNotice && (
+        <div className={`rounded-lg border p-4 text-sm ${noticeClass}`}>
+          {actionNotice.text}
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="border-b border-[#1C1C48]">
         <div className="flex gap-0">
@@ -603,7 +624,20 @@ export default function GenomicsPage() {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              annotate.mutate(upload.id);
+                              setActionNotice(null);
+                              annotate.mutate(upload.id, {
+                                onSuccess: ({ result }) => {
+                                  setActionNotice({
+                                    type: result.annotated > 0 ? "success" : "warning",
+                                    text: result.annotated > 0
+                                      ? `Annotated ${result.annotated.toLocaleString()} variants for ${upload.filename}.`
+                                      : `No variants required annotation for ${upload.filename}.`,
+                                  });
+                                },
+                                onError: (error) => {
+                                  setActionNotice({ type: "error", text: apiErrorMessage(error) });
+                                },
+                              });
                             }}
                             disabled={annotate.isPending}
                             title="Annotate variants with ClinVar significance"
