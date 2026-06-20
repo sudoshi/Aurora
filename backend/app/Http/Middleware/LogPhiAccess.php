@@ -13,7 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Aurora uses an "open clinical workspace" access model: any authenticated
  * clinical user may read patient/genomics/imaging/diagnostic-odyssey records.
- * The agreed compensating control is audit logging of that access.
+ * The agreed compensating control is audit logging of that access. Reads
+ * (GET/HEAD) are recorded as action 'phi.access'; mutations are recorded as
+ * 'phi.write', so auditors can filter on the action column directly.
  *
  * The audit write is performed after the controller has run and is fully
  * guarded: any failure (including a poisoned Postgres transaction,
@@ -32,7 +34,7 @@ class LogPhiAccess
         // Only audit successful access by an authenticated user.
         $user = $request->user();
         if ($user !== null && $response->getStatusCode() < 400) {
-            $this->writeAudit($request, $user->getAuthIdentifier(), $feature);
+            $this->writeAudit($request, $user->id, $feature);
         }
 
         return $response;
@@ -51,10 +53,16 @@ class LogPhiAccess
             $userAgent = $request->userAgent();
             $route = $request->route();
 
-            $log = new UserAuditLog;
-            $log->forceFill([
+            // Distinguish reads from mutations so auditors can filter on the
+            // action column without parsing the metadata JSON. GET/HEAD are
+            // reads; everything else (POST/PUT/PATCH/DELETE) is a write.
+            $action = $request->isMethod('GET') || $request->isMethod('HEAD')
+                ? 'phi.access'
+                : 'phi.write';
+
+            UserAuditLog::create([
                 'user_id' => $userId,
-                'action' => 'phi.access',
+                'action' => $action,
                 'feature' => $feature,
                 'ip_address' => $request->ip(),
                 'user_agent' => $userAgent !== null
@@ -67,7 +75,6 @@ class LogPhiAccess
                 ],
                 'occurred_at' => now(),
             ]);
-            $log->save();
         } catch (\Throwable $e) {
             try {
                 Log::warning('PHI access audit write failed', [

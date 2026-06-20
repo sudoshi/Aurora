@@ -22,6 +22,11 @@ class RecordUserActivity
         'admin/user-audit' => 'admin.user-audit',
         'admin' => 'admin',
         'commons' => 'commons',
+        // PHI endpoints (patients/imaging/genomics/...) are ALSO audited
+        // per-request by LogPhiAccess (action 'phi.access' for reads,
+        // 'phi.write' for mutations). This middleware instead records a
+        // throttled 'api_access' activity (one row per user/feature/hour) for
+        // general usage analytics. The two are intentionally distinct concerns.
         'patients' => 'patients',
     ];
 
