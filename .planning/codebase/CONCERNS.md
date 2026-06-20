@@ -23,9 +23,8 @@ These are GA-blocking but require sudo or a user decision; code work is done.
   Orthanc proxy credential is in git history and must be treated as compromised.
   The credential is now env-injected (W2-T01 done), but rotation on shared infra
   and BFG/`git filter-repo` history scrub need a user decision + operator action.
-- **PHI-access audit logging (W2-T11).** This is the **compensating control** for
-  the D1 open-clinical-workspace model — currently OPEN. No audit trail yet for
-  PHI reads (patient/genomics/imaging/odyssey) or data exports.
+  (PHI-access audit logging — the other D1 compensating control — is now **DONE**;
+  see W2-T11 in the Resolved section.)
 
 ## Accepted-by-design risks (with compensating controls)
 
@@ -34,7 +33,7 @@ Per the decisions recorded in `docs/security/threat-model.md`:
 - **Open clinical workspace (D1).** Patient, genomics, imaging, and odyssey
   records (threat-model findings A3–A6) are broadly visible to any authenticated
   clinical user — **accepted** for an MDT/tumor-board tool. Compensating control:
-  PHI-access audit logging (W2-T11, open) + Research-Use-Only labeling.
+  PHI-access audit logging (W2-T11, **done**) + Research-Use-Only labeling.
   *Note:* A2 (case authorization) was a genuine inconsistency and is **FIXED**
   (CasePolicy team-scoping + tests). Sub-resource controllers (discussion /
   annotation / document / decision) should gate on case access as a fast-follow.
@@ -155,6 +154,21 @@ Confirmed via `.planning/GA-READINESS-PLAN.md`, `.planning/ROADMAP.md`, and
 - **Frontend test availability** — resolved; Vitest suite present (~27 files /
   88 tests) plus the Playwright E2E suite that now gates `main`.
 - **Genomics service tests** — OncoKB/ClinVar services now have unit coverage.
+
+### Completed 2026-06-20 (this GA-hardening pass)
+- **W2-T11 — PHI-access audit logging.** `LogPhiAccess` middleware records every
+  patient/genomics/imaging/odyssey access (`phi.access` reads / `phi.write`
+  mutations) into `user_audit_logs`; resilient (never breaks the request). The D1
+  compensating control is now in place.
+- **A2 — case authorization.** `CasePolicy` team-scopes case view/update/archive.
+- **P2/P3/P4 — external de-identification.** MME label stripped, Beacon
+  k-anonymity (configurable, default 5), Phenopacket pseudonymous subject.
+- **W5-T01 / W7-T01 — AI labeling.** Imaging AI carries `data_source`/`verified`/
+  `disclaimer`; LLM decision-support carries `evidence_grade=llm_advisory`.
+- **W3-T01/T02/T03/T04 — observability.** Readiness probe, nginx healthcheck,
+  admin Orthanc/federation/Reverb checkers, request-id correlation logging.
+- **W13-T01/T03 — docs + RUO.** This rewrite; persistent in-app Research-Use-Only
+  notice (app shell + login).
 
 *The full pre-resolution detail is preserved in git history (this file's
 2026-03-24 revision).*

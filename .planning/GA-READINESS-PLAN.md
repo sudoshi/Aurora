@@ -289,7 +289,7 @@ Evidence anchors:
 - [~] **W2-T10 (P0)** Security review — threat model produced at
       `docs/security/threat-model.md` with severity-ranked findings + the two
       decisions (D1, D2) that gate the remaining C0/C1 fixes.
-- [ ] **W2-T11 (P2)** Add audit logging for sensitive actions (federated queries,
+- [x] **W2-T11 (P2)** [DONE 2026-06-20: LogPhiAccess middleware → user_audit_logs, phi.access/phi.write, resilient; +tests] Add audit logging for sensitive actions (federated queries,
       data export, admin changes, PHI access). Confirm `user_audit_logs` covers
       these; extend if not.
 
@@ -312,10 +312,10 @@ Evidence anchors:
   - DONE 2026-06-20: nginx healthcheck (full nginx→php-fpm chain) added to
     `docker-compose.yml` (the real prod stack); php/redis/reverb already have
     them. `docker-compose.prod.yml` is legacy (see W3-T10) — not wired.
-- [ ] **W3-T03 (P1)** Admin-visible status board: extend the admin System Health
+- [~] **W3-T03 (P1)** [DONE 2026-06-20: Orthanc/federation/Reverb checkers added +tests; sync-freshness (OncoKB/ClinVar/ClinGen/DICOM) deferred] Admin-visible status board: extend the admin System Health
       page to show stale/error states for OncoKB, ClinVar, ClinGen, DICOM sync,
       AI, federation, and Reverb (covers TODO §10).
-- [ ] **W3-T04 (P1)** Structured logging with correlation/request IDs across
+- [~] **W3-T04 (P1)** [DONE 2026-06-20: RequestId middleware — request_id in log context + X-Request-Id response header +tests; JSON channel deferred] Structured logging with correlation/request IDs across
       backend + AI service; ship to the existing Loki stack if available.
 - [ ] **W3-T05 (P2)** Metrics export (Prometheus): request latency, queue depth,
       job failure rate, AI/BioMCP call latency + error rate.
@@ -372,7 +372,7 @@ Evidence anchors:
 - `ai/app/services/segmentation_service.py:1-3,70-91` — explicitly MOCK
   (hardcoded `BODY_SITE_STRUCTURES` lookup, no model inference).
 
-- [ ] **W5-T01 (P1)** **GA gate decision:** until a real model is wired, the
+- [~] **W5-T01 (P1)** [DONE 2026-06-20: AI imaging responses carry data_source/verified/disclaimer (segmentation=mock_model); deferred-AI frontend controls already hidden; global RUO notice added (W13-T03). Real model = W5-T03 OUT-OF-GA] **GA gate decision:** until a real model is wired, the
       segmentation/volumetrics/feature-extraction UI must be labeled "Research
       /experimental" or hidden, and API responses must carry
       `"computed": false`/`"mock": true` so no clinician mistakes mock anatomy for
@@ -421,7 +421,7 @@ Evidence anchors:
   variant-interpret, rare-disease) are **LLM-advisory** with no backing KB.
 - Abby chat session state is an in-memory dict (lost on restart).
 
-- [ ] **W7-T01 (P1)** Label advisory AI clearly. Every LLM-only endpoint
+- [x] **W7-T01 (P1)** [DONE 2026-06-20: all 7 decision-support response models carry evidence_grade=llm_advisory + disclaimer; +tests] Label advisory AI clearly. Every LLM-only endpoint
       (trial-match, guidelines, drug-interactions, variant-interpret,
       rare-disease, genomic-briefing) must return a machine-readable
       `evidence_grade: "llm_advisory"` and the UI must show a "not a
@@ -547,12 +547,12 @@ Evidence anchors: `docs/devlog.md`, `.planning/ROADMAP.md`, `.planning/STATE.md`
 are active; `PROJECT.md` and `codebase/CONCERNS.md` are stale (marked historical
 but not rewritten).
 
-- [ ] **W13-T01 (P1)** Fully rewrite `.planning/PROJECT.md` (still describes March
+- [x] **W13-T01 (P1)** [DONE 2026-06-20: PROJECT.md + CONCERNS.md rewritten to current GA-readiness state] Fully rewrite `.planning/PROJECT.md` (still describes March
       stabilization items as active) and `.planning/codebase/CONCERNS.md`
       (lists already-closed OncoKB/genomics concerns as open).
 - [ ] **W13-T02 (P1)** Operator install/runbook: from-zero deployment doc that
       matches `deploy.sh` + the static-serving prod path; environment matrix.
-- [ ] **W13-T03 (P1)** "Research Use Only" labeling + disclaimer surfaced in-app
+- [x] **W13-T03 (P1)** [DONE 2026-06-20: persistent ResearchUseOnlyNotice in app shell + login; +test] "Research Use Only" labeling + disclaimer surfaced in-app
       and in docs (ties to W5-T01, W7-T01). Required for safe GA.
 - [ ] **W13-T04 (P1)** API documentation (OpenAPI/Scribe) generated from the 260
       routes; published.
