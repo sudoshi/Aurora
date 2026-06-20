@@ -31,11 +31,16 @@ class BeaconService
             ->when(! empty($params['alternateBases']), fn ($q) => $q->where('alt_allele', $params['alternateBases']));
 
         $count = (clone $query)->count();
-        $exists = $count > 0;
 
-        $summary = ['exists' => $exists];
+        // k-anonymity (D2): a "yes" for an ultra-rare variant is itself
+        // identifying, so cohorts smaller than the threshold are not disclosed —
+        // neither existence nor count is revealed below k.
+        $k = (int) config('services.beacon.k_anonymity', 5);
+        $disclosed = $count >= $k;
+
+        $summary = ['exists' => $disclosed];
         if ($granularity === 'count') {
-            $summary['numTotalResults'] = $count;
+            $summary['numTotalResults'] = $disclosed ? $count : 0;
         }
 
         return [

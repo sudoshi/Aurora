@@ -84,6 +84,9 @@ return [
         'org_name' => env('BEACON_ORG_NAME', 'Aurora'),
         'welcome_url' => env('BEACON_WELCOME_URL', 'https://aurora.example.org'),
         'default_granularity' => env('BEACON_DEFAULT_GRANULARITY', 'boolean'),
+        // k-anonymity: cohorts smaller than this are not disclosed (existence or
+        // count) on the public Beacon — external de-identified surface (D2).
+        'k_anonymity' => (int) env('BEACON_K_ANONYMITY', 5),
     ],
 
     'clingen_gdv' => [

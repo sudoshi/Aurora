@@ -22,6 +22,9 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
+        <!-- Disable Beacon k-anonymity by default so match-logic tests are
+             deterministic; the dedicated k-anon test overrides this to 5. -->
+        <env name="BEACON_K_ANONYMITY" value="1"/>
         <env name="CACHE_STORE" value="array"/>
         <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
         <!-- <env name="DB_DATABASE" value=":memory:"/> -->

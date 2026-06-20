@@ -18,6 +18,29 @@ it('reports variant existence and count for g_variants', function () {
     expect($miss['responseSummary'])->not->toHaveKey('numTotalResults');
 });
 
+it('suppresses cohorts below the k-anonymity threshold', function () {
+    config(['services.beacon.k_anonymity' => 5]);
+    GenomicVariant::factory()->count(2)->create(['chromosome' => '13', 'position' => 32339000, 'ref_allele' => 'G', 'alt_allele' => 'A']);
+    $svc = app(BeaconService::class);
+
+    $res = $svc->queryGVariants(['referenceName' => '13', 'start' => 32338999, 'referenceBases' => 'G', 'alternateBases' => 'A'], 'count');
+
+    // 2 < 5 — neither existence nor count is disclosed.
+    expect($res['responseSummary']['exists'])->toBeFalse();
+    expect($res['responseSummary']['numTotalResults'])->toBe(0);
+});
+
+it('discloses cohorts at or above the k-anonymity threshold', function () {
+    config(['services.beacon.k_anonymity' => 5]);
+    GenomicVariant::factory()->count(5)->create(['chromosome' => '13', 'position' => 32339100, 'ref_allele' => 'C', 'alt_allele' => 'T']);
+    $svc = app(BeaconService::class);
+
+    $res = $svc->queryGVariants(['referenceName' => '13', 'start' => 32339099, 'referenceBases' => 'C', 'alternateBases' => 'T'], 'count');
+
+    expect($res['responseSummary']['exists'])->toBeTrue();
+    expect($res['responseSummary']['numTotalResults'])->toBe(5);
+});
+
 it('builds a spec-shaped info document', function () {
     $info = app(BeaconService::class)->info();
     expect($info['meta']['apiVersion'])->toBe('v2.0.0');
