@@ -81,7 +81,7 @@ describe('POST /api/odysseys/{odyssey}/transition', function () {
 });
 
 describe('GET /api/odysseys/{odyssey}/phenopacket', function () {
-    it('exports a phenopacket with the patient as subject', function () {
+    it('exports a phenopacket with a pseudonymous subject (D2 de-id)', function () {
         $odyssey = DiagnosticOdyssey::factory()->create([
             'patient_id' => $this->patient->id,
             'created_by' => $this->user->id,
@@ -91,7 +91,8 @@ describe('GET /api/odysseys/{odyssey}/phenopacket', function () {
             ->getJson("/api/odysseys/{$odyssey->id}/phenopacket");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.subject.id', (string) $this->patient->id)
+            // Pseudonymous subject id — never the internal patient_id (D2).
+            ->assertJsonPath('data.subject.id', 'aurora-subject-'.$odyssey->id)
             ->assertJsonPath('data.metaData.phenopacketSchemaVersion', '2.0');
     });
 });
