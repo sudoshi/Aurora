@@ -2,6 +2,10 @@ upstream php_fpm {
     server php:9000;
 }
 
+upstream vite {
+    server node:5173;
+}
+
 server {
     listen 80;
     server_name localhost;
@@ -26,32 +30,17 @@ server {
     }
 
     # ── Static assets from backend/public ─────────────────────────────
-    location = / {
-        try_files /build/index.html =404;
-    }
-
-    location = /build/index.html {
-        root /var/www/html/public;
-        add_header Cache-Control "no-cache";
-    }
-
-    location ^~ /build/assets/ {
-        root /var/www/html/public;
-        try_files $uri =404;
+    location /build/ {
+        alias /var/www/html/public/build/;
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
-    location ^~ /build/ {
-        root /var/www/html/public;
-        try_files $uri =404;
-    }
-
-    location ^~ /storage/ {
+    location /storage/ {
         alias /var/www/html/public/storage/;
     }
 
-    location ^~ /image/ {
+    location /image/ {
         alias /var/www/html/public/image/;
     }
 
@@ -75,8 +64,11 @@ server {
     # ── Orthanc DICOM proxy ───────────────────────────────────────────
     location /orthanc/ {
         proxy_pass http://host.docker.internal:8042/;
-        # TODO: move credentials to env substitution (e.g. envsubst or Docker secrets)
-        proxy_set_header Authorization "Basic cGFydGhlbm9uOkdpeHNFSWwwaHBPQWVPd0tkbW1sQU1lMDRTUTBDS2lo";
+        # Credential injected at container start via envsubst from the
+        # ORTHANC_PROXY_AUTH env var (scoped by NGINX_ENVSUBST_FILTER so nginx's
+        # own $-variables are left untouched). Set it in the root .env; never
+        # hardcode the credential here.
+        proxy_set_header Authorization "${ORTHANC_PROXY_AUTH}";
         proxy_set_header Host $proxy_host;
         add_header Cross-Origin-Resource-Policy "cross-origin" always;
         add_header Access-Control-Allow-Origin "*" always;
@@ -86,8 +78,37 @@ server {
         proxy_send_timeout 300s;
     }
 
-    # ── Everything else → built SPA shell ─────────────────────────────
+    # ── Vite HMR WebSocket ────────────────────────────────────────────
+    location /@vite/ {
+        proxy_pass http://vite;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location /__vite_ping {
+        proxy_pass http://vite;
+    }
+
+    location /ws {
+        proxy_pass http://vite;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    # ── Everything else → Vite dev server (SPA) ───────────────────────
+    # Note: no global "deny dotfiles" rule — Vite serves paths like
+    # /node_modules/.vite/* that contain dot-prefixed segments.
+    # Static file security is handled by explicit /build/ and /storage/ locations.
     location / {
-        try_files $uri $uri/ /build/index.html;
+        proxy_pass http://vite;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
