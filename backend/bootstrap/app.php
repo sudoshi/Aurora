@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'mme.peer' => \App\Http\Middleware\AuthenticateMmePeer::class,
+            'audit.phi' => \App\Http\Middleware\LogPhiAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

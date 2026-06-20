@@ -108,20 +108,23 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::delete('/flags/{flag}', [PatientFlagController::class, 'destroy']);
 
     // ── Rare Disease — Diagnostic Odyssey ──────────────────────────────
-    Route::get('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'index']);
-    Route::post('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'store']);
-    Route::get('/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'worklist']);
-    Route::post('/odysseys/{odyssey}/import-phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'importPhenopacket']);
-    Route::get('/odysseys/{odyssey}', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'show']);
-    Route::post('/odysseys/{odyssey}/transition', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'transition']);
-    Route::get('/odysseys/{odyssey}/phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'phenopacket']);
-    Route::get('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'index']);
-    Route::post('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'store']);
-    Route::delete('/phenotypes/{phenotype}', [\App\Http\Controllers\PhenotypeFeatureController::class, 'destroy']);
+    // PHI access (open clinical workspace): audited via audit.phi:odyssey.
+    Route::middleware('audit.phi:odyssey')->group(function () {
+        Route::get('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'index']);
+        Route::post('/patients/{patient}/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'store']);
+        Route::get('/odysseys', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'worklist']);
+        Route::post('/odysseys/{odyssey}/import-phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'importPhenopacket']);
+        Route::get('/odysseys/{odyssey}', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'show']);
+        Route::post('/odysseys/{odyssey}/transition', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'transition']);
+        Route::get('/odysseys/{odyssey}/phenopacket', [\App\Http\Controllers\DiagnosticOdysseyController::class, 'phenopacket']);
+        Route::get('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'index']);
+        Route::post('/odysseys/{odyssey}/phenotypes', [\App\Http\Controllers\PhenotypeFeatureController::class, 'store']);
+        Route::delete('/phenotypes/{phenotype}', [\App\Http\Controllers\PhenotypeFeatureController::class, 'destroy']);
 
-    // ── MME outbound search + match listing ──────────────────────────────
-    Route::post('/odysseys/{odyssey}/mme-search', [\App\Http\Controllers\Mme\MmeSearchController::class, 'search']);
-    Route::get('/odysseys/{odyssey}/mme-matches', [\App\Http\Controllers\Mme\MmeSearchController::class, 'list']);
+        // ── MME outbound search + match listing ──────────────────────────────
+        Route::post('/odysseys/{odyssey}/mme-search', [\App\Http\Controllers\Mme\MmeSearchController::class, 'search']);
+        Route::get('/odysseys/{odyssey}/mme-matches', [\App\Http\Controllers\Mme\MmeSearchController::class, 'list']);
+    });
 
     // Rare Disease — HPO terminology proxy
     Route::get('/hpo/search', [\App\Http\Controllers\HpoTermController::class, 'search'])
@@ -138,7 +141,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/patients/{patient}/decisions', [PatientCollaborationController::class, 'decisions']);
 
     // Patient routes
-    Route::prefix('patients')->group(function () {
+    // PHI access (open clinical workspace): audited via audit.phi:patients.
+    Route::prefix('patients')->middleware('audit.phi:patients')->group(function () {
         Route::get('/', [PatientController::class, 'index']);
         Route::get('/search', [PatientController::class, 'search']);
         Route::get('/{patient}/profile', [PatientController::class, 'profile']);
@@ -148,7 +152,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // ── Imaging ──────────────────────────────────────────────────────────
-    Route::prefix('patients/{patient}/imaging')->group(function () {
+    // PHI access (open clinical workspace): audited via audit.phi:imaging.
+    Route::prefix('patients/{patient}/imaging')->middleware('audit.phi:imaging')->group(function () {
         Route::get('/', [ImagingController::class, 'index']);
         Route::get('/response-assessments', [ImagingController::class, 'responseAssessments']);
         Route::get('/{study}', [ImagingController::class, 'show']);
@@ -156,7 +161,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // ── Standalone Imaging ──────────────────────────────────────────────
-    Route::prefix('imaging')->group(function () {
+    Route::prefix('imaging')->middleware('audit.phi:imaging')->group(function () {
         Route::get('/stats', [ImagingController::class, 'stats']);
         Route::get('/studies', [ImagingController::class, 'studies']);
         Route::post('/studies/index-from-dicomweb', [ImagingController::class, 'indexFromDicomweb']);
@@ -192,7 +197,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // ── Genomics ──────────────────────────────────────────────────────────
-    Route::prefix('genomics')->group(function () {
+    // PHI access (open clinical workspace): audited via audit.phi:genomics.
+    Route::prefix('genomics')->middleware('audit.phi:genomics')->group(function () {
         Route::get('/stats', [GenomicsController::class, 'stats']);
         Route::get('/uploads', [GenomicsController::class, 'listUploads']);
         Route::post('/uploads', [GenomicsController::class, 'storeUpload']);
