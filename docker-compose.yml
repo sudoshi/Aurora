@@ -16,6 +16,13 @@ services:
       php:
         condition: service_healthy
     extra_hosts: ["host.docker.internal:host-gateway"]
+    healthcheck:
+      # Exercises the full nginx→php-fpm chain via the liveness probe.
+      test: ["CMD-SHELL", "wget -qO- http://localhost/api/health >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks: [aurora]
     restart: unless-stopped
 

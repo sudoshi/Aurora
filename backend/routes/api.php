@@ -49,13 +49,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Health check
-Route::get('/health', fn () => response()->json([
-    'status' => 'ok',
-    'service' => 'aurora-api',
-    'version' => '2.0.0',
-    'timestamp' => now()->toISOString(),
-]));
+// Health checks (public) — liveness + dependency readiness.
+Route::get('/health', [\App\Http\Controllers\HealthController::class, 'live']);
+Route::get('/health/ready', [\App\Http\Controllers\HealthController::class, 'ready']);
 
 // MME (MatchMaker Exchange) — public inbound endpoint, peer-token authenticated
 Route::post('/mme/v1/match', [\App\Http\Controllers\Mme\MatchController::class, 'match'])->middleware('mme.peer');
