@@ -52,6 +52,8 @@ return [
 
     'channels' => [
 
+        // TODO(W3-T04): optional JSON 'structured' log channel
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),

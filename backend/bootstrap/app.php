@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ['middleware' => ['auth:sanctum']],
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Run first so a correlation id is available to all other middleware/logs.
+        $middleware->prepend(\App\Http\Middleware\RequestId::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         $middleware->alias([
