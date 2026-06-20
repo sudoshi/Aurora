@@ -1,3 +1,12 @@
+# Optional overlays (AI/"Abby" service + GA4GH VRS anyvar) are folded into this
+# project via `include` so the whole Aurora stack lives under one compose project
+# with consistently-named containers. They reach host PG/Ollama via
+# host.docker.internal and publish their own host ports, so no shared network is
+# required. `docker compose up -d` now brings the full stack.
+include:
+  - docker/ai/docker-compose.ai.yml
+  - docker/vrs/docker-compose.vrs.yml
+
 services:
   nginx:
     container_name: aurora-nginx
@@ -28,6 +37,10 @@ services:
 
   php:
     container_name: aurora-php
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
     build:
       context: .
       dockerfile: docker/php/Dockerfile
@@ -85,6 +98,10 @@ services:
 
   redis:
     container_name: aurora-redis
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     image: redis:7-alpine
     ports: ["${REDIS_PORT:-6385}:6379"]
     healthcheck:

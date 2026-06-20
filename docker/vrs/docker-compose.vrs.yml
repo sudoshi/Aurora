@@ -23,6 +23,11 @@ services:
   # Built from postgres:17 with the btree_gist + varchar-gist-opclass init baked in
   # (see Dockerfile.storage) so anyvar's schema creation succeeds regardless of host perms.
   anyvar-storage:
+    container_name: aurora-anyvar-storage
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
     build:
       context: .
       dockerfile: Dockerfile.storage
@@ -40,6 +45,11 @@ services:
     restart: unless-stopped
 
   anyvar:
+    container_name: aurora-anyvar
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
     image: ghcr.io/biocommons/anyvar:1.0.0
     depends_on:
       anyvar-storage:
@@ -57,4 +67,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  # Pinned to the pre-consolidation volume name so the computed-VRS objects
+  # created under the standalone `vrs` project survive the move into `aurora`.
   aurora_anyvar_storage:
+    name: vrs_aurora_anyvar_storage

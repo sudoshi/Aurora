@@ -13,6 +13,11 @@
 # host.docker.internal.
 services:
   ai:
+    container_name: aurora-ai
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
     image: aurora-ai:dev
     ports:
       - "8100:8100"
