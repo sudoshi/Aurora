@@ -46,6 +46,10 @@ return [
         'password' => env('ORTHANC_PASS', env('ORTHANC_PASSWORD')),
     ],
 
+    'federation' => [
+        'url' => env('FEDERATION_URL', 'http://host.docker.internal:8200'),
+    ],
+
     'imaging' => [
         'local_import_roots' => array_values(array_filter(array_map(
             'trim',

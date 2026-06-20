@@ -15,11 +15,15 @@ class SystemHealthController extends Controller
 
     public function __construct()
     {
+        // TODO(W3-T03 follow-up): sync-freshness checkers (OncoKB/ClinVar/ClinGen/DICOM)
         $this->checkers = [
             'backend' => fn () => $this->checkBackend(),
             'redis' => fn () => $this->checkRedis(),
             'ai' => fn () => $this->checkAiService(),
             'queue' => fn () => $this->checkQueue(),
+            'orthanc' => fn () => $this->checkOrthanc(),
+            'federation' => fn () => $this->checkFederation(),
+            'reverb' => fn () => $this->checkReverb(),
         ];
     }
 
@@ -62,6 +66,9 @@ class SystemHealthController extends Controller
             'redis' => $this->getRedisMetrics(),
             'ai' => $this->getAiMetrics(),
             'queue' => $this->getQueueMetrics(),
+            'orthanc' => $this->getOrthancMetrics(),
+            'federation' => [],
+            'reverb' => $this->getReverbMetrics(),
             default => [],
         };
     }
@@ -227,5 +234,184 @@ class SystemHealthController extends Controller
         } catch (\Throwable) {
             return [];
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function checkOrthanc(): array
+    {
+        $name = 'Orthanc (DICOM)';
+        $key = 'orthanc';
+
+        $baseUrl = config('services.orthanc.base_url');
+        $user = config('services.orthanc.user');
+        $pass = config('services.orthanc.password');
+
+        if (empty($baseUrl) || empty($user) || empty($pass)) {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'degraded',
+                'message' => 'Orthanc is not configured (base_url/credentials missing).',
+            ];
+        }
+
+        $url = rtrim((string) $baseUrl, '/');
+
+        try {
+            $response = Http::timeout(3)->withBasicAuth((string) $user, (string) $pass)->get("{$url}/system");
+
+            if ($response->successful()) {
+                return [
+                    'name' => $name,
+                    'key' => $key,
+                    'status' => 'healthy',
+                    'message' => 'Orthanc is reachable.',
+                ];
+            }
+
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'degraded',
+                'message' => "Orthanc returned HTTP {$response->status()}.",
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'down',
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function checkFederation(): array
+    {
+        $name = 'Federation Relay';
+        $key = 'federation';
+
+        $url = rtrim((string) config('services.federation.url', env('FEDERATION_URL', 'http://host.docker.internal:8200')), '/');
+
+        try {
+            $response = Http::timeout(3)->get("{$url}/health");
+
+            if ($response->successful()) {
+                return [
+                    'name' => $name,
+                    'key' => $key,
+                    'status' => 'healthy',
+                    'message' => 'Federation relay is reachable.',
+                ];
+            }
+
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'degraded',
+                'message' => "Federation relay returned HTTP {$response->status()}.",
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'down',
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function checkReverb(): array
+    {
+        $name = 'Realtime (Reverb)';
+        $key = 'reverb';
+
+        if (config('broadcasting.default') !== 'reverb') {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'degraded',
+                'message' => 'Realtime disabled (BROADCAST_CONNECTION not reverb).',
+            ];
+        }
+
+        $host = config('broadcasting.connections.reverb.options.host')
+            ?: env('REVERB_SERVER_HOST', env('REVERB_HOST', 'localhost'));
+        $port = (int) (env('REVERB_SERVER_PORT', env('REVERB_PORT', 8080)));
+
+        try {
+            $errno = 0;
+            $errstr = '';
+            $socket = @fsockopen((string) $host, $port, $errno, $errstr, 2);
+
+            if ($socket !== false) {
+                fclose($socket);
+
+                return [
+                    'name' => $name,
+                    'key' => $key,
+                    'status' => 'healthy',
+                    'message' => "Reverb server reachable at {$host}:{$port}.",
+                ];
+            }
+
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'down',
+                'message' => "Reverb server unreachable at {$host}:{$port} ({$errstr}).",
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'down',
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getOrthancMetrics(): array
+    {
+        $baseUrl = config('services.orthanc.base_url');
+        $user = config('services.orthanc.user');
+        $pass = config('services.orthanc.password');
+
+        if (empty($baseUrl) || empty($user) || empty($pass)) {
+            return [];
+        }
+
+        $url = rtrim((string) $baseUrl, '/');
+
+        try {
+            $response = Http::timeout(3)->withBasicAuth((string) $user, (string) $pass)->get("{$url}/system");
+
+            return $response->successful() ? ($response->json() ?? []) : [];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getReverbMetrics(): array
+    {
+        return [
+            'driver' => config('broadcasting.default'),
+            'host' => config('broadcasting.connections.reverb.options.host'),
+            'port' => config('broadcasting.connections.reverb.options.port'),
+            'scheme' => config('broadcasting.connections.reverb.options.scheme'),
+        ];
     }
 }
