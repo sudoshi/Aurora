@@ -3,12 +3,16 @@
 namespace App\Models\Commons;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Message extends Model
 {
+    /** @use HasFactory<\Database\Factories\Commons\MessageFactory> */
+    use HasFactory;
+
     protected $table = 'commons_messages';
 
     protected $fillable = [

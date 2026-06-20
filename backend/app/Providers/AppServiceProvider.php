@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Commons\Channel;
+use App\Policies\Commons\ChannelPolicy;
 use App\Services\Auth\Oidc\OidcDiscoveryService;
 use App\Services\Auth\Oidc\OidcHandshakeStore;
 use App\Services\Auth\Oidc\OidcProviderConfig;
 use App\Services\Auth\Oidc\OidcReconciliationService;
 use App\Services\Auth\Oidc\OidcTokenValidator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,6 +42,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::policy(Channel::class, ChannelPolicy::class);
     }
 }
