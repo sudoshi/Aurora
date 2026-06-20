@@ -2,6 +2,22 @@
 
 from pydantic import BaseModel, Field
 
+# --- Advisory grading constants ---
+#
+# The decision-support endpoints (trial-match, guidelines, drug-interactions,
+# variant-interpret, prognosis, rare-disease, genomic-briefing) are powered by
+# Ollama LLM reasoning with NO backing knowledge base. Their outputs are
+# second-opinion / advisory only and must never be mistaken for
+# database-verified clinical decision support. Every response model below carries
+# an explicit evidence grade + disclaimer so consumers can label them correctly.
+
+LLM_ADVISORY_GRADE = "llm_advisory"
+LLM_ADVISORY_DISCLAIMER = (
+    "AI-generated advisory output from a language model with no backing "
+    "knowledge base. Not database-verified clinical decision support — verify "
+    "independently before any clinical use."
+)
+
 
 # --- Trial Matching ---
 
@@ -29,6 +45,8 @@ class TrialMatchResponse(BaseModel):
     patient_id: int
     suggestions: list[TrialSuggestion]
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Guideline Checker ---
@@ -52,6 +70,8 @@ class ConcordanceResult(BaseModel):
 class GuidelineCheckResponse(BaseModel):
     result: ConcordanceResult | None = None
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Drug Interaction Checker ---
@@ -74,6 +94,8 @@ class DrugInteraction(BaseModel):
 class DrugInteractionResponse(BaseModel):
     interactions: list[DrugInteraction]
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Variant Interpreter ---
@@ -102,6 +124,8 @@ class VariantInterpretation(BaseModel):
 class VariantInterpretResponse(BaseModel):
     interpretation: VariantInterpretation | None = None
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Prognostic Scorer ---
@@ -120,8 +144,16 @@ class PrognosticScore(BaseModel):
 
 
 class PrognosticScoreResponse(BaseModel):
+    # NOTE: This response can mix deterministic rule-based scores (ECOG,
+    # Charlson Comorbidity Index — computed algorithmically) with an Ollama LLM
+    # risk-stratification fallback (see prognostic_scorer.calculate_scores).
+    # Because the response as a whole may contain LLM-derived output, it is
+    # graded as advisory — a consumer cannot treat the full payload as
+    # database-verified.
     scores: list[PrognosticScore]
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Rare Disease Matcher ---
@@ -145,6 +177,8 @@ class RareDiseaseMatch(BaseModel):
 class RareDiseaseMatchResponse(BaseModel):
     matches: list[RareDiseaseMatch]
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
 
 
 # --- Genomic Briefing ---
@@ -186,3 +220,5 @@ class GenomicBriefingResponse(BaseModel):
     variant_count: int = 0
     actionable_count: int = 0
     error: str | None = None
+    evidence_grade: str = LLM_ADVISORY_GRADE
+    disclaimer: str = LLM_ADVISORY_DISCLAIMER
