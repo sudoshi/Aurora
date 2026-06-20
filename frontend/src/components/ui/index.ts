@@ -51,3 +51,6 @@ export type { CodeBlockProps } from "./CodeBlock";
 
 export { EmptyState } from "./EmptyState";
 export type { EmptyStateProps } from "./EmptyState";
+
+export { ResearchUseOnlyNotice } from "./ResearchUseOnlyNotice";
+export type { ResearchUseOnlyNoticeProps } from "./ResearchUseOnlyNotice";

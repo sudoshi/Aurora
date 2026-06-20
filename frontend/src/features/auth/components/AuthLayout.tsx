@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { ResearchUseOnlyNotice } from "@/components/ui/ResearchUseOnlyNotice";
 import "./auth-layout.css";
 
 const IMAGES = [
@@ -158,6 +159,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           </div>
         </div>
       </div>
+      <ResearchUseOnlyNotice variant="chip" />
     </div>
   );
 }

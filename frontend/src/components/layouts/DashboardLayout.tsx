@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { AbbyPanel } from "@/components/layout/AbbyPanel";
 import ChangePasswordModal from "@/features/auth/components/ChangePasswordModal";
+import { ResearchUseOnlyNotice } from "@/components/ui/ResearchUseOnlyNotice";
 import { useNotificationListener } from "@/features/commons/hooks/useNotificationListener";
 import { useRealtimeConnection } from "@/lib/useRealtime";
 import { useAuthStore } from "@/stores/authStore";
@@ -29,6 +30,7 @@ export default function DashboardLayout() {
           </main>
         </div>
       </div>
+      <ResearchUseOnlyNotice />
       {degraded && (
         <div
           role="status"
