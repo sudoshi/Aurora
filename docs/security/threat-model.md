@@ -84,6 +84,12 @@ Severity: **C0** GA-blocking · **C1** high · **C2** medium.
 
 ## Decisions required (owner: Dr. Udoshi)
 
+> **Decisions taken (2026-06-20):** D1 = **open clinical workspace + PHI audit
+> logging** (cases team-scoped; patient/genomics/imaging/odyssey remain broadly
+> visible to authenticated clinical users). D2 = **internal identified, external
+> de-identified** (internal FHIR/exports stay identified; MME + Beacon are
+> de-identified + k-anonymized). See remediation status below.
+
 **D1 — Clinical data access model.** Pick one:
 - (a) **Open clinical workspace** — any authenticated clinical user may access any
   patient/genomics/imaging record; enforce only *case* scoping (A2) + add PHI
@@ -103,8 +109,18 @@ soon as D1/D2 are set; the rest follows the chosen model.
 
 ## Remediation status
 
-- **Done:** A1 (reaction authz), security headers + test, rate-limit verification,
-  secret-at-boot validation, Orthanc credential externalization (W2-T01).
+- **Done:** A1 (reaction authz), **A2 (CasePolicy team-scoping + tests)**,
+  security headers + test, rate-limit verification, secret-at-boot validation,
+  Orthanc credential externalization (W2-T01), **P2 (MME label de-id)**,
+  **P3 (Beacon k-anonymity, configurable threshold)**, **P4 (Phenopacket
+  pseudonymous subject)**.
+- **By design (D1 = open clinical workspace):** A3–A6 (patient/genomics/imaging/
+  odyssey broadly visible to authenticated clinical users) are accepted — the
+  compensating control is PHI-access **audit logging (W2-T11, still open)**.
+- **By design (D2 = internal identified):** P1 (FHIR export identifiers) and P5
+  (AI proxy user headers) are internal-only surfaces — accepted as identified.
 - **Pending operator:** Orthanc credential **rotation** (W2-T02) + history scrub
   (W2-T03) — the old value is in git history.
-- **Pending decision:** A2–A6 (D1), P1–P4 (D2), audit logging (W2-T11).
+- **Still open:** **W2-T11** PHI-access audit logging (the D1 compensating
+  control); sub-resource controllers (discussion/annotation/document/decision)
+  should also gate on case access as a fast-follow.
