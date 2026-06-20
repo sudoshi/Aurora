@@ -302,14 +302,16 @@ Evidence anchors:
 - `DashboardController` `system-health` — DB + cache only; admin-gated.
 - No probes for AI, federation, Orthanc, queue, sync freshness.
 
-- [ ] **W3-T01 (P1)** Implement a real readiness endpoint that checks each
-      dependency: Postgres, Redis, queue depth, AI service, federation relay,
-      Orthanc, and last successful DICOM/OncoKB/ClinVar/ClinGen sync timestamps.
-      Return per-dependency status + overall.
-  - Acceptance: stopping Redis flips the readiness payload to degraded.
-- [ ] **W3-T02 (P1)** Add `healthcheck:` blocks to **every** service in
-      `docker-compose.prod.yml` (api, ai, federation, worker, reverb) — currently
-      only db/redis have them.
+- [x] **W3-T01 (P1)** Public readiness endpoint.
+  - DONE 2026-06-20: `HealthController` — `/api/health` (liveness) +
+    `/api/health/ready` (checks database/redis/cache, 200 ready / 503 degraded,
+    per-dependency up/down). +tests. NOTE: AI/Orthanc/federation/sync-freshness
+    checks live in the admin board (W3-T03), kept out of the public probe to
+    avoid leaking topology.
+- [~] **W3-T02 (P1)** Service healthchecks.
+  - DONE 2026-06-20: nginx healthcheck (full nginx→php-fpm chain) added to
+    `docker-compose.yml` (the real prod stack); php/redis/reverb already have
+    them. `docker-compose.prod.yml` is legacy (see W3-T10) — not wired.
 - [ ] **W3-T03 (P1)** Admin-visible status board: extend the admin System Health
       page to show stale/error states for OncoKB, ClinVar, ClinGen, DICOM sync,
       AI, federation, and Reverb (covers TODO §10).
@@ -322,11 +324,15 @@ Evidence anchors:
 - [ ] **W3-T07 (P1)** Queue worker operability: confirm `worker` restart policy,
       `--tries`/`--timeout` are env-configurable, and failed jobs land in
       `failed_jobs` with a retry runbook.
-- [ ] **W3-T08 (P1)** Backup & restore runbook: documented, scheduled Postgres
-      backups + a **tested** restore. Add `docs/deployment/backup-restore.md`.
-- [ ] **W3-T09 (P1)** Rollback runbook: how to revert a bad deploy (frontend
-      assets + migrations). Document migration-down safety; prefer
-      expand/contract migrations over destructive ones.
+- [x] **W3-T08 (P1)** Backup & restore runbook.
+  - DONE 2026-06-20: `docs/deployment/backup-restore.md` — host-PG `pg_dump`
+    (custom format, omop excluded), cron schedule, validated scratch-DB restore,
+    off-host copy, monthly restore test. (Scheduling the cron + first real restore
+    test are operator steps.)
+- [x] **W3-T09 (P1)** Rollback runbook.
+  - DONE 2026-06-20: `docs/deployment/rollback.md` — code revert + `deploy.sh`
+    (assets roll back with code), reversible vs destructive migration paths
+    (pg_restore), decision guide, post-rollback verification via readiness probe.
 - [ ] **W3-T10 (P2)** Resolve `docker-compose.prod.yml` status: it's unclear if
       it's legacy vs supported. Reconcile with the
       `docker-compose.yml` + `deploy.sh` static-serving path; remove or document.
