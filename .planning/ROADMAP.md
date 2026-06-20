@@ -1,6 +1,6 @@
 # Roadmap: Aurora Post-Stabilization Product Hardening
 
-## Status As Of 2026-06-17
+## Status As Of 2026-06-19
 
 Aurora's original stabilization and verification milestone is complete. The
 current branch, `v2/phase-0-scaffold`, has moved beyond the March 2026
@@ -21,7 +21,7 @@ genomics/test-hardening roadmap and now contains the major v2 platform slices:
 - Laravel 12 security baseline and frontend dependency advisories cleared.
 
 The old "Aurora Stabilization & Verification" roadmap is retained in
-`.planning/STATE.md` as historical context, but it is no longer the active
+`.planning/PROJECT.md` as historical context, but it is no longer the active
 development sequence.
 
 ## Current Product Position
@@ -70,7 +70,8 @@ development server.
 
 ### Phase 3: Imaging Productization
 
-**Status:** In progress as of 2026-06-18.
+**Status:** Endpoint closeout complete on 2026-06-19; refactor/performance and
+segmentation productization remain.
 
 **Goal:** Turn the now-indexed Orthanc study corpus into a dependable clinical
 imaging workflow.
@@ -87,31 +88,106 @@ imaging workflow.
   WADO-RS fields, normalized series fields, and the Orthanc series indexer.
 - Added a browser smoke that opens a live indexed study detail page and verifies
   the OHIF iframe URL includes the `StudyInstanceUIDs` parameter.
+- Implemented persistent imaging criteria list/create/delete and wired the
+  visible imaging criteria creation flow to the backend.
+- Implemented durable manual and computed imaging response assessments,
+  including stored history retrieval and frontend-compatible fallback payloads.
+- Returned frontend-compatible population analytics arrays while retaining the
+  existing distribution-map response keys.
+- Replaced green success states for deferred imaging actions with neutral
+  disabled/pending UI, so stubbed DICOMweb indexing, local import, auto-link,
+  NLP extraction, AI extraction, and template suggestion actions no longer
+  present as completed work.
+- Normalized imaging measurement and patient timeline contracts so frontend
+  measurement fields and longitudinal timeline data round-trip from the backend.
+- Documented `docs/imaging-ingestion-policy.md`, which settles blank-PatientID
+  handling and defines queued DICOMweb/local import and deterministic auto-link
+  boundaries.
+- Hardened protected API rate limiting so authenticated SPA/E2E traffic is
+  keyed by user ID through `throttle:api`, while guests retain IP-based limits.
+- Hardened Playwright auth setup to reuse validated stored Sanctum state before
+  calling the public login endpoint.
+- Verified the full public Chromium E2E target:
+  `npx playwright test --project=chromium` passed 31 tests with 2
+  data-dependent genomics skips against `https://aurora.acumenus.net`.
+- Added auditable imaging ingestion runs and queue jobs for DICOMweb indexing
+  and guarded local import.
+- Implemented queued DICOMweb indexing with deterministic DICOM PatientID
+  matching, blank-PatientID quarantine skips, and idempotent study/series
+  upserts.
+- Added persisted imaging feature storage and wired NLP extraction,
+  `/imaging/features`, imaging stats, and population top-feature analytics to
+  real data.
+- Implemented AI volumetric measurement extraction into
+  `clinical.imaging_measurements`.
+- Implemented deterministic measurement-template suggestions.
+- Changed auto-link from no-op success to an explicit policy error.
+- Enabled frontend controls for queued DICOMweb indexing, local import, NLP
+  extraction, and AI measurement extraction.
 
 **Tasks:**
-- Decide whether blank-PatientID MR studies should be quarantined, manually
-  linked, or imported under synthetic research records.
-- Implement or retire remaining stubbed imaging endpoints:
-  `indexFromDicomweb`, `extractNlp`, `importLocalTrigger`, `autoLinkStudies`,
-  `aiExtractMeasurements`, and `suggestTemplate`.
-- Decide whether DICOMweb indexing should be a UI action, scheduled job, or
-  one-way ops script.
+- Split `ImagingController` into narrower controllers/services now that the
+  behavior is covered.
+- Replace per-row study list count queries with eager-loaded counts and add
+  query-count/performance coverage.
+- Productize real segmentation execution and DICOM SEG/RTSTRUCT persistence.
+
+### Phase 3B: Genomics Upload Productization
+
+**Status:** Complete on 2026-06-19 for VCF/MAF/CSV/TSV upload processing;
+FHIR Genomics remains part of Phase 4 interoperability.
+
+**Goal:** Replace upload-level genomics false-success actions with a real,
+auditable variant ingestion path.
+
+**Completed tasks:**
+- Added `clinical.genomic_upload_variants` for staged parsed variants that can
+  exist before patient matching.
+- Added upload metadata for parse, match, import, ClinVar annotation, errors,
+  and last operation results.
+- Added `ProcessGenomicUploadJob` and `GenomicUploadIngestionService`.
+- Implemented streaming VCF and delimited MAF/CSV/TSV parsing, multi-ALT VCF
+  splitting, duplicate suppression, malformed-file failure states, and
+  deterministic sample identifier/MRN matching.
+- Implemented real upload-level `matchPersons`, `importToOmop`, and
+  `annotateClinVar` behavior with explicit operation payloads and non-2xx
+  responses for unavailable work.
+- Imported fully matched staged variants idempotently into
+  `clinical.genomic_variants`.
+- Updated frontend upload/detail actions so match/import/annotation display
+  real counts and backend errors.
+- Verified focused genomics API coverage and frontend typecheck.
 
 ### Phase 4: Interoperability Spine
+
+**Status:** Local adapter read projections and first outbound FHIR Genomics
+report export complete on 2026-06-19; inbound FHIR Genomics parsing and
+downstream standards-backed consumers remain.
 
 **Goal:** Replace placeholder clinical-data adapters with working, testable
 FHIR/OMOP flows.
 
+**Completed so far:**
+- Implemented `FhirAdapter` read paths for patient, conditions, medications,
+  procedures, measurements, observations, visits, notes, imaging studies, and
+  genomic variants as FHIR R4-style local projections.
+- Implemented `OmopAdapter` read paths over Aurora's actual local clinical
+  schema, projecting to OMOP CDM v5.4 table/source fields without pretending a
+  separate physical CDM schema exists.
+- Added `CLINICAL_DATA_ADAPTER` / `config/clinical.php` adapter selection for
+  `manual`, `fhir`, and `omop`.
+- Added focused adapter contract coverage for patient profile/search, notes,
+  imaging, genomics, and configured `PatientService` selection.
+- Selected FHIR Genomics as the first outbound emit path and added
+  `GET /api/genomics/patients/{patient}/fhir-report`, returning a FHIR R4
+  Bundle with `Patient`, Genomic Report `DiagnosticReport`, and variant
+  `Observation` resources.
+
 **Tasks:**
-- Implement `FhirAdapter` read paths for patient, conditions, medications,
-  procedures, measurements, observations, notes, imaging studies, genomic
-  variants, and cases.
-- Implement `OmopAdapter` read paths or clearly scope it to the actual local
-  OMOP schema available in Aurora.
-- Add contract tests for adapter output shapes used by Abby, decision drafting,
-  patient profile, and cohort tools.
-- Define the first outbound emit path: Phenopackets, FHIR Genomics, mCODE, or
-  FHIR Task/CarePlan.
+- Extend standards-backed contract coverage to Abby, decision drafting, and
+  cohort tools when their first concrete interoperability workflow is selected.
+- Implement inbound FHIR Genomics parsing for supported
+  `Bundle`/`DiagnosticReport`/variant `Observation` payloads.
 
 ### Phase 5: AI Decision Intelligence Slice 2
 

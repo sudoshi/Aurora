@@ -1,5 +1,250 @@
 # Aurora Devlog
 
+## 2026-06-19 — FHIR Genomics Outbound Report Export
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Selected FHIR Genomics as Aurora's first outbound interoperability emit path and
+added a protected export endpoint for patient-level genomic variant reports.
+The endpoint emits a FHIR R4 collection Bundle from Aurora's local clinical
+schema; it does not require or imply an external FHIR server.
+
+### Completed Tasks
+
+1. **Added FHIR Genomics report export service**
+   - Added `FhirGenomicsReportExporter`.
+   - The export contains a `Patient`, one Genomic Report `DiagnosticReport`,
+     and one variant `Observation` per stored `clinical.genomic_variants` row.
+   - The report and variant observations include HL7 FHIR Genomics Reporting
+     profile URLs.
+
+2. **Added authenticated API surface**
+   - Added `GET /api/genomics/patients/{patient}/fhir-report`.
+   - The response includes metadata for `standard=FHIR R4`, the Genomics
+     Reporting profile URLs, `variant_count`, and `scope=local_export`.
+
+3. **Verified the tranche**
+   - `php -l` passed for the exporter, genomics controller, routes, and tests.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest tests/Unit/Services/Genomics/FhirGenomicsReportExporterTest.php tests/Feature/Api/GenomicsControllerTest.php` passed: 42 tests / 169 assertions.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest --exclude-group=mockery-alias` passed: 501 tests / 1,830 assertions.
+   - `npm --prefix frontend run typecheck` passed.
+   - `npm --prefix frontend test` passed: 27 files / 88 tests.
+   - `npm --prefix frontend run build` passed.
+   - `git diff --check` passed.
+
+### Remaining Follow-Ups
+
+- Implement inbound FHIR Genomics upload parsing for supported
+  `Bundle`/`DiagnosticReport`/variant `Observation` payloads.
+- Extend standards-backed contract coverage to Abby, decision drafting, and
+  cohort tools after a concrete downstream workflow is selected.
+
+---
+
+## 2026-06-19 — FHIR/OMOP Adapter Read Projections
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Replaced the FHIR and OMOP adapter throwing stubs with standards-aware read
+projections over Aurora's existing local clinical schema. The adapters preserve
+the arrays consumed by current patient-profile workflows while adding FHIR R4
+resource metadata or OMOP CDM v5.4 source-record projections.
+
+### Completed Tasks
+
+1. **Implemented shared standards adapter behavior**
+   - Added `LocalStandardsAdapter` to decorate `ManualAdapter` output without
+     duplicating the clinical query layer.
+   - Normalized both array records and paginated note model instances before
+     decoration.
+
+2. **Implemented FHIR R4 read projections**
+   - `FhirAdapter` now supports patient, conditions, medications, procedures,
+     measurements, observations, visits, notes, imaging studies, genomic
+     variants, full profile, and search.
+   - Added minimal resource projections such as `Patient`, `Condition`,
+     `MedicationStatement`, `Observation`, `Encounter`, `DocumentReference`,
+     and `ImagingStudy`.
+
+3. **Implemented OMOP CDM v5.4 read projections**
+   - `OmopAdapter` now maps local clinical rows to the closest CDM table/source
+     shape: `person`, `condition_occurrence`, `drug_exposure`,
+     `procedure_occurrence`, `measurement`, `observation`, `visit_occurrence`,
+     and `note`.
+   - Imaging and genomics are intentionally represented as observation-style
+     source records because Aurora does not yet have a physical OMOP CDM schema.
+
+4. **Added adapter selection**
+   - Added `config/clinical.php` and `CLINICAL_DATA_ADAPTER=manual`.
+   - `PatientService` can now run with `manual`, `fhir`, or `omop`, and fails
+     fast for unsupported adapter names.
+
+5. **Verified the tranche**
+   - `php -l` passed for the new/changed adapter, config, service, and test
+     files.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest tests/Unit/Services/ClinicalDataAdapterImplementationsTest.php` passed: 4 tests / 44 assertions.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest tests/Unit/Services/ClinicalDataAdapterImplementationsTest.php tests/Unit/Services/ManualAdapterTest.php tests/Unit/Services/PatientServiceTest.php` passed: 30 tests / 159 assertions.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest --exclude-group=mockery-alias` passed: 496 tests / 1,795 assertions.
+   - `npm --prefix frontend run typecheck` passed.
+   - `npm --prefix frontend test` passed: 27 files / 88 tests.
+   - `npm --prefix frontend run build` passed.
+   - `git diff --check` passed.
+
+### Remaining Follow-Ups
+
+- FHIR Genomics upload parsing still fails fast until inbound parsing is
+  implemented for supported report bundles.
+- Extend standards-backed contract coverage to Abby, decision drafting, and
+  cohort tools after a concrete downstream workflow is chosen.
+
+---
+
+## 2026-06-19 — Genomics Upload Pipeline Closeout
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Replaced the genomics upload false-success actions with a staged, auditable
+pipeline for VCF/MAF/CSV variant ingestion, deterministic person matching,
+clinical variant import, and local ClinVar annotation.
+
+### Completed Tasks
+
+1. **Added staged upload variants**
+   - Added `clinical.genomic_upload_variants` for parsed rows that may not yet
+     have a patient match.
+   - Added upload metadata columns for parse/match/import/ClinVar timestamps,
+     error details, and last operation results.
+
+2. **Implemented queued upload parsing**
+   - Added `ProcessGenomicUploadJob` and `GenomicUploadIngestionService`.
+   - Upload creation now stores the file, queues parsing on the `genomics`
+     queue, and returns normalized frontend-compatible upload payloads.
+   - The parser streams VCF and delimited MAF/CSV/TSV rows, splits multi-ALT
+     VCF alleles, deduplicates repeated variants, and stages rows without
+     requiring a patient.
+
+3. **Implemented deterministic matching and import**
+   - `POST /api/genomics/uploads/{id}/match-persons` now re-runs exact
+     identifier/MRN matching and persists matched, unmatched, and review states.
+   - `POST /api/genomics/uploads/{id}/import` now imports only fully matched
+     staged rows into `clinical.genomic_variants` with idempotent update/create
+     behavior.
+   - Unmatched/review-required uploads return HTTP 409 instead of pretending
+     import succeeded.
+
+4. **Implemented upload-level ClinVar annotation**
+   - `POST /api/genomics/uploads/{id}/annotate-clinvar` now requires a populated
+     local ClinVar cache, annotates imported upload variants by genomic
+     coordinates, and reports eligible, annotated, already-annotated, and
+     missing-reference counts.
+
+5. **Updated frontend upload actions**
+   - Upload detail actions now surface concrete match/import counts and backend
+     errors.
+   - Import is only exposed after deterministic matching clears review-required
+     rows.
+   - Upload-list ClinVar annotation now reports real results/errors instead of
+     silently stopping a spinner.
+
+6. **Verified the tranche**
+   - `./vendor/bin/pint ...` passed after formatting backend changes.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest tests/Feature/Api/GenomicsControllerTest.php` passed: 37 tests / 134 assertions.
+   - `npm --prefix frontend run typecheck` passed.
+
+### Remaining Follow-Ups
+
+- FHIR Genomics uploads still fail fast until the broader FHIR/OMOP adapter
+  work is implemented.
+- The clinical import endpoint still writes to Aurora's local
+  `clinical.genomic_variants`; a true outbound OMOP export path remains part of
+  the interoperability backlog.
+
+---
+
+## 2026-06-19 — Imaging Productization Tranche 2
+
+**Branch:** `v2/phase-0-scaffold`
+
+### Overview
+
+Closed the remaining user-facing imaging stub actions by replacing false-success
+responses with queued ingestion runs, persisted feature storage, explicit
+unsupported auto-link semantics, and executable frontend controls.
+
+### Completed Tasks
+
+1. **Added auditable imaging ingestion runs**
+   - Added `clinical.imaging_ingestion_runs` with status, idempotency
+     fingerprint, requester, parameters, result, counters, timestamps, and a
+     partial unique index for active duplicate prevention.
+   - Added `ImagingIngestionRun` and `ImagingIngestionService`.
+   - Added queue jobs for DICOMweb indexing, local DICOM import, and the
+     reserved auto-link execution path.
+
+2. **Implemented queued DICOMweb indexing**
+   - `POST /api/imaging/studies/index-from-dicomweb` now validates filters,
+     creates or reuses an active ingestion run, dispatches
+     `IndexDicomwebStudiesJob`, and returns HTTP 202 with a poll URL.
+   - The worker queries Orthanc DICOMweb QIDO-RS, resolves DICOM PatientID
+     through deterministic patient identifiers/MRN, skips blank or unmatched
+     PatientID rows, upserts studies by StudyInstanceUID, and optionally
+     upserts series by SeriesInstanceUID.
+
+3. **Implemented guarded local import triggering**
+   - `POST /api/imaging/import-local/trigger` now requires configured
+     allowlisted roots and an import command.
+   - Disallowed paths return non-2xx errors; allowed paths create or reuse a
+     queued ingestion run.
+
+4. **Persisted imaging features**
+   - Added `clinical.imaging_features` and `ImagingFeature`.
+   - `POST /api/imaging/studies/{id}/extract-nlp` now calls the AI service,
+     persists extracted features as review-required records, and returns the
+     created feature payloads.
+   - `GET /api/imaging/features`, imaging stats, and population analytics now
+     read real feature rows.
+
+5. **Implemented AI measurement extraction and template suggestions**
+   - `POST /api/imaging/studies/{id}/ai-extract` now calls the AI volumetric
+     endpoint and persists returned volume/diameter measurements with
+     `source_type=ai_extraction`.
+   - `GET /api/imaging/studies/{id}/suggest-template` now returns deterministic
+     measurement templates based on modality and body part.
+
+6. **Retired unsafe auto-link success**
+   - `POST /api/imaging/studies/auto-link` now returns HTTP 422 with the
+     deterministic-linking policy instead of returning `{ linked: 0 }` success.
+
+7. **Updated imaging UI contracts**
+   - DICOMweb indexing and local import controls now queue ingestion runs and
+     show run status.
+   - Study detail now exposes NLP extraction.
+   - The measurement panel now exposes AI extraction.
+   - The stale auto-link prompt was removed from the patient imaging timeline.
+
+8. **Verified the tranche**
+   - `./vendor/bin/pint ...` passed after formatting the backend changes.
+   - `APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_DATABASE=aurora_test DB_USERNAME=smudoshi DB_MIGRATIONS_TABLE=public.migrations DB_PASSWORD=<backend/.env> ./vendor/bin/pest tests/Feature/Api/ImagingStudyApiTest.php` passed: 25 tests / 209 assertions.
+   - Full backend Pest passed: 483 tests / 1,706 assertions.
+   - `npm --prefix frontend run typecheck` passed.
+   - `npm --prefix frontend test` passed: 27 files / 88 tests.
+   - `npm --prefix frontend run build` passed.
+
+### Remaining Follow-Ups
+
+- Split `ImagingController` into narrower controllers/services now that the
+  behavior is covered.
+- Add query-count/performance coverage for study listing.
+- Productize true segmentation execution and DICOM SEG/RTSTRUCT persistence.
+
+---
+
 ## 2026-06-18 — Imaging Productization Tranche 1
 
 **Branch:** `v2/phase-0-scaffold`

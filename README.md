@@ -2,7 +2,7 @@
 
 **Advanced Clinical Case Intelligence Platform**
 
-Aurora is a secure, real-time collaboration platform for multidisciplinary clinical teams to coordinate complex patient care. It combines clinical data aggregation, AI-powered decision support (Abby), live collaboration sessions, and structured decision capture into a single unified workspace.
+Aurora is a secure collaboration platform for multidisciplinary clinical teams to coordinate complex patient care. It combines clinical data aggregation, AI-powered decision support (Abby), collaboration sessions, and structured decision capture into a single unified workspace.
 
 Built by [Acumenus](https://acumenus.net). Live at [aurora.acumenus.net](https://aurora.acumenus.net).
 
@@ -16,13 +16,13 @@ Aurora enables clinical teams to:
 - **View complete patient profiles** — demographics, conditions, medications, labs, imaging, genomics, clinical notes, and visit timelines in one place
 - **Make structured decisions** — propose recommendations, vote, finalize, and track follow-ups with full audit trails
 - **Get AI-powered insights** — Abby provides clinical trial matching, guideline concordance checking, drug interaction alerts, genomic variant interpretation, prognostic scoring, and "Patients Like This" similarity search
-- **Collaborate in real-time** — Commons channels with threaded discussions, wiki, announcements, and presence indicators
+- **Collaborate as a team** — Commons channels with threaded discussions, wiki, announcements, and presence-oriented UI; durable realtime transport is still on the hardening roadmap
 
 ## Architecture
 
 ```
 aurora/
-├── backend/          Laravel 11 / PHP 8.4 — API, auth, business logic
+├── backend/          Laravel 12 / PHP 8.4+ — API, auth, business logic
 ├── frontend/         React 19 / TypeScript / Tailwind 4 — SPA
 ├── ai/               Python FastAPI — Abby AI, similarity engine, clinical NLP
 ├── federation/       Python FastAPI — cross-institutional relay (opt-in)
@@ -34,9 +34,9 @@ aurora/
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Laravel 11, PHP 8.4, Sanctum auth, Spatie RBAC |
+| **Backend** | Laravel 12, PHP 8.4+, Sanctum auth, Spatie RBAC |
 | **Frontend** | React 19, TypeScript (strict), Vite 6, Tailwind 4, Zustand, TanStack Query |
-| **AI Service** | Python 3.13, FastAPI, SapBERT, Ollama/MedGemma, Claude API |
+| **AI Service** | Python 3.12 container / Python 3.13 CI, FastAPI, SapBERT, Ollama/MedGemma, Claude API |
 | **Database** | PostgreSQL 16 + pgvector |
 | **Cache/Queue** | Redis |
 | **Search** | pgvector cosine similarity, full-text search |
@@ -124,7 +124,7 @@ aurora/
 - Node.js 22+, npm
 - PostgreSQL 16 (with pgvector extension)
 - Redis
-- Python 3.13+ (for AI service)
+- Python 3.12 via the `aurora-ai:dev` container for AI service tests. CI also runs on Python 3.13; host Python 3.14 is not supported by the pinned AI dependency set.
 
 ### Local Development
 
@@ -205,17 +205,23 @@ See [docs/api/](docs/api/) for full endpoint reference.
 ## Testing
 
 ```bash
-# Backend (Pest)
-cd backend && php artisan test
+# Backend (Pest against local PostgreSQL aurora_test)
+cd backend
+DB_PASSWORD="$(awk -F= '/^DB_PASSWORD=/{print substr($0,index($0,"=")+1)}' .env)" \
+  APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_PORT=5432 \
+  DB_DATABASE=aurora_test DB_USERNAME=smudoshi \
+  DB_MIGRATIONS_TABLE=public.migrations \
+  ./vendor/bin/pest --exclude-group=mockery-alias
 
 # Frontend (Vitest)
 cd frontend && npm test
 
-# AI (pytest)
-cd ai && pytest
+# AI (pytest in the supported Python 3.12 container)
+docker build -t aurora-ai:dev ai
+docker run --rm aurora-ai:dev python -m pytest
 
 # E2E (Playwright)
-cd e2e && npx playwright test
+cd e2e && npx playwright test --project=chromium
 ```
 
 ## Security
@@ -223,11 +229,12 @@ cd e2e && npx playwright test
 - Sanctum token-based authentication with forced password change flow
 - Spatie RBAC with granular permissions
 - CSP headers, HSTS, X-Frame-Options
-- Rate limiting on auth and upload endpoints
+- Rate limiting on public auth/upload endpoints and authenticated API traffic
+  keyed by user ID
 - PHI sanitization before cloud LLM routing
 - Encrypted fields for sensitive configuration
-- Audit logging for all clinical data access
-- No hardcoded secrets (all via environment variables)
+- Activity logging for supported clinical and administrative workflows
+- Environment-based secret configuration is the target; remaining hardcoded service credentials are tracked for hardening
 
 ## Documentation
 

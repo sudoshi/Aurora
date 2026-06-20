@@ -1,5 +1,13 @@
 # Aurora — Stabilization & Verification
 
+> Historical snapshot, superseded on 2026-06-18. This March stabilization
+> checklist is retained for context only. The active roadmap is
+> `.planning/ROADMAP.md`, the current state is `.planning/STATE.md`, and the
+> completion checklist is `.planning/comprehensive-app-completion-todo.md`.
+> Several items below are now complete, including the `app`/`clinical` database
+> connections, CaseController validation stabilization, OncoKB parsing coverage,
+> and genomics upload/criteria persistence.
+
 ## What This Is
 
 Aurora is a secure, real-time collaboration platform for multidisciplinary clinical teams. A comprehensive Patient Genomics Tab feature was just built across all layers (Laravel backend, React/TypeScript frontend, Python FastAPI AI service). This milestone focuses on fixing critical bugs, completing deferred implementations, and achieving automated test coverage across the entire platform.
@@ -66,7 +74,7 @@ Every existing feature — auth, patients, cases, genomics, AI briefing — must
 ## Constraints
 
 - **Auth system**: Sacred — see `.claude/rules/auth-system.md`, no modifications to auth flow
-- **Tech stack**: Laravel 11 / React 19 / FastAPI — no changes
+- **Tech stack**: Laravel 12 / React 19 / FastAPI — no changes
 - **Database**: PostgreSQL on host (not Docker), connection via host.docker.internal
 - **Testing**: Pest (PHP), Vitest (JS), pytest (Python), Playwright (E2E) — 80%+ coverage target
 - **Deployment**: Must deploy to aurora.acumenus.net and verify after completion

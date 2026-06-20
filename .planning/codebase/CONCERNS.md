@@ -2,6 +2,13 @@
 
 **Analysis Date:** 2026-03-24
 
+> Historical snapshot, superseded on 2026-06-18. This document is retained for
+> old audit context and should not be treated as the active issue list. Current
+> tracking lives in `.planning/comprehensive-app-completion-todo.md`. In
+> particular, the database connection blocker, OncoKB response parsing coverage,
+> genomics upload/criteria persistence, and frontend test availability have
+> moved on since this snapshot.
+
 ## Critical Production Issues
 
 ### Database Connection Configuration Error

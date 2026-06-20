@@ -1,6 +1,7 @@
 # Testing Patterns
 
 **Analysis Date:** 2026-03-24
+**Last verified:** 2026-06-19
 
 ## Test Framework
 
@@ -12,10 +13,14 @@
 
 **Run Commands:**
 ```bash
-./vendor/bin/pest run                      # Run all tests
-./vendor/bin/pest run --watch              # Watch mode (re-runs on file change)
-./vendor/bin/pest run --coverage           # Coverage report
-./vendor/bin/pest --testdox                # Test documentation output
+DB_PASSWORD="$(awk -F= '/^DB_PASSWORD=/{print substr($0,index($0,"=")+1)}' .env)" \
+  APP_ENV=testing DB_CONNECTION=pgsql DB_HOST=localhost DB_PORT=5432 \
+  DB_DATABASE=aurora_test DB_USERNAME=smudoshi \
+  DB_MIGRATIONS_TABLE=public.migrations \
+  ./vendor/bin/pest --exclude-group=mockery-alias  # Run all tests
+./vendor/bin/pest --watch                            # Watch mode
+./vendor/bin/pest --coverage                         # Coverage report
+./vendor/bin/pest --testdox                          # Test documentation output
 ```
 
 **Runner (Frontend):**
@@ -34,13 +39,32 @@ npm run build              # Builds with tsc --noEmit (type checking)
 **Runner (Python/AI Service):**
 - **Pytest** (v8.3.0) — Testing framework
 - **TestClient:** FastAPI's `TestClient` for endpoint testing
-- **Config:** No `pytest.ini` — uses defaults, test discovery via `tests/test_*.py`
+- **Config:** `ai/pytest.ini` with scoped coverage and `--cov-fail-under=80`
+- **Runtime:** Docker image `aurora-ai:dev` is the supported local runtime; host
+  Python 3.14 cannot currently install the pinned dependency set.
 
 **Run Commands:**
 ```bash
-pytest tests/              # Run all tests
-pytest tests/ -v           # Verbose output
+docker build -t aurora-ai:dev ai
+docker run --rm aurora-ai:dev python -m pytest
 ```
+
+**Runner (E2E):**
+- **Playwright** configured under `e2e/`
+- **Current target:** public deployment by default,
+  `https://aurora.acumenus.net`
+- **Auth setup:** validates the persisted `.auth/admin.json` Sanctum state
+  before attempting another form login, so repeated runs do not exhaust the
+  public login throttle.
+
+**Run Command:**
+```bash
+cd e2e
+npx playwright test --project=chromium
+```
+
+**Latest verified result:** 31 passed, 2 data-dependent genomics skips against
+`https://aurora.acumenus.net`.
 
 **Assertion Library:**
 - **Backend:** Pest's `expect()` function (provides fluent assertions: `expect($value)->toBeTrue()`)
@@ -297,19 +321,21 @@ beforeEach(function () {
 **View Coverage:**
 ```bash
 # Backend
-./vendor/bin/pest run --coverage
+./vendor/bin/pest --coverage
 
 # Frontend (when configured)
 npm test -- --coverage
 
 # Python
-pytest tests/ --cov=app
+docker run --rm aurora-ai:dev python -m pytest
 ```
 
 **Gaps (Current):**
-- Frontend has no tests yet (Vitest not configured for test files)
-- Python tests minimal (health endpoint only)
-- Backend tests cover auth, services, but not all endpoints
+- Frontend has Vitest coverage for auth, genomics components/hooks/types, stores,
+  hooks, and library code.
+- Python AI tests pass with scoped 80% coverage enforcement in Docker.
+- Backend Pest suite is broad and currently passes with the explicit testing DB
+  settings above, but not every endpoint or workflow has product-level coverage.
 
 ## Test Types
 
