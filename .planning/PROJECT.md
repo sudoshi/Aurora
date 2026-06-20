@@ -1,92 +1,107 @@
-# Aurora — Stabilization & Verification
+# Aurora — Project Overview & Current Phase
 
-> Historical snapshot, superseded on 2026-06-18. This March stabilization
-> checklist is retained for context only. The active roadmap is
-> `.planning/ROADMAP.md`, the current state is `.planning/STATE.md`, and the
-> completion checklist is `.planning/comprehensive-app-completion-todo.md`.
-> Several items below are now complete, including the `app`/`clinical` database
-> connections, CaseController validation stabilization, OncoKB parsing coverage,
-> and genomics upload/criteria persistence.
+Last updated: 2026-06-20
 
-## What This Is
+> This file describes Aurora **as it is now** and the phase it is in. The
+> authoritative, agent-executable roadmap is **`.planning/GA-READINESS-PLAN.md`**
+> (workstreams W0–W14). The active milestone state is `.planning/STATE.md` and the
+> product sequence is `.planning/ROADMAP.md`. The previous "March stabilization"
+> framing of this file is retired — that work is complete.
 
-Aurora is a secure, real-time collaboration platform for multidisciplinary clinical teams. A comprehensive Patient Genomics Tab feature was just built across all layers (Laravel backend, React/TypeScript frontend, Python FastAPI AI service). This milestone focuses on fixing critical bugs, completing deferred implementations, and achieving automated test coverage across the entire platform.
+## What Aurora Is
 
-## Core Value
+Aurora is a secure, real-time collaboration platform for multidisciplinary
+clinical teams (tumor boards, surgical planning, rare-disease diagnostic
+odysseys, complex medical reviews) to coordinate patient care. It unifies:
 
-Every existing feature — auth, patients, cases, genomics, AI briefing — must work end-to-end with automated tests proving it. No regressions, no 500 errors, no dead endpoints.
+- **Patient intelligence** — demographics, conditions, medications, labs,
+  imaging, genomics, notes, and a longitudinal timeline in one workspace.
+- **Collaboration** — Commons channels with threaded discussions, presence,
+  reactions, and notifications; real-time transport via Laravel Reverb.
+- **Decision support (Abby)** — evidence-grounded decision drafting plus
+  LLM-advisory trial matching, guideline concordance, drug-interaction and
+  variant interpretation, and "Patients Like This" similarity.
+- **Structured decision capture** — recommendations, votes, finalization, and
+  follow-up tracking with audit trails.
 
-## Requirements
+It is open-source, vendor-agnostic, and standards-based: **FHIR R4**, **OMOP
+CDM v5.4**, and GA4GH interoperability surfaces (**Matchmaker Exchange**,
+**Beacon v2**, **Phenopackets v2**, ACMG/AMP, ClinVar/ClinGen).
 
-### Validated
+## Tech Stack
 
-- ✓ Monorepo structure (backend/, frontend/, ai/, federation/, e2e/) — existing
-- ✓ Docker Compose services (nginx, php, node, redis) — existing
-- ✓ PostgreSQL with app/clinical/public schemas — existing
-- ✓ GeneDrugInteraction model + migration + seeder (42 records) — existing
-- ✓ GenomicsController with interactions endpoint — existing
-- ✓ Genomic briefing AI service (Ollama-powered) — existing
-- ✓ Frontend Genomics tab with 7 components — existing
-- ✓ TanStack Query hooks for genomics — existing
-- ✓ Auth system (Sanctum, temp password, Resend email) — existing
+| Layer | Technology |
+|-------|-----------|
+| Backend | Laravel 12, PHP 8.4+, Sanctum auth, Spatie RBAC |
+| Frontend | React 19, TypeScript (strict), Vite 6, Tailwind 4, Zustand, TanStack Query |
+| AI service | Python 3.12 (FastAPI), SapBERT, Ollama/MedGemma, Claude API |
+| Federation | Python FastAPI relay (mTLS, opt-in) |
+| Database | PostgreSQL 16 + pgvector (host PG; `app`/`clinical`/`public` schemas) |
+| Real-time | Laravel Reverb (Pusher-protocol) |
+| Infra | Docker Compose (dev) / Apache + host php-fpm static serving (prod) |
 
-### Active
+See `README.md` for the public-facing description and `.claude/CLAUDE.md` for
+the developer context.
 
-- [ ] Fix critical 500 error: add `clinical` database connection to config/database.php
-- [ ] Fix CaseController validation rules referencing non-existent connection
-- [ ] Verify all auth endpoints work (login, register, change-password, logout)
-- [ ] Verify dashboard endpoint loads patient counts
-- [ ] Verify patient CRUD and profile endpoints
-- [ ] Verify case management endpoints (create, update, archive, team members)
-- [ ] Verify session management endpoints
-- [ ] Verify genomics interactions API returns seeded data
-- [ ] Verify genomics stats endpoint
-- [ ] Verify AI genomic briefing generation (Ollama)
-- [ ] Verify radiogenomics panel endpoint
-- [ ] Complete OncoKB response parsing in OncoKbService
-- [ ] Implement GenomicsController upload endpoints (listUploads, storeUpload, showUpload)
-- [ ] Implement GenomicsController criteria endpoints (listCriteria, storeCriterion, updateCriterion, destroyCriterion)
-- [ ] Automated backend tests (Pest) — 80%+ coverage for controllers and services
-- [ ] Automated frontend tests (Vitest) — 80%+ coverage for hooks and components
-- [ ] Automated AI service tests (pytest) — 80%+ coverage for endpoints and services
-- [ ] E2E tests (Playwright) — login flow, patient profile, genomics tab
+## Current Phase: GA Readiness
 
-### Out of Scope
+The original stabilization/verification milestone and the v2 feature build are
+complete. Aurora is **demo-/UAT-ready (~80–85% feature-complete)** and is now in
+a **GA-readiness hardening phase** driven by `.planning/GA-READINESS-PLAN.md`.
 
-- New feature development — stabilization only
-- Federation layer — off by default, future milestone
-- WebSocket/real-time features — not in current scope
-- Mobile optimization — web-first
-- Performance optimization — correctness first
-- CI/CD pipeline changes — existing GitHub Actions sufficient
+"GA" here means **safe, supportable, observable production for research/MDT
+use** — explicitly **not** FDA/CE regulated-medical-device clearance. Items that
+would be required for device clearance are deferred behind "Research Use Only"
+labeling (`[OUT-OF-GA]` in the plan).
 
-## Context
+### Where things stand
 
-- Branch: `v2/phase-0-scaffold` with 14 genomics commits
-- Critical blocker: `exists:clinical.patients,id` validation in CaseController interpreted by Laravel as connection `clinical` (not schema) — connection doesn't exist in database.php
-- PostgreSQL search_path is `app,clinical,public` on the `pgsql` connection
-- All 72 tables exist in the Aurora database on host PostgreSQL (port 5432)
-- Tinker confirms auth, models, and token generation all work — the 500 is a request-level issue
-- OncoKB service has connectivity check but no response parsing (explicit TODO)
-- GenomicsController has 7 stub endpoints returning empty responses
-- Codebase map: `.planning/codebase/` (7 documents, 2,217 lines)
+- **Real-time collaboration (W1):** Reverb is wired end-to-end — broadcasting
+  events, channel authorization, real `echo.ts`, presence/typing, a polling
+  fallback, and a backend broadcast test + a two-context Playwright spec.
+  Production *activation* (systemd unit + Apache WS proxy) is authored and
+  handed to the operator (requires sudo).
+- **CI integrity (W0):** the `continue-on-error` masks on mypy / npm-audit /
+  pip-audit are removed, E2E now gates `main` (not PR-only), and a gitleaks
+  secret-scan job hard-fails on findings. Backend/frontend/AI coverage floors
+  are still being ratcheted in.
+- **Security model (W2 + threat model):** implemented per decisions **D1/D2**
+  recorded in `docs/security/threat-model.md`:
+  - **D1 = open clinical workspace** — cases are team-scoped (CasePolicy);
+    patient/genomics/imaging/odyssey records are broadly visible to
+    authenticated clinical users, with **PHI-access audit logging** as the
+    compensating control (W2-T11, open).
+  - **D2 = internal identified, external de-identified** — internal FHIR/exports
+    stay identified; MME + Beacon are de-identified and k-anonymized.
+  - Security headers, rate limiting, secret-at-boot validation, and Orthanc
+    credential externalization are done; credential rotation + git-history
+    scrub remain operator tasks.
+- **Standards & interoperability:** FHIR/OMOP adapter read projections and the
+  first outbound FHIR Genomics report export are shipped; FHIR conformance
+  validation and inbound parsing are open (W6).
 
-## Constraints
+The honest status: feature-rich but unevenly productized; several **GA blockers**
+and **operator items** remain open. Track them in the GA plan, not here.
 
-- **Auth system**: Sacred — see `.claude/rules/auth-system.md`, no modifications to auth flow
-- **Tech stack**: Laravel 12 / React 19 / FastAPI — no changes
-- **Database**: PostgreSQL on host (not Docker), connection via host.docker.internal
-- **Testing**: Pest (PHP), Vitest (JS), pytest (Python), Playwright (E2E) — 80%+ coverage target
-- **Deployment**: Must deploy to aurora.acumenus.net and verify after completion
-- **Credentials**: admin@acumenus.net / superuser (must_change_password: false)
+## Key Constraints
 
-## Key Decisions
+- **Research Use Only.** Mock/advisory surfaces (e.g. mock segmentation,
+  LLM-only CDS) must be labeled or hidden; no stub presents as authoritative.
+- **Auth system is frozen.** Read `.claude/rules/auth-system.md` before touching
+  anything under auth — the temp-password/Resend flow and the forced
+  `must_change_password` modal are sacred. Additions only.
+- **Non-destructive only.** Soft deletes; no `migrate --force`; scoped `--path=`
+  migrations; never modify the read-only `omop` schema.
+- **Host uses `sudo-rs`** (no `-A`). Elevated operations are handed to the
+  operator — do not attempt interactive sudo.
+- **Tooling gates:** Pint (PHP); both `tsc --noEmit` and `vite build` (TS);
+  ruff + mypy (Python).
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Add `clinical` connection alias to database.php | Laravel interprets `exists:clinical.X` as connection name, not schema | — Pending |
-| Fix validation rules vs add connection | Adding connection is simpler and preserves schema-qualified model tables | — Pending |
-| Test all layers before new features | Can't build on broken foundation | — Pending |
+## Authoritative Roadmap
+
+`.planning/GA-READINESS-PLAN.md` — workstreams W0–W14, status markers, decisions
+D1/D2, sequencing (GA-0 harness → GA-1 security+realtime → GA-2 operability →
+GA-3 honest product surface → GA-4 GA cut), and GA exit criteria.
 
 ---
-*Last updated: 2026-03-25 after initialization*
+*Supersedes the 2026-03-25 "Stabilization & Verification" PROJECT.md.*
