@@ -8,11 +8,14 @@ use App\Models\ClinicalCase;
 use App\Services\BoardTemplateService;
 use App\Services\CaseService;
 use App\Services\CaseStateMachine;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CaseController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private readonly CaseService $caseService,
         private readonly BoardTemplateService $boardTemplateService,
@@ -105,6 +108,8 @@ class CaseController extends Controller
             return ApiResponse::error('Case not found', 404);
         }
 
+        $this->authorize('view', $clinicalCase);
+
         return ApiResponse::success($clinicalCase, 'Case retrieved');
     }
 
@@ -119,6 +124,8 @@ class CaseController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('update', $clinicalCase);
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
@@ -150,6 +157,8 @@ class CaseController extends Controller
             return ApiResponse::error('Case not found', 404);
         }
 
+        $this->authorize('delete', $clinicalCase);
+
         $this->caseService->archiveCase($clinicalCase);
         $clinicalCase->delete();
 
@@ -167,6 +176,8 @@ class CaseController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('manageTeam', $clinicalCase);
 
         $validated = $request->validate([
             'user_id' => 'required|integer|exists:app.users,id',
@@ -197,6 +208,8 @@ class CaseController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('manageTeam', $clinicalCase);
 
         try {
             $this->caseService->removeTeamMember($clinicalCase, $user);

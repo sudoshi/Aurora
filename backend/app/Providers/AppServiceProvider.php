@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\ClinicalCase;
 use App\Models\Commons\Channel;
+use App\Policies\CasePolicy;
 use App\Policies\Commons\ChannelPolicy;
 use App\Services\Auth\Oidc\OidcDiscoveryService;
 use App\Services\Auth\Oidc\OidcHandshakeStore;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Channel::class, ChannelPolicy::class);
+        Gate::policy(ClinicalCase::class, CasePolicy::class);
         $this->verifyRequiredSecrets();
     }
 
