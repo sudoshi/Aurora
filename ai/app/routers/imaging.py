@@ -16,6 +16,29 @@ from app.services.response_assessment import assess_response
 router = APIRouter()
 
 
+# ── Provenance / verification disclaimers ────────────────────────────────────
+#
+# Aurora's imaging AI outputs are NOT verified clinical measurements. Every
+# response carries machine-readable provenance flags (``data_source``,
+# ``verified``, ``disclaimer``) so no consumer can mistake mock or AI-derived
+# output for a verified clinical finding. Labeling is additive only — the
+# underlying algorithms and numeric outputs are unchanged.
+
+SEGMENTATION_DISCLAIMER = (
+    "Experimental: simulated segmentation, not a verified clinical measurement. "
+    "Research use only."
+)
+VOLUME_DISCLAIMER = (
+    "Computed from stored measurements; not an independently verified clinical "
+    "measurement. Research use only."
+)
+FEATURE_DISCLAIMER = "AI-generated; not a verified clinical finding. Research use only."
+RESPONSE_DISCLAIMER = (
+    "Rule-based response category from stored measurements; clinical "
+    "interpretation required. Research use only."
+)
+
+
 # ── Request / Response Models ────────────────────────────────────────────────
 
 
@@ -39,6 +62,9 @@ class SegmentResponse(BaseModel):
     structures: list[StructureResult]
     structure_count: int
     ai_analysis: dict[str, Any] | None = None
+    data_source: str
+    verified: bool = False
+    disclaimer: str
 
 
 class VolumeRequest(BaseModel):
@@ -54,6 +80,9 @@ class VolumeResponse(BaseModel):
     perpendicular_diameter_mm: float | None = None
     measurement_count: int
     interpretation: str | None = None
+    data_source: str
+    verified: bool = False
+    disclaimer: str
 
 
 class ResponseRequest(BaseModel):
@@ -79,6 +108,9 @@ class ResponseResult(BaseModel):
     percent_change: float | None = None
     measurements_comparison: MeasurementComparison
     ai_analysis: dict[str, Any] | None = None
+    data_source: str
+    verified: bool = False
+    disclaimer: str
 
 
 class TrendPoint(BaseModel):
@@ -109,6 +141,9 @@ class FeatureResponse(BaseModel):
     study_id: int
     features: list[ExtractedFeature]
     feature_count: int
+    data_source: str
+    verified: bool = False
+    disclaimer: str
 
 
 # ── Helper: Fetch measurements from Aurora backend DB via internal API ───────
@@ -226,6 +261,9 @@ async def segment_study(request: SegmentRequest) -> SegmentResponse:
         structures=[StructureResult(**s) for s in result["structures"]],
         structure_count=result["structure_count"],
         ai_analysis=result.get("ai_analysis"),
+        data_source=result.get("data_source", "mock_model"),
+        verified=False,
+        disclaimer=SEGMENTATION_DISCLAIMER,
     )
 
 
@@ -243,7 +281,12 @@ async def compute_volume_endpoint(request: VolumeRequest) -> VolumeResponse:
         measurements=measurements,
     )
 
-    return VolumeResponse(**result)
+    return VolumeResponse(
+        **result,
+        data_source="computed_from_measurements",
+        verified=False,
+        disclaimer=VOLUME_DISCLAIMER,
+    )
 
 
 @router.post("/imaging/response", response_model=ResponseResult)
@@ -275,6 +318,9 @@ async def response_assessment(request: ResponseRequest) -> ResponseResult:
             **result["measurements_comparison"]
         ),
         ai_analysis=result.get("ai_analysis"),
+        data_source="rule_based",
+        verified=False,
+        disclaimer=RESPONSE_DISCLAIMER,
     )
 
 
@@ -393,4 +439,7 @@ async def extract_features(request: FeatureRequest) -> FeatureResponse:
         study_id=request.study_id,
         features=features,
         feature_count=len(features),
+        data_source="ai_generated",
+        verified=False,
+        disclaimer=FEATURE_DISCLAIMER,
     )

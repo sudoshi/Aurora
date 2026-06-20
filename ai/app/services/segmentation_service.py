@@ -1,7 +1,12 @@
 """Segmentation service for imaging AI pipeline.
 
-Provides mock segmentation results with plausible clinical structures.
+Provides MOCK segmentation results with plausible clinical structures from a
+hardcoded body-site lookup. These are NOT verified clinical measurements.
 Real DICOM segmentation requires specialized models (TotalSegmentator, nnU-Net, etc.).
+
+The returned dict carries ``data_source="mock_model"`` so that provenance
+originates at the source and downstream consumers cannot mistake this
+experimental output for a verified clinical measurement.
 """
 
 import json
@@ -72,8 +77,11 @@ async def run_segmentation(
     body_site: str,
     algorithm: str | None = None,
 ) -> dict[str, Any]:
-    """Run mock segmentation on a study, returning detected structures and volumes.
+    """Run MOCK segmentation on a study, returning detected structures and volumes.
 
+    This is a mock: structures/volumes come from a hardcoded body-site lookup,
+    NOT from a real segmentation model, and must not be treated as a verified
+    clinical measurement. The returned dict includes ``data_source="mock_model"``.
     In production this would invoke TotalSegmentator, nnU-Net, or similar.
     """
     effective_algorithm = algorithm or "TotalSegmentator-v2"
@@ -126,4 +134,5 @@ async def run_segmentation(
         "structures": structures,
         "structure_count": len(structures),
         "ai_analysis": ai_analysis,
+        "data_source": "mock_model",
     }
