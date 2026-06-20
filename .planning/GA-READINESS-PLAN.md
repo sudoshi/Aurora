@@ -174,35 +174,40 @@ Evidence anchors:
 - Consumers already written: `frontend/src/features/commons/hooks/useEcho.ts`,
   `useTypingIndicator.ts`, `usePresence.ts`, notification listener.
 
-- [ ] **W1-T01 (P0)** Decide transport and record an ADR in `docs/plans/`.
-      Recommended: **Laravel Reverb** (first-party, ships with Laravel, WebSocket,
-      Pusher-protocol compatible) over Soketi/Pusher. Capture rationale,
-      ports, TLS termination, and scaling notes.
-- [ ] **W1-T02 (P0)** Install + configure Reverb. `composer require laravel/reverb`,
-      publish `config/broadcasting.php` + `config/reverb.php`, set
-      `BROADCAST_CONNECTION=reverb` and Reverb env keys in `.env.example` with
-      sensible dev defaults. Depends on: W1-T01.
-- [ ] **W1-T03 (P0)** Define channel authorization in
-      `backend/routes/channels.php`: private `commons.channel.{id}` authorized by
-      channel membership; presence channels for sessions/cases; user
-      notification channel `App.Models.User.{id}`. Ensure `/broadcasting/auth`
-      runs under `auth:sanctum`.
-  - Acceptance: an unauthorized user is rejected from a channel they don't belong to.
-- [ ] **W1-T04 (P0)** Create `ShouldBroadcast` events in `backend/app/Events/`
-      and dispatch them from the relevant controllers/services:
-      `MessageSent`, `MessageUpdated`, `ReactionUpdated`, `TypingIndicator`,
-      `NotificationCreated`, presence join/leave. Payloads must match the shapes
-      `useEcho.ts` already listens for (cross-check event names/keys exactly).
-  - Acceptance: posting a message emits a broadcast whose JSON matches the
-    frontend listener contract.
-- [ ] **W1-T05 (P0)** Replace `frontend/src/lib/echo.ts` stub with a real
-      `laravel-echo` + `pusher-js` initializer reading Reverb env, authorizing
-      via the Sanctum bearer token, and call `setEcho(...)` during app bootstrap.
-      Remove the `stub` comment (W0-T10 enforces this).
-  - Verify: `npm --prefix frontend run build` and `tsc --noEmit` both pass.
-- [ ] **W1-T06 (P1)** Add a **graceful polling fallback**: when Echo fails to
-      connect, the commons hooks must fall back to interval refetch so the app
-      never silently stops updating. Surface a connection-state indicator in the UI.
+- [x] **W1-T01 (P0)** Decide transport. **Laravel Reverb** chosen (first-party,
+      ships with Laravel 12, Pusher-protocol compatible). Rationale + ports/TLS
+      captured inline in `backend/.env.example` and the prod-wiring task (W1-T07).
+- [x] **W1-T02 (P0)** Install + configure Reverb.
+  - DONE 2026-06-19: `composer require laravel/reverb` (v1.10); published
+    `config/broadcasting.php` + `config/reverb.php`; `BROADCAST_CONNECTION=reverb`
+    + REVERB_*/VITE_REVERB_* in `.env.example`; `phpunit.xml` forces the `null`
+    broadcaster for tests. Also patched guzzle 7.12.1/psr7 2.12.1 so the unmasked
+    `composer audit` stays green.
+- [x] **W1-T03 (P0)** Channel authorization in `routes/channels.php`.
+  - DONE 2026-06-19: `commons.channel.{id}` (member-or-public), private
+    `App.Models.User.{id}` (id match), presence `commons.online`. Wired via
+    `bootstrap/app.php` `withBroadcasting(..., ['middleware' => ['auth:sanctum']])`
+    — `broadcasting/auth` route confirmed registered under sanctum.
+- [x] **W1-T04 (P0)** `ShouldBroadcastNow` events + dispatch.
+  - DONE 2026-06-19: `App\Events\Commons\{MessageSent,MessageUpdated,
+    ReactionUpdated,NotificationSent}` dispatched from MessageController
+    (store/update/destroy) and ReactionController, payloads matched byte-for-byte
+    to the `useEcho`/`useNotificationListener` contracts (default class-name for
+    message/reaction; `broadcastAs('NotificationSent')` for the dotted listener;
+    rich reaction summary with users). Typing/presence need no server event
+    (whisper + presence channel only). Also added a real **thread-reply
+    notification** producer (backend previously never wrote `commons_notifications`).
+  - NOTE: live socket delivery is NOT yet proven — see W1-T07/T08.
+- [x] **W1-T05 (P0)** Real `echo.ts` (laravel-echo + pusher-js, reverb broadcaster,
+      sanctum-bearer authorizer at `/broadcasting/auth`); `useRealtimeConnection`
+      brings it up in `DashboardLayout`; `useNotificationListener` now mounted
+      app-wide. Stub marker removed.
+  - DONE 2026-06-19: `tsc --noEmit` clean, `vite build` clean, 88 unit tests pass.
+    (Also restored `@testing-library/dom` + added `vite-env.d.ts` after the echo
+    libs install pruned the peer dep.)
+- [x] **W1-T06 (P1)** Graceful polling fallback + indicator.
+  - DONE 2026-06-19: `useMessages` polls every 8s whenever realtime status is not
+    `connected`; a "Reconnecting… live updates paused" pill shows on degraded.
 - [ ] **W1-T07 (P1)** Run Reverb in production. Add a `reverb` service to
       `docker-compose.prod.yml`, proxy the WS path in nginx (`/app`, `/apps`),
       and add a Reverb health probe (ties to W3). Update `deploy.sh` to start it.

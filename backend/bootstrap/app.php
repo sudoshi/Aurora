@@ -11,6 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withBroadcasting(
+        __DIR__.'/../routes/channels.php',
+        // SPA uses Sanctum bearer tokens, so the broadcast-auth route must run
+        // under the sanctum guard (not the default session/web guard).
+        ['middleware' => ['auth:sanctum']],
+    )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 

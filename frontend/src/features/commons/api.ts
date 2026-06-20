@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
+import { useRealtimeStatus } from "@/lib/useRealtime";
 import { listAbbyConversations } from "./services/abbyService";
 import type {
   ActivityItem,
@@ -204,10 +205,17 @@ export function useChannel(slug: string) {
 }
 
 export function useMessages(slug: string) {
+  // When realtime is delivering (connected) we rely on pushed events; otherwise
+  // fall back to polling so the channel never silently stops updating.
+  const status = useRealtimeStatus();
+  const live = status === "connected";
+
   return useQuery({
     queryKey: [MESSAGES_KEY, slug],
     queryFn: () => fetchMessages(slug),
     enabled: !!slug,
+    refetchInterval: live ? false : 8000,
+    refetchIntervalInBackground: false,
   });
 }
 

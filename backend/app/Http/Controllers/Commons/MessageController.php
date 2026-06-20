@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Commons;
 
+use App\Events\Commons\MessageSent;
+use App\Events\Commons\MessageUpdated;
+use App\Events\Commons\NotificationSent;
 use App\Http\Controllers\Controller;
 use App\Models\Commons\Channel;
 use App\Models\Commons\Message;
+use App\Models\Commons\Notification;
 use App\Models\Commons\ObjectReference;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
@@ -89,6 +93,26 @@ class MessageController extends Controller
 
         $message->load('user:id,name');
 
+        broadcast(new MessageSent($message))->toOthers();
+
+        // Notify the parent author when someone replies to their message.
+        if ($message->parent_id) {
+            $parent ??= Message::find($message->parent_id);
+            if ($parent && $parent->user_id !== $message->user_id) {
+                $notification = Notification::create([
+                    'user_id' => $parent->user_id,
+                    'type' => 'thread_reply',
+                    'title' => 'New reply to your message',
+                    'body' => \Illuminate\Support\Str::limit($message->body, 140),
+                    'channel_id' => $channel->id,
+                    'message_id' => $message->id,
+                    'actor_id' => $message->user_id,
+                ]);
+
+                broadcast(new NotificationSent($notification));
+            }
+        }
+
         return response()->json(['data' => $message], 201);
     }
 
@@ -110,6 +134,8 @@ class MessageController extends Controller
             'edited_at' => now(),
         ]);
 
+        broadcast(new MessageUpdated($message, 'updated'))->toOthers();
+
         return response()->json(['data' => $message]);
     }
 
@@ -122,6 +148,8 @@ class MessageController extends Controller
         }
 
         $message->update(['deleted_at' => now()]);
+
+        broadcast(new MessageUpdated($message, 'deleted'))->toOthers();
 
         return response()->json(['data' => $message]);
     }

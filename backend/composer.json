@@ -9,6 +9,7 @@
         "php": "^8.2",
         "firebase/php-jwt": "^7.0",
         "laravel/framework": "^12.61.1",
+        "laravel/reverb": "^1.10",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "spatie/laravel-permission": "^6.24"

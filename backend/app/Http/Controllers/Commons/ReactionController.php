@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Commons;
 
+use App\Events\Commons\ReactionUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Commons\Message;
 use App\Models\Commons\Reaction;
@@ -32,13 +33,22 @@ class ReactionController extends Controller
 
         if ($existing) {
             $existing->delete();
+            $action = 'removed';
         } else {
             Reaction::create([
                 'message_id' => $message->id,
                 'user_id' => $user->id,
                 'emoji' => $emoji,
             ]);
+            $action = 'added';
         }
+
+        broadcast(new ReactionUpdated(
+            $message,
+            $emoji,
+            ['id' => $user->id, 'name' => $user->name],
+            $action,
+        ))->toOthers();
 
         // Return updated reaction summary for this message
         $reactions = Reaction::where('message_id', $message->id)
