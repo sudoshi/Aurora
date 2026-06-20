@@ -89,6 +89,21 @@ server {
         proxy_send_timeout 300s;
     }
 
+    # ── Reverb WebSocket (realtime) ───────────────────────────────────
+    # Browser connects to ws(s)://<host>/app/<key>; proxied to the reverb
+    # service. Server-side broadcasts call reverb directly, not through here.
+    location /app {
+        proxy_pass http://reverb:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+
     # ── Everything else → built SPA shell ─────────────────────────────
     location / {
         try_files $uri $uri/ /build/index.html;

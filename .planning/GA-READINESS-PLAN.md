@@ -208,14 +208,28 @@ Evidence anchors:
 - [x] **W1-T06 (P1)** Graceful polling fallback + indicator.
   - DONE 2026-06-19: `useMessages` polls every 8s whenever realtime status is not
     `connected`; a "Reconnecting… live updates paused" pill shows on degraded.
-- [ ] **W1-T07 (P1)** Run Reverb in production. Add a `reverb` service to
-      `docker-compose.prod.yml`, proxy the WS path in nginx (`/app`, `/apps`),
-      and add a Reverb health probe (ties to W3). Update `deploy.sh` to start it.
-- [ ] **W1-T08 (P1)** Multi-user E2E coverage: a Playwright spec with two browser
-      contexts proving (a) live message delivery, (b) presence join/leave,
-      (c) typing indicator, (d) notification push. Add to `e2e/`.
-  - Verify: `npx playwright test e2e/realtime.spec.ts` passes against a stack
-    with Reverb running.
+- [~] **W1-T07 (P1)** Run Reverb in production. Artifacts authored + dev wiring
+      done; prod ACTIVATION requires sudo (handed to operator).
+  - DONE 2026-06-19: dev `reverb` service (opt-in `realtime` profile) in
+    `docker-compose.yml` + nginx `/app` WS proxy in both templates + healthcheck;
+    `deploy.sh` `restart_reverb` hook. Prod artifacts: `deploy/aurora-reverb.service`
+    (systemd), `deploy/apache-aurora-reverb.conf` (mod_proxy_wstunnel), and the
+    runbook `docs/deployment/realtime-reverb.md`. Verified: `docker compose
+    --profile realtime config` valid, nginx envsubst intact.
+  - PENDING (operator, sudo): `systemctl enable --now aurora-reverb`,
+    `a2enmod proxy_wstunnel` + paste the Apache snippet + reload, set prod
+    REVERB_*/VITE_REVERB_* in `backend/.env` and rebuild frontend. See runbook.
+- [~] **W1-T08 (P1)** Multi-user E2E + backend broadcast test.
+  - DONE 2026-06-19: backend `CommonsBroadcastTest` (5 tests) asserts all four
+    events broadcast on the correct channels with the frontend-matching payloads
+    + the thread-reply notification producer — green (uncovered & fixed the
+    missing `ChannelPolicy` that was 403-ing all posting). Two-context Playwright
+    spec `e2e/tests/realtime.spec.ts` proves live cross-session delivery within a
+    6s window (tighter than the 8s poll ⇒ proves push); parses under the chromium
+    project.
+  - PENDING: run `npx playwright test realtime` against a stack with Reverb live
+    (after W1-T07 activation). Presence/typing/notification-push E2E assertions
+    can be layered on once the message-delivery spec is green live.
 
 ---
 

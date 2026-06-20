@@ -92,6 +92,19 @@ restart_runtime() {
     fi
 }
 
+restart_reverb() {
+    # Restart the realtime WebSocket server if installed (see
+    # deploy/aurora-reverb.service + docs/deployment/realtime-reverb.md).
+    if docker_service_running reverb; then
+        compose restart reverb
+    elif systemctl list-unit-files 2>/dev/null | grep -q '^aurora-reverb\.service'; then
+        sudo systemctl restart aurora-reverb 2>/dev/null \
+            || echo "Reverb restart skipped (may need sudo)"
+    else
+        echo "Reverb not installed; skipping (realtime disabled)."
+    fi
+}
+
 stop_dev_frontend_if_running() {
     if docker ps --format '{{.Names}}' | grep -qx 'aurora-node'; then
         echo "Stopping dev Vite service for production static serving..."
@@ -174,6 +187,7 @@ cp -a dist/. "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend b
 
 echo "[6/6] Reloading runtime..."
 restart_runtime
+restart_reverb
 stop_dev_frontend_if_running
 verify_static_frontend
 

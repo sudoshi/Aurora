@@ -1,0 +1,20 @@
+[Unit]
+Description=Aurora Reverb WebSocket server (realtime collaboration)
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=smudoshi
+Group=smudoshi
+WorkingDirectory=/home/smudoshi/Github/Aurora/backend
+# Reads REVERB_* / BROADCAST_CONNECTION from backend/.env; binds locally so only
+# Apache (mod_proxy_wstunnel on /app) is publicly exposed.
+ExecStart=/usr/bin/php artisan reverb:start --host=127.0.0.1 --port=8080
+Restart=always
+RestartSec=3
+# Restart if it dies repeatedly but don't thrash the box.
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target
