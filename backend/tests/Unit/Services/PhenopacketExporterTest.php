@@ -23,7 +23,9 @@ it('exports a v2-shaped phenopacket with subject and schema version', function (
     $packet = $this->exporter->export($this->odyssey);
 
     expect($packet['id'])->toBe('aurora-odyssey-'.$this->odyssey->id);
-    expect($packet['subject']['id'])->toBe((string) $this->patient->id);
+    // Pseudonymous subject id (D2) — never the internal patient_id.
+    expect($packet['subject']['id'])->toBe('aurora-subject-'.$this->odyssey->id);
+    expect($packet['subject']['id'])->not->toBe((string) $this->patient->id);
     expect($packet['metaData']['phenopacketSchemaVersion'])->toBe('2.0');
     expect($packet['metaData']['resources'][0]['namespacePrefix'])->toBe('HP');
 });

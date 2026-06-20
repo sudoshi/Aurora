@@ -41,7 +41,9 @@ class PhenopacketExporter
         return [
             'id' => 'aurora-odyssey-'.$odyssey->id,
             'subject' => [
-                'id' => (string) $odyssey->patient_id,
+                // Pseudonymous subject id (D2): never emit the internal
+                // patient_id on an export that may cross the trust boundary.
+                'id' => 'aurora-subject-'.$odyssey->id,
             ],
             'phenotypicFeatures' => $features,
             'metaData' => [

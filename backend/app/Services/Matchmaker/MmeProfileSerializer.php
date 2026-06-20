@@ -36,8 +36,11 @@ class MmeProfileSerializer
 
         return [
             'patient' => array_filter([
+                // De-identified (D2): no free-text label/title — it can carry a
+                // name or MRN, and MME crosses the institution boundary in both
+                // directions. Identity is the pseudonymous odyssey id; matching
+                // uses HPO features + variants with contact-mediated follow-up.
                 'id' => 'aurora-odyssey-'.$odyssey->id,
-                'label' => $odyssey->title,
                 'contact' => $contact,
                 'species' => 'NCBITaxon:9606',
                 'features' => $features,

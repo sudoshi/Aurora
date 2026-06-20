@@ -16,6 +16,8 @@ it('serializes an odyssey into an MME patient profile', function () {
     $profile = app(MmeProfileSerializer::class)->serialize($odyssey);
 
     expect($profile['patient']['id'])->toBe('aurora-odyssey-'.$odyssey->id);
+    // De-identified (D2): no free-text label that could carry name/MRN.
+    expect($profile['patient'])->not->toHaveKey('label');
     expect($profile['patient']['contact']['name'])->not->toBe('');
     expect($profile['patient']['features'])->toHaveCount(2);
     expect(collect($profile['patient']['features'])->firstWhere('id', 'HP:0001250')['observed'])->toBe('yes');
