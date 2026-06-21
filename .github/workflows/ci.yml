@@ -410,6 +410,12 @@ jobs:
           DB_USERNAME: aurora
           DB_PASSWORD: secret
           REDIS_HOST: 127.0.0.1
+          # `artisan serve` uses PHP's built-in server, single-threaded by
+          # default. The SPA fires a config request on mount, and a second
+          # request (e.g. the login POST) then queues behind it until timeout —
+          # which is why the invalid-credentials test saw no error render.
+          # Allow concurrent request handling.
+          PHP_CLI_SERVER_WORKERS: "4"
 
       - name: Install Playwright
         working-directory: e2e
