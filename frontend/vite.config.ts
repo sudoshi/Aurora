@@ -57,6 +57,17 @@ export default defineConfig({
         'src/lib/echo.ts',
         'src/lib/query-client.ts',
       ],
+      // Coverage floor is a ratchet: set just below current coverage (measured
+      // 2026-06-21 — lines 69.6%, statements 68.3%, branches 62.6%, funcs 51.8%)
+      // so CI enforces "don't regress" without forcing a big test-writing push.
+      // CI runs `npm test -- --run --coverage`, which fails the build if any
+      // metric drops below these. Ratchet these up over time. [W0-T08]
+      thresholds: {
+        lines: 60,
+        statements: 60,
+        branches: 55,
+        functions: 45,
+      },
     },
   },
 });
