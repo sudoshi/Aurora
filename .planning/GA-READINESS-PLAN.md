@@ -122,6 +122,16 @@ Evidence anchors:
       major bump to clear the 9 ignored transitive CVEs, validated against the
       BioMCP evidence-retrieval path (PubMed/trials/variants). Remove the matching
       `--ignore-vuln` entries from `ci.yml` as each clears.
+  - 2026-06-20 ATTEMPTED, deferred (ResolutionImpossible). Findings: `biomcp-python`
+    0.7.3 DOES allow `mcp[cli]>=1.12.3,<2.0.0` (so mcp→1.23+ clears CVE-2025-66416)
+    and only constrains fastapi/starlette under its unused `[worker]` extra. The
+    real blocker is `pydantic==2.10.6`: newer `mcp` requires pydantic>2.10.6, and
+    `fastapi`→0.13x needs `starlette` 1.x + newer pydantic too. So this is a
+    **coordinated pydantic 2.10→2.11+ (+pydantic-core) migration** across all
+    models, plus fastapi/starlette 1.x, validated with a LIVE BioMCP smoke (the
+    suite mocks BioMCP, so green tests don't prove the live path). Safe state kept:
+    the 9 CVEs remain explicitly `--ignore-vuln`'d (NEW vulns still fail CI). Do
+    this as a dedicated branch with the pydantic migration + live smoke.
 - [x] **W0-T04 (P0)** Make E2E gate `main`. Change the e2e job to run on
       `push` as well, and add `e2e` to the deploy job `needs:`.
   - DONE 2026-06-19: removed e2e `if: pull_request` (now runs on PRs + pushes);
