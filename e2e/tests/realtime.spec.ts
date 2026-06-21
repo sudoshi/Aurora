@@ -15,6 +15,12 @@ import path from "path";
 const authFile = path.join(__dirname, "..", ".auth", "admin.json");
 const PUSH_WINDOW_MS = 6_000; // < the 8s poll interval, so success ⇒ push
 
+// This test needs a running Reverb server AND a frontend built with VITE_REVERB_*
+// (see docs/deployment/realtime-reverb.md). CI serves a plain `artisan serve`
+// build with no reverb, so the test is opt-in: run it where realtime is actually
+// provisioned with `E2E_REALTIME=1` (prod is verified via the WS 101 handshake).
+const REALTIME_PROVISIONED = process.env.E2E_REALTIME === "1";
+
 async function openGeneralChannel(context: BrowserContext) {
   const page = await context.newPage();
   await page.goto("/commons/general");
@@ -25,6 +31,11 @@ async function openGeneralChannel(context: BrowserContext) {
 }
 
 test.describe("Realtime collaboration", () => {
+  test.skip(
+    !REALTIME_PROVISIONED,
+    "Realtime (Reverb) not provisioned here — set E2E_REALTIME=1 with reverb running and a VITE_REVERB_* build to exercise it.",
+  );
+
   test("a message posted in one session appears live in another", async ({
     browser,
   }) => {

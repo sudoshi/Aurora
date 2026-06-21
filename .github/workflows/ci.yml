@@ -182,6 +182,11 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist/
+          # The SPA shell (app.blade.php) reads build/.vite/manifest.json. That
+          # dir is hidden, and upload-artifact@v4 excludes hidden files by
+          # default — without this the manifest is dropped, the SPA never
+          # renders under `artisan serve`, and every E2E (login) times out.
+          include-hidden-files: true
           retention-days: 7
 
   # ── AI Service: lint + type check + tests ──────────────────────────────────
