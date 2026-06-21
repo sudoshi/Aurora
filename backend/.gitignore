@@ -1,0 +1,6 @@
+# Scribe API documentation (regenerated via `php artisan scribe:generate`).
+# We track the OpenAPI spec (public/docs/openapi.yaml) but not the bulky
+# generated HTML/assets/Postman collection or the intermediate source dir.
+/public/docs/*
+!/public/docs/openapi.yaml
+/.scribe
