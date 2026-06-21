@@ -24,6 +24,12 @@ class FhirGenomicsReportExporter
         'display' => 'Genetic analysis report',
     ];
 
+    private const VARIANT_ASSESSMENT_LOINC = [
+        'system' => 'http://loinc.org',
+        'code' => '69548-6',
+        'display' => 'Genetic variant assessment',
+    ];
+
     /**
      * @return array<string, mixed>
      */
@@ -171,6 +177,7 @@ class FhirGenomicsReportExporter
                 'text' => 'Genetics',
             ]],
             'code' => [
+                'coding' => [self::VARIANT_ASSESSMENT_LOINC],
                 'text' => 'Genomic variant',
             ],
             'subject' => $this->patientReference($patient),
