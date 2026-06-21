@@ -32,6 +32,14 @@ class ImagingController extends Controller
             || $study->source_type === 'orthanc'
             || str_contains((string) $study->dicom_endpoint, 'dicom-web');
 
+        // Prefer eager-loaded withCount() attributes (set by callers that list
+        // many studies) to avoid an N+1 of per-study count() queries. Fall back
+        // to a live count only when the attribute was not pre-loaded.
+        $measurementCount = $study->imaging_measurements_count
+            ?? $study->imagingMeasurements()->count();
+        $segmentationCount = $study->segmentations_count
+            ?? $study->segmentations()->count();
+
         return [
             'id' => $study->id,
             'patient_id' => $study->patient_id,
@@ -55,9 +63,9 @@ class ImagingController extends Controller
             'status' => $isIndexed ? 'indexed' : 'pending',
             'source_id' => $study->source_id,
             'source_type' => $study->source_type,
-            'measurement_count' => $study->imagingMeasurements()->count(),
-            'measurements_count' => $study->imagingMeasurements()->count(),
-            'segmentation_count' => $study->segmentations()->count(),
+            'measurement_count' => $measurementCount,
+            'measurements_count' => $measurementCount,
+            'segmentation_count' => $segmentationCount,
             'created_at' => $study->created_at?->toISOString(),
             'updated_at' => $study->updated_at?->toISOString(),
         ];
@@ -234,7 +242,10 @@ class ImagingController extends Controller
 
     public function studies(Request $request): JsonResponse
     {
-        $query = ImagingStudy::orderBy('study_date', 'desc');
+        // Eager-load measurement/segmentation counts so formatStudy() reads the
+        // *_count attributes instead of issuing a count() per study (N+1).
+        $query = ImagingStudy::withCount(['imagingMeasurements', 'segmentations'])
+            ->orderBy('study_date', 'desc');
 
         if ($request->filled('modality')) {
             $query->where('modality', $request->input('modality'));
@@ -834,6 +845,7 @@ class ImagingController extends Controller
         }
 
         $studies = ImagingStudy::where('patient_id', $personId)
+            ->withCount(['imagingMeasurements', 'segmentations'])
             ->orderBy('study_date', 'desc')
             ->get()
             ->map(fn (ImagingStudy $s) => $this->formatStudy($s));
