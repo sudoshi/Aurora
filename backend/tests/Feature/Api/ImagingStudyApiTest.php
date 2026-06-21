@@ -261,6 +261,68 @@ describe('Imaging measurements and timeline contracts', function () {
             ->assertJsonPath('data.0.is_target_lesion', true);
     });
 
+    it('marks a manually created measurement as clinician source', function () {
+        $patient = imagingTestPatient(['mrn' => 'TCIA-SOURCE-CLINICIAN-001']);
+        $study = orthancTestStudy($patient, [
+            'study_uid' => '1.2.3.source.clinician',
+            'body_part' => 'Liver',
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/imaging/studies/{$study->id}/measurements", [
+                'measurement_type' => 'longest_diameter',
+                'measurement_name' => 'Clinician-entered target lesion',
+                'value_as_number' => 18.0,
+                'unit' => 'mm',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.source', 'clinician');
+
+        $this->assertDatabaseHas('clinical.imaging_measurements', [
+            'imaging_study_id' => $study->id,
+            'measurement_name' => 'Clinician-entered target lesion',
+            'source' => 'clinician',
+        ]);
+    });
+
+    it('marks an AI-extracted volume measurement as computed source', function () {
+        config([
+            'services.ai.base_url' => 'http://ai.test',
+        ]);
+
+        $patient = imagingTestPatient(['mrn' => 'TCIA-SOURCE-COMPUTED-001']);
+        $study = orthancTestStudy($patient, [
+            'study_uid' => '1.2.3.source.computed',
+            'body_part' => 'Liver',
+        ]);
+
+        Http::fake([
+            'http://ai.test/api/ai/imaging/volume' => Http::response([
+                'study_id' => $study->id,
+                'measurement_type' => 'tumor_volume',
+                'volume_cm3' => 14.2,
+                'longest_diameter_mm' => 33.1,
+            ]),
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/imaging/studies/{$study->id}/ai-extract");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.measurements.0.source', 'computed')
+            ->assertJsonPath('data.measurements.1.source', 'computed');
+
+        $this->assertDatabaseHas('clinical.imaging_measurements', [
+            'imaging_study_id' => $study->id,
+            'measurement_type' => 'tumor_volume',
+            'source_type' => 'ai_extraction',
+            'source' => 'computed',
+        ]);
+    });
+
     it('returns the patient imaging timeline in the frontend contract shape', function () {
         $patient = imagingTestPatient([
             'mrn' => 'TCIA-TIMELINE-001',

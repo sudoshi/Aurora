@@ -93,6 +93,7 @@ class ImagingFormatter
             'algorithm_name' => $algorithmName,
             'confidence' => $m->confidence !== null ? (float) $m->confidence : null,
             'measured_at' => $m->measured_at?->toISOString(),
+            'source' => $m->source ?? ($algorithmName !== null ? 'computed' : 'clinician'),
             'source_id' => $m->source_id,
             'source_type' => $m->source_type,
             'created_by' => null,

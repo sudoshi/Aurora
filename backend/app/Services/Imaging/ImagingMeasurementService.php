@@ -62,6 +62,7 @@ class ImagingMeasurementService
             'algorithm_name' => $algorithmName,
             'confidence' => $validated['confidence'] ?? null,
             'measured_at' => $validated['measured_at'] ?? now(),
+            'source' => 'clinician',
             'source_id' => $seriesId,
             'source_type' => $seriesId ? 'series' : 'manual',
         ]);
@@ -244,6 +245,7 @@ class ImagingMeasurementService
                     'algorithm_name' => 'aurora-ai-volumetric',
                     'confidence' => null,
                     'measured_at' => now(),
+                    'source' => 'computed',
                 ]));
             }
 
@@ -263,6 +265,7 @@ class ImagingMeasurementService
                     'algorithm_name' => 'aurora-ai-volumetric',
                     'confidence' => null,
                     'measured_at' => now(),
+                    'source' => 'computed',
                 ]));
             }
 
@@ -306,6 +309,10 @@ class ImagingMeasurementService
         $algorithmName = $validated['algorithm_name'] ?? $validated['measured_by'] ?? null;
         $value = $validated['value_as_number'] ?? $validated['value_numeric'];
 
+        // Legacy patient-scoped endpoint can carry an algorithm name for
+        // tool-produced values; treat those as computed, otherwise clinician.
+        $source = $algorithmName !== null ? 'computed' : 'clinician';
+
         $measurement = ImagingMeasurement::create([
             'imaging_study_id' => $studyModel->id,
             'imaging_series_id' => $seriesId,
@@ -321,6 +328,7 @@ class ImagingMeasurementService
             'algorithm_name' => $algorithmName,
             'confidence' => $validated['confidence'] ?? null,
             'measured_at' => $validated['measured_at'] ?? now(),
+            'source' => $source,
             'source_id' => $seriesId,
             'source_type' => $seriesId ? 'series' : 'manual',
         ]);

@@ -13,6 +13,9 @@ export type MeasurementType =
 export type ResponseCategory = 'CR' | 'PR' | 'SD' | 'PD' | 'NE' | string;
 export type ResponseCriteria = 'recist' | 'ct_severity' | 'deauville' | 'rano';
 
+// Provenance of an imaging measurement: clinician-entered vs AI/algorithm-computed.
+export type MeasurementSource = 'clinician' | 'computed';
+
 export interface ImagingStudy {
   id: number;
   source_id: string | number | null;
@@ -174,6 +177,7 @@ export interface ImagingMeasurement {
   laterality: 'LEFT' | 'RIGHT' | 'BILATERAL' | null;
   algorithm_name: string | null;
   confidence: number | null;
+  source: MeasurementSource | null;
   created_by: number | null;
   measured_at: string | null;
   is_target_lesion: boolean;

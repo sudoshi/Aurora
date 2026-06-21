@@ -1,7 +1,32 @@
 import { useState } from "react";
-import { Ruler, Plus, Trash2, Loader2, Target, Sparkles } from "lucide-react";
+import { Ruler, Plus, Trash2, Loader2, Target, Sparkles, Cpu, UserRound } from "lucide-react";
 import { useStudyMeasurements, useCreateMeasurement, useDeleteMeasurement, useAiExtractMeasurements } from "../hooks/useImaging";
-import type { ImagingMeasurement, MeasurementType } from "../types";
+import type { ImagingMeasurement, MeasurementType, MeasurementSource } from "../types";
+
+// Provenance badge: computed (AI/algorithm) is styled as experimental/muted to
+// match the Research-Use-Only posture; clinician-entered reads as authoritative.
+// Never color-only — each badge carries an icon and an explicit text label.
+function MeasurementSourceBadge({ source }: { source: MeasurementSource | null }) {
+  const isComputed = source === "computed";
+  const label = isComputed ? "AI / computed" : "Clinician";
+  const title = isComputed
+    ? "AI- or algorithm-computed measurement (research use only — verify before clinical use)"
+    : "Clinician-entered measurement";
+
+  return (
+    <span
+      title={title}
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+        isComputed
+          ? "border border-dashed border-[#A78BFA]/40 bg-[#A78BFA]/10 text-[#A78BFA]"
+          : "border border-[#2DD4BF]/30 bg-[#2DD4BF]/10 text-[#2DD4BF]"
+      }`}
+    >
+      {isComputed ? <Cpu size={10} aria-hidden="true" /> : <UserRound size={10} aria-hidden="true" />}
+      {label}
+    </span>
+  );
+}
 
 const MEASUREMENT_PRESETS: Array<{
   label: string;
@@ -331,7 +356,7 @@ export default function MeasurementPanel({ studyId, personId }: MeasurementPanel
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#1C1C48]">
-                  {["Type", "Name", "Value", "Body Site", "Target", "Date", ""].map(h => (
+                  {["Type", "Name", "Source", "Value", "Body Site", "Target", "Date", ""].map(h => (
                     <th key={h} className="px-4 py-2.5 text-left text-[10px] font-medium text-[#4A5068] uppercase tracking-wider">
                       {h}
                     </th>
@@ -347,6 +372,9 @@ export default function MeasurementPanel({ studyId, personId }: MeasurementPanel
                       </span>
                     </td>
                     <td className="px-4 py-3 text-[#E8ECF4] text-xs font-medium">{m.measurement_name}</td>
+                    <td className="px-4 py-3">
+                      <MeasurementSourceBadge source={m.source} />
+                    </td>
                     <td className="px-4 py-3 text-[#B4BAC8] text-xs font-mono">
                       {m.value_as_number != null ? m.value_as_number.toFixed(2) : "--"} {m.unit}
                     </td>
