@@ -2,300 +2,26 @@ import { useState, useMemo, useRef, useCallback, useEffect, useId } from "react"
 import { Search, X, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ClinicalEvent, ClinicalDomain, ObservationPeriod } from "../types/profile";
-
-// ---------------------------------------------------------------------------
-// Domain configuration
-// ---------------------------------------------------------------------------
-
-const DOMAIN_CONFIG: Record<
-  ClinicalDomain,
-  { label: string; color: string; order: number }
-> = {
-  condition:   { label: "Conditions",   color: "var(--domain-condition)",   order: 0 },
-  medication:  { label: "Medications",  color: "var(--domain-drug)",        order: 1 },
-  procedure:   { label: "Procedures",   color: "var(--domain-procedure)",   order: 2 },
-  measurement: { label: "Measurements", color: "var(--domain-measurement)", order: 3 },
-  observation: { label: "Observations", color: "var(--domain-observation)", order: 4 },
-  visit:       { label: "Visits",       color: "var(--domain-visit)",       order: 5 },
-};
-
-// Resolved colors for SVG rendering (CSS vars don't work in SVG fill/stroke)
-const DOMAIN_RESOLVED: Record<ClinicalDomain, string> = {
-  condition:   "#00D68F",
-  medication:  "#60A5FA",
-  procedure:   "#F472B6",
-  measurement: "#2DD4BF",
-  observation: "#A78BFA",
-  visit:       "#9D75F8",
-};
-
-const ALL_DOMAINS: ClinicalDomain[] = [
-  "condition",
-  "medication",
-  "procedure",
-  "measurement",
-  "observation",
-  "visit",
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function parseDate(d: string): number {
-  return new Date(d).getTime();
-}
-
-function formatTimelineDate(ms: number): string {
-  return new Date(ms).toLocaleDateString("en-US", {
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatTooltipDate(d: string): string {
-  return new Date(d).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatDuration(startDate: string, endDate: string): string {
-  const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
-  if (diffMs <= 0) return "";
-  const days = Math.round(diffMs / (24 * 60 * 60 * 1000));
-  if (days === 0) return "same day";
-  if (days === 1) return "1 day";
-  if (days < 30) return `${days} days`;
-  const months = Math.round(days / 30.44);
-  if (months < 12) return months === 1 ? "1 month" : `${months} months`;
-  const years = Math.round(days / 365.25);
-  return years === 1 ? "1 year" : `${years} years`;
-}
-
-// ---------------------------------------------------------------------------
-// Lane packing
-// ---------------------------------------------------------------------------
-
-const LANE_HEIGHT = 28;
-const EVENT_HEIGHT = 8;
-const EVENT_GAP = 3;
-const MIN_EVENT_WIDTH = 4;
-const MAX_ROWS = 12;
-const TIMELINE_PADDING = 60;
-const LABEL_WIDTH = 148;
-
-interface PackedEvent {
-  event: ClinicalEvent;
-  row: number;
-  startMs: number;
-  endMs: number;
-}
-
-function packDomainEvents(
-  events: ClinicalEvent[],
-  timeRange: number,
-): { packed: PackedEvent[]; rowCount: number } {
-  if (events.length === 0) return { packed: [], rowCount: 0 };
-
-  const minGapMs = timeRange * 0.008;
-
-  const items = events.map((ev) => ({
-    event: ev,
-    startMs: parseDate(ev.start_date),
-    endMs: ev.end_date ? parseDate(ev.end_date) : parseDate(ev.start_date),
-  }));
-  items.sort((a, b) => a.startMs - b.startMs || (a.endMs - a.startMs) - (b.endMs - b.startMs));
-
-  const rowEnds: number[] = [];
-  const packed: PackedEvent[] = [];
-
-  for (const item of items) {
-    const effectiveEnd = Math.max(item.endMs, item.startMs + minGapMs);
-    let assignedRow = -1;
-
-    for (let r = 0; r < rowEnds.length; r++) {
-      if (rowEnds[r] <= item.startMs) {
-        assignedRow = r;
-        break;
-      }
-    }
-
-    if (assignedRow === -1) {
-      if (rowEnds.length < MAX_ROWS) {
-        assignedRow = rowEnds.length;
-        rowEnds.push(0);
-      } else {
-        assignedRow = 0;
-        let minEnd = rowEnds[0];
-        for (let r = 1; r < MAX_ROWS; r++) {
-          if (rowEnds[r] < minEnd) {
-            minEnd = rowEnds[r];
-            assignedRow = r;
-          }
-        }
-      }
-    }
-
-    rowEnds[assignedRow] = effectiveEnd;
-    packed.push({ ...item, row: assignedRow });
-  }
-
-  return { packed, rowCount: rowEnds.length };
-}
-
-// ---------------------------------------------------------------------------
-// Time Range Slider
-// ---------------------------------------------------------------------------
-
-const SLIDER_HANDLE_W = 8;
-
-function TimeRangeSlider({
-  viewStart,
-  viewEnd,
-  onViewChange,
-  timeMin,
-  timeMax,
-  years,
-}: {
-  viewStart: number;
-  viewEnd: number;
-  onViewChange: (start: number, end: number) => void;
-  timeMin: number;
-  timeMax: number;
-  years: number[];
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef<"start" | "end" | "middle" | null>(null);
-  const dragOrigin = useRef({ x: 0, start: 0, end: 0 });
-
-  const fracToMs = (f: number) => timeMin + f * (timeMax - timeMin);
-
-  const formatLabel = (f: number) => {
-    const d = new Date(fracToMs(f));
-    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-  };
-
-  const getFrac = (clientX: number) => {
-    const rect = trackRef.current?.getBoundingClientRect();
-    if (!rect) return 0;
-    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  };
-
-  const handlePointerDown = (e: React.PointerEvent, target: "start" | "end" | "middle") => {
-    e.preventDefault();
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    dragging.current = target;
-    dragOrigin.current = { x: e.clientX, start: viewStart, end: viewEnd };
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!dragging.current) return;
-    const minSpan = 0.02;
-
-    if (dragging.current === "start") {
-      const frac = getFrac(e.clientX);
-      onViewChange(Math.min(frac, viewEnd - minSpan), viewEnd);
-    } else if (dragging.current === "end") {
-      const frac = getFrac(e.clientX);
-      onViewChange(viewStart, Math.max(frac, viewStart + minSpan));
-    } else {
-      const dx = e.clientX - dragOrigin.current.x;
-      const rect = trackRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const fracDx = dx / rect.width;
-      const span = dragOrigin.current.end - dragOrigin.current.start;
-      let newStart = dragOrigin.current.start + fracDx;
-      let newEnd = newStart + span;
-      if (newStart < 0) { newEnd -= newStart; newStart = 0; }
-      if (newEnd > 1) { newStart -= newEnd - 1; newEnd = 1; }
-      onViewChange(Math.max(0, newStart), Math.min(1, newEnd));
-    }
-  };
-
-  const handlePointerUp = () => { dragging.current = null; };
-
-  // Year tick marks for the slider track
-  const yearTicks = years.map((y) => {
-    const ms = new Date(`${y}-01-01`).getTime();
-    return { year: y, frac: (ms - timeMin) / (timeMax - timeMin) };
-  }).filter((t) => t.frac > 0.02 && t.frac < 0.98);
-
-  return (
-    <div className="flex items-center gap-3 px-4 py-2.5 bg-[var(--surface-base)] border-b border-[var(--surface-overlay)]">
-      <span className="text-[10px] text-[var(--text-muted)] tabular-nums shrink-0 w-16 text-right">
-        {formatLabel(viewStart)}
-      </span>
-
-      {/* Slider track */}
-      <div
-        ref={trackRef}
-        className="relative flex-1 h-6 select-none"
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-      >
-        {/* Background track */}
-        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1.5 rounded-full bg-[var(--surface-overlay)]" />
-
-        {/* Year tick marks */}
-        {yearTicks.map((t) => (
-          <div
-            key={t.year}
-            className="absolute top-0 flex flex-col items-center"
-            style={{ left: `${t.frac * 100}%`, transform: "translateX(-50%)" }}
-          >
-            <span className="text-[8px] text-[var(--text-ghost)] leading-none">{t.year}</span>
-            <div className="w-px h-1 bg-[var(--text-ghost)] opacity-40 mt-0.5" />
-          </div>
-        ))}
-
-        {/* Active range fill */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full cursor-grab active:cursor-grabbing"
-          style={{
-            left: `${viewStart * 100}%`,
-            width: `${(viewEnd - viewStart) * 100}%`,
-            background: "linear-gradient(90deg, #22D3EE, #00D68F, #9D75F8)",
-            opacity: 0.7,
-          }}
-          onPointerDown={(e) => handlePointerDown(e, "middle")}
-        />
-
-        {/* Start handle */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 rounded-sm cursor-ew-resize"
-          style={{
-            left: `calc(${viewStart * 100}% - ${SLIDER_HANDLE_W / 2}px)`,
-            width: SLIDER_HANDLE_W,
-            height: 18,
-            backgroundColor: "#22D3EE",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
-          onPointerDown={(e) => handlePointerDown(e, "start")}
-        />
-
-        {/* End handle */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 rounded-sm cursor-ew-resize"
-          style={{
-            left: `calc(${viewEnd * 100}% - ${SLIDER_HANDLE_W / 2}px)`,
-            width: SLIDER_HANDLE_W,
-            height: 18,
-            backgroundColor: "#9D75F8",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
-          onPointerDown={(e) => handlePointerDown(e, "end")}
-        />
-      </div>
-
-      <span className="text-[10px] text-[var(--text-muted)] tabular-nums shrink-0 w-16">
-        {formatLabel(viewEnd)}
-      </span>
-    </div>
-  );
-}
+import {
+  ALL_DOMAINS,
+  DOMAIN_CONFIG,
+  DOMAIN_RESOLVED,
+  EVENT_GAP,
+  EVENT_HEIGHT,
+  LABEL_WIDTH,
+  LANE_HEIGHT,
+  MIN_EVENT_WIDTH,
+  TIMELINE_PADDING,
+  formatTimelineDate,
+  packDomainEvents,
+  parseDate,
+  type PackedEvent,
+} from "./patientTimeline.utils";
+import { TimeRangeSlider } from "./patientTimeline/TimeRangeSlider";
+import { DomainFilterBar } from "./patientTimeline/DomainFilterBar";
+import { TimelineLegend } from "./patientTimeline/TimelineLegend";
+import { TimelineTooltip } from "./patientTimeline/TimelineTooltip";
+import { TimelineEmptyState } from "./patientTimeline/TimelineEmptyState";
 
 // ---------------------------------------------------------------------------
 // Component
@@ -576,11 +302,7 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
   const handleMouseUp = () => { isDragging.current = false; };
 
   if (events.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-48 rounded-lg border border-dashed border-[var(--border-default)] bg-[var(--surface-raised)]">
-        <p className="text-sm text-[var(--text-muted)]">No clinical events to display</p>
-      </div>
-    );
+    return <TimelineEmptyState />;
   }
 
   return (
@@ -653,37 +375,12 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
       </div>
 
       {/* Domain filter toggles */}
-      <div className="flex items-center gap-1.5 px-4 py-2 bg-[var(--surface-raised)] border-b border-[var(--border-default)] overflow-x-auto">
-        <span className="text-[10px] text-[var(--text-ghost)] shrink-0 mr-1">Domains:</span>
-        {allPresentDomains.map((domain) => {
-          const cfg = DOMAIN_CONFIG[domain];
-          const resolvedColor = DOMAIN_RESOLVED[domain];
-          const hidden = hiddenDomains.has(domain);
-          const count = events.filter((e) => e.domain === domain).length;
-          return (
-            <button
-              key={domain}
-              type="button"
-              onClick={() => toggleHide(domain)}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium border transition-all shrink-0",
-                hidden && "border-[var(--border-default)] text-[var(--text-ghost)] bg-transparent",
-              )}
-              style={
-                hidden
-                  ? {}
-                  : {
-                      backgroundColor: `${resolvedColor}15`,
-                      color: resolvedColor,
-                      borderColor: `${resolvedColor}40`,
-                    }
-              }
-            >
-              {cfg.label} ({count})
-            </button>
-          );
-        })}
-      </div>
+      <DomainFilterBar
+        domains={allPresentDomains}
+        events={events}
+        hiddenDomains={hiddenDomains}
+        onToggle={toggleHide}
+      />
 
       {/* Time range slider */}
       <TimeRangeSlider
@@ -791,7 +488,7 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
                 <g className="cursor-pointer" onClick={() => toggleCollapse(domain)}>
                   <rect x={0} y={y} width={LABEL_WIDTH} height={LANE_HEIGHT} fill="transparent" />
                   <text x={10} y={y + LANE_HEIGHT / 2 + 4} fill="#4A5068" style={{ fontSize: 8 }}>
-                    {isCollapsed ? "\u25B6" : "\u25BC"}
+                    {isCollapsed ? "▶" : "▼"}
                   </text>
                   <rect x={22} y={y + LANE_HEIGHT / 2 - 4} width={8} height={8} rx={2} fill={resolvedColor} />
                   <text x={36} y={y + LANE_HEIGHT / 2 + 3} fill="#B4BAC8" style={{ fontSize: 10, fontWeight: 500 }}>
@@ -869,70 +566,17 @@ export function PatientTimeline({ events, observationPeriods = [], onEventClick 
       </div>
 
       {/* Tooltip */}
-      {tooltip && !isDragging.current && (() => {
-        const ev = tooltip.event;
-        const TOOLTIP_W = 260;
-        const TOOLTIP_OFFSET = 14;
-        const containerW = containerRef.current?.clientWidth ?? svgWidth;
-        const leftPos = tooltip.x + TOOLTIP_OFFSET + TOOLTIP_W > containerW
-          ? tooltip.x - TOOLTIP_W - TOOLTIP_OFFSET
-          : tooltip.x + TOOLTIP_OFFSET;
-        const duration = ev.end_date && ev.end_date !== ev.start_date
-          ? formatDuration(ev.start_date, ev.end_date)
-          : null;
-        const resolvedColor = DOMAIN_RESOLVED[ev.domain];
-        return (
-          <div
-            className="absolute pointer-events-none z-50"
-            style={{ left: Math.max(4, leftPos), top: tooltip.y - 10 }}
-          >
-            <div className="rounded-lg bg-[var(--surface-base)] border border-[var(--border-default)] px-3 py-2 shadow-xl" style={{ maxWidth: TOOLTIP_W }}>
-              <p className="text-xs font-semibold text-[var(--text-primary)]">
-                {ev.concept_name}
-              </p>
-              <div className="mt-1 space-y-0.5">
-                <p className="text-[10px] text-[var(--text-muted)]">
-                  <span
-                    className="inline-block w-2 h-2 rounded-sm mr-1"
-                    style={{ backgroundColor: resolvedColor }}
-                  />
-                  {DOMAIN_CONFIG[ev.domain].label}
-                </p>
-                <p className="text-[10px] text-[var(--text-muted)]">
-                  {formatTooltipDate(ev.start_date)}
-                  {ev.end_date && ev.end_date !== ev.start_date && ` \u2013 ${formatTooltipDate(ev.end_date)}`}
-                  {duration && <span className="ml-1 text-[var(--text-ghost)]">({duration})</span>}
-                </p>
-                {ev.value_numeric != null && (
-                  <p className="text-[10px] text-[var(--warning)]">
-                    {String(ev.value_numeric)}{ev.unit ? ` ${ev.unit}` : ""}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      {tooltip && !isDragging.current && (
+        <TimelineTooltip
+          event={tooltip.event}
+          x={tooltip.x}
+          y={tooltip.y}
+          containerWidth={containerRef.current?.clientWidth ?? svgWidth}
+        />
+      )}
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-t border-[var(--border-default)] bg-[var(--surface-overlay)]">
-        <div className="flex flex-wrap gap-3">
-          {activeDomains.map((domain) => {
-            const resolvedColor = DOMAIN_RESOLVED[domain];
-            return (
-              <div key={domain} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: resolvedColor }} />
-                <span className="text-[10px] text-[var(--text-muted)]">
-                  {DOMAIN_CONFIG[domain].label} ({domainEvents[domain].length})
-                </span>
-              </div>
-            );
-          })}
-        </div>
-        <span className="text-[10px] text-[var(--text-disabled)]">
-          Ctrl+scroll to zoom &middot; Drag to pan &middot; Click event for details
-        </span>
-      </div>
+      <TimelineLegend activeDomains={activeDomains} domainEvents={domainEvents} />
     </div>
   );
 }
