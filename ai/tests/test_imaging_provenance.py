@@ -53,6 +53,62 @@ async def test_run_segmentation_includes_data_source():
     assert result["structure_count"] > 0
 
 
+@pytest.mark.asyncio
+async def test_run_segmentation_degraded_when_ollama_unreachable():
+    """When Ollama is unreachable the canned ai_analysis -> ai_status=degraded.
+
+    Structures/volumes are deterministic and must still be returned.
+    """
+    # ollama_base_url is unreachable in tests -> canned ai_analysis fallback
+    result = await run_segmentation(study_id=1, body_site="chest")
+    assert result["ai_status"] == "degraded"
+    assert result["structure_count"] > 0
+
+
+@pytest.mark.asyncio
+async def test_run_segmentation_ok_when_ollama_succeeds():
+    """When the LLM call succeeds, ai_status is 'ok'."""
+    mock_response = AsyncMock()
+    mock_response.raise_for_status = lambda: None
+    mock_response.json = lambda: {
+        "response": '{"summary": "ok", "notable_findings": [], "quality_assessment": "good"}'
+    }
+    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mocked:
+        mocked.return_value = mock_response
+        result = await run_segmentation(study_id=1, body_site="chest")
+    assert result["ai_status"] == "ok"
+
+
+def test_segment_response_degraded_on_ollama_failure(client):
+    """Endpoint stays 200 with usable structures but ai_status=degraded.
+
+    No mock_ollama fixture here -> the real (unreachable) Ollama URL is used,
+    forcing the canned fallback path.
+    """
+    resp = client.post(
+        "/api/ai/imaging/segment",
+        json={"study_id": 1, "body_site": "chest"},
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ai_status"] == "degraded"
+    assert body["structure_count"] > 0
+    assert body["data_source"] == "mock_model"
+
+
+def test_segment_response_ok_when_ollama_succeeds(client, mock_ollama):
+    """With a working (mocked) LLM, the endpoint reports ai_status=ok."""
+    mock_ollama.return_value.json.return_value = {
+        "response": '{"summary": "ok", "notable_findings": [], "quality_assessment": "good"}'
+    }
+    resp = client.post(
+        "/api/ai/imaging/segment",
+        json={"study_id": 1, "body_site": "chest"},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["ai_status"] == "ok"
+
+
 def test_segment_response_carries_provenance(client, mock_ollama):
     resp = client.post(
         "/api/ai/imaging/segment",

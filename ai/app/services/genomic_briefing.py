@@ -4,6 +4,8 @@ import logging
 from datetime import datetime, timezone
 
 from app.models.decision_support import (
+    AI_STATUS_DEGRADED,
+    AI_STATUS_OK,
     GenomicBriefingRequest,
     GenomicBriefingResponse,
 )
@@ -74,16 +76,19 @@ async def generate_briefing(request: GenomicBriefingRequest) -> GenomicBriefingR
         + '\n\nRespond in JSON:\n{"briefing": "your 3-5 sentence clinical narrative here"}'
     )
 
+    ai_status = AI_STATUS_OK
     try:
         data = await call_ollama_json(prompt, system=SYSTEM_PROMPT)
         briefing_text = str(data.get("briefing", "Unable to generate briefing."))
     except Exception as e:
         logger.error("Genomic briefing generation failed: %s", e)
         briefing_text = f"Briefing generation failed: {type(e).__name__}"
+        ai_status = AI_STATUS_DEGRADED
 
     return GenomicBriefingResponse(
         briefing=briefing_text,
         generated_at=datetime.now(timezone.utc).isoformat(),
         variant_count=request.total_variant_count,
         actionable_count=len(actionable),
+        ai_status=ai_status,
     )

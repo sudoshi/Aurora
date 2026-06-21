@@ -98,8 +98,12 @@ async def run_segmentation(
             }
         )
 
-    # Attempt AI analysis via Ollama
+    # Attempt AI analysis via Ollama. The deterministic structures/volumes above
+    # are unaffected by LLM availability; only the ``ai_analysis`` narrative
+    # depends on Ollama. ``ai_status`` reports whether that narrative is a real
+    # model result ("ok") or canned fallback text ("degraded").
     ai_analysis = None
+    ai_status = "ok"
     try:
         prompt = IMAGING_ANALYSIS_PROMPT.format(
             body_site=body_site,
@@ -125,6 +129,7 @@ async def run_segmentation(
             "notable_findings": [],
             "quality_assessment": "good",
         }
+        ai_status = "degraded"
 
     return {
         "segmentation_id": segmentation_id,
@@ -134,5 +139,6 @@ async def run_segmentation(
         "structures": structures,
         "structure_count": len(structures),
         "ai_analysis": ai_analysis,
+        "ai_status": ai_status,
         "data_source": "mock_model",
     }

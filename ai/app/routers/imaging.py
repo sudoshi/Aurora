@@ -62,6 +62,10 @@ class SegmentResponse(BaseModel):
     structures: list[StructureResult]
     structure_count: int
     ai_analysis: dict[str, Any] | None = None
+    # "ok" when the ai_analysis narrative came from the LLM; "degraded" when
+    # Ollama was unavailable and canned fallback text was substituted. The
+    # structures/volumes are deterministic and unaffected either way.
+    ai_status: str = "ok"
     data_source: str
     verified: bool = False
     disclaimer: str
@@ -261,6 +265,7 @@ async def segment_study(request: SegmentRequest) -> SegmentResponse:
         structures=[StructureResult(**s) for s in result["structures"]],
         structure_count=result["structure_count"],
         ai_analysis=result.get("ai_analysis"),
+        ai_status=result.get("ai_status", "ok"),
         data_source=result.get("data_source", "mock_model"),
         verified=False,
         disclaimer=SEGMENTATION_DISCLAIMER,

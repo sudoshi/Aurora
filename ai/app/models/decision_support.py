@@ -18,6 +18,17 @@ LLM_ADVISORY_DISCLAIMER = (
     "independently before any clinical use."
 )
 
+# --- AI availability status ---
+#
+# A machine-readable signal of whether the LLM actually produced this response.
+# "ok"       -> the Ollama/LLM call succeeded and the content is model output.
+# "degraded" -> the LLM was unavailable; structured fallback content is returned
+#               so the endpoint still serves usable data, but the narrative /
+#               reasoning portion is NOT a real model result. Callers MUST treat
+#               degraded output as a placeholder, not a clinical inference.
+AI_STATUS_OK = "ok"
+AI_STATUS_DEGRADED = "degraded"
+
 
 # --- Trial Matching ---
 
@@ -47,6 +58,7 @@ class TrialMatchResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Guideline Checker ---
@@ -72,6 +84,7 @@ class GuidelineCheckResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Drug Interaction Checker ---
@@ -96,6 +109,7 @@ class DrugInteractionResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Variant Interpreter ---
@@ -126,6 +140,7 @@ class VariantInterpretResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Prognostic Scorer ---
@@ -154,6 +169,7 @@ class PrognosticScoreResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Rare Disease Matcher ---
@@ -179,6 +195,7 @@ class RareDiseaseMatchResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK
 
 
 # --- Genomic Briefing ---
@@ -222,3 +239,4 @@ class GenomicBriefingResponse(BaseModel):
     error: str | None = None
     evidence_grade: str = LLM_ADVISORY_GRADE
     disclaimer: str = LLM_ADVISORY_DISCLAIMER
+    ai_status: str = AI_STATUS_OK

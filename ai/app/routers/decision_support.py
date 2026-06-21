@@ -5,6 +5,7 @@ import logging
 from fastapi import APIRouter
 
 from app.models.decision_support import (
+    AI_STATUS_DEGRADED,
     DrugInteractionRequest,
     DrugInteractionResponse,
     GenomicBriefingRequest,
@@ -48,6 +49,7 @@ async def trial_match_endpoint(request: TrialMatchRequest) -> TrialMatchResponse
             patient_id=request.patient_id,
             suggestions=[],
             error=f"Trial matching service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -67,6 +69,7 @@ async def guideline_check_endpoint(
         logger.error("Guideline check failed: %s", exc)
         return GuidelineCheckResponse(
             error=f"Guideline checker service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -86,6 +89,7 @@ async def drug_interaction_endpoint(
         return DrugInteractionResponse(
             interactions=[],
             error=f"Drug interaction service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -105,6 +109,7 @@ async def variant_interpret_endpoint(
         logger.error("Variant interpretation failed: %s", exc)
         return VariantInterpretResponse(
             error=f"Variant interpreter service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -121,6 +126,7 @@ async def prognosis_endpoint(
         return PrognosticScoreResponse(
             scores=[],
             error=f"Prognostic scorer service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -140,6 +146,7 @@ async def rare_disease_endpoint(
         return RareDiseaseMatchResponse(
             matches=[],
             error=f"Rare disease matcher service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
 
 
@@ -154,4 +161,5 @@ async def genomic_briefing_endpoint(
         logger.error("Genomic briefing failed: %s", exc)
         return GenomicBriefingResponse(
             error=f"Genomic briefing service unavailable: {type(exc).__name__}",
+            ai_status=AI_STATUS_DEGRADED,
         )
