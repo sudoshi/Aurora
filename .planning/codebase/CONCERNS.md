@@ -67,33 +67,28 @@ Sourced from the GA plan; cite the workstream IDs when picking these up.
   audit (lazy-load OHIF), realtime+imaging load tests, data-retention policy.
 
 ### Imaging (W4) — partial
-- **W4-T01 / W14-T01** Split `ImagingController` (~1,990 lines) into focused
-  controllers/services, behavior-preserving.
-- **W4-T02 / W4-T03** Replace per-study measurement/segmentation **count
-  queries** with `withCount(...)` to kill N+1; add a query-count test.
-- **W4-T04** Enforce the blank-PatientID quarantine policy in code (+test).
-- **W4-T06** OHIF iframe hardening (CSP `frame-src`, env-injected Orthanc auth).
+- **W4-T01/T02/T03/T04, W14-T01** ImagingController split, withCount N+1 fix +
+  query-count test, blank-PatientID enforcement — **DONE 2026-06-20** (see the
+  Resolved section). Remaining: **W4-T06** OHIF iframe hardening review (CSP
+  `frame-src` — Orthanc auth is already env-injected).
 
 ### Imaging AI / segmentation (W5)
-- **W5-T01 (P1, GA-blocking as labeling)** `ai/app/services/segmentation_service.py`
-  is an explicit **MOCK** (hardcoded body-site lookup, no model inference). The
-  UI must be labeled "Research/experimental" and responses must carry
-  `"mock": true`/`"computed": false` — no clinician must mistake mock anatomy
-  for a real measurement.
-- **W5-T02** Distinguish clinician-entered vs computed measurements end-to-end.
+- **W5-T02** Distinguish clinician-entered vs computed measurements end-to-end
+  (partially addressed: AI imaging responses now carry `data_source`/`verified`/
+  `disclaimer`; the per-measurement clinician-vs-computed `source` field is the
+  remaining piece).
 - **W5-T03/T04/T05 `[OUT-OF-GA]`** Wire a real segmentation model
   (TotalSegmentator / nnU-Net) behind an isolated process/queue boundary;
-  persistence + execution-boundary tests.
+  persistence + execution-boundary tests. *(W5-T01 mock labeling is DONE — the
+  AI responses carry `data_source="mock_model"`/`verified=false`/`disclaimer`.)*
 
 ### AI guardrails (W7)
-- **W7-T01 (P1)** Label LLM-only advisory endpoints (trial-match, guidelines,
-  drug-interactions, variant-interpret, rare-disease, genomic-briefing) with
-  `evidence_grade: "llm_advisory"` + a "verify independently" UI affordance.
-  *(The draft-decision path is already de-identified + BioMCP-grounded.)*
-- **W7-T02** Persist Abby chat session state (currently in-memory; lost on AI
-  restart) with a retention policy.
-- **W7-T03/T04/T05** Ollama-down degradation surfacing + tests; pin model IDs;
-  decision-quality instrumentation.
+- **W7-T02** Persist Abby chat session state — investigated + **deferred**:
+  conversations are already DB-backed (Laravel `AbbyController` + `copilot.py`
+  DB sessions); no volatile state confirmed. Reopen only if a real in-memory
+  session is found.
+- **W7-T04/T05** Pin model IDs in config; decision-quality instrumentation.
+  *(W7-T01 advisory labeling + W7-T03 `ai_status=degraded` are DONE.)*
 
 ### Interoperability (W6) — partial
 - **W6-T01** Validate FHIR R4 conformance of emitted resources against the

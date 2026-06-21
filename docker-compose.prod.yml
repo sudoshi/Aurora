@@ -1,3 +1,10 @@
+# ⚠️ LEGACY — NOT the production deployment path. (W10 decision, 2026-06-21)
+# Production runs as: Apache (TLS :443) → docker `aurora-nginx` :8085 → the
+# `docker-compose.yml` stack (php, redis, nginx, optional reverb), deployed via
+# ./deploy.sh. This `docker-compose.prod.yml` (separate api/web/worker/federation
+# build images) is NOT used by deploy.sh and is kept only as a reference for a
+# future self-contained container topology. Do not wire it into prod without
+# reconciling it with docker-compose.yml + the Apache vhost first.
 services:
   api:
     build:

@@ -1,6 +1,6 @@
 # Aurora Comprehensive App Completion TODO
 
-Last updated: 2026-06-19
+Last updated: 2026-06-21 (swarm-audited check-off pass)
 
 This checklist tracks the full app-completion plan across backend, frontend,
 AI service, imaging, genomics, interoperability, federation, operations, and
@@ -58,7 +58,7 @@ Checkbox semantics:
 
 ## 1. Imaging Productization
 
-- [ ] Complete the Orthanc/OHIF imaging workflow.
+- [x] Complete the Orthanc/OHIF imaging workflow.
   - [x] Orthanc proxy and DICOMweb access were verified in planning summary.
   - [x] Orthanc corpus was synced into Aurora.
   - [x] Indexed Orthanc studies return `status=indexed` and
@@ -108,12 +108,12 @@ Checkbox semantics:
     frontend-entered names, body sites, laterality, target lesion numbers,
     series IDs, algorithm names, and confidence values round-trip.
 
-- [ ] Improve imaging backend structure and performance.
-  - [ ] Split the 1,651-line `ImagingController` into narrower controllers or
+- [x] Improve imaging backend structure and performance.
+  - [x] Split the 1,651-line `ImagingController` into narrower controllers or
     services.
-  - [ ] Replace per-study measurement/segmentation count queries with
+  - [x] Replace per-study measurement/segmentation count queries with
     eager-loaded counts.
-  - [ ] Add query-count or performance tests for study listing.
+  - [x] Add query-count or performance tests for study listing.
 
 ## 2. Imaging AI And Measurements
 
@@ -179,11 +179,11 @@ Checkbox semantics:
   - [x] Commons APIs, pages, hooks, and UI modules exist.
   - [x] Frontend hooks are written for channel subscription, presence,
     notification listening, and typing whispers.
-  - [ ] Replace `frontend/src/lib/echo.ts` stub with Laravel Echo/Reverb or
+  - [x] Replace `frontend/src/lib/echo.ts` stub with Laravel Echo/Reverb or
     Soketi initialization.
-  - [ ] Configure `/broadcasting/auth` and private/presence channel
+  - [x] Configure `/broadcasting/auth` and private/presence channel
     authorization.
-  - [ ] Add backend broadcast events for messages, replies, reactions,
+  - [x] Add backend broadcast events for messages, replies, reactions,
     notifications, presence, and typing.
   - [ ] Add graceful polling fallback when real-time transport is unavailable.
   - [ ] Add multi-user E2E coverage for live messages, notifications, and
@@ -210,7 +210,7 @@ Checkbox semantics:
   - [x] Beacon genomic variant boolean/count query exists.
   - [ ] Configure real MME peers and document consent/privacy controls.
   - [ ] Expand Beacon filtering terms beyond an empty response.
-  - [ ] Decide Beacon record/count access tiers and k-anonymity policy.
+  - [x] Decide Beacon record/count access tiers and k-anonymity policy.
 
 ## 7. AI Decision Intelligence
 
@@ -284,16 +284,16 @@ Checkbox semantics:
     `throttle:api` limiter on protected routes; authenticated SPA/E2E traffic
     now keys by user ID at 300 requests/minute while guests remain at
     60 requests/minute.
-  - [ ] Move Orthanc nginx credentials out of hardcoded base64 headers into env
+  - [x] Move Orthanc nginx credentials out of hardcoded base64 headers into env
     substitution or Docker secrets.
-  - [ ] Decide whether `docker-compose.prod.yml` is legacy or supported; remove
+  - [x] Decide whether `docker-compose.prod.yml` is legacy or supported; remove
     or update it.
   - [ ] Add health checks for Orthanc, AI, federation, queues, and sync
     freshness.
   - [ ] Add admin-visible stale/error states for OncoKB, ClinVar, ClinGen,
     DICOM sync, and AI services.
-  - [ ] Add CI checks for backend, frontend, AI, and E2E smoke paths.
-  - [ ] Add coverage threshold enforcement in GitHub Actions if still desired.
+  - [x] Add CI checks for backend, frontend, AI, and E2E smoke paths.
+  - [x] Add coverage threshold enforcement in GitHub Actions if still desired.
 
 ## 11. Planning And Documentation Hygiene
 
@@ -307,20 +307,20 @@ Checkbox semantics:
     describes old March stabilization items as active.
   - [x] Mark stale `.planning/codebase/CONCERNS.md` as historical, because it
     includes completed OncoKB/genomics concerns as open.
-  - [ ] Fully rewrite stale `.planning/PROJECT.md`, which still describes old March
+  - [x] Fully rewrite stale `.planning/PROJECT.md`, which still describes old March
     stabilization items as active.
-  - [ ] Fully rewrite stale `.planning/codebase/CONCERNS.md`, which includes completed
+  - [x] Fully rewrite stale `.planning/codebase/CONCERNS.md`, which includes completed
     OncoKB/genomics concerns as open.
-  - [ ] Decide whether to keep or remove untracked
+  - [x] Decide whether to keep or remove untracked
     `.planning/quick/1-refactor-imaging-pipeline-for-re-indexed/1-PLAN.md`.
-  - [ ] Decide whether to keep, relocate, or remove untracked
+  - [x] Decide whether to keep, relocate, or remove untracked
     `dicom/pathology_download_plan.md`.
   - [ ] Add a devlog entry whenever each remaining tranche closes.
 
 ## 12. Large-File Refactoring And Maintainability
 
 - [ ] Reduce highest-risk large files once behavior is stable.
-  - [ ] Split `backend/app/Http/Controllers/ImagingController.php`
+  - [x] Split `backend/app/Http/Controllers/ImagingController.php`
     (1,651 lines).
   - [ ] Split `frontend/src/features/patient-profile/components/PatientTimeline.tsx`
     (938 lines).
@@ -339,7 +339,7 @@ Checkbox semantics:
 
 - [ ] Phase A: repair local validation dependencies and commands.
 - [x] Phase B: finish or hide remaining user-facing imaging stubs.
-- [ ] Phase C: implement FHIR/OMOP adapters and genomic upload processing.
+- [x] Phase C: implement FHIR/OMOP adapters and genomic upload processing.
 - [ ] Phase D: wire realtime collaboration and federation local responder.
 - [ ] Phase E: implement ambient decision-intelligence slice 2.
 - [ ] Phase F: complete rare-disease follow-ons and first non-rare TAVR pack.

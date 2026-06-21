@@ -1,5 +1,35 @@
 # Aurora Devlog
 
+## 2026-06-21 — Worklist swarm-audit + check-off pass
+
+**Branch:** `main`
+
+Ran a 31-agent verification swarm to ground-truth every open item in
+`.planning/comprehensive-app-completion-todo.md` against the codebase (one
+verifier per section + an adversarial skeptic re-checking each proposed
+check-off). Applied 19 confirmed check-offs (now 125 done / 60 genuinely-open),
+and closed the small gaps the skeptic surfaced:
+
+- **W0-T08** frontend vitest coverage floor enforced in CI (measured ~69% lines;
+  ratchet floor 60/55/45) — unblocks the CI-checks + coverage-threshold items.
+- **Channel-authorization denial tests** (`BroadcastChannelAuthTest`) — non-member
+  denied private channel subscription via `/broadcasting/auth`; member/own/public
+  allowed. (Found + worked around the `null` broadcaster's no-op `auth()`.)
+- Corrected stale `CONCERNS.md` (W4/W5-T01/W7-T01/W7-T03 were listed as remaining
+  but are done); marked `docker-compose.prod.yml` **legacy** (prod = Apache →
+  docker `aurora-nginx` → docker-compose.yml stack); recorded keep-decisions for
+  the two untracked plan docs (both now tracked).
+
+The skeptic also flagged — and a direct full-suite run **disproved** — a claimed
+"query-count tests failing" regression: `./vendor/bin/pest` is 543→548 green; the
+skeptic's failure was a `php artisan test --filter` in-container result-cache
+artifact, not a real test failure.
+
+Genuinely-open remainder (correctly left unchecked): real segmentation model
+(`[OUT-OF-GA]`), ambient-MDT transcript slice (W7-T06), TAVR pack (W9),
+federation `/respond` + Beacon filtering terms (W8), the 6 frontend large-file
+splits (W14), and rare-disease follow-ons (W8/§8).
+
 ## 2026-06-19 — FHIR Genomics Outbound Report Export
 
 **Branch:** `v2/phase-0-scaffold`
