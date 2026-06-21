@@ -10,6 +10,9 @@ it('sets hardening headers on API responses', function () {
 
     expect($response->headers->get('Content-Security-Policy'))
         ->toContain("default-src 'self'")
+        // OHIF is embedded same-origin (/ohif/), so frame-src is locked to 'self';
+        // frame-ancestors 'none' blocks Aurora itself from being framed (W4-T06).
+        ->toContain("frame-src 'self'")
         ->toContain("frame-ancestors 'none'")
         ->toContain("object-src 'none'");
 });

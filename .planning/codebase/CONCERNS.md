@@ -67,10 +67,11 @@ Sourced from the GA plan; cite the workstream IDs when picking these up.
   audit (lazy-load OHIF), realtime+imaging load tests, data-retention policy.
 
 ### Imaging (W4) — partial
-- **W4-T01/T02/T03/T04, W14-T01** ImagingController split, withCount N+1 fix +
-  query-count test, blank-PatientID enforcement — **DONE 2026-06-20** (see the
-  Resolved section). Remaining: **W4-T06** OHIF iframe hardening review (CSP
-  `frame-src` — Orthanc auth is already env-injected).
+- **W4-T01/T02/T03/T04/T06, W14-T01** ImagingController split, withCount N+1 fix +
+  query-count test, blank-PatientID enforcement, OHIF iframe hardening (CSP
+  `frame-src 'self'` + `frame-ancestors 'none'` + env-injected Orthanc auth,
+  asserted in SecurityHeadersTest) — **DONE** (see Resolved). The remaining W4
+  imaging items are all the `[OUT-OF-GA]` real-model ones under W5.
 
 ### Imaging AI / segmentation (W5)
 - **W5-T02** Distinguish clinician-entered vs computed measurements end-to-end
