@@ -118,7 +118,7 @@ Evidence anchors:
     pins (starlette/mcp) + diskcache (no upstream fix); replaced blanket mask with
     explicit per-CVE `--ignore-vuln` so NEW vulns fail CI. pip-audit exits 0.
     Coordinated framework bump tracked as **W0-T03b**.
-- [ ] **W0-T03b (P1)** Coordinated `fastapi` + `biomcp-python` (+`starlette`/`mcp`)
+- [x] **W0-T03b (P1)** [DONE 2026-06-20: 8/9 CVEs cleared — pydantic 2.10.6→2.13.4 + mcp 1.28 + fastapi 0.138 + starlette 1.3.1; FastAPI 0.133+ dropped the starlette<1.0 cap; validated incl. LIVE BioMCP smoke; only diskcache CVE-2025-69872 remains (no upstream fix). config.py → SettingsConfigDict.] Coordinated `fastapi` + `biomcp-python` (+`starlette`/`mcp`)
       major bump to clear the 9 ignored transitive CVEs, validated against the
       BioMCP evidence-retrieval path (PubMed/trials/variants). Remove the matching
       `--ignore-vuln` entries from `ci.yml` as each clears.
