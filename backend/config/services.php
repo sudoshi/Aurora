@@ -103,6 +103,17 @@ return [
         'csv_url' => env('CLINGEN_GDV_CSV_URL', 'https://search.clinicalgenome.org/kb/gene-validity/download'),
     ],
 
+    // Freshness windows (in days) for admin sync-freshness health checks
+    // (SystemHealthController). A sync source is reported `healthy` when its
+    // latest sync timestamp is within the window, `degraded` (stale) when
+    // older, and `unknown` when no sync has ever run. Override via env.
+    'sync_freshness' => [
+        'oncokb_days' => (int) env('SYNC_FRESHNESS_ONCOKB_DAYS', 30),
+        'clinvar_days' => (int) env('SYNC_FRESHNESS_CLINVAR_DAYS', 30),
+        'clingen_days' => (int) env('SYNC_FRESHNESS_CLINGEN_DAYS', 30),
+        'dicom_days' => (int) env('SYNC_FRESHNESS_DICOM_DAYS', 7),
+    ],
+
     'oidc' => [
         'enabled' => filter_var(env('OIDC_ENABLED', false), FILTER_VALIDATE_BOOL),
         'discovery_url' => env('OIDC_DISCOVERY_URL', 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration'),

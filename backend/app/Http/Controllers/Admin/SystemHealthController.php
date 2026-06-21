@@ -15,7 +15,6 @@ class SystemHealthController extends Controller
 
     public function __construct()
     {
-        // TODO(W3-T03 follow-up): sync-freshness checkers (OncoKB/ClinVar/ClinGen/DICOM)
         $this->checkers = [
             'backend' => fn () => $this->checkBackend(),
             'redis' => fn () => $this->checkRedis(),
@@ -24,6 +23,10 @@ class SystemHealthController extends Controller
             'orthanc' => fn () => $this->checkOrthanc(),
             'federation' => fn () => $this->checkFederation(),
             'reverb' => fn () => $this->checkReverb(),
+            'oncokb_sync' => fn () => $this->checkOncoKbSync(),
+            'clinvar_sync' => fn () => $this->checkClinVarSync(),
+            'clingen_sync' => fn () => $this->checkClinGenSync(),
+            'dicom_sync' => fn () => $this->checkDicomSync(),
         ];
     }
 
@@ -69,6 +72,10 @@ class SystemHealthController extends Controller
             'orthanc' => $this->getOrthancMetrics(),
             'federation' => [],
             'reverb' => $this->getReverbMetrics(),
+            'oncokb_sync' => $this->getSyncMetrics('clinical.gene_drug_interactions', 'oncokb_last_synced_at'),
+            'clinvar_sync' => $this->getClinVarSyncMetrics(),
+            'clingen_sync' => $this->getSyncMetrics('clinical.clingen_gene_validity', 'last_checked_at'),
+            'dicom_sync' => $this->getDicomSyncMetrics(),
             default => [],
         };
     }
@@ -413,5 +420,274 @@ class SystemHealthController extends Controller
             'port' => config('broadcasting.connections.reverb.options.port'),
             'scheme' => config('broadcasting.connections.reverb.options.scheme'),
         ];
+    }
+
+    // ── Sync-freshness checkers (W3-T03) ─────────────────────────────────
+    // Surface admin-visible stale/error states for the knowledge-base and
+    // DICOM sync sources. Each derives recency from the best available "last
+    // successful sync" signal on the relevant table. Status semantics:
+    //   healthy  → latest sync within the configured freshness window
+    //   degraded → latest sync older than the window (stale)
+    //   unknown  → no sync has ever run (empty table / null timestamp)
+    //   down     → an actual exception occurred while querying
+
+    /**
+     * OncoKB gene-drug interactions. Recency = MAX(oncokb_last_synced_at),
+     * falling back to MAX(updated_at) on clinical.gene_drug_interactions.
+     *
+     * @return array<string, mixed>
+     */
+    private function checkOncoKbSync(): array
+    {
+        return $this->freshnessFromTable(
+            name: 'OncoKB Sync',
+            key: 'oncokb_sync',
+            table: 'clinical.gene_drug_interactions',
+            columns: ['oncokb_last_synced_at', 'updated_at'],
+            windowDays: (int) config('services.sync_freshness.oncokb_days', 30),
+            label: 'gene-drug interactions',
+        );
+    }
+
+    /**
+     * ClinGen Gene-Disease Validity. Recency = MAX(last_checked_at), falling
+     * back to MAX(updated_at) on clinical.clingen_gene_validity.
+     *
+     * @return array<string, mixed>
+     */
+    private function checkClinGenSync(): array
+    {
+        return $this->freshnessFromTable(
+            name: 'ClinGen Sync',
+            key: 'clingen_sync',
+            table: 'clinical.clingen_gene_validity',
+            columns: ['last_checked_at', 'updated_at'],
+            windowDays: (int) config('services.sync_freshness.clingen_days', 30),
+            label: 'gene-disease validity curations',
+        );
+    }
+
+    /**
+     * ClinVar. Recency = latest completed sync in clinical.clinvar_sync_log
+     * (the same source surfaced by GenomicsController::clinvarStatus).
+     *
+     * @return array<string, mixed>
+     */
+    private function checkClinVarSync(): array
+    {
+        $name = 'ClinVar Sync';
+        $key = 'clinvar_sync';
+        $windowDays = (int) config('services.sync_freshness.clinvar_days', 30);
+
+        try {
+            $latest = DB::table('clinical.clinvar_sync_log')
+                ->where('status', 'completed')
+                ->whereNotNull('finished_at')
+                ->max('finished_at');
+
+            $variants = (int) DB::table('clinical.clinvar_variants')->count();
+
+            return $this->freshnessStatus($name, $key, $latest, $variants, $windowDays, 'variants');
+        } catch (\Throwable $e) {
+            return $this->downStatus($name, $key, $e);
+        }
+    }
+
+    /**
+     * DICOM sync. Recency = latest finished ingestion run in
+     * clinical.imaging_ingestion_runs, falling back to MAX(updated_at) on
+     * clinical.imaging_studies. Count = number of indexed imaging studies.
+     *
+     * @return array<string, mixed>
+     */
+    private function checkDicomSync(): array
+    {
+        $name = 'DICOM Sync';
+        $key = 'dicom_sync';
+        $windowDays = (int) config('services.sync_freshness.dicom_days', 7);
+
+        try {
+            $latest = DB::table('clinical.imaging_ingestion_runs')
+                ->whereNotNull('finished_at')
+                ->max('finished_at');
+
+            if ($latest === null) {
+                $latest = DB::table('clinical.imaging_studies')->max('updated_at')
+                    ?? DB::table('clinical.imaging_studies')->max('created_at');
+            }
+
+            $studies = (int) DB::table('clinical.imaging_studies')->count();
+
+            return $this->freshnessStatus($name, $key, $latest, $studies, $windowDays, 'imaging studies');
+        } catch (\Throwable $e) {
+            return $this->downStatus($name, $key, $e);
+        }
+    }
+
+    /**
+     * Derive a freshness status from the latest non-null value across one or
+     * more timestamp columns on a single table (first non-null wins).
+     *
+     * @param  list<string>  $columns
+     * @return array<string, mixed>
+     */
+    private function freshnessFromTable(
+        string $name,
+        string $key,
+        string $table,
+        array $columns,
+        int $windowDays,
+        string $label,
+    ): array {
+        try {
+            $count = (int) DB::table($table)->count();
+
+            $latest = null;
+            foreach ($columns as $column) {
+                $latest = DB::table($table)->max($column);
+                if ($latest !== null) {
+                    break;
+                }
+            }
+
+            return $this->freshnessStatus($name, $key, $latest, $count, $windowDays, $label);
+        } catch (\Throwable $e) {
+            return $this->downStatus($name, $key, $e);
+        }
+    }
+
+    /**
+     * Build the status payload from a resolved latest timestamp + row count.
+     *
+     * @param  \DateTimeInterface|string|null  $latest
+     * @return array<string, mixed>
+     */
+    private function freshnessStatus(
+        string $name,
+        string $key,
+        $latest,
+        int $count,
+        int $windowDays,
+        string $label,
+    ): array {
+        if ($latest === null || $count === 0) {
+            return [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'unknown',
+                'message' => "No sync recorded yet ({$count} {$label}).",
+                'details' => ['count' => $count, 'last_sync' => null, 'window_days' => $windowDays],
+            ];
+        }
+
+        $latestAt = $latest instanceof \DateTimeInterface
+            ? \Illuminate\Support\Carbon::instance($latest)
+            : \Illuminate\Support\Carbon::parse((string) $latest);
+
+        $ageDays = $latestAt->diffInDays(now());
+        $stale = $latestAt->lt(now()->subDays($windowDays));
+        $iso = $latestAt->toIso8601String();
+
+        return [
+            'name' => $name,
+            'key' => $key,
+            'status' => $stale ? 'degraded' : 'healthy',
+            'message' => $stale
+                ? "Stale: last sync {$iso} (~{$ageDays}d ago, window {$windowDays}d), {$count} {$label}."
+                : "Last sync {$iso} (~{$ageDays}d ago), {$count} {$label}.",
+            'details' => [
+                'count' => $count,
+                'last_sync' => $iso,
+                'age_days' => $ageDays,
+                'window_days' => $windowDays,
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function downStatus(string $name, string $key, \Throwable $e): array
+    {
+        return [
+            'name' => $name,
+            'key' => $key,
+            'status' => 'down',
+            'message' => $e->getMessage(),
+        ];
+    }
+
+    /**
+     * Latest timestamp + row count metrics for a simple table-backed sync.
+     *
+     * @param  list<string>|string  $columns
+     * @return array<string, mixed>
+     */
+    private function getSyncMetrics(string $table, array|string $columns): array
+    {
+        try {
+            $count = (int) DB::table($table)->count();
+
+            $latest = null;
+            foreach ((array) $columns as $column) {
+                $latest = DB::table($table)->max($column);
+                if ($latest !== null) {
+                    break;
+                }
+            }
+
+            return [
+                'count' => $count,
+                'last_sync' => $latest !== null
+                    ? \Illuminate\Support\Carbon::parse((string) $latest)->toIso8601String()
+                    : null,
+            ];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getClinVarSyncMetrics(): array
+    {
+        try {
+            $latest = DB::table('clinical.clinvar_sync_log')
+                ->where('status', 'completed')
+                ->whereNotNull('finished_at')
+                ->max('finished_at');
+
+            return [
+                'count' => (int) DB::table('clinical.clinvar_variants')->count(),
+                'last_sync' => $latest !== null
+                    ? \Illuminate\Support\Carbon::parse((string) $latest)->toIso8601String()
+                    : null,
+            ];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getDicomSyncMetrics(): array
+    {
+        try {
+            $latest = DB::table('clinical.imaging_ingestion_runs')
+                ->whereNotNull('finished_at')
+                ->max('finished_at')
+                ?? DB::table('clinical.imaging_studies')->max('updated_at');
+
+            return [
+                'count' => (int) DB::table('clinical.imaging_studies')->count(),
+                'last_sync' => $latest !== null
+                    ? \Illuminate\Support\Carbon::parse((string) $latest)->toIso8601String()
+                    : null,
+            ];
+        } catch (\Throwable) {
+            return [];
+        }
     }
 }
