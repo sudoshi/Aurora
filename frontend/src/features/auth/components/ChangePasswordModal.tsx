@@ -81,6 +81,9 @@ export default function ChangePasswordModal() {
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="change-password-title"
         style={{
           width: "100%",
           maxWidth: 420,
@@ -92,6 +95,7 @@ export default function ChangePasswordModal() {
         }}
       >
         <h2
+          id="change-password-title"
           style={{
             fontSize: "var(--text-xl)",
             fontWeight: 600,
