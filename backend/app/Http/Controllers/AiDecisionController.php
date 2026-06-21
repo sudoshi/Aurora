@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
 use App\Models\ClinicalCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class AiDecisionController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * POST /api/cases/{case}/decisions/draft
      *
@@ -18,6 +21,9 @@ class AiDecisionController extends Controller
     public function draft(int $case): JsonResponse
     {
         $c = ClinicalCase::findOrFail($case);
+
+        // Drafting an AI recommendation requires case access (CasePolicy).
+        $this->authorize('view', $c);
 
         try {
             $resp = Http::timeout(60)->acceptJson()->post(
