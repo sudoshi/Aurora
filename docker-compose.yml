@@ -27,7 +27,9 @@ services:
     extra_hosts: ["host.docker.internal:host-gateway"]
     healthcheck:
       # Exercises the full nginx→php-fpm chain via the liveness probe.
-      test: ["CMD-SHELL", "wget -qO- http://localhost/api/health >/dev/null 2>&1 || exit 1"]
+      # Use 127.0.0.1, not localhost: nginx listens IPv4-only, while localhost
+      # resolves to ::1 first in the alpine image and the probe would hang/fail.
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/api/health >/dev/null 2>&1 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
