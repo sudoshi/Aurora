@@ -13,4 +13,8 @@ regexes = [
   # Prose in a test-plan doc that matches the generic-api-key heuristic:
   # "...sync with/without token, success/failure/exception paths"
   '''token, success/failure/exception''',
+  # RFC 6455 example WebSocket handshake nonce ("the sample nonce", base64).
+  # Appears verbatim in docs as the Sec-WebSocket-Key for curl WS-upgrade checks.
+  # Public test vector, not a credential.
+  '''dGhlIHNhbXBsZSBub25jZQ==''',
 ]
