@@ -122,10 +122,17 @@ jobs:
           DB_PASSWORD: secret
           DB_MIGRATIONS_TABLE: public.migrations
 
+      # Coverage floor is a ratchet: --min is set just below current line
+      # coverage (measured 59.4% via pcov, 2026-06-20) so CI enforces
+      # "don't regress" without forcing a big test-writing push. xdebug is
+      # installed (coverage: xdebug above); XDEBUG_MODE=coverage lets Pest
+      # collect. memory_limit is raised because coverage report generation
+      # OOMs at PHP's 128M default. Ratchet --min up toward 70% over time. [W0-T07]
       - name: Pest tests
         working-directory: backend
-        run: ./vendor/bin/pest --exclude-group=mockery-alias
+        run: php -d memory_limit=1G ./vendor/bin/pest --exclude-group=mockery-alias --coverage --min=55
         env:
+          XDEBUG_MODE: coverage
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
