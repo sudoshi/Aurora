@@ -40,6 +40,12 @@ return [
         'base_url' => env('AI_SERVICE_URL', 'http://localhost:8100'),
     ],
 
+    // Prometheus /metrics scrape token (W3-T05). When set, the /metrics endpoint
+    // requires `Authorization: Bearer <token>`; when blank it is open (dev/local).
+    'metrics' => [
+        'token' => env('METRICS_TOKEN'),
+    ],
+
     'orthanc' => [
         'base_url' => env('ORTHANC_URL', 'http://host.docker.internal:8042'),
         'user' => env('ORTHANC_USER'),

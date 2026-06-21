@@ -53,6 +53,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', [\App\Http\Controllers\HealthController::class, 'live']);
 Route::get('/health/ready', [\App\Http\Controllers\HealthController::class, 'ready']);
 
+// Prometheus metrics (public — NOT behind sanctum; scrapers send a token, not a
+// session). Optional bearer-token gate enforced in the controller via
+// config('services.metrics.token'). Throttled so it can't be hammered.
+Route::get('/metrics', [\App\Http\Controllers\MetricsController::class, 'index'])
+    ->middleware('throttle:60,1');
+
 // MME (MatchMaker Exchange) — public inbound endpoint, peer-token authenticated
 Route::post('/mme/v1/match', [\App\Http\Controllers\Mme\MatchController::class, 'match'])->middleware('mme.peer');
 
