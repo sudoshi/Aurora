@@ -1,7 +1,7 @@
 # Core framework
-fastapi==0.115.0
+fastapi==0.138.0  # >=0.133 drops the starlette<1.0 cap, allowing starlette 1.x (W0-T03b)
 uvicorn[standard]==0.34.2  # 0.34.2 min required by biomcp-python
-pydantic==2.10.6  # 2.10.6 min required by biomcp-python; fastapi/anthropic allow <3
+pydantic==2.13.4  # >=2.11 required by mcp>=1.23 (was 2.10.6); pydantic-core follows (W0-T03b)
 pydantic-settings==2.7.0
 httpx==0.28.1  # 0.28.1 min required by biomcp-python; anthropic allows <1
 python-dotenv==1.2.2  # CVE-2026-28684 fix
@@ -31,3 +31,9 @@ pytest==9.0.3  # CVE-2025-71176 fix
 pytest-cov>=5.0.0
 pytest-asyncio>=0.24.0
 mypy==1.14.0
+
+# Transitive deps pinned for CVE remediation (W0-T03b).
+# mcp/starlette are pulled in via biomcp-python -> mcp[cli] and fastapi; pinned
+# explicitly so the CI vuln scan sees the fixed versions deterministically.
+mcp[cli]==1.28.0  # clears CVE-2025-66416 (fix >=1.23.0); within biomcp's <2.0.0; needs pydantic>=2.11
+starlette==1.3.1  # clears PYSEC-2026-161, CVE-2024-47874, CVE-2025-54121, CVE-2026-48818, CVE-2026-48817, CVE-2026-54283, CVE-2026-54282 (fastapi>=0.133 allows starlette 1.x)
