@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ApiResponse;
 use App\Models\CaseDiscussion;
 use App\Models\ClinicalCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CaseDiscussionController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * GET /api/cases/{case}/discussions
      * List discussions for a case (threaded: top-level with nested replies).
@@ -21,6 +24,8 @@ class CaseDiscussionController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $discussions = CaseDiscussion::where('case_id', $case)
             ->whereNull('parent_id')
@@ -42,6 +47,8 @@ class CaseDiscussionController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $validated = $request->validate([
             'content' => 'required|string|max:5000',

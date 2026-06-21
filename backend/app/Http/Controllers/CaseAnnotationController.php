@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ApiResponse;
 use App\Models\CaseAnnotation;
 use App\Models\ClinicalCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CaseAnnotationController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * GET /api/cases/{case}/annotations
      * List annotations for a case.
@@ -21,6 +24,8 @@ class CaseAnnotationController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $annotations = CaseAnnotation::where('case_id', $case)
             ->with('user')
@@ -41,6 +46,8 @@ class CaseAnnotationController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $validated = $request->validate([
             'domain' => 'required|string|in:condition,medication,procedure,measurement,observation,imaging,genomic,general',

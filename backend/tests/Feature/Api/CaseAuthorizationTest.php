@@ -49,3 +49,34 @@ it('forbids an outsider from managing the case team', function () {
         ->postJson("/api/cases/{$case->id}/team", ['user_id' => $target->id, 'role' => 'reviewer'])
         ->assertStatus(403);
 });
+
+it('forbids an outsider from participating in case sub-resources', function () {
+    $creator = User::factory()->create();
+    $case = ClinicalCase::factory()->create(['created_by' => $creator->id]);
+    $outsider = User::factory()->create();
+
+    // Posting a discussion message to someone else's case is denied.
+    $this->actingAs($outsider, 'sanctum')
+        ->postJson("/api/cases/{$case->id}/discussions", ['content' => 'Outsider intrusion'])
+        ->assertStatus(403);
+
+    // Adding an annotation to someone else's case is denied.
+    $this->actingAs($outsider, 'sanctum')
+        ->postJson("/api/cases/{$case->id}/annotations", [
+            'domain' => 'general',
+            'content' => 'Outsider annotation',
+        ])
+        ->assertStatus(403);
+
+    // Reading discussions on someone else's case is denied.
+    $this->actingAs($outsider, 'sanctum')
+        ->getJson("/api/cases/{$case->id}/discussions")
+        ->assertStatus(403);
+
+    // A team member, by contrast, may participate.
+    $member = User::factory()->create();
+    CaseTeamMember::create(['case_id' => $case->id, 'user_id' => $member->id, 'role' => 'reviewer', 'invited_at' => now()]);
+    $this->actingAs($member, 'sanctum')
+        ->postJson("/api/cases/{$case->id}/discussions", ['content' => 'Member contribution'])
+        ->assertStatus(201);
+});

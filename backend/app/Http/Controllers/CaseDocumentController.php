@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ApiResponse;
 use App\Models\CaseDocument;
 use App\Models\ClinicalCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CaseDocumentController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * GET /api/cases/{case}/documents
      * List documents for a case.
@@ -22,6 +25,8 @@ class CaseDocumentController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $documents = CaseDocument::where('case_id', $case)
             ->with('uploader')
@@ -42,6 +47,8 @@ class CaseDocumentController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $request->validate([
             'file' => 'required|file|max:51200', // 50MB max
@@ -81,6 +88,14 @@ class CaseDocumentController extends Controller
         if (! $doc) {
             return ApiResponse::error('Document not found', 404);
         }
+
+        $clinicalCase = ClinicalCase::find($doc->case_id);
+
+        if (! $clinicalCase) {
+            return ApiResponse::error('Case not found', 404);
+        }
+
+        $this->authorize('view', $clinicalCase);
 
         // Delete the file from storage
         if (Storage::disk('local')->exists($doc->filepath)) {

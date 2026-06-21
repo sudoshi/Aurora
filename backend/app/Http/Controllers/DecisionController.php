@@ -7,11 +7,14 @@ use App\Models\ClinicalCase;
 use App\Models\Decision;
 use App\Models\DecisionVote;
 use App\Models\FollowUp;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DecisionController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * GET /api/decisions/dashboard — all decisions across cases
      */
@@ -36,6 +39,8 @@ class DecisionController extends Controller
             return ApiResponse::error('Case not found', 404);
         }
 
+        $this->authorize('view', $clinicalCase);
+
         $decisions = Decision::where('case_id', $case)
             ->with(['proposer:id,name'])
             ->withCount(['votes', 'followUps'])
@@ -55,6 +60,8 @@ class DecisionController extends Controller
         if (! $clinicalCase) {
             return ApiResponse::error('Case not found', 404);
         }
+
+        $this->authorize('view', $clinicalCase);
 
         $validated = $request->validate([
             'session_id' => 'nullable|integer|exists:app.sessions,id',
@@ -102,6 +109,8 @@ class DecisionController extends Controller
      */
     public function update(Request $request, Decision $decision): JsonResponse
     {
+        $this->authorizeCaseAccess($decision->case_id);
+
         $validated = $request->validate([
             'recommendation' => 'sometimes|string',
             'rationale' => 'nullable|string',
@@ -121,6 +130,8 @@ class DecisionController extends Controller
      */
     public function vote(Request $request, Decision $decision): JsonResponse
     {
+        $this->authorizeCaseAccess($decision->case_id);
+
         $validated = $request->validate([
             'vote' => 'required|string|in:agree,disagree,abstain',
             'comment' => 'nullable|string',
@@ -149,6 +160,8 @@ class DecisionController extends Controller
      */
     public function finalize(Request $request, Decision $decision): JsonResponse
     {
+        $this->authorizeCaseAccess($decision->case_id);
+
         $validated = $request->validate([
             'status' => 'required|string|in:approved,rejected,deferred',
         ]);
@@ -169,6 +182,8 @@ class DecisionController extends Controller
      */
     public function addFollowUp(Request $request, Decision $decision): JsonResponse
     {
+        $this->authorizeCaseAccess($decision->case_id);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -190,6 +205,8 @@ class DecisionController extends Controller
      */
     public function updateFollowUp(Request $request, FollowUp $followUp): JsonResponse
     {
+        $this->authorizeCaseAccess($followUp->decision?->case_id);
+
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
@@ -206,5 +223,20 @@ class DecisionController extends Controller
         $followUp->load('assignee:id,name');
 
         return ApiResponse::success($followUp, 'Follow-up updated');
+    }
+
+    /**
+     * Resolve the parent case for a decision/follow-up and ensure the
+     * acting user has case access (creator, invited team member, or admin).
+     */
+    private function authorizeCaseAccess(?int $caseId): void
+    {
+        if ($caseId === null) {
+            abort(404);
+        }
+
+        $clinicalCase = ClinicalCase::findOrFail($caseId);
+
+        $this->authorize('view', $clinicalCase);
     }
 }
