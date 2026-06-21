@@ -1,3 +1,8 @@
+# Env backups/snapshots — these contain real secrets; never commit them.
+.env.bak*
+.env.*.bak
+.env.save
+
 # Scribe API documentation (regenerated via `php artisan scribe:generate`).
 # We track the OpenAPI spec (public/docs/openapi.yaml) but not the bulky
 # generated HTML/assets/Postman collection or the intermediate source dir.

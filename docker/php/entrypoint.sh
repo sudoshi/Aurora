@@ -21,7 +21,17 @@ for p in app bootstrap config database public resources routes artisan composer.
     [ -e "$p" ] && chmod -R o+rX "$p" 2>/dev/null || true
 done
 
-# Clear caches for dev (in case production caches were left)
+# If a command was provided (compose `command:` / CMD — e.g. the reverb and
+# queue sidecars run `php artisan reverb:start` / `queue:work`), exec it instead
+# of php-fpm. It arrives as "$@" because ENTRYPOINT is this wrapper. Without
+# this, every sidecar silently ran php-fpm. Sidecars skip the cache-clear below
+# so they never wipe the web tier's shared bootstrap/cache.
+if [ "$#" -gt 0 ]; then
+    exec "$@"
+fi
+
+# Web tier (php-fpm): clear any stale dev caches that may have been baked into
+# the bind-mounted tree, then serve.
 php artisan config:clear 2>/dev/null || true
 php artisan route:clear 2>/dev/null || true
 php artisan view:clear 2>/dev/null || true

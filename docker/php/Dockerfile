@@ -4,6 +4,7 @@ FROM php:8.4-fpm-alpine
 RUN apk add --no-cache \
     postgresql-dev \
     libzip-dev \
+    linux-headers \
     zip \
     unzip \
     fcgi \
@@ -12,7 +13,9 @@ RUN apk add --no-cache \
     pgsql \
     zip \
     bcmath \
-    opcache
+    opcache \
+    pcntl \
+    sockets
 
 # Install php-fpm-healthcheck
 RUN wget -O /usr/local/bin/php-fpm-healthcheck \

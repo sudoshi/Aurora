@@ -26,6 +26,17 @@ run_artisan() {
     fi
 }
 
+# Composer must run where the runtime lives. In prod that's the php CONTAINER
+# (PHP 8.4, root-owned vendor); running it on the host (different PHP, no write
+# access to root-owned vendor/) corrupts the autoloader. Mirror run_artisan.
+run_composer() {
+    if docker_php_running; then
+        compose exec -T php sh -c "cd /var/www/html && composer $*"
+    else
+        (cd "$DEPLOY_DIR/backend" && composer "$@")
+    fi
+}
+
 normalize_backend_permissions() {
     local readable_paths=(
         app
@@ -86,7 +97,11 @@ normalize_backend_permissions() {
 
 restart_runtime() {
     if docker_php_running; then
-        compose restart php nginx
+        # `up -d` (NOT `restart`): docker `restart` does NOT reload env_file, so
+        # backend/.env changes would be ignored and config:cache would bake stale
+        # values. `up -d` recreates a container only when its config/env changed,
+        # otherwise it's a no-op.
+        compose up -d php nginx
     else
         sudo systemctl reload php8.4-fpm 2>/dev/null || echo "PHP-FPM reload skipped (may need sudo)"
     fi
@@ -155,41 +170,124 @@ verify_static_frontend() {
     echo "Static frontend smoke passed: built assets are served without Vite dev markers."
 }
 
-echo "[1/6] Pulling latest code..."
-cd "$DEPLOY_DIR"
-git pull origin "$(git branch --show-current)" || true
+# ---- Argument parsing -------------------------------------------------------
+# Scoped + non-destructive by default. Database migrations (migrate --force) are
+# DESTRUCTIVE-CAPABLE and therefore only run when --db is passed explicitly —
+# never implied by a bare `./deploy.sh` or by --all.
+DO_PHP=false
+DO_FRONTEND=false
+DO_DB=false
+DO_REVERB=false
+DO_PULL=true
+EXPLICIT_SCOPE=false
 
-echo "[2/6] Installing backend dependencies..."
-cd "$DEPLOY_DIR/backend"
-composer install --no-dev --optimize-autoloader --no-interaction --no-progress || composer install --no-interaction --no-progress
-normalize_backend_permissions
+usage() {
+    cat <<'USAGE'
+Aurora deploy — scoped, non-destructive by default.
 
-echo "[3/6] Running migrations..."
-run_artisan migrate --force
+Usage: ./deploy.sh [scopes...] [options]
 
-echo "[4/6] Clearing caches..."
-run_artisan config:clear
-run_artisan cache:clear
-run_artisan route:clear
-run_artisan view:clear
-run_artisan config:cache
-run_artisan route:cache
-run_artisan view:cache
-normalize_backend_permissions
+Scopes (combine freely; default with no args = --php --frontend, i.e. a full
+app deploy WITHOUT database migrations):
+  --all         Backend + frontend (no migrations). Same as no arguments.
+  --php         Backend: composer install, clear/rebuild caches, restart php+nginx.
+  --frontend    Frontend: npm build, publish to public/build, restart nginx.
+  --db          Run pending migrations (migrate --force). DESTRUCTIVE-CAPABLE —
+                only runs when this flag is given explicitly. Never implied by
+                --all or a bare ./deploy.sh.
+  --reverb      Restart the realtime Reverb websocket server.
 
-echo "[5/6] Building frontend..."
-cd "$DEPLOY_DIR/frontend"
-npm ci 2>/dev/null || npm install
-npm run build
-rm -rf "$DEPLOY_DIR/backend/public/build"
-mkdir -p "$DEPLOY_DIR/backend/public/build"
-cp -a dist/. "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend build copy skipped (dist may not exist yet)"
+Options:
+  --no-pull     Skip 'git pull' (deploy the working tree as-is).
+  -h, --help    Show this help.
 
-echo "[6/6] Reloading runtime..."
-restart_runtime
-restart_reverb
-stop_dev_frontend_if_running
-verify_static_frontend
+Examples:
+  ./deploy.sh                 # full app deploy, NO migrations
+  ./deploy.sh --frontend      # rebuild just the SPA
+  ./deploy.sh --php           # re-cache config after editing backend/.env
+  ./deploy.sh --db            # apply pending migrations (explicit, on purpose)
+  ./deploy.sh --php --db      # backend + migrations
+USAGE
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --all)      DO_PHP=true; DO_FRONTEND=true; EXPLICIT_SCOPE=true ;;
+        --php)      DO_PHP=true; EXPLICIT_SCOPE=true ;;
+        --frontend) DO_FRONTEND=true; EXPLICIT_SCOPE=true ;;
+        --db)       DO_DB=true; EXPLICIT_SCOPE=true ;;
+        --reverb)   DO_REVERB=true; EXPLICIT_SCOPE=true ;;
+        --no-pull)  DO_PULL=false ;;
+        -h|--help)  usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; usage; exit 2 ;;
+    esac
+    shift
+done
+
+# Default (no scope flags): full app deploy WITHOUT migrations.
+if [ "$EXPLICIT_SCOPE" = false ]; then
+    DO_PHP=true
+    DO_FRONTEND=true
+fi
+
+# ---- Execution --------------------------------------------------------------
+if [ "$DO_PULL" = true ]; then
+    echo "[pull] Pulling latest code..."
+    cd "$DEPLOY_DIR"
+    git pull origin "$(git branch --show-current)" || true
+fi
+
+if [ "$DO_PHP" = true ]; then
+    echo "[php] Installing backend dependencies (in container)..."
+    # NOTE: full install (no --no-dev). config/scribe.php imports knuckleswtf/scribe
+    # classes at boot, so pruning dev deps breaks the app. To enable --no-dev,
+    # move knuckleswtf/scribe to "require" (and guard its config) first.
+    run_composer install --optimize-autoloader --no-interaction --no-progress
+    normalize_backend_permissions
+fi
+
+if [ "$DO_DB" = true ]; then
+    echo "[db] Applying migrations (explicit --db)..."
+    echo "     Pending before run:"
+    run_artisan migrate:status 2>/dev/null | grep -i 'pending' || echo "     (none pending)"
+    run_artisan migrate --force
+else
+    echo "[db] Skipped — migrations only run with explicit --db."
+fi
+
+if [ "$DO_PHP" = true ]; then
+    echo "[php] Clearing + rebuilding caches..."
+    run_artisan config:clear
+    run_artisan cache:clear
+    run_artisan route:clear
+    run_artisan view:clear
+    run_artisan config:cache
+    run_artisan route:cache
+    run_artisan view:cache
+    normalize_backend_permissions
+fi
+
+if [ "$DO_FRONTEND" = true ]; then
+    echo "[frontend] Building frontend..."
+    cd "$DEPLOY_DIR/frontend"
+    npm ci 2>/dev/null || npm install
+    npm run build
+    rm -rf "$DEPLOY_DIR/backend/public/build"
+    mkdir -p "$DEPLOY_DIR/backend/public/build"
+    cp -a dist/. "$DEPLOY_DIR/backend/public/build/" 2>/dev/null || echo "Frontend build copy skipped (dist may not exist yet)"
+fi
+
+echo "[reload] Reloading runtime..."
+if [ "$DO_PHP" = true ] || [ "$DO_FRONTEND" = true ]; then
+    restart_runtime
+    restart_reverb            # self-guards: only restarts if the reverb service exists
+elif [ "$DO_REVERB" = true ]; then
+    restart_reverb
+fi
+if [ "$DO_FRONTEND" = true ]; then
+    stop_dev_frontend_if_running
+    verify_static_frontend
+fi
 
 echo "=== Deployment complete ==="
 echo "Visit: https://aurora.acumenus.net"
