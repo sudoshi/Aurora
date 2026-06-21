@@ -31,6 +31,19 @@ class ClinicalPatient extends Model
     }
 
     /**
+     * Curated patient roster: hide bulk imaging-cohort records (TCIA) that are
+     * DICOM-derived and carry no clinical context. They remain in the database
+     * and reachable by id (imaging views, cases), just not listed/counted in
+     * the roster. Null source_type (manually-created patients) stays visible.
+     */
+    public function scopeRosterVisible(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where(function (\Illuminate\Database\Eloquent\Builder $q) {
+            $q->where('source_type', '!=', 'tcia')->orWhereNull('source_type');
+        });
+    }
+
+    /**
      * Derive patient category from conditions.
      */
     public function getCategoryAttribute(): string

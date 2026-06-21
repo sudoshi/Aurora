@@ -22,7 +22,8 @@ class PatientController extends Controller
         $perPage = (int) $request->input('per_page', 50);
         $perPage = min(max($perPage, 1), 100);
 
-        $patients = ClinicalPatient::with('conditions:id,patient_id,concept_name')
+        $patients = ClinicalPatient::rosterVisible()
+            ->with('conditions:id,patient_id,concept_name')
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->paginate($perPage);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Models\Clinical\ClinicalPatient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,8 +14,8 @@ class DashboardController extends Controller
     {
         $userId = $request->user()->id;
 
-        // Count patients in clinical schema
-        $totalPatients = DB::table('clinical.patients')->count();
+        // Count patients in the curated roster (excludes bulk TCIA imaging cohort)
+        $totalPatients = ClinicalPatient::rosterVisible()->count();
 
         // Count cases (the cases table may not exist yet, so handle gracefully)
         $totalCases = 0;
