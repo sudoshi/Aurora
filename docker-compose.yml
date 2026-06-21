@@ -58,7 +58,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
-    networks: [aurora]
+    # acropolis-backend: shared infra net — reach the PACS by DNS
+    # (parthenon-orthanc:8042) instead of host.docker.internal.
+    networks: [aurora, acropolis-backend]
     restart: unless-stopped
 
   # Laravel Reverb WebSocket server. Opt-in via `--profile realtime` so the
@@ -124,3 +126,8 @@ services:
 networks:
   aurora:
     driver: bridge
+  # Shared Acropolis internal network (declared/owned by the Parthenon stack).
+  # Provides DNS access to parthenon-orthanc (PACS) and other infra services.
+  acropolis-backend:
+    name: acropolis-backend
+    external: true
