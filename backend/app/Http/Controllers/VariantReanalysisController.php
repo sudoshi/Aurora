@@ -41,7 +41,9 @@ class VariantReanalysisController extends Controller
             $query->where('severity', $request->string('severity'));
         }
 
-        return ApiResponse::paginated($query->paginate($request->integer('per_page', 25)));
+        $perPage = min(max($request->integer('per_page', 25), 1), 100);
+
+        return ApiResponse::paginated($query->paginate($perPage));
     }
 
     public function acknowledge(AcknowledgeKbAlertRequest $request, int $alert): JsonResponse

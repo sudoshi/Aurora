@@ -547,7 +547,8 @@ class GenomicsController extends Controller
             $query->where('source', $source);
         }
 
-        $interactions = $query->orderBy('gene')->orderBy('evidence_level')->get();
+        $limit = min((int) $request->input('limit', 100), 200);
+        $interactions = $query->orderBy('gene')->orderBy('evidence_level')->limit($limit)->get();
 
         return response()->json([
             'success' => true,

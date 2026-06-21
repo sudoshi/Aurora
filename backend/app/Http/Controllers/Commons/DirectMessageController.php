@@ -24,6 +24,7 @@ class DirectMessageController extends Controller
             ->withCount('members')
             ->withMax('messages', 'created_at')
             ->orderByDesc('messages_max_created_at')
+            ->limit(min((int) $request->input('limit', 100), 200))
             ->get()
             ->map(function (Channel $channel) use ($user) {
                 $otherMember = $channel->members->first(

@@ -21,7 +21,7 @@ class UserAuditController extends Controller
             ->when($request->date_to, fn ($q) => $q->where('occurred_at', '<=', $request->string('date_to')->toString().' 23:59:59'))
             ->orderByDesc('occurred_at');
 
-        $perPage = $request->integer('per_page', 50);
+        $perPage = min(max($request->integer('per_page', 50), 1), 100);
         $logs = $query->paginate($perPage);
 
         return response()->json([
@@ -40,7 +40,7 @@ class UserAuditController extends Controller
         $logs = UserAuditLog::query()
             ->where('user_id', $user->id)
             ->orderByDesc('occurred_at')
-            ->paginate($request->integer('per_page', 25));
+            ->paginate(min(max($request->integer('per_page', 25), 1), 100));
 
         return response()->json([
             'data' => $logs->getCollection()->map(fn (UserAuditLog $log) => $this->formatLog($log))->values(),
