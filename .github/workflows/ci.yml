@@ -5,6 +5,12 @@ on:
     branches: [main, "v2/*"]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_migrations:
+        description: "Run database migrations during deploy (migrate --force)"
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -437,18 +443,20 @@ jobs:
           path: e2e/playwright-report/
           retention-days: 14
 
-  # ── Deploy — only on main push, after all checks pass ─────────────────────
+  # ── Deploy — MANUAL ONLY (workflow_dispatch), after all checks pass ────────
+  # Intentionally NOT triggered by push: production is deployed deliberately via
+  # the hardened ./deploy.sh (in-container composer, migrations gated behind an
+  # explicit --db, env_file reloaded via `up -d`). Run from the Actions tab →
+  # "Aurora CI" → "Run workflow", optionally ticking run_migrations.
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     needs: [backend-test, frontend, ai, security, e2e]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy via SSH
+      - name: Deploy via SSH (delegates to ./deploy.sh)
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -457,12 +465,5 @@ jobs:
           script: |
             cd /home/smudoshi/Github/Aurora
             git pull origin main
-            cd backend && composer install --no-dev --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            cd ../frontend && npm ci && npm run build
-            rm -rf ../backend/public/build
-            cp -r dist ../backend/public/build
+            ./deploy.sh --all ${{ inputs.run_migrations && '--db' || '' }}
             echo "Deployed at $(date)"
