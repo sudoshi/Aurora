@@ -80,7 +80,9 @@ class AuthProviderSeeder extends Seeder
                     'client_id' => '',
                     'client_secret' => '',
                     'discovery_url' => 'https://auth.acumenus.net/application/o/aurora-oidc/.well-known/openid-configuration',
-                    'redirect_uri' => '/api/auth/oidc/callback',
+                    // Must be ABSOLUTE — Authentik strict redirect-URI matching rejects a
+                    // relative path with "Redirect URI Error" (fixed 2026-06-22).
+                    'redirect_uri' => 'https://aurora.acumenus.net/api/auth/oidc/callback',
                     'scopes' => ['openid', 'profile', 'email', 'groups'],
                     'allowed_groups' => ['Aurora Admins'],
                     'pkce_enabled' => true,
